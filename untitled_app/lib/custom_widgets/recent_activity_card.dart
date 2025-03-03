@@ -1,4 +1,4 @@
-import 'package:flutter/Material.dart';
+import 'package:flutter/material.dart';
 import 'package:untitled_app/custom_widgets/time_stamp.dart';
 import '../models/post_handler.dart' show RecentActivityCard;
 import 'package:untitled_app/localization/generated/app_localizations.dart';
