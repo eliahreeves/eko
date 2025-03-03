@@ -163,7 +163,7 @@ class PostCardController extends ChangeNotifier {
     } else {
       if (!sharing) {
         sharing = true;
-        await Share.shareWithResult(
+        await Share.share(
             'Check out my post on Echo: ${c.appURL}/feed/post/${post.postId}');
         sharing = false;
       }

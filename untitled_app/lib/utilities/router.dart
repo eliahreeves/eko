@@ -259,10 +259,11 @@ final goRouter = GoRouter(
           navigatorKey: _shellNavigatorComposeKey,
           routes: [
             GoRoute(
-              onExit: (context) {
-                locator<NavBarController>().enable();
-                return true;
-              },
+              // FIXME
+              // onExit: (context) {
+              //   locator<NavBarController>().enable();
+              //   return true;
+              // },
               path: '/compose',
               name: 'compose',
               pageBuilder: (context, state) {
@@ -303,19 +304,21 @@ final goRouter = GoRouter(
                   builder: (context, state) => const ShareProfile(),
                 ),
                 GoRoute(
-                  onExit: (context) {
-                    locator<NavBarController>().enable();
-                    return true;
-                  },
+                  // FIXME
+                  // onExit: (context) {
+                  //   locator<NavBarController>().enable();
+                  //   return true;
+                  // },
                   path: 'edit_profile',
                   name: 'edit_profile',
                   builder: (context, state) => const EditProfile(),
                 ),
                 GoRoute(
-                    onExit: (context) {
-                      locator<NavBarController>().enable();
-                      return true;
-                    },
+                  // FIXME
+                    // onExit: (context) {
+                    //   locator<NavBarController>().enable();
+                    //   return true;
+                    // },
                     path: 'user_settings',
                     name: 'user_settings',
                     builder: (context, state) => const UserSettings(),

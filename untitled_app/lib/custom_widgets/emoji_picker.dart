@@ -14,32 +14,33 @@ class EmojiSelector extends StatelessWidget {
         context.pop();
       },
       config: Config(
-        columns: 7,
-        // Issue: https://github.com/flutter/flutter/issues/28894
-        emojiSizeMax: 32 *
-            (foundation.defaultTargetPlatform == TargetPlatform.iOS
-                ? 1.30
-                : 1.0),
-        verticalSpacing: 0,
-        horizontalSpacing: 0,
-        gridPadding: EdgeInsets.zero,
-        initCategory: Category.SMILEYS,
-        bgColor: Theme.of(context).colorScheme.background,
-        indicatorColor: Theme.of(context).colorScheme.primary,
-        iconColor: Theme.of(context).colorScheme.outline,
-        iconColorSelected: Theme.of(context).colorScheme.primary,
+        // FIXME
+        // columns: 7,
+        // // Issue: https://github.com/flutter/flutter/issues/28894
+        // emojiSizeMax: 32 *
+        //     (foundation.defaultTargetPlatform == TargetPlatform.iOS
+        //         ? 1.30
+        //         : 1.0),
+        // verticalSpacing: 0,
+        // horizontalSpacing: 0,
+        // gridPadding: EdgeInsets.zero,
+        // initCategory: Category.SMILEYS,
+        // bgColor: Theme.of(context).colorScheme.background,
+        // indicatorColor: Theme.of(context).colorScheme.primary,
+        // iconColor: Theme.of(context).colorScheme.outline,
+        // iconColorSelected: Theme.of(context).colorScheme.primary,
 
-        skinToneDialogBgColor: Theme.of(context).colorScheme.surface,
-        skinToneIndicatorColor: Theme.of(context).colorScheme.outline,
-        enableSkinTones: true,
-        recentTabBehavior: RecentTabBehavior.NONE,
-        recentsLimit: 28,
-        replaceEmojiOnLimitExceed: false,
-        noRecents: const Text(
-          'No Recents',
-          style: TextStyle(fontSize: 20, color: Colors.black26),
-          textAlign: TextAlign.center,
-        ),
+        // skinToneDialogBgColor: Theme.of(context).colorScheme.surface,
+        // skinToneIndicatorColor: Theme.of(context).colorScheme.outline,
+        // enableSkinTones: true,
+        // recentTabBehavior: RecentTabBehavior.NONE,
+        // recentsLimit: 28,
+        // replaceEmojiOnLimitExceed: false,
+        // noRecents: const Text(
+        //   'No Recents',
+        //   style: TextStyle(fontSize: 20, color: Colors.black26),
+        //   textAlign: TextAlign.center,
+        // ),
       ),
     );
   }

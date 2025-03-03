@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:untitled_app/models/current_user.dart';
 
 class AppUser {
@@ -78,6 +79,7 @@ class AppUser {
         return null;
       }
     }
+
     final userRef = FirebaseFirestore.instance.collection("users");
     final data =
         await userRef.doc(uid).get(); //FIXME need exception handleing all below

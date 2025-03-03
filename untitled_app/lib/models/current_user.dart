@@ -174,6 +174,18 @@ class CurrentUser extends AppUser {
       // print(blockedBy);
       if (fcmTokens == null) {
         addFCM();
+      } else if (await getActivityNotification()) {
+        List<String> fcmTokens = List<String>.from(userData['fcmTokens'] ?? []);
+        final String currentDeviceToken =
+            await FirebaseMessaging.instance.getToken() ?? "";
+        // check to see if contained in array
+        if (!fcmTokens.contains(currentDeviceToken)) {
+          fcmTokens.add(currentDeviceToken);
+          final DocumentReference userDocRef =
+              FirebaseFirestore.instance.collection("users").doc(user);
+          // Update the Firestore document with the modified FCM tokens array
+          await userDocRef.update({'fcmTokens': fcmTokens});
+        }
       }
     }
     //await _readLikedPosts();
@@ -367,7 +379,8 @@ class CurrentUser extends AppUser {
 
     cropedFile = await imageCropper.cropImage(
         sourcePath: pickedFile.path,
-        cropStyle: CropStyle.circle,
+        // FIXME
+        // cropStyle: CropStyle.circle,
         maxHeight: 300,
         maxWidth: 300,
         aspectRatio: const CropAspectRatio(ratioX: 150, ratioY: 150),
