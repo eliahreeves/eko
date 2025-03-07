@@ -45,3 +45,5 @@ app.*.map.json
 /untitled_app/android/app/debug
 /untitled_app/android/app/profile
 /untitled_app/android/app/release
+
+firbaseHosting/**/*.js
