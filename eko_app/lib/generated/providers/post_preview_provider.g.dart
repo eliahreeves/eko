@@ -6,7 +6,7 @@ part of '../../providers/post_preview_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postPreviewHash() => r'ac0b10f398df616cae3708d3d5ab28d6a34b89f6';
+String _$postPreviewHash() => r'97af7488599d078d3d5473cf990a77f88702eef4';
 
 /// See also [PostPreview].
 @ProviderFor(PostPreview)

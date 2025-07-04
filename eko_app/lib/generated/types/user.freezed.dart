@@ -23,7 +23,6 @@ mixin _$UserModel {
   String get uid;
   bool get isVerified;
   String? get verificationUrl;
-  @JsonKey(name: 'share_online_status')
   bool get shareOnlineStatus;
 
   /// Create a copy of UserModel
@@ -90,7 +89,7 @@ abstract mixin class $UserModelCopyWith<$Res> {
       String uid,
       bool isVerified,
       String? verificationUrl,
-      @JsonKey(name: 'share_online_status') bool shareOnlineStatus});
+      bool shareOnlineStatus});
 }
 
 /// @nodoc
@@ -264,7 +263,7 @@ extension UserModelPatterns on UserModel {
             String uid,
             bool isVerified,
             String? verificationUrl,
-            @JsonKey(name: 'share_online_status') bool shareOnlineStatus)?
+            bool shareOnlineStatus)?
         $default, {
     required TResult orElse(),
   }) {
@@ -312,7 +311,7 @@ extension UserModelPatterns on UserModel {
             String uid,
             bool isVerified,
             String? verificationUrl,
-            @JsonKey(name: 'share_online_status') bool shareOnlineStatus)
+            bool shareOnlineStatus)
         $default,
   ) {
     final _that = this;
@@ -358,7 +357,7 @@ extension UserModelPatterns on UserModel {
             String uid,
             bool isVerified,
             String? verificationUrl,
-            @JsonKey(name: 'share_online_status') bool shareOnlineStatus)?
+            bool shareOnlineStatus)?
         $default,
   ) {
     final _that = this;
@@ -383,7 +382,6 @@ extension UserModelPatterns on UserModel {
 
 /// @nodoc
 
-@JsonSerializable(explicitToJson: true)
 class _UserModel implements UserModel {
   const _UserModel(
       {required this.name,
@@ -395,7 +393,7 @@ class _UserModel implements UserModel {
       required this.uid,
       required this.isVerified,
       this.verificationUrl,
-      @JsonKey(name: 'share_online_status') required this.shareOnlineStatus})
+      required this.shareOnlineStatus})
       : _followers = followers,
         _following = following;
 
@@ -430,7 +428,6 @@ class _UserModel implements UserModel {
   @override
   final String? verificationUrl;
   @override
-  @JsonKey(name: 'share_online_status')
   final bool shareOnlineStatus;
 
   /// Create a copy of UserModel
@@ -503,7 +500,7 @@ abstract mixin class _$UserModelCopyWith<$Res>
       String uid,
       bool isVerified,
       String? verificationUrl,
-      @JsonKey(name: 'share_online_status') bool shareOnlineStatus});
+      bool shareOnlineStatus});
 }
 
 /// @nodoc

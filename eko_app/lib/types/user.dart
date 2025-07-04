@@ -1,11 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:eko_app/types/current_user.dart';
 part '../generated/types/user.freezed.dart';
-part '../generated/types/user.g.dart';
 
 @freezed
 abstract class UserModel with _$UserModel {
-  @JsonSerializable(explicitToJson: true)
   const factory UserModel({
     required String name,
     required String username,
@@ -16,7 +14,7 @@ abstract class UserModel with _$UserModel {
     required String uid,
     required bool isVerified,
     String? verificationUrl,
-    @JsonKey(name: 'share_online_status') required bool shareOnlineStatus,
+    required bool shareOnlineStatus,
   }) = _UserModel;
 
   factory UserModel.userNotFound() {

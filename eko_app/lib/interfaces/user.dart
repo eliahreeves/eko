@@ -3,18 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 Future<bool> isUsernameAvailable(String username) async {
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .where('username', isEqualTo: username)
-      .get();
-
-  if (querySnapshot.docs.isEmpty) {
+  try {
+    return await supabase
+        .rpc('is_username_available', params: {'p_username': username});
+  } catch (e) {
+    debugPrint(e.toString());
     return true;
-  } else {
-    return false;
   }
 }
 

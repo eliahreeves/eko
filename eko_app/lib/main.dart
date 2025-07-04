@@ -17,6 +17,8 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:eko_app/firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> _checkFirstInstall() async {
   if (!PrefsService.notFirstInstall) {
@@ -27,6 +29,15 @@ Future<void> _checkFirstInstall() async {
   }
 }
 
+Future<void> _initSupabase() async {
+  final url = dotenv.env['SUPABASE_URL'];
+  final key = dotenv.env['SUPABASE_KEY'];
+  if (url == null || key == null || url.isEmpty || key.isEmpty) {
+    return;
+  }
+  await Supabase.initialize(url: url, anonKey: key);
+}
+
 // Future<void> _buildVersion() async {
 //   if (!kIsWeb) await locator<Version>().init();
 // }
@@ -34,6 +45,7 @@ Future<void> _checkFirstInstall() async {
 Future<void> main() async {
   usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env', isOptional: true);
   //init
   await Future.wait([
     PrefsService.init(),
@@ -42,6 +54,7 @@ Future<void> main() async {
   // setupLocator();
   //protected/dependent services
   await Future.wait([
+    _initSupabase(),
     _checkFirstInstall(),
     LogoService.init(),
     NotificationHelper.setupNotifications(),

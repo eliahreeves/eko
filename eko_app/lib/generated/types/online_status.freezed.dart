@@ -288,7 +288,7 @@ extension OnlineStatusPatterns on OnlineStatus {
 class _ with DiagnosticableTreeMixin implements OnlineStatus {
   const _(
       {this.online = false,
-      @JsonKey(includeFromJson: false) this.valid = true,
+      @JsonKey(includeFromJson: false) this.valid = false,
       this.id,
       @JsonKey(name: 'last_changed') this.lastChanged});
   factory _.fromJson(Map<String, dynamic> json) => _$FromJson(json);

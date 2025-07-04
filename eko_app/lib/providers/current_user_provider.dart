@@ -11,6 +11,7 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/current_user.dart';
 import 'package:eko_app/types/activity.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 
 // Necessary for code-generation to work
 part '../generated/providers/current_user_provider.g.dart';
@@ -225,18 +226,19 @@ class CurrentUser extends _$CurrentUser {
 
   Future<void> reload() async {
     final uid = ref.read(authProvider).uid!;
-    final userRef = FirebaseFirestore.instance.collection('users');
-
     try {
-      final mainDoc =
-          await userRef.doc(uid).snapshots().firstWhere((doc) => doc.exists);
-
+      final response = await supabase.rpc(
+        'get_user_by_id',
+        params: {'p_uid': uid},
+      );
+      if (response is! List || response.isEmpty) return;
+      final row = response.first;
+      if (row is! Map) return;
+      final rowMap = Map<String, dynamic>.from(row);
       final blockedBy = await _getPeopleWhoBlockedMe();
-      final mainData = mainDoc.data();
-      if (mainData != null) {
-        mainData['blockedBy'] = blockedBy;
-        state = CurrentUserModel.fromJson(mainData);
-      }
+      state = CurrentUserModel.fromJson(
+        _currentUserDocFromSupabaseRow(rowMap, blockedBy),
+      );
     } catch (e) {
       debugPrint('Error reloading current user: $e');
     }
@@ -343,4 +345,60 @@ class CurrentUser extends _$CurrentUser {
       });
     }
   }
+}
+
+Map<String, dynamic> _currentUserDocFromSupabaseRow(
+  Map<String, dynamic> row,
+  List<String> blockedBy,
+) {
+  List<String> asStrList(Object? v) {
+    if (v == null) return [];
+    if (v is List) return v.map((e) => e.toString()).toList();
+    return [];
+  }
+
+  Map<String, int> asPollVotes(Object? v) {
+    if (v == null) return {};
+    if (v is Map) {
+      return v.map(
+        (k, e) => MapEntry(
+          k.toString(),
+          e is int ? e : int.tryParse(e.toString()) ?? 0,
+        ),
+      );
+    }
+    return {};
+  }
+
+  final profileDataRaw = row['profileData'] ?? row['profile_data'];
+  final Map<String, dynamic> profileData;
+  if (profileDataRaw is Map) {
+    profileData = Map<String, dynamic>.from(profileDataRaw);
+  } else {
+    profileData = {
+      'profilePicture':
+          row['profile_picture'] ?? row['profilePicture'] ?? '',
+      'bio': row['bio'] ?? '',
+      'followers': asStrList(row['followers']),
+      'following': asStrList(row['following']),
+      'likedPosts': asStrList(row['liked_posts'] ?? row['likedPosts']),
+      'dislikedPosts':
+          asStrList(row['disliked_posts'] ?? row['dislikedPosts']),
+      'pollVotes': asPollVotes(row['poll_votes'] ?? row['pollVotes']),
+    };
+  }
+
+  return {
+    'name': row['name'] ?? '',
+    'username': row['username'] ?? '',
+    'uid': '${row['id'] ?? row['uid'] ?? ''}',
+    'isVerified': row['is_verified'] ?? row['isVerified'] ?? false,
+    'verificationUrl': row['verification_url'] ?? row['verificationUrl'],
+    'share_online_status':
+        row['share_online_status'] ?? row['shareOnlineStatus'] ?? true,
+    'profileData': profileData,
+    'blockedUsers': asStrList(row['blocked_users'] ?? row['blockedUsers']),
+    'blockedBy': blockedBy,
+    'unreadGroup': row['unread_group'] ?? row['unreadGroup'] ?? false,
+  };
 }
