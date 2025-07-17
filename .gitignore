@@ -49,3 +49,4 @@ app.*.map.json
 .direnv
 
 firbaseHosting/**/*.js
+node_modules
