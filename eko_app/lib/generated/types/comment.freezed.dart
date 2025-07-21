@@ -29,6 +29,8 @@ mixin _$CommentModel {
   int get dislikes;
   @JsonKey(name: 'created_at')
   String get createdAt;
+  @LikeStateConverter()
+  LikeState get likeState;
 
   /// Create a copy of CommentModel
   /// with the given fields replaced by the non-null parameter values.
@@ -56,17 +58,28 @@ mixin _$CommentModel {
             (identical(other.dislikes, dislikes) ||
                 other.dislikes == dislikes) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.likeState, likeState) ||
+                other.likeState == likeState));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, uid, id, parentId, gifUrl,
-      const DeepCollectionEquality().hash(body), likes, dislikes, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      uid,
+      id,
+      parentId,
+      gifUrl,
+      const DeepCollectionEquality().hash(body),
+      likes,
+      dislikes,
+      createdAt,
+      likeState);
 
   @override
   String toString() {
-    return 'CommentModel(uid: $uid, id: $id, parentId: $parentId, gifUrl: $gifUrl, body: $body, likes: $likes, dislikes: $dislikes, createdAt: $createdAt)';
+    return 'CommentModel(uid: $uid, id: $id, parentId: $parentId, gifUrl: $gifUrl, body: $body, likes: $likes, dislikes: $dislikes, createdAt: $createdAt, likeState: $likeState)';
   }
 }
 
@@ -84,7 +97,8 @@ abstract mixin class $CommentModelCopyWith<$Res> {
       @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
       @JsonKey(name: 'like_count') int likes,
       @JsonKey(name: 'dislike_count') int dislikes,
-      @JsonKey(name: 'created_at') String createdAt});
+      @JsonKey(name: 'created_at') String createdAt,
+      @LikeStateConverter() LikeState likeState});
 }
 
 /// @nodoc
@@ -107,6 +121,7 @@ class _$CommentModelCopyWithImpl<$Res> implements $CommentModelCopyWith<$Res> {
     Object? likes = null,
     Object? dislikes = null,
     Object? createdAt = null,
+    Object? likeState = null,
   }) {
     return _then(_self.copyWith(
       uid: null == uid
@@ -141,6 +156,10 @@ class _$CommentModelCopyWithImpl<$Res> implements $CommentModelCopyWith<$Res> {
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
+      likeState: null == likeState
+          ? _self.likeState
+          : likeState // ignore: cast_nullable_to_non_nullable
+              as LikeState,
     ));
   }
 }
@@ -347,7 +366,8 @@ class _CommentModel extends CommentModel {
       final List<String> body = const <String>[],
       @JsonKey(name: 'like_count') this.likes = 0,
       @JsonKey(name: 'dislike_count') this.dislikes = 0,
-      @JsonKey(name: 'created_at') required this.createdAt})
+      @JsonKey(name: 'created_at') required this.createdAt,
+      @LikeStateConverter() this.likeState = LikeState.none})
       : _body = body,
         super._();
   factory _CommentModel.fromJson(Map<String, dynamic> json) =>
@@ -382,6 +402,10 @@ class _CommentModel extends CommentModel {
   @override
   @JsonKey(name: 'created_at')
   final String createdAt;
+  @override
+  @JsonKey()
+  @LikeStateConverter()
+  final LikeState likeState;
 
   /// Create a copy of CommentModel
   /// with the given fields replaced by the non-null parameter values.
@@ -413,17 +437,28 @@ class _CommentModel extends CommentModel {
             (identical(other.dislikes, dislikes) ||
                 other.dislikes == dislikes) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.likeState, likeState) ||
+                other.likeState == likeState));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, uid, id, parentId, gifUrl,
-      const DeepCollectionEquality().hash(_body), likes, dislikes, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      uid,
+      id,
+      parentId,
+      gifUrl,
+      const DeepCollectionEquality().hash(_body),
+      likes,
+      dislikes,
+      createdAt,
+      likeState);
 
   @override
   String toString() {
-    return 'CommentModel(uid: $uid, id: $id, parentId: $parentId, gifUrl: $gifUrl, body: $body, likes: $likes, dislikes: $dislikes, createdAt: $createdAt)';
+    return 'CommentModel(uid: $uid, id: $id, parentId: $parentId, gifUrl: $gifUrl, body: $body, likes: $likes, dislikes: $dislikes, createdAt: $createdAt, likeState: $likeState)';
   }
 }
 
@@ -443,7 +478,8 @@ abstract mixin class _$CommentModelCopyWith<$Res>
       @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
       @JsonKey(name: 'like_count') int likes,
       @JsonKey(name: 'dislike_count') int dislikes,
-      @JsonKey(name: 'created_at') String createdAt});
+      @JsonKey(name: 'created_at') String createdAt,
+      @LikeStateConverter() LikeState likeState});
 }
 
 /// @nodoc
@@ -467,6 +503,7 @@ class __$CommentModelCopyWithImpl<$Res>
     Object? likes = null,
     Object? dislikes = null,
     Object? createdAt = null,
+    Object? likeState = null,
   }) {
     return _then(_CommentModel(
       uid: null == uid
@@ -501,6 +538,10 @@ class __$CommentModelCopyWithImpl<$Res>
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
+      likeState: null == likeState
+          ? _self.likeState
+          : likeState // ignore: cast_nullable_to_non_nullable
+              as LikeState,
     ));
   }
 }
