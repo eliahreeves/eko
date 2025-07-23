@@ -18,10 +18,6 @@ _CommentModel _$CommentModelFromJson(Map<String, dynamic> json) =>
       likes: (json['like_count'] as num?)?.toInt() ?? 0,
       dislikes: (json['dislike_count'] as num?)?.toInt() ?? 0,
       createdAt: json['created_at'] as String,
-      likeState: json['likeState'] == null
-          ? LikeState.none
-          : const LikeStateConverter()
-              .fromJson(json['likeState'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$CommentModelToJson(_CommentModel instance) =>
@@ -34,5 +30,4 @@ Map<String, dynamic> _$CommentModelToJson(_CommentModel instance) =>
       'like_count': instance.likes,
       'dislike_count': instance.dislikes,
       'created_at': instance.createdAt,
-      'likeState': const LikeStateConverter().toJson(instance.likeState),
     };

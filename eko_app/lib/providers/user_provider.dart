@@ -62,10 +62,4 @@ class User extends _$User {
       return UserModel.userNotFound();
     }
   }
-
-  void updateFollowers(List<String> newFollowers) {
-    // state.whenData((user) {
-    //   state = AsyncData(user.copyWith(followers: newFollowers));
-    // });
-  }
 }
