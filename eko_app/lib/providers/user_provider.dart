@@ -14,6 +14,7 @@ part '../generated/providers/user_provider.g.dart';
 @riverpod
 class User extends _$User {
   Timer? _disposeTimer;
+  bool _isFollowAction = false;
   @override
   FutureOr<UserModel> build(String uid) {
     // *** This block is for lifecycle management *** //
@@ -61,5 +62,33 @@ class User extends _$User {
     } catch (_) {
       return UserModel.userNotFound();
     }
+  }
+
+  Future<void> toggleFollow() async {
+    (await future).isFollowing ? await unfollow() : await follow();
+  }
+
+  Future<void> follow() async {
+    await _followInner(true);
+  }
+
+  Future<void> unfollow() async {
+    await _followInner(false);
+  }
+
+  Future<void> _followInner(bool isFollow) async {
+    final user = state.valueOrNull;
+    if (user == null || _isFollowAction) {
+      return;
+    }
+    _isFollowAction = true;
+    try {
+      state = AsyncData(user.copyWith(isFollowing: isFollow));
+      await supabase.rpc('change_follow_state',
+          params: {'p_uid': user.uid, 'p_is_follow': isFollow});
+    } catch (e) {
+      state = AsyncData(user);
+    }
+    _isFollowAction = false;
   }
 }
