@@ -38,7 +38,12 @@ class VerificationBadge extends ConsumerWidget {
                   items: [
                     PopupMenuItem(
                       onTap: () async {
-                        final uri = Uri.parse(verificationUrl);
+                        final hasProtocol =
+                            verificationUrl.startsWith(RegExp(r'https?://'));
+                        final String validUrl = hasProtocol
+                            ? verificationUrl
+                            : 'https://$verificationUrl';
+                        final uri = Uri.parse(validUrl);
                         await launchUrl(uri,
                             mode: LaunchMode.externalApplication);
                       },

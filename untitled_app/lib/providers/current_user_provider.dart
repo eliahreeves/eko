@@ -35,8 +35,13 @@ class CurrentUser extends _$CurrentUser {
       String? verificationUrl}) async {
     final prev = state.user;
     state = state.copyWith(
-        user:
-            state.user.copyWith(name: name ?? prev.name, bio: bio ?? prev.bio));
+        user: state.user.copyWith(
+      name: name ?? prev.name,
+      bio: bio ?? prev.bio,
+      verificationUrl: verificationUrl ?? prev.verificationUrl,
+      isVerified:
+          verificationUrl == prev.verificationUrl ? prev.isVerified : false,
+    ));
 
     try {
       String? pic;
