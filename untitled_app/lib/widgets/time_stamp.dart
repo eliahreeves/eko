@@ -14,7 +14,7 @@ String formatTime(DateTime time) {
   } else if (difference.inDays < 7) {
     return '${difference.inDays}d';
   } else {
-    return DateFormat('dd/MM/yy').format(now);
+    return DateFormat('dd/MM/yy').format(time);
   }
 }
 
