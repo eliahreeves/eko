@@ -63,9 +63,12 @@ class CurrentUser extends _$CurrentUser {
       if (name != null) {
         json['name'] = name;
       }
-      if (verificationUrl != null) {
+      if (verificationUrl != prev.verificationUrl) {
         json['verificationUrl'] = verificationUrl;
         json['isVerified'] = null;
+      } else {
+        json['verificationUrl'] = prev.verificationUrl;
+        json['isVerified'] = prev.isVerified;
       }
       if (bio != null) {
         json['profileData.bio'] = bio;

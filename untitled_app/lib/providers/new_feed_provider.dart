@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:untitled_app/interfaces/post_queries.dart';
 import 'package:untitled_app/providers/current_user_provider.dart';
@@ -18,26 +19,22 @@ class NewFeed extends _$NewFeed {
   }
 
   Future<void> getter() async {
-    final restrictedUsers = await ref.watch(restrictedUserProvider.future);
-    final List<PostModel> postList = [];
-    while (postList.length < c.postsOnRefresh) {
-      final baseQuery = FirebaseFirestore.instance
-          .collection('posts')
-          .where('tags', arrayContains: 'public')
-          .orderBy('time', descending: true)
-          .limit(c.postsOnRefresh);
-      final query = state.$1.isEmpty
-          ? baseQuery
-          : baseQuery.startAfter([_timestamps.last]);
-      final intermediatePostList = await getPosts(query);
-      ref.read(postPoolProvider).putAll(intermediatePostList);
-      postList.addAll(intermediatePostList.where((post) {
-        final currentUser = ref.read(currentUserProvider).user;
-        return !restrictedUsers.contains(post.uid) ||
-            currentUser.following.contains(post.uid) ||
-            currentUser.uid == post.uid;
-      }));
-    }
+    // final restrictedUsers = await ref.watch(restrictedUserProvider.future);
+    final baseQuery = FirebaseFirestore.instance
+        .collection('posts')
+        .where('tags', arrayContains: 'public')
+        .orderBy('time', descending: true)
+        .limit(c.postsOnRefresh);
+    final query =
+        state.$1.isEmpty ? baseQuery : baseQuery.startAfter([_timestamps.last]);
+    final postList = await getPosts(query);
+    ref.read(postPoolProvider).putAll(postList);
+    // postList.addAll(intermediatePostList.where((post) {
+    //   final currentUser = ref.read(currentUserProvider).user;
+    //   return !restrictedUsers.contains(post.uid) ||
+    //       currentUser.following.contains(post.uid) ||
+    //       currentUser.uid == post.uid;
+    // }));
 
     final newList = [...state.$1];
     for (final post in postList) {

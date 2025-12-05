@@ -1,4 +1,4 @@
-package VerifyUsers
+package verifyusers
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
+	"google.golang.org/api/option"
 )
 
 func init() {
@@ -23,7 +24,7 @@ func init() {
 // VerifyUsers is a scheduled function that runs daily at midnight.
 func VerifyUsers(ctx context.Context, e event.Event) error {
 	log.Println("VerifyUsers task started - running daily verification.")
-	run()
+	Run()
 	log.Println("VerifyUsers task completed successfully.")
 	return nil
 }
@@ -85,7 +86,7 @@ func findAllRelMeLinks(n *html.Node) []string {
 
 func queryUnverifiedUsers(ctx context.Context, client *firestore.Client) ([]User, error) {
 	iter := client.Collection("users").
-		Where("verificationUrl", "!=", nil).
+		Where("verificationUrl", ">", "").
 		Where("isVerified", "==", nil).
 		Documents(ctx)
 
@@ -111,9 +112,10 @@ func queryUnverifiedUsers(ctx context.Context, client *firestore.Client) ([]User
 	return users, nil
 }
 
-func run() {
+func Run() {
 	ctx := context.Background()
-	app, err := firebase.NewApp(ctx, nil)
+	opt := option.WithCredentialsFile("sdk.json")
+	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
@@ -131,10 +133,12 @@ func run() {
 	}
 
 	for _, user := range users {
+		log.Printf("Processing user: UID=%s, Username=%s, VerificationURL=%s", user.UID, user.Username, user.VerificationURL)
 		url := user.VerificationURL
 		resp, err := fetchPage(url)
 		if err != nil {
-			log.Fatalf("Fatal Error: %v\n", err)
+			log.Printf("Error fetching page for user %s with URL '%s': %v\n", user.UID, url, err)
+			continue // Skip to the next user
 		}
 		defer resp.Body.Close()
 
@@ -154,6 +158,7 @@ func run() {
 					log.Printf("Failed to update user %s: %v", user.UID, err)
 				}
 			}
+
 		}
 
 	}

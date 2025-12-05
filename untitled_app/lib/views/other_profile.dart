@@ -172,7 +172,10 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
     }
 
     Future<void> onRefresh() async {
-      return await ref.refresh(userProvider(uid));
+      await Future.wait([
+        ref.refresh(userProvider(uid).future),
+        ref.read(currentUserProvider.notifier).reload(),
+      ]);
     }
 
     return PopScope(
