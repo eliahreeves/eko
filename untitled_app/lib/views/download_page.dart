@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart' as html;
 import 'package:untitled_app/localization/generated/app_localizations.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
 import '../utilities/constants.dart' as c;
@@ -10,21 +8,6 @@ import '../interfaces/uri_launcher.dart';
 
 class DownloadPage extends StatelessWidget {
   const DownloadPage({super.key});
-
-  void redirectToStore() {
-    if (kIsWeb) {
-      var userAgent = html.window.navigator.userAgent;
-      if (userAgent.contains(RegExp(r'android', caseSensitive: false))) {
-        // Redirect to Google Play Store
-        html.window.location.href = c.playStoreURL;
-      } else if (userAgent
-              .contains(RegExp(r'iPad|iPhone|iPod', caseSensitive: false)) &&
-          !userAgent.contains('MSStream')) {
-        // Redirect to Apple App Store
-        html.window.location.href = c.appStoreURL;
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
