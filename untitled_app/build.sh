@@ -6,6 +6,8 @@ BUILD_NAME=""
 BUILD_NUMBER=""
 FLUTTER_COMMAND="flutter build"
 
+if [[ -z "$TENOR_API_KEY" || -z "$SEARCH_API_KEY" || -z "$ALGOLIA_APP_ID" ]]; then echo "Error: env variable(s) missing"; exit 1; fi
+
 DART_DEFINES=(
     "--dart-define=\"TENOR_API_KEY=$TENOR_API_KEY\""
     "--dart-define=\"SEARCH_API_KEY=$SEARCH_API_KEY\""
@@ -23,12 +25,12 @@ while [[ "$#" -gt 0 ]]; do
             shift
             ;;
         --build-name)
-            if [ -z "$2" ]; then echo "Error: --build-name requires a value."; exit 1; fi
+            if [[ -z "$2" && "$BUILD_TARGET" == "ios" ]]; then echo "Error: --build-name requires a value for ios."; exit 1; fi
             BUILD_NAME="$2"
             shift 2
             ;;
         --build-number)
-            if [ -z "$2" ]; then echo "Error: --build-number requires a value."; exit 1; fi
+            if [[ -z "$2" && "$BUILD_TARGET" == "ios" ]]; then echo "Error: --build-number requires a value for ios."; exit 1; fi
             BUILD_NUMBER="$2"
             shift 2
             ;;
