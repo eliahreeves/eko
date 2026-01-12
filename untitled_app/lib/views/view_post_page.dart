@@ -115,9 +115,22 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
     );
   }
 
-  void _deletePostFromDialog() {
-    context.pop();
-    // TODO: delete post (after sql) didnt want to do now since appcheck wasnt working
+  void _deletePostFromDialog() async {
+    _popDialog();
+
+    try {
+      await ref.read(postProvider(widget.id).notifier).deletePost();
+      if (mounted) {
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(
+          context: context,
+          text: AppLocalizations.of(context)!.defaultErrorTittle,
+        );
+      }
+    }
   }
 
   void deletePressed(String createdAt) {
@@ -126,16 +139,16 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         .add(const Duration(hours: 48))
         .difference(DateTime.now())
         .isNegative) {
-      //delete
-      showMyDialog(
-          AppLocalizations.of(context)!.deletePostWarningTitle,
-          AppLocalizations.of(context)!.deletePostWarningBody,
-          [
-            AppLocalizations.of(context)!.cancel,
-            AppLocalizations.of(context)!.delete
-          ],
-          [_popDialog, _deletePostFromDialog],
-          context);
+    //delete
+    showMyDialog(
+        AppLocalizations.of(context)!.deletePostWarningTitle,
+        AppLocalizations.of(context)!.deletePostWarningBody,
+        [
+          AppLocalizations.of(context)!.cancel,
+          AppLocalizations.of(context)!.delete
+        ],
+        [_popDialog, _deletePostFromDialog],
+        context);
     } else {
       //too early
       showMyDialog(

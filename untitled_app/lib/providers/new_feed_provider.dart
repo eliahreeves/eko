@@ -61,4 +61,13 @@ class NewFeed extends _$NewFeed {
       state = (newList, state.$2);
     }
   }
+
+  void removePost(String postId) {
+    final newList = [...state.$1];
+    final removed = newList.remove(postId);
+    if (removed) {
+      _set.remove(postId);
+      state = (newList, state.$2);
+    }
+  }
 }

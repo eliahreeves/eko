@@ -5,6 +5,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:untitled_app/interfaces/post.dart';
 import 'package:untitled_app/providers/current_user_provider.dart';
 import 'package:untitled_app/providers/pool_providers.dart';
+import 'package:untitled_app/providers/following_feed_provider.dart';
+import 'package:untitled_app/providers/new_feed_provider.dart';
 import 'package:untitled_app/types/post.dart';
 // Necessary for code-generation to work
 part '../generated/providers/post_provider.g.dart';
@@ -287,5 +289,27 @@ class Post extends _$Post {
     }
 
     _isVoting = false;
+  }
+
+  Future<void> deletePost() async {
+    final currentPost = await future;
+    final postId = currentPost.id;
+
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final postRef = firestore.collection('posts').doc(postId);
+      final comments = await postRef.collection('comments').get();
+      final batch = firestore.batch();
+      for (var doc in comments.docs) {
+        batch.delete(doc.reference);
+      }
+      batch.delete(postRef);
+      await batch.commit();
+      ref.read(followingFeedProvider.notifier).removePost(postId);
+      ref.read(newFeedProvider.notifier).removePost(postId);
+      ref.invalidateSelf();
+    } catch (e) {
+      rethrow;
+    }
   }
 }

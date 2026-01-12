@@ -108,6 +108,15 @@ class FollowingFeed extends _$FollowingFeed {
     }
   }
 
+  void removePost(String postId) {
+    final newList = [...state.$1];
+    final removed = newList.remove(postId);
+    if (removed) {
+      _set.remove(postId);
+      state = (newList, state.$2);
+    }
+  }
+
   Future<void> refresh() async {
     _set.clear();
     _feedChunks.clear();
