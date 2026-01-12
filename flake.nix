@@ -41,6 +41,10 @@
             go
             google-cloud-sdk
           ];
+
+          shellHook = ''
+            export GRADLE_OPTS="-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/35.0.0/aapt2"
+          '';
         };
     });
 }
