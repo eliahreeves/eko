@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 FLUTTER_COMMAND="flutter run \
---dart-define=\"TENOR_API_KEY=$TENOR_API_KEY\" \
+--dart-define=\"KLIPY_API_KEY=$KLIPY_API_KEY\" \
 --dart-define=\"SEARCH_API_KEY=$SEARCH_API_KEY\" \
 --dart-define=\"ALGOLIA_APP_ID=$ALGOLIA_APP_ID\""
 
