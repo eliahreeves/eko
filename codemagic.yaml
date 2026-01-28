@@ -1,0 +1,30 @@
+workflows:
+  build-only:
+    name: Build
+    instance_type: mac_mini_m2
+    working_directory: untitled_app
+    environment:
+      groups:
+        - secrets
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Get Dependencies
+        script: flutter pub get
+
+      - name: Build Android APK
+        script: |
+          flutter build apk --release \
+            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
+            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
+            --dart-define=TENOR_API_KEY=$TENOR_API_KEY
+
+      - name: Build iOS
+        script: |
+          flutter build ios --release --no-codesign \
+            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
+            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
+            --dart-define=TENOR_API_KEY=$TENOR_API_KEY
+        
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk

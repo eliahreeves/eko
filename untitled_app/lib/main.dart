@@ -18,7 +18,6 @@ import '../interfaces/shared_pref_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:untitled_app/firebase_options.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> _checkFirstInstall() async {
   if ((PrefsService.instance.getBool('NOT_FIRST_INSTALL')) == null) {
@@ -39,7 +38,6 @@ Future<void> main() async {
   //init
   await Future.wait([
     PrefsService.init(),
-    dotenv.load(),
     Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     )
