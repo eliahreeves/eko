@@ -21,10 +21,11 @@ workflows:
       - name: Set up key.properties
         script: |
           cd android
+          FINAL_KEYSTORE_PATH=${CM_KEYSTORE:-$CM_KEYSTORE_PATH}
           echo "storePassword=$CM_KEYSTORE_PASSWORD" > key.properties
           echo "keyPassword=$CM_KEY_PASSWORD" >> key.properties
           echo "keyAlias=$CM_KEY_ALIAS" >> key.properties
-          echo "storeFile=$CM_KEYSTORE" >> key.properties
+          echo "storeFile=$FINAL_KEYSTORE_PATH" >> key.properties
       - name: Build Android App Bundle
         script: |
           flutter build appbundle --release \
