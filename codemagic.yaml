@@ -23,6 +23,7 @@ workflows:
         - upload-keystore
       vars:
         PACKAGE_NAME: "com.echo.android"
+        GOOGLE_PLAY_TRACK: internal
       flutter: stable
     scripts:
       - name: Get Dependencies
@@ -44,8 +45,13 @@ workflows:
           else
             VERSION_NAME="0.0.0"
           fi
-          # Build number: Codemagic BUILD_NUMBER (auto-incrementing; same for Android & iOS)
-          BUILD_NUM="${BUILD_NUMBER:-0}"
+          # Build number: latest from Google Play + 1 (fallback to Codemagic BUILD_NUMBER if none yet)
+          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK" 2>/dev/null || true)
+          if [ -n "$LATEST_PLAY" ]; then
+            BUILD_NUM=$(($LATEST_PLAY + 1))
+          else
+            BUILD_NUM="${BUILD_NUMBER:-1}"
+          fi
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
           # B. Build with overrides
           flutter build appbundle --release \
@@ -77,6 +83,10 @@ workflows:
     environment:
       groups:
         - secrets
+        - google_play
+      vars:
+        PACKAGE_NAME: "com.echo.android"
+        GOOGLE_PLAY_TRACK: internal
       flutter: stable
       xcode: latest
     scripts:
@@ -91,8 +101,13 @@ workflows:
           else
             VERSION_NAME="0.0.0"
           fi
-          # Build number: Codemagic BUILD_NUMBER (same for Android & iOS)
-          BUILD_NUM="${BUILD_NUMBER:-0}"
+          # Build number: same as Android (Google Play latest + 1), fallback to 0
+          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK" 2>/dev/null || true)
+          if [ -n "$LATEST_PLAY" ]; then
+            BUILD_NUM=$(($LATEST_PLAY + 1))
+          else
+            BUILD_NUM="0"
+          fi
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
           # B. Build with overrides
           flutter build ios --release --no-codesign \
