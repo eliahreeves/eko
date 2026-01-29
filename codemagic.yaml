@@ -7,6 +7,9 @@ workflows:
     triggering:
       events:
         - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
     environment:
       groups:
         - secrets
@@ -27,9 +30,22 @@ workflows:
           echo "keyPassword=$CM_KEY_PASSWORD" >> key.properties
           echo "keyAlias=$CM_KEY_ALIAS" >> key.properties
           echo "storeFile=$FINAL_KEYSTORE_PATH" >> key.properties
-      - name: Build Android App Bundle
+      - name: Set version from tag and build Android App Bundle
         script: |
+          # A. Variable extraction (tag-driven release)
+          # Build name: strip leading 'v' from CM_TAG (e.g. v1.7.6 → 1.7.6)
+          if [ -n "$CM_TAG" ]; then
+            VERSION_NAME="${CM_TAG#v}"
+          else
+            VERSION_NAME="0.0.0"
+          fi
+          # Build number: Codemagic BUILD_NUMBER (auto-incrementing; same for Android & iOS)
+          BUILD_NUM="${BUILD_NUMBER:-0}"
+          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+          # B. Build with overrides
           flutter build appbundle --release \
+            --build-name="$VERSION_NAME" \
+            --build-number="$BUILD_NUM" \
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
             --dart-define=TENOR_API_KEY=$TENOR_API_KEY
@@ -45,8 +61,14 @@ workflows:
   ios-workflow:
     name: iOS Workflow
     instance_type: mac_mini_m2
-    max_build_duration: 60
+    max_build_duration: 120
     working_directory: untitled_app
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
     environment:
       groups:
         - secrets
@@ -55,9 +77,22 @@ workflows:
     scripts:
       - name: Get Dependencies
         script: flutter pub get
-      - name: Build iOS (No Signing)
+      - name: Set version from tag and build iOS
         script: |
+          # A. Variable extraction (tag-driven release)
+          # Build name: strip leading 'v' from CM_TAG (e.g. v1.7.6 → 1.7.6)
+          if [ -n "$CM_TAG" ]; then
+            VERSION_NAME="${CM_TAG#v}"
+          else
+            VERSION_NAME="0.0.0"
+          fi
+          # Build number: Codemagic BUILD_NUMBER (same for Android & iOS)
+          BUILD_NUM="${BUILD_NUMBER:-0}"
+          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+          # B. Build with overrides
           flutter build ios --release --no-codesign \
+            --build-name="$VERSION_NAME" \
+            --build-number="$BUILD_NUM" \
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
             --dart-define=TENOR_API_KEY=$TENOR_API_KEY
