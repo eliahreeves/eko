@@ -1,27 +1,48 @@
 workflows:
-  android-build:
-    name: Android Build
+  android-workflow:
+    name: Android Workflow
     instance_type: mac_mini_m2
+    max_build_duration: 120
     working_directory: untitled_app
+    triggering:
+      events:
+        - tag
     environment:
       groups:
         - secrets
+      android_signing:
+        - upload-keystore
+      vars:
+        PACKAGE_NAME: "com.echo.android"
       flutter: stable
     scripts:
       - name: Get Dependencies
         script: flutter pub get
-      - name: Build Android APK
+      - name: Set up key.properties
         script: |
-          flutter build apk --release \
+          echo "storePassword=$CM_KEYSTORE_PASSWORD" > android/key.properties
+          echo "keyPassword=$CM_KEY_PASSWORD" >> android/key.properties
+          echo "keyAlias=$CM_KEY_ALIAS" >> android/key.properties
+          echo "storeFile=$CM_KEYSTORE" >> android/key.properties
+      - name: Build Android App Bundle
+        script: |
+          flutter build appbundle --release \
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
             --dart-define=TENOR_API_KEY=$TENOR_API_KEY
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/mapping/release/mapping.txt
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
 
-  ios-build:
-    name: iOS Build
+  ios-workflow:
+    name: iOS Workflow
     instance_type: mac_mini_m2
+    max_build_duration: 60
     working_directory: untitled_app
     environment:
       groups:
@@ -37,5 +58,3 @@ workflows:
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
             --dart-define=TENOR_API_KEY=$TENOR_API_KEY
-    artifacts:
-      - build/ios/iphoneos/*.app
