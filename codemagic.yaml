@@ -38,22 +38,14 @@ workflows:
           echo "storeFile=$FINAL_KEYSTORE_PATH" >> key.properties
       - name: Set version from tag and build Android App Bundle
         script: |
-          # A. Variable extraction (tag-driven release)
-          # Build name: strip leading 'v' from CM_TAG (e.g. v1.7.6 → 1.7.6)
           if [ -n "$CM_TAG" ]; then
             VERSION_NAME="${CM_TAG#v}"
           else
             VERSION_NAME="0.0.0"
           fi
-          # Build number: latest from Google Play + 1 (fallback to Codemagic BUILD_NUMBER if none yet)
-          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK" 2>/dev/null || true)
-          if [ -n "$LATEST_PLAY" ]; then
-            BUILD_NUM=$(($LATEST_PLAY + 1))
-          else
-            BUILD_NUM="${BUILD_NUMBER:-1}"
-          fi
+          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
+          BUILD_NUM=$(($LATEST_PLAY + 1))
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
-          # B. Build with overrides
           flutter build appbundle --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
@@ -74,6 +66,11 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: untitled_app
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.gradle/caches
+        - $HOME/Library/Caches/CocoaPods
     triggering:
       events:
         - tag
@@ -83,10 +80,8 @@ workflows:
     environment:
       groups:
         - secrets
-        - google_play
       vars:
         PACKAGE_NAME: "com.echo.android"
-        GOOGLE_PLAY_TRACK: internal
       flutter: stable
       xcode: latest
     scripts:
@@ -94,22 +89,14 @@ workflows:
         script: flutter pub get
       - name: Set version from tag and build iOS
         script: |
-          # A. Variable extraction (tag-driven release)
-          # Build name: strip leading 'v' from CM_TAG (e.g. v1.7.6 → 1.7.6)
           if [ -n "$CM_TAG" ]; then
             VERSION_NAME="${CM_TAG#v}"
           else
             VERSION_NAME="0.0.0"
           fi
-          # Build number: same as Android (Google Play latest + 1), fallback to 0
-          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK" 2>/dev/null || true)
-          if [ -n "$LATEST_PLAY" ]; then
-            BUILD_NUM=$(($LATEST_PLAY + 1))
-          else
-            BUILD_NUM="0"
-          fi
+          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
+          BUILD_NUM=$(($LATEST_PLAY + 1))
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
-          # B. Build with overrides
           flutter build ios --release --no-codesign \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
