@@ -20,10 +20,11 @@ workflows:
         script: flutter pub get
       - name: Set up key.properties
         script: |
-          echo "storePassword=$CM_KEYSTORE_PASSWORD" > android/key.properties
-          echo "keyPassword=$CM_KEY_PASSWORD" >> android/key.properties
-          echo "keyAlias=$CM_KEY_ALIAS" >> android/key.properties
-          echo "storeFile=$CM_KEYSTORE" >> android/key.properties
+          cd android
+          echo "storePassword=$CM_KEYSTORE_PASSWORD" > key.properties
+          echo "keyPassword=$CM_KEY_PASSWORD" >> key.properties
+          echo "keyAlias=$CM_KEY_ALIAS" >> key.properties
+          echo "storeFile=$CM_KEYSTORE" >> key.properties
       - name: Build Android App Bundle
         script: |
           flutter build appbundle --release \
