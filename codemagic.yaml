@@ -59,7 +59,6 @@ workflows:
       google_play:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
-        submit_as_draft: true
 
   ios-workflow:
     name: iOS Workflow
