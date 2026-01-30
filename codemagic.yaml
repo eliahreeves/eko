@@ -1,30 +1,127 @@
 workflows:
-  build-only:
-    name: Build
+  android-workflow:
+    name: Android Workflow
     instance_type: mac_mini_m2
+    max_build_duration: 120
     working_directory: untitled_app
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.gradle/caches
+        - $HOME/Library/Caches/CocoaPods
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
     environment:
       groups:
         - secrets
+        - google_play
+      android_signing:
+        - upload-keystore
+      vars:
+        PACKAGE_NAME: "com.echo.android"
+        GOOGLE_PLAY_TRACK: internal
+      flutter: stable
+    scripts:
+      - name: Get Dependencies
+        script: flutter pub get
+      - name: Set up key.properties
+        script: |
+          cd android
+          FINAL_KEYSTORE_PATH=${CM_KEYSTORE:-$CM_KEYSTORE_PATH}
+          echo "storePassword=$CM_KEYSTORE_PASSWORD" > key.properties
+          echo "keyPassword=$CM_KEY_PASSWORD" >> key.properties
+          echo "keyAlias=$CM_KEY_ALIAS" >> key.properties
+          echo "storeFile=$FINAL_KEYSTORE_PATH" >> key.properties
+      - name: Set version from tag and build Android App Bundle
+        script: |
+          if [ -n "$CM_TAG" ]; then
+            VERSION_NAME="${CM_TAG#v}"
+          else
+            VERSION_NAME="0.0.0"
+          fi
+          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
+          BUILD_NUM=$(($LATEST_PLAY + 1))
+          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+          flutter build appbundle --release \
+            --build-name="$VERSION_NAME" \
+            --build-number="$BUILD_NUM" \
+            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
+            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
+            --dart-define=TENOR_API_KEY=$TENOR_API_KEY
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/mapping/release/mapping.txt
+    publishing:
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+
+  ios-workflow:
+    name: iOS Workflow
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: untitled_app
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.gradle/caches
+        - $HOME/Library/Caches/CocoaPods
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    integrations:
+      app_store_connect: appstoreconnect-api-key
+    environment:
+      groups:
+        - secrets
+        - google_play
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.example.untitledApp
+      vars:
+        PACKAGE_NAME: "com.echo.android"
       flutter: stable
       xcode: latest
     scripts:
       - name: Get Dependencies
         script: flutter pub get
-
-      - name: Build Android APK
+      - name: Install CocoaPods
         script: |
-          flutter build apk --release \
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Set version from tag and build IPA
+        script: |
+          if [ -n "$CM_TAG" ]; then
+            VERSION_NAME="${CM_TAG#v}"
+          else
+            VERSION_NAME="0.0.0"
+          fi
+          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
+          if [ -n "$LATEST_PLAY" ]; then
+            BUILD_NUM=$(($LATEST_PLAY + 1))
+          else
+            BUILD_NUM="0"
+          fi
+          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+          flutter build ipa --release \
+            --build-name="$VERSION_NAME" \
+            --build-number="$BUILD_NUM" \
+            --export-options-plist=/Users/builder/export_options.plist \
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
             --dart-define=TENOR_API_KEY=$TENOR_API_KEY
-
-      - name: Build iOS
-        script: |
-          flutter build ios --release --no-codesign \
-            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
-            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
-            --dart-define=TENOR_API_KEY=$TENOR_API_KEY
-        
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
