@@ -14,25 +14,25 @@ part of '../../types/gif_model.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$TenorResponse {
-  List<TenorResult> get results;
+mixin _$KlipyResponse {
+  List<KlipyResult> get results;
 
-  /// Create a copy of TenorResponse
+  /// Create a copy of KlipyResponse
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  $TenorResponseCopyWith<TenorResponse> get copyWith =>
-      _$TenorResponseCopyWithImpl<TenorResponse>(
-          this as TenorResponse, _$identity);
+  $KlipyResponseCopyWith<KlipyResponse> get copyWith =>
+      _$KlipyResponseCopyWithImpl<KlipyResponse>(
+          this as KlipyResponse, _$identity);
 
-  /// Serializes this TenorResponse to a JSON map.
+  /// Serializes this KlipyResponse to a JSON map.
   Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is TenorResponse &&
+            other is KlipyResponse &&
             const DeepCollectionEquality().equals(other.results, results));
   }
 
@@ -43,28 +43,28 @@ mixin _$TenorResponse {
 
   @override
   String toString() {
-    return 'TenorResponse(results: $results)';
+    return 'KlipyResponse(results: $results)';
   }
 }
 
 /// @nodoc
-abstract mixin class $TenorResponseCopyWith<$Res> {
-  factory $TenorResponseCopyWith(
-          TenorResponse value, $Res Function(TenorResponse) _then) =
-      _$TenorResponseCopyWithImpl;
+abstract mixin class $KlipyResponseCopyWith<$Res> {
+  factory $KlipyResponseCopyWith(
+          KlipyResponse value, $Res Function(KlipyResponse) _then) =
+      _$KlipyResponseCopyWithImpl;
   @useResult
-  $Res call({List<TenorResult> results});
+  $Res call({List<KlipyResult> results});
 }
 
 /// @nodoc
-class _$TenorResponseCopyWithImpl<$Res>
-    implements $TenorResponseCopyWith<$Res> {
-  _$TenorResponseCopyWithImpl(this._self, this._then);
+class _$KlipyResponseCopyWithImpl<$Res>
+    implements $KlipyResponseCopyWith<$Res> {
+  _$KlipyResponseCopyWithImpl(this._self, this._then);
 
-  final TenorResponse _self;
-  final $Res Function(TenorResponse) _then;
+  final KlipyResponse _self;
+  final $Res Function(KlipyResponse) _then;
 
-  /// Create a copy of TenorResponse
+  /// Create a copy of KlipyResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -75,7 +75,7 @@ class _$TenorResponseCopyWithImpl<$Res>
       results: null == results
           ? _self.results
           : results // ignore: cast_nullable_to_non_nullable
-              as List<TenorResult>,
+              as List<KlipyResult>,
     ));
   }
 }
@@ -83,31 +83,31 @@ class _$TenorResponseCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true)
-class _TenorResponse implements TenorResponse {
-  const _TenorResponse({required final List<TenorResult> results})
+class _KlipyResponse implements KlipyResponse {
+  const _KlipyResponse({required final List<KlipyResult> results})
       : _results = results;
-  factory _TenorResponse.fromJson(Map<String, dynamic> json) =>
-      _$TenorResponseFromJson(json);
+  factory _KlipyResponse.fromJson(Map<String, dynamic> json) =>
+      _$KlipyResponseFromJson(json);
 
-  final List<TenorResult> _results;
+  final List<KlipyResult> _results;
   @override
-  List<TenorResult> get results {
+  List<KlipyResult> get results {
     if (_results is EqualUnmodifiableListView) return _results;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_results);
   }
 
-  /// Create a copy of TenorResponse
+  /// Create a copy of KlipyResponse
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$TenorResponseCopyWith<_TenorResponse> get copyWith =>
-      __$TenorResponseCopyWithImpl<_TenorResponse>(this, _$identity);
+  _$KlipyResponseCopyWith<_KlipyResponse> get copyWith =>
+      __$KlipyResponseCopyWithImpl<_KlipyResponse>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$TenorResponseToJson(
+    return _$KlipyResponseToJson(
       this,
     );
   }
@@ -116,7 +116,7 @@ class _TenorResponse implements TenorResponse {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _TenorResponse &&
+            other is _KlipyResponse &&
             const DeepCollectionEquality().equals(other._results, _results));
   }
 
@@ -127,47 +127,47 @@ class _TenorResponse implements TenorResponse {
 
   @override
   String toString() {
-    return 'TenorResponse(results: $results)';
+    return 'KlipyResponse(results: $results)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$TenorResponseCopyWith<$Res>
-    implements $TenorResponseCopyWith<$Res> {
-  factory _$TenorResponseCopyWith(
-          _TenorResponse value, $Res Function(_TenorResponse) _then) =
-      __$TenorResponseCopyWithImpl;
+abstract mixin class _$KlipyResponseCopyWith<$Res>
+    implements $KlipyResponseCopyWith<$Res> {
+  factory _$KlipyResponseCopyWith(
+          _KlipyResponse value, $Res Function(_KlipyResponse) _then) =
+      __$KlipyResponseCopyWithImpl;
   @override
   @useResult
-  $Res call({List<TenorResult> results});
+  $Res call({List<KlipyResult> results});
 }
 
 /// @nodoc
-class __$TenorResponseCopyWithImpl<$Res>
-    implements _$TenorResponseCopyWith<$Res> {
-  __$TenorResponseCopyWithImpl(this._self, this._then);
+class __$KlipyResponseCopyWithImpl<$Res>
+    implements _$KlipyResponseCopyWith<$Res> {
+  __$KlipyResponseCopyWithImpl(this._self, this._then);
 
-  final _TenorResponse _self;
-  final $Res Function(_TenorResponse) _then;
+  final _KlipyResponse _self;
+  final $Res Function(_KlipyResponse) _then;
 
-  /// Create a copy of TenorResponse
+  /// Create a copy of KlipyResponse
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $Res call({
     Object? results = null,
   }) {
-    return _then(_TenorResponse(
+    return _then(_KlipyResponse(
       results: null == results
           ? _self._results
           : results // ignore: cast_nullable_to_non_nullable
-              as List<TenorResult>,
+              as List<KlipyResult>,
     ));
   }
 }
 
 /// @nodoc
-mixin _$TenorResult {
+mixin _$KlipyResult {
   String get id;
   String get title;
   @JsonKey(name: 'media_formats')
@@ -178,21 +178,21 @@ mixin _$TenorResult {
   String get url;
   List<String> get tags;
 
-  /// Create a copy of TenorResult
+  /// Create a copy of KlipyResult
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  $TenorResultCopyWith<TenorResult> get copyWith =>
-      _$TenorResultCopyWithImpl<TenorResult>(this as TenorResult, _$identity);
+  $KlipyResultCopyWith<KlipyResult> get copyWith =>
+      _$KlipyResultCopyWithImpl<KlipyResult>(this as KlipyResult, _$identity);
 
-  /// Serializes this TenorResult to a JSON map.
+  /// Serializes this KlipyResult to a JSON map.
   Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is TenorResult &&
+            other is KlipyResult &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.mediaFormats, mediaFormats) ||
@@ -218,15 +218,15 @@ mixin _$TenorResult {
 
   @override
   String toString() {
-    return 'TenorResult(id: $id, title: $title, mediaFormats: $mediaFormats, contentDescription: $contentDescription, itemurl: $itemurl, url: $url, tags: $tags)';
+    return 'KlipyResult(id: $id, title: $title, mediaFormats: $mediaFormats, contentDescription: $contentDescription, itemurl: $itemurl, url: $url, tags: $tags)';
   }
 }
 
 /// @nodoc
-abstract mixin class $TenorResultCopyWith<$Res> {
-  factory $TenorResultCopyWith(
-          TenorResult value, $Res Function(TenorResult) _then) =
-      _$TenorResultCopyWithImpl;
+abstract mixin class $KlipyResultCopyWith<$Res> {
+  factory $KlipyResultCopyWith(
+          KlipyResult value, $Res Function(KlipyResult) _then) =
+      _$KlipyResultCopyWithImpl;
   @useResult
   $Res call(
       {String id,
@@ -241,13 +241,13 @@ abstract mixin class $TenorResultCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$TenorResultCopyWithImpl<$Res> implements $TenorResultCopyWith<$Res> {
-  _$TenorResultCopyWithImpl(this._self, this._then);
+class _$KlipyResultCopyWithImpl<$Res> implements $KlipyResultCopyWith<$Res> {
+  _$KlipyResultCopyWithImpl(this._self, this._then);
 
-  final TenorResult _self;
-  final $Res Function(TenorResult) _then;
+  final KlipyResult _self;
+  final $Res Function(KlipyResult) _then;
 
-  /// Create a copy of TenorResult
+  /// Create a copy of KlipyResult
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -292,7 +292,7 @@ class _$TenorResultCopyWithImpl<$Res> implements $TenorResultCopyWith<$Res> {
     ));
   }
 
-  /// Create a copy of TenorResult
+  /// Create a copy of KlipyResult
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -306,8 +306,8 @@ class _$TenorResultCopyWithImpl<$Res> implements $TenorResultCopyWith<$Res> {
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true)
-class _TenorResult implements TenorResult {
-  const _TenorResult(
+class _KlipyResult implements KlipyResult {
+  const _KlipyResult(
       {required this.id,
       required this.title,
       @JsonKey(name: 'media_formats') required this.mediaFormats,
@@ -316,8 +316,8 @@ class _TenorResult implements TenorResult {
       required this.url,
       required final List<String> tags})
       : _tags = tags;
-  factory _TenorResult.fromJson(Map<String, dynamic> json) =>
-      _$TenorResultFromJson(json);
+  factory _KlipyResult.fromJson(Map<String, dynamic> json) =>
+      _$KlipyResultFromJson(json);
 
   @override
   final String id;
@@ -341,17 +341,17 @@ class _TenorResult implements TenorResult {
     return EqualUnmodifiableListView(_tags);
   }
 
-  /// Create a copy of TenorResult
+  /// Create a copy of KlipyResult
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$TenorResultCopyWith<_TenorResult> get copyWith =>
-      __$TenorResultCopyWithImpl<_TenorResult>(this, _$identity);
+  _$KlipyResultCopyWith<_KlipyResult> get copyWith =>
+      __$KlipyResultCopyWithImpl<_KlipyResult>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$TenorResultToJson(
+    return _$KlipyResultToJson(
       this,
     );
   }
@@ -360,7 +360,7 @@ class _TenorResult implements TenorResult {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _TenorResult &&
+            other is _KlipyResult &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.mediaFormats, mediaFormats) ||
@@ -386,16 +386,16 @@ class _TenorResult implements TenorResult {
 
   @override
   String toString() {
-    return 'TenorResult(id: $id, title: $title, mediaFormats: $mediaFormats, contentDescription: $contentDescription, itemurl: $itemurl, url: $url, tags: $tags)';
+    return 'KlipyResult(id: $id, title: $title, mediaFormats: $mediaFormats, contentDescription: $contentDescription, itemurl: $itemurl, url: $url, tags: $tags)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$TenorResultCopyWith<$Res>
-    implements $TenorResultCopyWith<$Res> {
-  factory _$TenorResultCopyWith(
-          _TenorResult value, $Res Function(_TenorResult) _then) =
-      __$TenorResultCopyWithImpl;
+abstract mixin class _$KlipyResultCopyWith<$Res>
+    implements $KlipyResultCopyWith<$Res> {
+  factory _$KlipyResultCopyWith(
+          _KlipyResult value, $Res Function(_KlipyResult) _then) =
+      __$KlipyResultCopyWithImpl;
   @override
   @useResult
   $Res call(
@@ -412,13 +412,13 @@ abstract mixin class _$TenorResultCopyWith<$Res>
 }
 
 /// @nodoc
-class __$TenorResultCopyWithImpl<$Res> implements _$TenorResultCopyWith<$Res> {
-  __$TenorResultCopyWithImpl(this._self, this._then);
+class __$KlipyResultCopyWithImpl<$Res> implements _$KlipyResultCopyWith<$Res> {
+  __$KlipyResultCopyWithImpl(this._self, this._then);
 
-  final _TenorResult _self;
-  final $Res Function(_TenorResult) _then;
+  final _KlipyResult _self;
+  final $Res Function(_KlipyResult) _then;
 
-  /// Create a copy of TenorResult
+  /// Create a copy of KlipyResult
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -431,7 +431,7 @@ class __$TenorResultCopyWithImpl<$Res> implements _$TenorResultCopyWith<$Res> {
     Object? url = null,
     Object? tags = null,
   }) {
-    return _then(_TenorResult(
+    return _then(_KlipyResult(
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -463,7 +463,7 @@ class __$TenorResultCopyWithImpl<$Res> implements _$TenorResultCopyWith<$Res> {
     ));
   }
 
-  /// Create a copy of TenorResult
+  /// Create a copy of KlipyResult
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')

@@ -4,20 +4,20 @@ part '../generated/types/gif_model.freezed.dart';
 part '../generated/types/gif_model.g.dart';
 
 @freezed
-abstract class TenorResponse with _$TenorResponse {
+abstract class KlipyResponse with _$KlipyResponse {
   @JsonSerializable(explicitToJson: true)
-  const factory TenorResponse({
-    required List<TenorResult> results,
-  }) = _TenorResponse;
+  const factory KlipyResponse({
+    required List<KlipyResult> results,
+  }) = _KlipyResponse;
 
-  factory TenorResponse.fromJson(Map<String, dynamic> json) =>
-      _$TenorResponseFromJson(json);
+  factory KlipyResponse.fromJson(Map<String, dynamic> json) =>
+      _$KlipyResponseFromJson(json);
 }
 
 @freezed
-abstract class TenorResult with _$TenorResult {
+abstract class KlipyResult with _$KlipyResult {
   @JsonSerializable(explicitToJson: true)
-  const factory TenorResult({
+  const factory KlipyResult({
     required String id,
     required String title,
     @JsonKey(name: 'media_formats') required MediaFormats mediaFormats,
@@ -25,10 +25,10 @@ abstract class TenorResult with _$TenorResult {
     required String itemurl,
     required String url,
     required List<String> tags,
-  }) = _TenorResult;
+  }) = _KlipyResult;
 
-  factory TenorResult.fromJson(Map<String, dynamic> json) =>
-      _$TenorResultFromJson(json);
+  factory KlipyResult.fromJson(Map<String, dynamic> json) =>
+      _$KlipyResultFromJson(json);
 }
 
 @freezed

@@ -6,19 +6,19 @@ part of '../../types/gif_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_TenorResponse _$TenorResponseFromJson(Map<String, dynamic> json) =>
-    _TenorResponse(
+_KlipyResponse _$KlipyResponseFromJson(Map<String, dynamic> json) =>
+    _KlipyResponse(
       results: (json['results'] as List<dynamic>)
-          .map((e) => TenorResult.fromJson(e as Map<String, dynamic>))
+          .map((e) => KlipyResult.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$TenorResponseToJson(_TenorResponse instance) =>
+Map<String, dynamic> _$KlipyResponseToJson(_KlipyResponse instance) =>
     <String, dynamic>{
       'results': instance.results.map((e) => e.toJson()).toList(),
     };
 
-_TenorResult _$TenorResultFromJson(Map<String, dynamic> json) => _TenorResult(
+_KlipyResult _$KlipyResultFromJson(Map<String, dynamic> json) => _KlipyResult(
       id: json['id'] as String,
       title: json['title'] as String,
       mediaFormats:
@@ -29,7 +29,7 @@ _TenorResult _$TenorResultFromJson(Map<String, dynamic> json) => _TenorResult(
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
-Map<String, dynamic> _$TenorResultToJson(_TenorResult instance) =>
+Map<String, dynamic> _$KlipyResultToJson(_KlipyResult instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,

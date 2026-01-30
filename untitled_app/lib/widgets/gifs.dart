@@ -1,16 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 // todo add to models
 class GifData {
+  final String id;
   final String url;
   final int width;
   final int height;
 
-  GifData({required this.url, required this.width, required this.height});
+  GifData(
+      {required this.id,
+      required this.url,
+      required this.width,
+      required this.height});
+}
+
+Future<void> registerGifShare({
+  required String gifId,
+}) async {
+  final uri = Uri.https(
+    'api.klipy.com',
+    '/v1/gifs/registershare',
+    {
+      'key': const String.fromEnvironment('KLIPY_API_KEY'),
+      'id': gifId,
+    },
+  );
+
+  try {
+    await http.post(uri);
+  } catch (_) {}
 }
 
 class GifSearchSection extends StatefulWidget {
@@ -62,9 +85,9 @@ class _GifSearchSectionState extends State<GifSearchSection> {
       return;
     }
 
-    final uri = Uri.https('tenor.googleapis.com', '/v2/autocomplete', {
+    final uri = Uri.https('api.klipy.com', '/v2/autocomplete', {
       'q': query,
-      'key': const String.fromEnvironment('TENOR_API_KEY'),
+      'key': const String.fromEnvironment('KLIPY_API_KEY'),
     });
 
     try {
@@ -94,13 +117,13 @@ class _GifSearchSectionState extends State<GifSearchSection> {
 
     final path = query.isEmpty ? '/v2/featured' : '/v2/search';
     final params = {
-      'key': const String.fromEnvironment('TENOR_API_KEY'),
+      'key': const String.fromEnvironment('KLIPY_API_KEY'),
       'limit': '20',
       if (query.isNotEmpty) 'q': query,
       if (_nextPos.isNotEmpty) 'pos': _nextPos,
     };
 
-    final uri = Uri.https('tenor.googleapis.com', path, params);
+    final uri = Uri.https('api.klipy.com', path, params);
 
     try {
       setState(() => _isLoadingMore = true);
@@ -113,6 +136,7 @@ class _GifSearchSectionState extends State<GifSearchSection> {
           final newGifs = results
               .map((r) {
                 // todo christian store the full quality in firebase
+                final id = r['id'];
                 final mediaFormats = r['media_formats'];
                 Map<String, dynamic>? chosenFormat =
                     mediaFormats['tinygif'] ?? mediaFormats['gif'];
@@ -121,9 +145,15 @@ class _GifSearchSectionState extends State<GifSearchSection> {
                 final url = chosenFormat['url'];
                 final dims = chosenFormat['dims'];
 
-                if (url == null || dims == null || dims.length < 2) return null;
+                if (id == null ||
+                    url == null ||
+                    dims == null ||
+                    dims.length < 2) {
+                  return null;
+                }
 
-                return GifData(url: url, width: dims[0], height: dims[1]);
+                return GifData(
+                    id: id, url: url, width: dims[0], height: dims[1]);
               })
               .whereType<GifData>()
               .toList();
@@ -161,8 +191,18 @@ class _GifSearchSectionState extends State<GifSearchSection> {
                     isDense: true,
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.outlineVariant,
-                    hintText: 'Search Tenor',
+                    hintText: 'Search KLIPY',
                     prefixIcon: Icon(Icons.search),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: IgnorePointer(
+                        child: SvgPicture.asset(
+                          'images/klipy-search.svg',
+                          height: 12,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
                     border: InputBorder.none,
                   ),
                 ),
@@ -219,6 +259,7 @@ class _GifSearchSectionState extends State<GifSearchSection> {
               itemCount: _gifData.length,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
+                  registerGifShare(gifId: _gifData[index].id);
                   context.pop(_gifData[index].url);
                 },
                 child: Container(
