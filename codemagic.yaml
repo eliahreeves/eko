@@ -23,7 +23,6 @@ workflows:
         - upload-keystore
       vars:
         PACKAGE_NAME: "com.echo.android"
-        GOOGLE_PLAY_TRACK: internal
       flutter: stable
     scripts:
       - name: Get Dependencies
@@ -51,14 +50,14 @@ workflows:
             --build-number="$BUILD_NUM" \
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
-            --dart-define=TENOR_API_KEY=$TENOR_API_KEY
+            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
     artifacts:
       - build/app/outputs/bundle/release/*.aab
       - build/app/outputs/mapping/release/mapping.txt
     publishing:
       google_play:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
+        track: production
 
   ios-workflow:
     name: iOS Workflow
@@ -81,12 +80,9 @@ workflows:
     environment:
       groups:
         - secrets
-        - google_play
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.example.untitledApp
-      vars:
-        PACKAGE_NAME: "com.echo.android"
       flutter: stable
       xcode: latest
     scripts:
@@ -104,12 +100,7 @@ workflows:
           else
             VERSION_NAME="0.0.0"
           fi
-          LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
-          if [ -n "$LATEST_PLAY" ]; then
-            BUILD_NUM=$(($LATEST_PLAY + 1))
-          else
-            BUILD_NUM="0"
-          fi
+          BUILD_NUM="0"
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
@@ -117,7 +108,7 @@ workflows:
             --export-options-plist=/Users/builder/export_options.plist \
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
-            --dart-define=TENOR_API_KEY=$TENOR_API_KEY
+            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -125,3 +116,5 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+        submit_to_app_store: true
+        cancel_previous_submissions: true
