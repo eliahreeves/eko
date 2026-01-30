@@ -77,9 +77,15 @@ workflows:
       tag_patterns:
         - pattern: 'v*'
           include: true
+    integrations:
+      app_store_connect: appstoreconnect-api-key
     environment:
       groups:
         - secrets
+        - google_play
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.example.untitledApp
       vars:
         PACKAGE_NAME: "com.echo.android"
       flutter: stable
@@ -87,7 +93,12 @@ workflows:
     scripts:
       - name: Get Dependencies
         script: flutter pub get
-      - name: Set version from tag and build iOS
+      - name: Install CocoaPods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Set version from tag and build IPA
         script: |
           if [ -n "$CM_TAG" ]; then
             VERSION_NAME="${CM_TAG#v}"
@@ -95,11 +106,19 @@ workflows:
             VERSION_NAME="0.0.0"
           fi
           LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
-          BUILD_NUM=$(($LATEST_PLAY + 1))
+          if [ -n "$LATEST_PLAY" ]; then
+            BUILD_NUM=$(($LATEST_PLAY + 1))
+          else
+            BUILD_NUM="0"
+          fi
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
-          flutter build ios --release --no-codesign \
+          flutter build ipa --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
+            --export-options-plist=/Users/builder/export_options.plist \
             --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
             --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
             --dart-define=TENOR_API_KEY=$TENOR_API_KEY
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
