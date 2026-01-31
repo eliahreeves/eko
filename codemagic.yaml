@@ -8,7 +8,6 @@ workflows:
       cache_paths:
         - $FLUTTER_ROOT/.pub-cache
         - $HOME/.gradle/caches
-        - $HOME/Library/Caches/CocoaPods
     triggering:
       events:
         - tag
@@ -67,7 +66,6 @@ workflows:
     cache:
       cache_paths:
         - $FLUTTER_ROOT/.pub-cache
-        - $HOME/.gradle/caches
         - $HOME/Library/Caches/CocoaPods
     triggering:
       events:
@@ -118,3 +116,36 @@ workflows:
         submit_to_testflight: true
         submit_to_app_store: true
         cancel_previous_submissions: true
+
+  web-workflow:
+    name: Web Workflow
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: untitled_app
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    environment:
+      groups:
+        - secrets
+        - firebase
+      flutter: stable
+    scripts:
+      - name: Get Dependencies
+        script: flutter pub get
+      - name: Build Flutter web
+        script: |
+          flutter config --enable-web
+          flutter build web --release \
+            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
+            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
+            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
+      - name: Deploy to Firebase Hosting
+        script: |
+          firebase deploy --only hosting --non-interactive --token "$FIREBASE_TOKEN"
