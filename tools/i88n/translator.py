@@ -1,4 +1,5 @@
 import json
+import os
 
 untranslatedList = [
     "signIn",
@@ -104,7 +105,10 @@ untranslatedList = [
     "birthdayExplanation"
   ]
 
-arbpath = r'C:\Users\ereec\Documents\GitHub\untitled\untitled_app\lib\localization\l10n\app_en.arb'
+# Path to app_en.arb relative to repo root (script lives in tools/i88n/)
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_repo_root = os.path.dirname(os.path.dirname(_script_dir))
+arbpath = os.path.join(_repo_root, 'eko_app', 'lib', 'localization', 'l10n', 'app_en.arb')
 
 with open(arbpath, 'r') as file:
         

@@ -1,4 +1,4 @@
-/untitled_app/lib/secrets
+/eko_app/lib/secrets
 /backend/NewPostNotification/secrets/
 
 # Miscellaneous
@@ -7,11 +7,11 @@
 *.pyc
 *.swp
 .DS_Store
-/untitled_app/.atom/
-/untitled_app/.buildlog/
-/untitled_app/.history
-/untitled_app/.svn/
-/untitled_app/migrate_working_dir/
+/eko_app/.atom/
+/eko_app/.buildlog/
+/eko_app/.history
+/eko_app/.svn/
+/eko_app/migrate_working_dir/
 
 # IntelliJ related
 *.iml
@@ -28,13 +28,13 @@
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
-/untitled_app/.dart_tool/
-/untitled_app/.flutter-plugins
-/untitled_app/.flutter-plugins-dependencies
-/untitled_app/.packages
-/untitled_app/.pub-cache/
-/untitled_app/.pub/
-/untitled_app/build/
+/eko_app/.dart_tool/
+/eko_app/.flutter-plugins
+/eko_app/.flutter-plugins-dependencies
+/eko_app/.packages
+/eko_app/.pub-cache/
+/eko_app/.pub/
+/eko_app/build/
 # Symbolication related
 app.*.symbols
 
@@ -43,9 +43,9 @@ app.*.map.json
 .firebase/
 
 # Android Studio will place build artifacts here
-/untitled_app/android/app/debug
-/untitled_app/android/app/profile
-/untitled_app/android/app/release
+/eko_app/android/app/debug
+/eko_app/android/app/profile
+/eko_app/android/app/release
 .direnv
 
 firbaseHosting/**/*.js
