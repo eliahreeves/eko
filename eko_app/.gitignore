@@ -1,18 +1,19 @@
-/eko_app/lib/secrets
-/backend/NewPostNotification/secrets/
-
 # Miscellaneous
 *.class
 *.log
 *.pyc
 *.swp
-.DS_Store
-/eko_app/.atom/
-/eko_app/.buildlog/
-/eko_app/.history
-/eko_app/.svn/
-/eko_app/migrate_working_dir/
-
+.DS_Store                               
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+*.env
+firepit-log.txt
+untranslated.json
 # IntelliJ related
 *.iml
 *.ipr
@@ -23,29 +24,25 @@
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 .vscode/
-.VSCodeCounter/
 
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
-/eko_app/.dart_tool/
-/eko_app/.flutter-plugins
-/eko_app/.flutter-plugins-dependencies
-/eko_app/.packages
-/eko_app/.pub-cache/
-/eko_app/.pub/
-/eko_app/build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
 # Symbolication related
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
-.firebase/
 
 # Android Studio will place build artifacts here
-/eko_app/android/app/debug
-/eko_app/android/app/profile
-/eko_app/android/app/release
-.direnv
-
-firbaseHosting/**/*.js
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/build/
