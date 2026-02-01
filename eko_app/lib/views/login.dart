@@ -7,7 +7,7 @@ import 'package:eko_app/interfaces/user.dart' as user;
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/widgets/icons.dart';
-import '../custom_widgets/login_text_feild.dart';
+import '../custom_widgets/login_text_field.dart';
 import '../utilities/constants.dart' as c;
 
 class LoginPage extends ConsumerStatefulWidget {

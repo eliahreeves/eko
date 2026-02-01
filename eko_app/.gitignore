@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 *.env
+firepit-log.txt
+untranslated.json
 # IntelliJ related
 *.iml
 *.ipr
@@ -43,3 +45,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/build/

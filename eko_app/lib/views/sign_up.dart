@@ -13,7 +13,7 @@ import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/widgets/create_password.dart';
 import 'package:eko_app/widgets/username_check_display.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../custom_widgets/login_text_feild.dart';
+import '../custom_widgets/login_text_field.dart';
 import '../utilities/constants.dart' as c;
 import '../custom_widgets/download_button_if_web.dart';
 

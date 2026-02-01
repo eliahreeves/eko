@@ -59,19 +59,19 @@ class _CustomInputField extends State<CustomInputField> {
 
   @override
   Widget build(BuildContext context) {
-    double feildWidth;
+    double fieldWidth;
 
     if (widget.width == null) {
-      feildWidth = c.widthGetter(context) * 0.9;
+      fieldWidth = c.widthGetter(context) * 0.9;
     } else {
-      feildWidth = widget.width!;
+      fieldWidth = widget.width!;
     }
     return Container(
       alignment: Alignment.bottomCenter,
       padding: widget.padding
           ? const EdgeInsets.only(top: 10, bottom: 10)
           : const EdgeInsets.only(),
-      width: feildWidth,
+      width: fieldWidth,
       height: widget.height,
       child: TextFormField(
         autofillHints: widget.autofillHints,
