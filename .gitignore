@@ -6,7 +6,7 @@
 *.log
 *.pyc
 *.swp
-/untitled_app/.DS_Store
+.DS_Store
 /untitled_app/.atom/
 /untitled_app/.buildlog/
 /untitled_app/.history
