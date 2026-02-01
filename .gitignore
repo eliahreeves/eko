@@ -6,7 +6,7 @@
 *.log
 *.pyc
 *.swp
-/untitled_app/.DS_Store
+.DS_Store
 /untitled_app/.atom/
 /untitled_app/.buildlog/
 /untitled_app/.history
@@ -22,7 +22,7 @@
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+.vscode/
 .VSCodeCounter/
 
 # Flutter/Dart/Pub related

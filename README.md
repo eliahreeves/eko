@@ -57,42 +57,42 @@ Here is an example of the current pages as of February 2024.
 #### Feed
 Here is the Feed. You can choose a filter and scroll through their respective posts. You can comment, like, and even share a post with a link.
 
-<img src="./images/readme/homepage1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/homepage1.png" alt="drawing" width="200"/>
 
 #### Groups
 The Groups page is similar to group chats, where you can make posts to people you select.
 
-<img src="./images/readme/groups1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/groups1.png" alt="drawing" width="200"/>
 
 #### Compose
 The page to write a post. Click the +image button to add a gif from Giphy.
 
-<img src="./images/readme/postpage1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/postpage1.png" alt="drawing" width="200"/>
 
 #### Search
 You can search for any user.
 
-<img src="./images/readme/searchpage1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/searchpage1.png" alt="drawing" width="200"/>
 
 #### Profile Page
 A page for your or another user's profile. Can view their followers and following.
 
-<img src="/images/readme/profilepage1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/profilepage1.png" alt="drawing" width="200"/>
 
 #### Comments Page
 A page to post and view comments.
 
-<img src="./images/readme/comments1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/comments1.png" alt="drawing" width="200"/>
 
 #### Login Page
 A page for users to log in.
 
-<img src="./images/readme/login1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/login1.png" alt="drawing" width="200"/>
 
 #### Share Page
 A page for users to share their profile with others.
 
-<img src="./images/readme/qr1.png" alt="drawing" width="200"/>
+<img src="./assets/readme/qr1.png" alt="drawing" width="200"/>
 
 ## Developing
 
