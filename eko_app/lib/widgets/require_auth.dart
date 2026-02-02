@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/presence_provider.dart';
@@ -17,18 +16,11 @@ class RequireAuth extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final online = ref.watch(presenceProvider);
     if (auth.isLoading) {
-      return Center(child: LoadingSpinner());
-    }
-    if (auth.uid == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/');
-      });
-      return SizedBox.expand();
+      return const Center(child: LoadingSpinner());
     }
     if (user.user.uid.isEmpty) {
-      return Center(child: LoadingSpinner());
+      return const Center(child: LoadingSpinner());
     }
-    // force one device on
     if (!online.valid) {
       return InvalidSessionPage();
     }

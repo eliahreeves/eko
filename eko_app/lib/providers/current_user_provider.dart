@@ -225,8 +225,11 @@ class CurrentUser extends _$CurrentUser {
         await Future.wait([userRef.doc(uid).get(), _getPeopleWhoBlockedMe()]);
     final mainData =
         (results[0] as DocumentSnapshot<Map<String, dynamic>>).data();
-    assert(mainData != null);
-    mainData!['blockedBy'] = results[1];
+    if (mainData == null) {
+      await FirebaseAuth.instance.signOut();
+      return;
+    }
+    mainData['blockedBy'] = results[1];
 
     state = CurrentUserModel.fromJson(mainData);
   }

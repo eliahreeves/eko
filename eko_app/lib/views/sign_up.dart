@@ -84,11 +84,11 @@ class _SignUpState extends ConsumerState<SignUp> {
     nameController.dispose();
     passwordFocus.dispose();
     nameFocus.dispose();
-    monthFocus.dispose;
-    dayFocus.dispose;
+    monthFocus.dispose();
+    dayFocus.dispose();
     yearFocus.dispose();
-    monthController.dispose;
-    dayController.dispose;
+    monthController.dispose();
+    dayController.dispose();
     yearController.dispose();
     keyFocus.dispose();
     super.dispose();
@@ -167,6 +167,8 @@ class _SignUpState extends ConsumerState<SignUp> {
           name: nameController.text,
           birthday:
               '${monthController.text}/${dayController.text}/${yearController.text}'))) {
+        if (!mounted) return true;
+        context.go('/verify-email');
         return true;
       }
     } else {

@@ -94,7 +94,7 @@ class MyApp extends ConsumerWidget {
           Locale('es'), // Spanish
         ],
         builder: (context, child) => CheckVersion(child: child),
-        routerConfig: goRouter,
+        routerConfig: ref.watch(goRouterProvider),
       ),
     );
   }

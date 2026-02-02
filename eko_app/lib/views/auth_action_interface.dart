@@ -1,24 +1,27 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/interfaces/user.dart';
+import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/widgets/create_password.dart';
 import 'package:eko_app/widgets/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import '../custom_widgets/warning_dialog.dart';
 import '../utilities/constants.dart' as c;
 
-//Forgot password page
+//Forgot password page + email verification link handler
 
-class AuthActionInterface extends StatefulWidget {
+class AuthActionInterface extends ConsumerStatefulWidget {
   final Map<String, String> urlData;
   const AuthActionInterface({super.key, required this.urlData});
 
   @override
-  State<AuthActionInterface> createState() => _AuthActionInterfaceState();
+  ConsumerState<AuthActionInterface> createState() =>
+      _AuthActionInterfaceState();
 }
 
-class _AuthActionInterfaceState extends State<AuthActionInterface> {
+class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final passwordFocus = FocusNode();
@@ -95,27 +98,45 @@ class _AuthActionInterfaceState extends State<AuthActionInterface> {
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if ((widget.urlData['mode'] ?? '') == 'resetPassword') {
+      final mode = widget.urlData['mode'] ?? '';
+      final oobCode = widget.urlData['oobCode'] ?? '';
+
+      if (mode == 'verifyEmail' && oobCode.isNotEmpty) {
         try {
-          final userEmail =
-              await verifyPasswordReset(widget.urlData['oobCode'] ?? '');
-          setState(() {
-            email = userEmail;
-            index = 2;
-          });
+          await FirebaseAuth.instance.applyActionCode(oobCode);
+          if (!mounted) return;
+          await ref.read(authProvider.notifier).refreshEmailVerification();
+          if (!mounted) return;
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            context.go('/feed');
+          } else {
+            context.go('/login');
+          }
         } on FirebaseAuthException {
-          setState(() {
-            index = 1;
-          });
+          if (mounted) setState(() => index = 1);
+        }
+        return;
+      }
+
+      if (mode == 'resetPassword') {
+        try {
+          final userEmail = await verifyPasswordReset(oobCode);
+          if (mounted) {
+            setState(() {
+              email = userEmail;
+              index = 2;
+            });
+          }
+        } on FirebaseAuthException {
+          if (mounted) setState(() => index = 1);
         }
       } else {
-        setState(() {
-          index = 1;
-        });
+        if (mounted) setState(() => index = 1);
       }
     });
-    super.initState();
   }
 
   @override

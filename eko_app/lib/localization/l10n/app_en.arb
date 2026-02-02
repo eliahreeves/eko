@@ -52,6 +52,25 @@
     "forgotPasswordTittle":"You've Got Mail!",
     "forgotPasswordBody":"Check your email for a password reset link.",
 
+    "verifyEmailTitle":"Verify your email",
+    "verifyEmailBody":"We sent a verification link to your email. Check your inbox and spam folder, then click the link to verify your account.",
+    "resendVerificationEmail":"Resend email",
+    "resendSent":"Verification email sent.",
+    "resendTooManyAttempts":"Too many attempts. Please try again later.",
+    "iveVerifiedMyEmail":"I've verified my email",
+    "resendInSeconds":"Resend in {seconds}s",
+    "@resendInSeconds": {
+      "placeholders": {
+        "seconds": {
+          "type": "int"
+        }
+      }
+    },
+    "wrongEmailTitle":"Used the wrong email?",
+    "wrongEmailBody":"We'll delete this account so you can sign up again with the correct email. You'll return to the welcome page.",
+    "useDifferentEmail":"I used the wrong email",
+    "verifyEmailLeaveTitle":"Leave verification?",
+    "verifyEmailLeaveBody":"You can sign out and return to the welcome page.",
 
     "exitCreateAccountTitle":"Return to welcome page?",
     "exitCreateAccountBody":"Are you sure you want to go back? Your information will be deleted.",

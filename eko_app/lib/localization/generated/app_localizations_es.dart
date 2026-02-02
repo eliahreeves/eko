@@ -110,6 +110,48 @@ class AppLocalizationsEs extends AppLocalizations {
       'Intenta usar el link que mandamos a tu correo electrónico';
 
   @override
+  String get verifyEmailTitle => 'Verify your email';
+
+  @override
+  String get verifyEmailBody =>
+      'We sent a verification link to your email. Check your inbox and spam folder, then click the link to verify your account.';
+
+  @override
+  String get resendVerificationEmail => 'Resend email';
+
+  @override
+  String get resendSent => 'Verification email sent.';
+
+  @override
+  String get resendTooManyAttempts =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get iveVerifiedMyEmail => 'I\'ve verified my email';
+
+  @override
+  String resendInSeconds(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
+  String get wrongEmailTitle => 'Used the wrong email?';
+
+  @override
+  String get wrongEmailBody =>
+      'We\'ll delete this account so you can sign up again with the correct email. You\'ll return to the welcome page.';
+
+  @override
+  String get useDifferentEmail => 'I used the wrong email';
+
+  @override
+  String get verifyEmailLeaveTitle => 'Leave verification?';
+
+  @override
+  String get verifyEmailLeaveBody =>
+      'You can sign out and return to the welcome page.';
+
+  @override
   String get exitCreateAccountTitle =>
       'Quieres regresar a la página de inicio?';
 

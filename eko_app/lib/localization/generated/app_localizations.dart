@@ -284,6 +284,78 @@ abstract class AppLocalizations {
   /// **'Check your email for a password reset link.'**
   String get forgotPasswordBody;
 
+  /// No description provided for @verifyEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your email'**
+  String get verifyEmailTitle;
+
+  /// No description provided for @verifyEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a verification link to your email. Check your inbox and spam folder, then click the link to verify your account.'**
+  String get verifyEmailBody;
+
+  /// No description provided for @resendVerificationEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend email'**
+  String get resendVerificationEmail;
+
+  /// No description provided for @resendSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification email sent.'**
+  String get resendSent;
+
+  /// No description provided for @resendTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again later.'**
+  String get resendTooManyAttempts;
+
+  /// No description provided for @iveVerifiedMyEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve verified my email'**
+  String get iveVerifiedMyEmail;
+
+  /// No description provided for @resendInSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds}s'**
+  String resendInSeconds(int seconds);
+
+  /// No description provided for @wrongEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Used the wrong email?'**
+  String get wrongEmailTitle;
+
+  /// No description provided for @wrongEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll delete this account so you can sign up again with the correct email. You\'ll return to the welcome page.'**
+  String get wrongEmailBody;
+
+  /// No description provided for @useDifferentEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'I used the wrong email'**
+  String get useDifferentEmail;
+
+  /// No description provided for @verifyEmailLeaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave verification?'**
+  String get verifyEmailLeaveTitle;
+
+  /// No description provided for @verifyEmailLeaveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can sign out and return to the welcome page.'**
+  String get verifyEmailLeaveBody;
+
   /// No description provided for @exitCreateAccountTitle.
   ///
   /// In en, this message translates to:

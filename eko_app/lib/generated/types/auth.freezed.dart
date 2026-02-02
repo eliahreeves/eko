@@ -18,6 +18,8 @@ mixin _$AuthModel {
   String? get uid;
   String? get email;
   bool get isLoading;
+  bool? get emailVerified;
+  DateTime? get creationTime;
 
   /// Create a copy of AuthModel
   /// with the given fields replaced by the non-null parameter values.
@@ -34,15 +36,20 @@ mixin _$AuthModel {
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading));
+                other.isLoading == isLoading) &&
+            (identical(other.emailVerified, emailVerified) ||
+                other.emailVerified == emailVerified) &&
+            (identical(other.creationTime, creationTime) ||
+                other.creationTime == creationTime));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, uid, email, isLoading);
+  int get hashCode => Object.hash(
+      runtimeType, uid, email, isLoading, emailVerified, creationTime);
 
   @override
   String toString() {
-    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading)';
+    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading, emailVerified: $emailVerified, creationTime: $creationTime)';
   }
 }
 
@@ -51,7 +58,12 @@ abstract mixin class $AuthModelCopyWith<$Res> {
   factory $AuthModelCopyWith(AuthModel value, $Res Function(AuthModel) _then) =
       _$AuthModelCopyWithImpl;
   @useResult
-  $Res call({String? uid, String? email, bool isLoading});
+  $Res call(
+      {String? uid,
+      String? email,
+      bool isLoading,
+      bool? emailVerified,
+      DateTime? creationTime});
 }
 
 /// @nodoc
@@ -69,6 +81,8 @@ class _$AuthModelCopyWithImpl<$Res> implements $AuthModelCopyWith<$Res> {
     Object? uid = freezed,
     Object? email = freezed,
     Object? isLoading = null,
+    Object? emailVerified = freezed,
+    Object? creationTime = freezed,
   }) {
     return _then(_self.copyWith(
       uid: freezed == uid
@@ -83,6 +97,14 @@ class _$AuthModelCopyWithImpl<$Res> implements $AuthModelCopyWith<$Res> {
           ? _self.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      emailVerified: freezed == emailVerified
+          ? _self.emailVerified
+          : emailVerified // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      creationTime: freezed == creationTime
+          ? _self.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }
@@ -90,7 +112,12 @@ class _$AuthModelCopyWithImpl<$Res> implements $AuthModelCopyWith<$Res> {
 /// @nodoc
 
 class _AuthModel implements AuthModel {
-  const _AuthModel({this.uid, this.email, required this.isLoading});
+  const _AuthModel(
+      {this.uid,
+      this.email,
+      required this.isLoading,
+      this.emailVerified,
+      this.creationTime});
 
   @override
   final String? uid;
@@ -98,6 +125,10 @@ class _AuthModel implements AuthModel {
   final String? email;
   @override
   final bool isLoading;
+  @override
+  final bool? emailVerified;
+  @override
+  final DateTime? creationTime;
 
   /// Create a copy of AuthModel
   /// with the given fields replaced by the non-null parameter values.
@@ -115,15 +146,20 @@ class _AuthModel implements AuthModel {
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading));
+                other.isLoading == isLoading) &&
+            (identical(other.emailVerified, emailVerified) ||
+                other.emailVerified == emailVerified) &&
+            (identical(other.creationTime, creationTime) ||
+                other.creationTime == creationTime));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, uid, email, isLoading);
+  int get hashCode => Object.hash(
+      runtimeType, uid, email, isLoading, emailVerified, creationTime);
 
   @override
   String toString() {
-    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading)';
+    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading, emailVerified: $emailVerified, creationTime: $creationTime)';
   }
 }
 
@@ -135,7 +171,12 @@ abstract mixin class _$AuthModelCopyWith<$Res>
       __$AuthModelCopyWithImpl;
   @override
   @useResult
-  $Res call({String? uid, String? email, bool isLoading});
+  $Res call(
+      {String? uid,
+      String? email,
+      bool isLoading,
+      bool? emailVerified,
+      DateTime? creationTime});
 }
 
 /// @nodoc
@@ -153,6 +194,8 @@ class __$AuthModelCopyWithImpl<$Res> implements _$AuthModelCopyWith<$Res> {
     Object? uid = freezed,
     Object? email = freezed,
     Object? isLoading = null,
+    Object? emailVerified = freezed,
+    Object? creationTime = freezed,
   }) {
     return _then(_AuthModel(
       uid: freezed == uid
@@ -167,6 +210,14 @@ class __$AuthModelCopyWithImpl<$Res> implements _$AuthModelCopyWith<$Res> {
           ? _self.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      emailVerified: freezed == emailVerified
+          ? _self.emailVerified
+          : emailVerified // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      creationTime: freezed == creationTime
+          ? _self.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }

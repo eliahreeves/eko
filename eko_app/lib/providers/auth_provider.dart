@@ -21,8 +21,12 @@ class Auth extends _$Auth {
       if (user == null) {
         state = AuthModel.signedOut();
       } else {
-        state =
-            state.copyWith(uid: user.uid, isLoading: false, email: user.email);
+        state = state.copyWith(
+            uid: user.uid,
+            isLoading: false,
+            email: user.email,
+            emailVerified: user.emailVerified,
+            creationTime: user.metadata.creationTime);
       }
     });
   }
@@ -69,6 +73,8 @@ class Auth extends _$Auth {
 
       await addFCM(user.user!.uid);
 
+      await user.user!.sendEmailVerification();
+
       return ('success');
     } on FirebaseAuthException catch (e) {
       return (e.code);
@@ -90,5 +96,17 @@ class Auth extends _$Auth {
 
   Future<void> deleteAccount() async {
     await FirebaseAuth.instance.currentUser?.delete();
+  }
+
+  Future<void> sendEmailVerification() async {
+    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+  }
+
+  Future<void> refreshEmailVerification() async {
+    await FirebaseAuth.instance.currentUser?.reload();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      state = state.copyWith(emailVerified: user.emailVerified);
+    }
   }
 }
