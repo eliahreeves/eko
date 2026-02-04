@@ -168,7 +168,7 @@ class _SignUpState extends ConsumerState<SignUp> {
           birthday:
               '${monthController.text}/${dayController.text}/${yearController.text}'))) {
         if (!mounted) return true;
-        context.go('/verify-email');
+        context.go('/feed');
         return true;
       }
     } else {

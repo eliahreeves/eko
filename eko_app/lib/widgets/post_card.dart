@@ -180,7 +180,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   void sharePressed(String id) async {
     if (kIsWeb) {
       Clipboard.setData(ClipboardData(
-          text: 'Check out my post on Echo: ${c.appURL}/feed/post/$id'));
+          text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id'));
       showSnackBar(
           context: context,
           text: AppLocalizations.of(context)!.coppiedToClipboard);

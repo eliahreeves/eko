@@ -30,10 +30,12 @@ class DownloadPage extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.surface,
         ),
         body: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
               SizedBox(
                 width: width * 0.8,
                 child: QrImageView(
@@ -70,6 +72,7 @@ class DownloadPage extends StatelessWidget {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),

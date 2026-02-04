@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/custom_widgets/safe_area.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/auth_provider.dart';
-import 'package:eko_app/providers/email_verification_cutoff_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/views/blocked_users_page.dart';
 import 'package:eko_app/views/download_page.dart';
@@ -14,7 +13,6 @@ import 'package:eko_app/views/edit_group_page.dart';
 import 'package:eko_app/views/camera_page.dart';
 import 'package:eko_app/views/edit_picture.dart';
 import 'package:eko_app/views/group_add_people.dart';
-import 'package:eko_app/views/invalid_session_page.dart';
 import 'package:eko_app/views/login.dart';
 import 'package:eko_app/views/share_profile_page.dart';
 import 'package:eko_app/views/sign_up.dart';
@@ -36,11 +34,11 @@ import 'package:eko_app/views/create_group_page.dart';
 import 'package:eko_app/custom_widgets/emoji_picker.dart';
 import 'package:eko_app/views/sub_group_page.dart';
 import 'package:eko_app/views/auth_action_interface.dart';
-import 'package:eko_app/views/verify_email_page.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:eko_app/views/view_likes_page.dart';
 import 'package:eko_app/widgets/gifs.dart';
 import 'package:eko_app/widgets/require_auth.dart';
+import 'package:eko_app/widgets/require_no_auth.dart';
 import 'package:eko_app/views/profile_redirect_page.dart';
 import 'package:eko_app/views/re_auth_page.dart';
 
@@ -59,21 +57,9 @@ class GoRouterRefreshNotifier extends ChangeNotifier {
   void refresh() => notifyListeners();
 }
 
-bool _isPublicLocation(String loc) {
-  return loc == '/' ||
-      loc.startsWith('/signup') ||
-      loc == '/auth' ||
-      loc == '/login' ||
-      loc == '/download';
-}
-
 final goRouterProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = GoRouterRefreshNotifier();
   ref.listen(authProvider, (_, __) => refreshNotifier.refresh());
-  ref.listen(
-    emailVerificationCutoffProvider,
-    (_, __) => refreshNotifier.refresh(),
-  );
   return GoRouter(
     observers: [
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
@@ -88,24 +74,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final loc = state.matchedLocation;
       if (auth.isLoading) return null;
       if (auth.uid == null) {
-        if (_isPublicLocation(loc)) return null;
+        if (loc == '/' ||
+            loc == '/signup' ||
+            loc == '/login' ||
+            loc == '/auth' ||
+            loc == '/download') return null;
         return '/';
       }
-      final cutoffAsync = ref.read(emailVerificationCutoffProvider);
-      if (cutoffAsync.isLoading) return null;
-      final cutoffDate = cutoffAsync.maybeWhen<DateTime?>(
-        data: (d) => d,
-        orElse: () => null,
-      );
-      final mustVerify = auth.emailVerified == false &&
-          auth.creationTime != null &&
-          cutoffDate != null &&
-          !auth.creationTime!.isBefore(cutoffDate);
-      if (mustVerify) {
-        if (loc == '/verify-email') return null;
-        return '/verify-email';
-      }
-      if (_isPublicLocation(loc) || loc == '/verify-email') return '/feed';
+      if (loc == '/' || loc == '/signup' || loc == '/login') return '/feed';
       return null;
     },
     routes: [
@@ -127,7 +103,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: 'signup',
             name: 'signup',
             builder: (context, state) {
-              return const AppSafeArea(child: SignUp());
+              return const RequireNoAuth(child: AppSafeArea(child: SignUp()));
             },
           ),
           GoRoute(
@@ -142,7 +118,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: 'login',
             name: 'login',
             builder: (context, state) {
-              return const AppSafeArea(child: LoginPage());
+              return const RequireNoAuth(
+                  child: AppSafeArea(child: LoginPage()));
             },
           ),
           GoRoute(
@@ -150,20 +127,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             name: 'download',
             builder: (context, state) {
               return const AppSafeArea(child: DownloadPage());
-            },
-          ),
-          GoRoute(
-            path: 'invalid_session',
-            name: 'invalid_session',
-            builder: (context, state) {
-              return const AppSafeArea(child: InvalidSessionPage());
-            },
-          ),
-          GoRoute(
-            path: 'verify-email',
-            name: 'verify_email',
-            builder: (context, state) {
-              return const AppSafeArea(child: VerifyEmailPage());
             },
           ),
         ],
@@ -303,7 +266,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       state.uri.queryParameters['repostId'];
                   final String? timestamp =
                       state.uri.queryParameters['timestamp'];
-                  print('${state.uri.queryParameters} $repostId');
                   return NoTransitionPage(
                     child: ComposePage(
                       groupId: id,
