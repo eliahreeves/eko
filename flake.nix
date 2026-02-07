@@ -17,6 +17,7 @@
           allowUnfree = true;
         };
       };
+
       androidComposition = pkgs.androidenv.composeAndroidPackages {
         buildToolsVersions = ["35.0.0"];
         platformVersions = [36 35 34 33 31];
@@ -25,26 +26,28 @@
         includeCmake = true;
         cmakeVersions = ["3.22.1"];
       };
-      androidSdk = androidComposition.androidsdk;
-    in {
-      devShell = with pkgs;
-        mkShell rec {
-          ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";
-          ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
-          buildInputs = [
-            flutter
-            androidSdk
-            jdk
-            ninja
-            unzip
-            firebase-tools
-            go
-            google-cloud-sdk
-          ];
 
-          shellHook = ''
-            export GRADLE_OPTS="-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/35.0.0/aapt2"
-          '';
-        };
+      androidSdk = androidComposition.androidsdk;
+      sdkPath = "${androidSdk}/libexec/android-sdk";
+    in {
+      devShell = pkgs.mkShell {
+        ANDROID_SDK_ROOT = sdkPath;
+        ANDROID_HOME = sdkPath;
+
+        nativeBuildInputs = with pkgs; [
+          flutter
+          androidSdk
+          jdk
+          ninja
+          unzip
+          firebase-tools
+          go
+          google-cloud-sdk
+        ];
+
+        shellHook = ''
+          export GRADLE_OPTS="-Dorg.gradle.project.android.aapt2FromMavenOverride=${sdkPath}/build-tools/35.0.0/aapt2"
+        '';
+      };
     });
 }

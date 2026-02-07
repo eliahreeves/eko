@@ -78,6 +78,7 @@ workflows:
     environment:
       groups:
         - secrets
+        - apple
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.example.untitledApp
@@ -98,7 +99,8 @@ workflows:
           else
             VERSION_NAME="0.0.0"
           fi
-          BUILD_NUM="0"
+          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID" 2>/dev/null || echo "0")
+          BUILD_NUM=$(($LATEST_BUILD + 1))
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
@@ -116,6 +118,61 @@ workflows:
         submit_to_testflight: true
         submit_to_app_store: true
         cancel_previous_submissions: true
+
+  ios-testflight-workflow:
+    name: iOS TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: eko_app
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    integrations:
+      app_store_connect: appstoreconnect-api-key
+    environment:
+      groups:
+        - secrets
+        - apple
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.example.untitledApp
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Get Dependencies
+        script: flutter pub get
+      - name: Install CocoaPods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Build IPA with current App Store version
+        script: |
+          # Get the current live App Store version
+          CURRENT_VERSION=$(app-store-connect get-latest-app-store-build-number --app-id "$APP_STORE_APPLE_ID" 2>/dev/null | grep -oP 'version: \K[^ ]+' || echo "1.0.0")
+          VERSION_NAME="${CURRENT_VERSION}"
+          
+          # Get latest build number for this version and increment
+          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID" --version "$VERSION_NAME" 2>/dev/null || echo "0")
+          BUILD_NUM=$(($LATEST_BUILD + 1))
+          
+          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+          flutter build ipa --release \
+            --build-name="$VERSION_NAME" \
+            --build-number="$BUILD_NUM" \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
+            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
+            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
 
   web-workflow:
     name: Web Workflow
