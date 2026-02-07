@@ -100,11 +100,11 @@ workflows:
             VERSION_NAME="0.0.0"
           fi
           
-          # Get latest build number for THIS specific version
-          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID" --version "$VERSION_NAME" 2>/dev/null || echo "0")
+          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID")
           BUILD_NUM=$(($LATEST_BUILD + 1))
-          
+
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
@@ -152,36 +152,19 @@ workflows:
         script: xcode-project use-profiles
       - name: Build IPA with next version number
         script: |
-          # Get latest build from App Store Connect to determine the highest version
-          APP_INFO=$(app-store-connect get-latest-app-store-build-number --app-id "$APP_STORE_APPLE_ID" 2>/dev/null || echo "")
-          
-          # Extract version using sed (macOS compatible)
+          APP_INFO=$(app-store-connect get-latest-app-store-build-number --app-id "$APP_STORE_APPLE_ID")
           CURRENT_VERSION=$(echo "$APP_INFO" | sed -n 's/.*version: \([^ ]*\).*/\1/p' | head -n 1)
           
-          # If we couldn't get version, try using latest build number info
-          if [ -z "$CURRENT_VERSION" ]; then
-            LATEST_BUILD_INFO=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID" 2>/dev/null || echo "")
-            CURRENT_VERSION=$(echo "$LATEST_BUILD_INFO" | sed -n 's/.*version \([0-9.]*\).*/\1/p' | head -n 1)
-          fi
-          
-          # If still empty, use fallback
-          if [ -z "$CURRENT_VERSION" ] || [ "$CURRENT_VERSION" = "0" ]; then
-            CURRENT_VERSION="1.7.7"
-          fi
-          
-          # Parse version and increment patch
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
           PATCH=$((PATCH + 1))
           VERSION_NAME="${MAJOR}.${MINOR}.${PATCH}"
           
-          echo "Current App Store version: $CURRENT_VERSION"
-          echo "Using version for TestFlight: $VERSION_NAME"
-          
-          # Get latest build number for THIS specific version
-          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID" --version "$VERSION_NAME" 2>/dev/null || echo "0")
+          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID")
           BUILD_NUM=$(($LATEST_BUILD + 1))
           
-          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+          echo "Current App Store version: $CURRENT_VERSION"
+          echo "TestFlight version: $VERSION_NAME (build $BUILD_NUM)"
+          
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
