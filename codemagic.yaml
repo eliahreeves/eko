@@ -103,11 +103,12 @@ workflows:
             VERSION_NAME="0.0.0"
           fi
           
-          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID")
+          BUILD_INFO=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID")
+          LATEST_BUILD=$(echo "$BUILD_INFO" | tail -1)
           BUILD_NUM=$(($LATEST_BUILD + 1))
-
-          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
-
+          
+          echo "Production version: $VERSION_NAME (build $BUILD_NUM)"
+          
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
@@ -155,35 +156,19 @@ workflows:
         script: xcode-project use-profiles
       - name: Build IPA with next version number
         script: |
-          echo "=== Testing app-store-connect commands with positional argument ==="
+          APP_STORE_INFO=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
+          APP_STORE_VERSION=$(echo "$APP_STORE_INFO" | sed -n 's/.*version \([0-9.]*\).*/\1/p')
           
-          echo "--- Command 1: get-latest-app-store-build-number ---"
-          app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID" || echo "Command failed"
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$APP_STORE_VERSION"
+          PATCH=$((PATCH + 1))
+          VERSION_NAME="${MAJOR}.${MINOR}.${PATCH}"
           
-          echo ""
-          echo "--- Command 2: get-latest-testflight-build-number ---"
-          app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" || echo "Command failed"
+          BUILD_INFO=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID")
+          LATEST_BUILD=$(echo "$BUILD_INFO" | tail -1)
+          BUILD_NUM=$(($LATEST_BUILD + 1))
           
-          echo ""
-          echo "--- Command 3: get-latest-build-number ---"
-          app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID" || echo "Command failed"
-          
-          echo ""
-          echo "--- Command 4: builds list (first 5 lines) ---"
-          app-store-connect builds list --app-id "$APP_STORE_APPLE_ID" 2>/dev/null | head -5 || echo "Command failed"
-          
-          echo ""
-          echo "--- Command 5: app-store-versions list (first 5 lines) ---"
-          app-store-connect app-store-versions list --app-id "$APP_STORE_APPLE_ID" 2>/dev/null | head -5 || echo "Command failed"
-          
-          echo ""
-          echo "=== END TESTING ==="
-          
-          # For now, use fallback values to allow build to continue
-          VERSION_NAME="1.7.8"
-          BUILD_NUM="2"
-          
-          echo "Using fallback: $VERSION_NAME (build $BUILD_NUM)"
+          echo "App Store version: $APP_STORE_VERSION"
+          echo "TestFlight version: $VERSION_NAME (build $BUILD_NUM)"
           
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
