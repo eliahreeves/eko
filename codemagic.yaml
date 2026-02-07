@@ -1,6 +1,6 @@
 workflows:
-  android-workflow:
-    name: Android Workflow
+  android-release:
+    name: Android Release
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: eko_app
@@ -41,9 +41,12 @@ workflows:
           else
             VERSION_NAME="0.0.0"
           fi
+
           LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
           BUILD_NUM=$(($LATEST_PLAY + 1))
+
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+
           flutter build appbundle --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
@@ -58,8 +61,8 @@ workflows:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: production
 
-  ios-workflow:
-    name: iOS Workflow
+  ios-release:
+    name: iOS Release
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: eko_app
@@ -122,7 +125,7 @@ workflows:
         submit_to_app_store: true
         cancel_previous_submissions: true
 
-  ios-testflight-workflow:
+  ios-testflight:
     name: iOS TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 120
@@ -152,14 +155,36 @@ workflows:
         script: xcode-project use-profiles
       - name: Build IPA with next version number
         script: |
+          # Get current App Store version and build info
           APP_INFO=$(app-store-connect get-latest-app-store-build-number --app-id "$APP_STORE_APPLE_ID")
-          CURRENT_VERSION=$(echo "$APP_INFO" | sed -n 's/.*version: \([^ ]*\).*/\1/p' | head -n 1)
           
+          echo "=== DEBUG: APP_INFO output ==="
+          echo "$APP_INFO"
+          echo "=== END DEBUG ==="
+          
+          # Extract version
+          CURRENT_VERSION=$(echo "$APP_INFO" | sed -n 's/.*version: \([^ ]*\).*/\1/p' | head -n 1)
+          echo "Extracted CURRENT_VERSION: $CURRENT_VERSION"
+          
+          # Try to extract build number - testing multiple patterns
+          LATEST_BUILD_1=$(echo "$APP_INFO" | sed -n 's/.*build: \([0-9]*\).*/\1/p' | head -n 1)
+          LATEST_BUILD_2=$(echo "$APP_INFO" | sed -n 's/.*build number: \([0-9]*\).*/\1/p' | head -n 1)
+          LATEST_BUILD_3=$(echo "$APP_INFO" | grep -o '[0-9]\+$' | head -n 1)
+          
+          echo "Build extraction attempts:"
+          echo "  Pattern 1 (build:): '$LATEST_BUILD_1'"
+          echo "  Pattern 2 (build number:): '$LATEST_BUILD_2'"
+          echo "  Pattern 3 (number at end): '$LATEST_BUILD_3'"
+          
+          # Use first non-empty result
+          LATEST_BUILD="${LATEST_BUILD_1:-${LATEST_BUILD_2:-${LATEST_BUILD_3:-0}}}"
+          echo "Final LATEST_BUILD: $LATEST_BUILD"
+          
+          # Increment patch version for TestFlight
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
           PATCH=$((PATCH + 1))
           VERSION_NAME="${MAJOR}.${MINOR}.${PATCH}"
           
-          LATEST_BUILD=$(app-store-connect get-latest-build-number --app-id "$APP_STORE_APPLE_ID")
           BUILD_NUM=$(($LATEST_BUILD + 1))
           
           echo "Current App Store version: $CURRENT_VERSION"
@@ -181,8 +206,8 @@ workflows:
         submit_to_testflight: true
         submit_to_app_store: false
 
-  web-workflow:
-    name: Web Workflow
+  web-release:
+    name: Web Release
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: eko_app
