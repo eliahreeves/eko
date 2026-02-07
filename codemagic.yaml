@@ -1,6 +1,6 @@
 workflows:
-  android-workflow:
-    name: Android Workflow
+  android-release:
+    name: Android Release
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: eko_app
@@ -41,9 +41,12 @@ workflows:
           else
             VERSION_NAME="0.0.0"
           fi
+
           LATEST_PLAY=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" 2>/dev/null || true)
           BUILD_NUM=$(($LATEST_PLAY + 1))
+
           echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+
           flutter build appbundle --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
@@ -58,8 +61,8 @@ workflows:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: production
 
-  ios-workflow:
-    name: iOS Workflow
+  ios-release:
+    name: iOS Release
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: eko_app
@@ -78,6 +81,7 @@ workflows:
     environment:
       groups:
         - secrets
+        - apple
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.example.untitledApp
@@ -98,8 +102,13 @@ workflows:
           else
             VERSION_NAME="0.0.0"
           fi
-          BUILD_NUM="0"
-          echo "VERSION_NAME=$VERSION_NAME BUILD_NUMBER=$BUILD_NUM"
+          
+          BUILD_INFO=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID" 2>&1)
+          LATEST_BUILD=$(echo "$BUILD_INFO" | tail -1)
+          BUILD_NUM=$(($LATEST_BUILD + 1))
+          
+          echo "Production version: $VERSION_NAME (build $BUILD_NUM)"
+          
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
@@ -117,8 +126,68 @@ workflows:
         submit_to_app_store: true
         cancel_previous_submissions: true
 
-  web-workflow:
-    name: Web Workflow
+  ios-testflight:
+    name: iOS TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: eko_app
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    integrations:
+      app_store_connect: appstoreconnect-api-key
+    environment:
+      groups:
+        - secrets
+        - apple
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.example.untitledApp
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Get Dependencies
+        script: flutter pub get
+      - name: Install CocoaPods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Build IPA with next version number
+        script: |
+          APP_STORE_INFO=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID" 2>&1)
+          APP_STORE_VERSION=$(echo "$APP_STORE_INFO" | sed -n 's/.*version \([0-9.]*\).*/\1/p')
+          
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$APP_STORE_VERSION"
+          PATCH=$((PATCH + 1))
+          VERSION_NAME="${MAJOR}.${MINOR}.${PATCH}"
+          
+          BUILD_INFO=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID" 2>&1)
+          LATEST_BUILD=$(echo "$BUILD_INFO" | tail -1)
+          BUILD_NUM=$(($LATEST_BUILD + 1))
+          
+          echo "App Store version: $APP_STORE_VERSION"
+          echo "TestFlight version: $VERSION_NAME (build $BUILD_NUM)"
+          
+          flutter build ipa --release \
+            --build-name="$VERSION_NAME" \
+            --build-number="$BUILD_NUM" \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
+            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
+            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
+
+  web-release:
+    name: Web Release
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: eko_app
