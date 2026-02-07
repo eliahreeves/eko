@@ -156,19 +156,83 @@ workflows:
         script: xcode-project use-profiles
       - name: Build IPA with next version number
         script: |
+          echo "=== TESTING ALTERNATIVE VERSION COMMANDS ==="
+          
+          echo "--- Test 1: app-store-versions list ---"
+          app-store-connect app-store-versions list "$APP_STORE_APPLE_ID" 2>&1 | head -10 || echo "Command failed"
+          
+          echo ""
+          echo "--- Test 2: builds list --limit 1 ---"
+          app-store-connect builds list "$APP_STORE_APPLE_ID" --limit 1 2>&1 | head -10 || echo "Command failed"
+          
+          echo ""
+          echo "--- Test 3: apps get ---"
+          app-store-connect apps get "$APP_STORE_APPLE_ID" 2>&1 | head -10 || echo "Command failed"
+          
+          echo "=== END TESTING ALTERNATIVES ==="
+          echo ""
+          
+          echo "=== DEBUG START ==="
+          
+          # Get live App Store version
           APP_STORE_INFO=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
+          
+          echo "RAW APP_STORE_INFO:"
+          echo "'$APP_STORE_INFO'"
+          echo "Length: ${#APP_STORE_INFO}"
+          echo "---"
+          
           APP_STORE_VERSION=$(echo "$APP_STORE_INFO" | sed -n 's/.*version \([0-9.]*\).*/\1/p')
           
+          echo "After sed extraction:"
+          echo "APP_STORE_VERSION='$APP_STORE_VERSION'"
+          echo "Length: ${#APP_STORE_VERSION}"
+          echo "---"
+          
+          # Try alternative parsing methods
+          ALT1=$(echo "$APP_STORE_INFO" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          ALT2=$(echo "$APP_STORE_INFO" | awk '{print $NF}')
+          
+          echo "Alternative parsing:"
+          echo "ALT1 (grep -oE)='$ALT1'"
+          echo "ALT2 (awk last field)='$ALT2'"
+          echo "---"
+          
+          # Use whichever works
+          if [ -n "$APP_STORE_VERSION" ]; then
+            echo "Using sed result"
+          elif [ -n "$ALT1" ]; then
+            echo "Using grep result"
+            APP_STORE_VERSION="$ALT1"
+          elif [ -n "$ALT2" ]; then
+            echo "Using awk result"
+            APP_STORE_VERSION="$ALT2"
+          else
+            echo "ERROR: Could not parse App Store version!"
+            exit 1
+          fi
+          
+          # Increment patch version for TestFlight
           IFS='.' read -r MAJOR MINOR PATCH <<< "$APP_STORE_VERSION"
+          echo "Parsed components: MAJOR=$MAJOR MINOR=$MINOR PATCH=$PATCH"
           PATCH=$((PATCH + 1))
           VERSION_NAME="${MAJOR}.${MINOR}.${PATCH}"
           
+          # Get latest build number
+          echo "---"
+          echo "Getting latest build number..."
           BUILD_INFO=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID")
+          echo "RAW BUILD_INFO: '$BUILD_INFO'"
           LATEST_BUILD=$(echo "$BUILD_INFO" | tail -1)
+          echo "Extracted LATEST_BUILD: '$LATEST_BUILD'"
           BUILD_NUM=$(($LATEST_BUILD + 1))
           
-          echo "App Store version: $APP_STORE_VERSION"
-          echo "TestFlight version: $VERSION_NAME (build $BUILD_NUM)"
+          echo "=== DEBUG END ==="
+          echo ""
+          echo "Final values:"
+          echo "  App Store version: $APP_STORE_VERSION"
+          echo "  TestFlight version: $VERSION_NAME (build $BUILD_NUM)"
+          echo ""
           
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
