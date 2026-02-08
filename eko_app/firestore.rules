@@ -1,0 +1,110 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match / databases / { database } / documents {
+
+    //user
+    match / users / { userId }{
+      // Allow any authenticated user to read information about all users
+      allow read: if true; //request.auth != null;
+
+      // Allow users to write information about themselves
+      allow write: if request.auth != null && request.auth.uid == userId;
+
+      // Allow users to edit the followers field of other users (but not anythig else)
+    	allow update: if 
+      	request.auth != null &&
+        //checks to see if all of the fields are the same except for followers
+        request.resource.data.email == resource.data.email &&
+        request.resource.data.fcmTokens == resource.data.fcmTokens &&
+        request.resource.data.name == resource.data.name &&
+        request.resource.data.profileData.bio == resource.data.profileData.bio &&
+        request.resource.data.profileData.following == resource.data.profileData.following &&
+        request.resource.data.profileData.profilePicture == resource.data.profileData.profilePicture &&
+        request.resource.data.uid == resource.data.uid &&
+        request.resource.data.username == resource.data.username;
+    }
+
+    //user new activity 
+    // Allow users to read newActivity data
+    match / users / { userId } / newActivity / { document=**}{
+      	allow read: if request.auth != null; //&& request.auth.uid == userId;
+        allow write: if request.auth != null;
+        allow create: if request.auth != null;
+    }
+
+    //user likes
+    match / users / { userId } / arrays / likes{
+
+      	// Allow authenticated users to read likes
+      	allow read: if request.auth != null;
+
+      	// Allow authenticated users to write likes to themselvs
+        allow write: if request.auth != null; //&& request.auth.uid == userId;
+    }
+
+    //posts
+    match / posts / { postId }{
+        // Allow any authenticated user to read posts
+        allow read: if true;
+        // Allow an authenticated user to create a post if they are the author
+        allow create: if 
+          request.auth.uid == request.resource.data.author;//&&
+          //request.resource.data.likes == 0;
+        // Allow an authenticated user to modify a post
+        allow update: if request.auth != null;
+        // Allow user to delete a post if they are the author
+				allow delete: if 
+        	request.auth.uid == resource.data.author;
+    }
+
+    //comments
+    match / posts / { postId } / comments / { commentId }{
+        // Allow any authenticated user to read comments
+        allow read: if true;
+        // Allow an authenticated user to create a comment if they are the author
+        allow create: if 
+          request.auth.uid == request.resource.data.author &&
+        request.resource.data.likes == 0;
+        // Allow an authenticated user to modify a comment
+        allow update: if 
+          request.auth != null &&
+        request.resource.data.time == resource.data.time &&
+        request.resource.data.author == resource.data.author;
+        // Allow user to delete comments on a post if user is author of that post
+        // TODO: fix this is broken, should be author of the comment
+        allow delete: if 
+        	request.auth.uid == get(/databases/$(database) / documents / posts / $(postId)).data.author;
+    }
+
+    //groups
+    match / groups / { document=**}{
+      // Allow any authenticated user to read posts
+      allow read: if true;//request.auth != null;
+      // Allow an authenticated user to create a post if they are the author
+      allow create: if true;//request.auth.uid == request.resource.data.author;
+      // Allow an authenticated user to modify a post
+      allow update: if true;//request.auth != null;
+    }
+    //utilites
+    match / utilities / { document=**}{
+      // Allow any authenticated user to read posts
+      allow read: if true;//request.auth != null;
+      // Allow an authenticated user to create a post if they are the author
+      allow create: if false;//request.auth.uid == request.resource.data.author;
+      // Allow an authenticated user to modify a post
+      allow update: if false;
+      allow write: if false;//request.auth != null;
+    }
+    //reports
+    match / reports / { document=**}{
+      // Allow any authenticated user to read posts
+      allow read: if true;//request.auth != null;
+      // Allow an authenticated user to create a post if they are the author
+      allow create: if request.auth != null;//request.auth.uid == request.resource.data.author;
+      // Allow an authenticated user to modify a post
+      allow update: if false;
+      allow write: if false;//request.auth != null;
+    }
+  }
+}
