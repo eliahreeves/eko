@@ -6,6 +6,7 @@ import 'package:eko_app/custom_widgets/warning_dialog.dart';
 import 'package:eko_app/interfaces/user.dart' as user;
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
+import 'package:eko_app/widgets/google_sign_in_button.dart';
 import 'package:eko_app/widgets/icons.dart';
 import '../custom_widgets/login_text_field.dart';
 import '../utilities/constants.dart' as c;
@@ -260,6 +261,40 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 ),
               ),
+              SizedBox(height: height * 0.02),
+              // Divider with "OR"
+              SizedBox(
+                width: width * 0.9,
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Divider(
+                            color: Theme.of(context).colorScheme.outline)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OR',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                        child: Divider(
+                            color: Theme.of(context).colorScheme.outline)),
+                  ],
+                ),
+              ),
+              SizedBox(height: height * 0.02),
+              // Google Sign-In Button
+              SizedBox(
+                width: width * 0.9,
+                child: const GoogleSignInButton(
+                  text: 'Sign in with Google',
+                ),
+              ),
+              SizedBox(height: height * 0.02),
             ],
           ),
         ),

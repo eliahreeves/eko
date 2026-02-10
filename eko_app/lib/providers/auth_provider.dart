@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' show debugPrint;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/types/auth.dart';
+import 'package:eko_app/utilities/constants.dart';
 // Necessary for code-generation to work
 part '../generated/providers/auth_provider.g.dart';
 
@@ -22,21 +24,23 @@ class Auth extends _$Auth {
         state = AuthModel.signedOut();
       } else {
         state = state.copyWith(
-            uid: user.uid,
-            isLoading: false,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            creationTime: user.metadata.creationTime);
+          uid: user.uid,
+          isLoading: false,
+          email: user.email,
+          emailVerified: user.emailVerified,
+          creationTime: user.metadata.creationTime,
+        );
       }
     });
   }
 
-  Future<String> signUp(
-      {required String email,
-      required String password,
-      required String username,
-      required String name,
-      required String birthday}) async {
+  Future<String> signUp({
+    required String email,
+    required String password,
+    required String username,
+    required String name,
+    required String birthday,
+  }) async {
     try {
       final UserCredential user =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -44,28 +48,15 @@ class Auth extends _$Auth {
         password: password,
       );
       if (user.user?.uid == null) return 'unknown';
-      final userData = {
-        'uid': user.user?.uid,
-        'email': email.trim(),
-        'username': username,
-        'name': name,
-        'fcmTokens': [],
-        'blockedUsers': [],
-        'isVerified': false,
-        'profileData': {
-          'birthday': birthday,
-          'likedPosts': [],
-          'dislikedPosts': [],
-          'pollVotes': {},
-          'bio': '',
-          'followers': [],
-          'following': [],
-          'likes': 0,
-          'dislikes': 0,
-          'profilePicture':
-              'https://firebasestorage.googleapis.com/v0/b/untitled-2832f.appspot.com/o/profile_pictures%2Fdefault%2Fprofile.jpg?alt=media&token=2543c4eb-f991-468f-9ce8-68c576ffca7c',
-        }
-      };
+
+      final userData = _buildNewUserDoc(
+        uid: user.user!.uid,
+        email: email.trim(),
+        username: username,
+        name: name,
+        birthday: birthday,
+      );
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.user?.uid)
@@ -81,12 +72,14 @@ class Auth extends _$Auth {
     }
   }
 
-  Future<String> signIn(
-      {required String email, required String password}) async {
+  Future<String> signIn({
+    required String email,
+    required String password,
+  }) async {
     try {
       final UserCredential user = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email.trim(), password: password);
-      if (user.user != null) addFCM(user.user!.uid);
+      if (user.user != null) await addFCM(user.user!.uid);
       return ('success');
     } on FirebaseAuthException catch (e) {
       debugPrint(e.code);
@@ -108,5 +101,87 @@ class Auth extends _$Auth {
     if (user != null) {
       state = state.copyWith(emailVerified: user.emailVerified);
     }
+  }
+
+  Future<void> signInWithGoogle() async {
+    // google sign in
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser == null) return;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // firebase sign in
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+    final user = userCredential.user!;
+
+    // Check if user document exists
+    final userRef =
+        FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final docSnapshot = await userRef.get();
+
+    if (!docSnapshot.exists) {
+      // Generate username from email
+      final email = user.email ?? '';
+      final emailPrefix = email
+          .split('@')[0]
+          .toLowerCase()
+          .replaceAll(RegExp(r'[^a-z0-9_]'), '_');
+      String username = emailPrefix;
+      if (!(await isUsernameAvailable(emailPrefix))) {
+        username =
+            '${emailPrefix}_${DateTime.now().millisecondsSinceEpoch % 100000}';
+      }
+
+      final userData = _buildNewUserDoc(
+        uid: user.uid,
+        email: email,
+        username: username,
+        name: googleUser.displayName ?? email.split('@')[0],
+        birthday: null,
+        photoUrl: googleUser.photoUrl,
+      );
+
+      await userRef.set(userData);
+    }
+
+    await addFCM(user.uid);
+  }
+
+  Map<String, dynamic> _buildNewUserDoc({
+    required String uid,
+    required String email,
+    required String username,
+    required String name,
+    required String? birthday,
+    String? photoUrl,
+  }) {
+    return {
+      'uid': uid,
+      'email': email,
+      'username': username,
+      'name': name,
+      'fcmTokens': [],
+      'blockedUsers': [],
+      'isVerified': false,
+      'share_online_status': true,
+      'profileData': {
+        'birthday': birthday,
+        'likedPosts': [],
+        'dislikedPosts': [],
+        'pollVotes': {},
+        'bio': '',
+        'followers': [],
+        'following': [],
+        'likes': 0,
+        'dislikes': 0,
+        'profilePicture': photoUrl ?? defaultProfilePictureUrl,
+      },
+    };
   }
 }

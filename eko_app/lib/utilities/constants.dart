@@ -136,3 +136,5 @@ const String playStoreURL =
 const String appStoreURL =
     'https://apps.apple.com/us/app/eko/id6470772031?platform=iphone';
 const String termsUrl = 'https://conetechnologies-32cd1.web.app/eko/terms';
+const String defaultProfilePictureUrl =
+    'https://firebasestorage.googleapis.com/v0/b/untitled-2832f.appspot.com/o/profile_pictures%2Fdefault%2Fprofile.jpg?alt=media&token=2543c4eb-f991-468f-9ce8-68c576ffca7c';
