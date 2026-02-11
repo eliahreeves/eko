@@ -7,11 +7,19 @@ class LogoService {
 
   static Future<void> init() async {
     try {
+      final logosRef = FirebaseStorage.instance.ref().child('eko_logos');
+      final logos = await logosRef.listAll();
+      final int numLogos = logos.items.length;
+
+      if (numLogos == 0) {
+        _logo = null;
+        return;
+      }
+
       int date = DateTime.now().toUtc().millisecondsSinceEpoch ~/
           Duration.millisecondsPerDay;
-      int file = date % 15 + 1;
-      final storageRef =
-          FirebaseStorage.instance.ref().child('eko_logos/$file.svg');
+      int logoIndex = date % numLogos;
+      final storageRef = logos.items[logoIndex];
 
       final url =
           await storageRef.getDownloadURL().timeout(const Duration(seconds: 1));
