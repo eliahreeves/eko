@@ -602,9 +602,7 @@ class _GetInfoState extends State<GetInfo> {
             height: height * 0.02,
           ),
           // Google Sign-Up Button
-          const GoogleSignInButton(
-            text: 'Sign up with Google',
-          ),
+          const GoogleSignInButton(),
           SizedBox(
             height: height * 0.04,
           ),

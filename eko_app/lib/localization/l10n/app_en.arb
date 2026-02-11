@@ -288,5 +288,6 @@
     "changeImage":"Change Image",
     "pickImage":"Pick Image",
     "verification":"Verification",
-    "verificationUrl":"Verification Url"
+    "verificationUrl":"Verification Url",
+    "continueWithGoogle":"Continue with Google"
 }

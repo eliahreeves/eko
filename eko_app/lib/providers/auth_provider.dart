@@ -126,16 +126,25 @@ class Auth extends _$Auth {
     final docSnapshot = await userRef.get();
 
     if (!docSnapshot.exists) {
-      // Generate username from email
       final email = user.email ?? '';
-      final emailPrefix = email
+      String emailPrefix = email
           .split('@')[0]
           .toLowerCase()
           .replaceAll(RegExp(r'[^a-z0-9_]'), '_');
+      if (emailPrefix.length > 18) {
+        emailPrefix = emailPrefix.substring(0, 18);
+      }
+      while (emailPrefix.length < 3) {
+        emailPrefix += '_';
+      }
       String username = emailPrefix;
       if (!(await isUsernameAvailable(emailPrefix))) {
-        username =
-            '${emailPrefix}_${DateTime.now().millisecondsSinceEpoch % 100000}';
+        final suffix =
+            (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
+        username = '${emailPrefix}_$suffix';
+      }
+      if (!isUsernameValid(username)) {
+        username = 'user_${DateTime.now().millisecondsSinceEpoch % 1000000}';
       }
 
       final userData = _buildNewUserDoc(

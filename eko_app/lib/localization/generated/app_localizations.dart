@@ -1297,6 +1297,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verification Url'**
   String get verificationUrl;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
 }
 
 class _AppLocalizationsDelegate

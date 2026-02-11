@@ -35,10 +35,9 @@ Future<void> addFCM(String uid) async {
         final String currentDeviceToken =
             await FirebaseMessaging.instance.getToken() ?? '';
         // Retrieve the FCM tokens array
-        // TODO: will change when in a collection
-        if (userSnapshot.data().toString().contains('fcmTokens')) {
-          List<String> fcmTokens =
-              List<String>.from(userSnapshot['fcmTokens'] ?? []);
+        final data = userSnapshot.data() as Map<String, dynamic>?;
+        if (data != null && data.containsKey('fcmTokens')) {
+          List<String> fcmTokens = List<String>.from(data['fcmTokens'] ?? []);
 
           // check to see if contained in array
           if (!fcmTokens.contains(currentDeviceToken)) {
@@ -47,9 +46,8 @@ Future<void> addFCM(String uid) async {
           // Update the Firestore document with the modified FCM tokens array
           await userDocRef.update({'fcmTokens': fcmTokens});
         } else {
-          List<String> fcmTokens = [];
-          fcmTokens.add(currentDeviceToken);
-          userDocRef.update({'fcmTokens': fcmTokens});
+          List<String> fcmTokens = [currentDeviceToken];
+          await userDocRef.update({'fcmTokens': fcmTokens});
         }
         setActivityNotification(true);
       }

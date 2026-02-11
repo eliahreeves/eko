@@ -638,4 +638,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verificationUrl => 'Verification Url';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
 }

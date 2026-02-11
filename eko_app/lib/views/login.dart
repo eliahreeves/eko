@@ -290,9 +290,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               // Google Sign-In Button
               SizedBox(
                 width: width * 0.9,
-                child: const GoogleSignInButton(
-                  text: 'Sign in with Google',
-                ),
+                child: const GoogleSignInButton(),
               ),
               SizedBox(height: height * 0.02),
             ],
