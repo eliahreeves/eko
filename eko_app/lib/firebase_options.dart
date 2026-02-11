@@ -67,8 +67,10 @@ class DefaultFirebaseOptions {
     projectId: 'untitled-2832f',
     databaseURL: 'https://untitled-2832f-default-rtdb.firebaseio.com',
     storageBucket: 'untitled-2832f.appspot.com',
-    androidClientId: '146952619766-d0f5d066b7vb1ept43m0ctq3rgcspiek.apps.googleusercontent.com',
-    iosClientId: '146952619766-oe04136fscs8alaf1t1hq4ftmfi3kf0f.apps.googleusercontent.com',
+    androidClientId:
+        '146952619766-103dakuob5tgp036phf01tbs0gqb204j.apps.googleusercontent.com',
+    iosClientId:
+        '146952619766-c3hft6hdlme7mrps2v8ul062l2gcb2kd.apps.googleusercontent.com',
     iosBundleId: 'com.example.untitledApp',
   );
 
@@ -79,8 +81,10 @@ class DefaultFirebaseOptions {
     projectId: 'untitled-2832f',
     databaseURL: 'https://untitled-2832f-default-rtdb.firebaseio.com',
     storageBucket: 'untitled-2832f.appspot.com',
-    androidClientId: '146952619766-d0f5d066b7vb1ept43m0ctq3rgcspiek.apps.googleusercontent.com',
-    iosClientId: '146952619766-oe04136fscs8alaf1t1hq4ftmfi3kf0f.apps.googleusercontent.com',
+    androidClientId:
+        '146952619766-103dakuob5tgp036phf01tbs0gqb204j.apps.googleusercontent.com',
+    iosClientId:
+        '146952619766-c3hft6hdlme7mrps2v8ul062l2gcb2kd.apps.googleusercontent.com',
     iosBundleId: 'com.example.untitledApp',
   );
 
@@ -94,5 +98,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'untitled-2832f.appspot.com',
     measurementId: 'G-PWMR5VYPCV',
   );
-
 }
