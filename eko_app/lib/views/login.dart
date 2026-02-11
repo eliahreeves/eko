@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/custom_widgets/download_button_if_web.dart';
-import 'package:eko_app/custom_widgets/warning_dialog.dart';
+import 'package:eko_app/custom_widgets/error_snack_bar.dart';
 import 'package:eko_app/interfaces/user.dart' as user;
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/widgets/google_sign_in_button.dart';
 import 'package:eko_app/widgets/icons.dart';
-import '../custom_widgets/login_text_field.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/custom_widgets/login_text_field.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/auth/auth_button.dart';
+import 'package:eko_app/widgets/auth/auth_divider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -35,57 +38,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   int handleError(String errorCode) {
+    final l10n = AppLocalizations.of(context)!;
     switch (errorCode) {
       case 'success':
         return 0;
       case 'invalid-email':
-        showMyDialog(
-            AppLocalizations.of(context)!.invalidEmailTittle,
-            AppLocalizations.of(context)!.invalidEmailBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
-        return 1;
-      case 'user-not-found':
-        showMyDialog(
-            AppLocalizations.of(context)!.userNotFoundTitle,
-            AppLocalizations.of(context)!.userNotFoundBody,
-            [
-              AppLocalizations.of(context)!.signUp,
-              AppLocalizations.of(context)!.tryAgain
-            ],
-            [
-              () {
-                context.pop();
-                context.go('/signup');
-              },
-              context.pop
-            ],
-            context);
-        return 1;
-      case 'wrong-password':
-        showMyDialog(
-            AppLocalizations.of(context)!.wrongPasswordTittle,
-            AppLocalizations.of(context)!.wrongPasswordBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
-        return 1;
-      case 'user-disabled':
-        showMyDialog(
-            AppLocalizations.of(context)!.userDisabledTittle,
-            AppLocalizations.of(context)!.userDisabledBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+        showSnackBar(
+          text: l10n.invalidEmailBody,
+          context: context,
+        );
         return 1;
       default:
-        showMyDialog(
-            AppLocalizations.of(context)!.defaultErrorTittle,
-            AppLocalizations.of(context)!.defaultErrorBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+        showSnackBar(
+          text: l10n.loginFailedBody,
+          context: context,
+        );
         return 1;
     }
   }
@@ -113,45 +80,64 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.outlineVariant,
-          title: Text(AppLocalizations.of(context)!.resetPassword),
-          content: SingleChildScrollView(
-            child: CustomInputField(
-              autofillHints: [AutofillHints.email],
-              label: AppLocalizations.of(context)!.email,
-              controller: emailController,
-              inputType: TextInputType.emailAddress,
+        bool isSending = false;
+        return StatefulBuilder(builder: (context, setDialogState) {
+          final l10n = AppLocalizations.of(context)!;
+          return AlertDialog(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text(l10n.resetPassword),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomInputField(
+                    autofillHints: [AutofillHints.email],
+                    label: l10n.email,
+                    controller: emailController,
+                    inputType: TextInputType.emailAddress,
+                  ),
+                ],
+              ),
             ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(AppLocalizations.of(context)!.cancel),
-              onPressed: () {
-                context.pop();
-              },
-            ),
-            TextButton(
-              child: Text(AppLocalizations.of(context)!.sendResetLink),
-              onPressed: () async {
-                context.pop();
-                if (handleError(await user.forgotPassword(
-                        countryCode: countryCode,
-                        email: emailController.text.trim())) ==
-                    0) {
-                  if (context.mounted) {
-                    showMyDialog(
-                        AppLocalizations.of(context)!.forgotPasswordTittle,
-                        AppLocalizations.of(context)!.forgotPasswordBody,
-                        [AppLocalizations.of(context)!.ok],
-                        [context.pop],
-                        context);
-                  }
-                }
-              },
-            ),
-          ],
-        );
+            actions: <Widget>[
+              TextButton(
+                child: Text(l10n.cancel),
+                onPressed: () {
+                  context.pop();
+                },
+              ),
+              TextButton(
+                onPressed: isSending
+                    ? null
+                    : () async {
+                        setDialogState(() {
+                          isSending = true;
+                        });
+                        // Vague approach: always show success message unless it's a structural error
+                        // and don't pop until done
+                        await user.forgotPassword(
+                            countryCode: countryCode,
+                            email: emailController.text.trim());
+
+                        if (context.mounted) {
+                          context.pop();
+                          showSnackBar(
+                            text: l10n.forgotPasswordBody,
+                            context: context,
+                          );
+                        }
+                      },
+                child: isSending
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.sendResetLink),
+              ),
+            ],
+          );
+        });
       },
     );
   }
@@ -160,140 +146,89 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final width = c.widthGetter(context);
     final height = MediaQuery.sizeOf(context).height;
+    final l10n = AppLocalizations.of(context)!;
 
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        floatingActionButton: downloadButtonIfWeb(),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        extendBodyBehindAppBar: true,
-        body: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Column(
-            children: [
-              IconButton(
-                icon: Row(
-                  children: [
-                    Icon(Icons.arrow_back_ios_rounded,
-                        color: Theme.of(context).colorScheme.onSurface),
-                    Text(
-                      AppLocalizations.of(context)!.previous,
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    )
-                  ],
-                ),
-                onPressed: () => context.go('/'),
-              ),
-              SizedBox(
-                height: height * .055,
-              ),
-              SizedBox(
-                height: height * .25,
-                width: width * 0.7,
-                child: Eko(
-                  useDefault: true,
-                ),
-              ),
-              SizedBox(height: height * .05),
-              AutofillGroup(
-                child: Column(
-                  children: [
-                    CustomInputField(
-                      autofillHints: [AutofillHints.email],
-                      focus: emailFocus,
-                      label: AppLocalizations.of(context)!.email,
-                      controller: emailController,
-                      inputType: TextInputType.emailAddress,
-                    ),
-                    CustomInputField(
-                      autofillHints: [AutofillHints.password],
-                      textInputAction: TextInputAction.go,
-                      onEditingComplete: () => loginPressed(),
-                      focus: passwordFocus,
-                      label: AppLocalizations.of(context)!.password,
-                      controller: passwordController,
-                      inputType: TextInputType.visiblePassword,
-                      password: true,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: height * 0.015),
-              SizedBox(
-                  width: width * 0.9,
-                  height: width * 0.15,
-                  child: TextButton(
-                    onPressed: () => loginPressed(),
-                    style: TextButton.styleFrom(
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withValues(alpha: .55)),
-                    child: isLoading
-                        ? const CircularProgressIndicator()
-                        : Text(
-                            AppLocalizations.of(context)!.logIn,
-                            style: TextStyle(
-                              fontSize: 18,
-                              letterSpacing: 1,
-                              fontWeight: FontWeight.normal,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          ),
-                  )),
-              SizedBox(
-                width: width * 0.9,
-                height: width * 0.1,
-                child: TextButton(
-                  onPressed: () => forgotPasswordPressed(
-                      AppLocalizations.of(context)!.localeName),
-                  child: Text(
-                    AppLocalizations.of(context)!.forgotPassword,
-                    style: TextStyle(
-                      fontSize: 13,
-                      letterSpacing: 1,
-                      fontWeight: FontWeight.normal,
-                      color: Theme.of(context).colorScheme.onSurface,
+    return Scaffold(
+      appBar: AuthAppBar(),
+      floatingActionButton: downloadButtonIfWeb(),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Center(
+          child: SizedBox(
+            width: c.widthGetter(context),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.symmetric(
+                  horizontal: width * c.authPaddingHorizontal),
+              child: Column(
+                children: [
+                  SizedBox(height: height * .04),
+                  SizedBox(
+                    height: height * .22,
+                    width: width * 0.7,
+                    child: Eko(useDefault: true),
+                  ),
+                  SizedBox(height: height * .04),
+                  AutofillGroup(
+                    child: Column(
+                      children: [
+                        CustomInputField(
+                          autofillHints: [AutofillHints.email],
+                          focus: emailFocus,
+                          label: l10n.email,
+                          controller: emailController,
+                          inputType: TextInputType.emailAddress,
+                        ),
+                        CustomInputField(
+                          autofillHints: [AutofillHints.password],
+                          textInputAction: TextInputAction.go,
+                          onEditingComplete: () => loginPressed(),
+                          focus: passwordFocus,
+                          label: l10n.password,
+                          controller: passwordController,
+                          inputType: TextInputType.visiblePassword,
+                          password: true,
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: height * 0.02),
-              // Divider with "OR"
-              SizedBox(
-                width: width * 0.9,
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: Divider(
-                            color: Theme.of(context).colorScheme.outline)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                  const SizedBox(height: c.authElementSpacing),
+                  AuthButton.primary(
+                    label: l10n.logIn,
+                    isLoading: isLoading,
+                    onPressed: isLoading ? null : loginPressed,
+                  ),
+                  SizedBox(
+                    width: c.widthGetter(context) * 0.9,
+                    child: TextButton(
+                      onPressed: isLoading
+                          ? null
+                          : () => forgotPasswordPressed(l10n.localeName),
+                      style: TextButton.styleFrom(
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSurface,
+                      ),
                       child: Text(
-                        'OR',
+                        l10n.forgotPassword,
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    Expanded(
-                        child: Divider(
-                            color: Theme.of(context).colorScheme.outline)),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: c.authSectionSpacing),
+                  const AuthDivider(
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                  const SizedBox(height: c.authElementSpacing),
+                  const GoogleSignInButton(),
+                  SizedBox(height: height * 0.04),
+                ],
               ),
-              SizedBox(height: height * 0.02),
-              // Google Sign-In Button
-              SizedBox(
-                width: width * 0.9,
-                child: const GoogleSignInButton(),
-              ),
-              SizedBox(height: height * 0.02),
-            ],
+            ),
           ),
         ),
       ),

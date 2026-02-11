@@ -268,5 +268,8 @@
     "pickImage":"Escoger imagen",
     "verification":"Verificación",
     "verificationUrl":"Verification Url",
-    "continueWithGoogle":"Continuar con Google"
+    "continueWithGoogle":"Continuar con Google",
+    
+    "loginFailedTitle":"Inicio de Sesión Fallido",
+    "loginFailedBody":"Por favor, revisa tu correo y contraseña e intenta de nuevo."
 }

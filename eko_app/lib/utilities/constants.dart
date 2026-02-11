@@ -95,6 +95,14 @@ ButtonStyle buttonStyle(context) {
 const double logoPaddingVert = 30;
 const double logoPaddingHoriz = 0;
 const double loginPadding = 0.006;
+
+// UI
+const double authPaddingHorizontal = 0.05;
+const double authSectionSpacing = 32.0;
+const double authElementSpacing = 16.0;
+const double authButtonHeight = 54.0;
+const double maxAuthWidth = 500.0;
+
 //profile pic
 const int imageQuality = 85;
 const double imageSize = 150;
