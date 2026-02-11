@@ -1303,6 +1303,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Google'**
   String get continueWithGoogle;
+
+  /// No description provided for @loginFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Failed'**
+  String get loginFailedTitle;
+
+  /// No description provided for @loginFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your email and password and try again.'**
+  String get loginFailedBody;
 }
 
 class _AppLocalizationsDelegate

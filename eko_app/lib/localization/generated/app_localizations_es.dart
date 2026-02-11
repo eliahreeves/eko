@@ -648,4 +648,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get continueWithGoogle => 'Continuar con Google';
+
+  @override
+  String get loginFailedTitle => 'Inicio de Sesión Fallido';
+
+  @override
+  String get loginFailedBody =>
+      'Por favor, revisa tu correo y contraseña e intenta de nuevo.';
 }

@@ -6,6 +6,9 @@ import 'package:eko_app/custom_widgets/warning_dialog.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/auth/auth_button.dart';
+import 'package:eko_app/widgets/auth/auth_divider.dart';
 
 class ReAuthPage extends ConsumerStatefulWidget {
   const ReAuthPage({super.key});
@@ -60,93 +63,87 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
   @override
   Widget build(BuildContext context) {
     final width = c.widthGetter(context);
+    final height = MediaQuery.sizeOf(context).height;
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface),
-          onPressed: () => context.pop(),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text(
-          AppLocalizations.of(context)!.deleteAccount,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).colorScheme.onSurface,
+      appBar: const AuthAppBar(),
+      body: Center(
+        child: SizedBox(
+          width: width,
+          child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.symmetric(
+                horizontal: width * c.authPaddingHorizontal),
+            children: [
+              SizedBox(height: height * .04),
+              SizedBox(
+                height: height * .08,
+                child: Align(
+                  child: Text(
+                    l10n.deleteAccount,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+              ),
+              const AuthDivider(
+                indent: 20,
+                endIndent: 20,
+              ),
+              SizedBox(height: height * .04),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  l10n.deleteAcountReAuthWarning,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              SizedBox(height: height * .06),
+              CustomInputField(
+                textInputAction: TextInputAction.go,
+                focus: passwordFocus,
+                label: l10n.password,
+                controller: passwordController,
+                inputType: TextInputType.visiblePassword,
+                password: true,
+              ),
+              const SizedBox(height: c.authElementSpacing),
+              AuthButton.primary(
+                label: l10n.deleteAccount,
+                isLoading: isLoading,
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() => isLoading = true);
+                        final password = passwordController.text;
+                        if (password == '') {
+                          passwordFocus.requestFocus();
+                        } else {
+                          final result = await ref
+                              .read(authProvider.notifier)
+                              .signIn(
+                                  password: password,
+                                  email: ref.read(authProvider).email!);
+                          if (handleError(result) == 0) {
+                            await ref
+                                .read(authProvider.notifier)
+                                .deleteAccount();
+                          }
+                        }
+                        setState(() => isLoading = false);
+                      },
+              ),
+              SizedBox(height: height * 0.05),
+            ],
           ),
         ),
       ),
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        // =mainAxisSize: MainAxisSize.min,
-
-        children: [
-          SizedBox(
-            height: width * 0.05,
-          ),
-          SizedBox(
-              width: width * 0.7,
-              child: Text(
-                  AppLocalizations.of(context)!.deleteAcountReAuthWarning,
-                  textAlign: TextAlign.center)),
-          SizedBox(
-            height: width * 0.2,
-          ),
-          CustomInputField(
-            textInputAction: TextInputAction.go,
-            // onEditingComplete: () =>
-            //     prov.Provider.of<LoginController>(context, listen: false)
-            //         .logInPressed(),
-            focus: passwordFocus,
-            label: AppLocalizations.of(context)!.password,
-            controller: passwordController,
-            inputType: TextInputType.visiblePassword,
-            password: true,
-          ),
-          SizedBox(
-            height: width * 0.05,
-          ),
-          InkWell(
-            child: Container(
-              alignment: Alignment.center,
-              height: width * 0.15,
-              width: width * 0.9,
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  color: Theme.of(context).colorScheme.primary),
-              child: Text(AppLocalizations.of(context)!.deleteAccount,
-                  style: TextStyle(
-                      fontSize: width * 0.06,
-                      color: Theme.of(context).colorScheme.onPrimary),
-                  textAlign: TextAlign.center),
-            ),
-            onTap: () async {
-              if (!isLoading) {
-                setState(() {
-                  isLoading = true;
-                });
-                final password = passwordController.text;
-                if (password == '') {
-                  passwordFocus.requestFocus();
-                } else {
-                  if (handleError((await ref.read(authProvider.notifier).signIn(
-                          password: password,
-                          email: ref.read(authProvider).email!))) ==
-                      0) {
-                    await ref.read(authProvider.notifier).deleteAccount();
-                  }
-                }
-                setState(() {
-                  isLoading = false;
-                });
-              }
-            },
-          ),
-          SizedBox(height: width * 0.05)
-        ],
-      )),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/custom_widgets/error_snack_bar.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class GoogleSignInButton extends ConsumerStatefulWidget {
   const GoogleSignInButton({super.key});
@@ -38,26 +39,36 @@ class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return SizedBox(
       width: double.infinity,
+      height: c.authButtonHeight,
       child: OutlinedButton(
         onPressed: isLoading ? null : _handleGoogleSignIn,
         style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          side: BorderSide(
-            color: Theme.of(context).colorScheme.outline,
-            width: 1,
+          side: BorderSide(color: theme.colorScheme.outline),
+          foregroundColor: theme.colorScheme.onSurface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+            ? SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: theme.colorScheme.onSurface,
+                ),
               )
             : Text(
                 AppLocalizations.of(context)!.continueWithGoogle,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
               ),
       ),
     );

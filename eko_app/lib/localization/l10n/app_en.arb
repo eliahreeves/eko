@@ -289,5 +289,8 @@
     "pickImage":"Pick Image",
     "verification":"Verification",
     "verificationUrl":"Verification Url",
-    "continueWithGoogle":"Continue with Google"
+    "continueWithGoogle":"Continue with Google",
+    
+    "loginFailedTitle":"Login Failed",
+    "loginFailedBody":"Please check your email and password and try again."
 }

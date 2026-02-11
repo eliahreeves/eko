@@ -14,9 +14,12 @@ import 'package:eko_app/widgets/create_password.dart';
 import 'package:eko_app/widgets/google_sign_in_button.dart';
 import 'package:eko_app/widgets/username_check_display.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../custom_widgets/login_text_field.dart';
-import '../utilities/constants.dart' as c;
-import '../custom_widgets/download_button_if_web.dart';
+import 'package:eko_app/custom_widgets/login_text_field.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/custom_widgets/download_button_if_web.dart';
+import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/auth/auth_button.dart';
+import 'package:eko_app/widgets/auth/auth_divider.dart';
 
 void _showWeakPassword(BuildContext context) {
   showMyDialog(
@@ -24,24 +27,6 @@ void _showWeakPassword(BuildContext context) {
       AppLocalizations.of(context)!.weakPasswordBody,
       [AppLocalizations.of(context)!.tryAgain],
       [context.pop],
-      context);
-}
-
-void _showConfirmExit(BuildContext context) {
-  showMyDialog(
-      AppLocalizations.of(context)!.exitCreateAccountTitle,
-      AppLocalizations.of(context)!.exitCreateAccountBody,
-      [
-        AppLocalizations.of(context)!.goBack,
-        AppLocalizations.of(context)!.stay
-      ],
-      [
-        () {
-          context.pop();
-          context.go('/');
-        },
-        context.pop
-      ],
       context);
 }
 
@@ -96,14 +81,15 @@ class _SignUpState extends ConsumerState<SignUp> {
   }
 
   bool _handleError(String errorCode) {
+    final l10n = AppLocalizations.of(context)!;
     switch (errorCode) {
       case 'success':
         return true;
       case 'username-taken':
         showMyDialog(
-            AppLocalizations.of(context)!.usernameTakenTitle,
-            AppLocalizations.of(context)!.usernameTakenBody,
-            [AppLocalizations.of(context)!.goBack],
+            l10n.usernameTakenTitle,
+            l10n.usernameTakenBody,
+            [l10n.goBack],
             [
               () {
                 context.pop();
@@ -117,26 +103,20 @@ class _SignUpState extends ConsumerState<SignUp> {
             context);
         break;
       case 'invalid-email':
-        showMyDialog(
-            AppLocalizations.of(context)!.invalidEmailTittle,
-            AppLocalizations.of(context)!.invalidEmailBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+        showSnackBar(
+          text: l10n.invalidEmailBody,
+          context: context,
+        );
         break;
       case 'weak-password':
         _showWeakPassword(context);
         break;
       case 'email-already-in-use':
         showMyDialog(
-            AppLocalizations.of(context)!.emailAlreadyInUseTitle,
-            AppLocalizations.of(context)!.emailAlreadyInUseBody,
+            l10n.emailAlreadyInUseTitle,
+            l10n.emailAlreadyInUseBody,
+            [l10n.logIn, l10n.tryAgain],
             [
-              AppLocalizations.of(context)!.logIn,
-              AppLocalizations.of(context)!.tryAgain
-            ],
-            [
-//invalid
               () {
                 context.pop();
                 context.go('/');
@@ -146,12 +126,8 @@ class _SignUpState extends ConsumerState<SignUp> {
             context);
         break;
       default:
-        showMyDialog(
-            AppLocalizations.of(context)!.defaultErrorTittle,
-            AppLocalizations.of(context)!.defaultErrorBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+        showMyDialog(l10n.defaultErrorTittle, l10n.defaultErrorBody,
+            [l10n.tryAgain], [context.pop], context);
         break;
     }
     return false;
@@ -181,84 +157,60 @@ class _SignUpState extends ConsumerState<SignUp> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) {
-            if (didPop) return;
-            _showConfirmExit(context);
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: AuthAppBar(
+          onBack: () {
+            if (index == 1) {
+              setState(() {
+                index = 0;
+              });
+            } else {
+              context.go('/');
+            }
           },
-          child: Scaffold(
-            floatingActionButton: downloadButtonIfWeb(),
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(50),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    onPressed: () {
-                      if (index == 1) {
-                        setState(() {
-                          index = 0;
-                        });
-                        return;
-                      }
-                      _showConfirmExit(context);
-                    },
-                    icon: Row(
-                      children: [
-                        Icon(Icons.arrow_back_ios_rounded,
-                            color: Theme.of(context).colorScheme.onSurface),
-                        Text(
-                          AppLocalizations.of(context)!.previous,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-            ),
-            body: Center(
-              child: SizedBox(
-                width: c.widthGetter(context),
-                child: IndexedStack(
-                  index: index,
-                  children: <Widget>[
-                    GetInfo(
-                      setPage: (target) => setState(() {
-                        index = target;
-                      }),
-                      nameController: nameController,
-                      nameFocus: nameFocus,
-                      usernameFocus: usernameFocus,
-                      usernameController: usernameController,
-                      monthFocus: monthFocus,
-                      dayFocus: dayFocus,
-                      yearFocus: yearFocus,
-                      monthController: monthController,
-                      dayController: dayController,
-                      yearController: yearController,
-                      keyFocus: keyFocus,
-                      emailController: emailController,
-                      emailFocus: emailFocus,
-                    ),
-                    GetPassword(
-                      setPage: (target) => setState(() {
-                        index = target;
-                      }),
-                      passwordController: passwordController,
-                      confirmPasswordController: confirmPasswordController,
-                      passwordFocus: passwordFocus,
-                      confirmPasswordFocus: confirmPasswordFocus,
-                      signUp: signUp,
-                    ),
-                  ],
+        ),
+        floatingActionButton: downloadButtonIfWeb(),
+        body: Center(
+          child: SizedBox(
+            width: c.widthGetter(context),
+            child: IndexedStack(
+              index: index,
+              children: <Widget>[
+                GetInfo(
+                  setPage: (target) => setState(() {
+                    index = target;
+                  }),
+                  nameController: nameController,
+                  nameFocus: nameFocus,
+                  usernameFocus: usernameFocus,
+                  usernameController: usernameController,
+                  monthFocus: monthFocus,
+                  dayFocus: dayFocus,
+                  yearFocus: yearFocus,
+                  monthController: monthController,
+                  dayController: dayController,
+                  yearController: yearController,
+                  keyFocus: keyFocus,
+                  emailController: emailController,
+                  emailFocus: emailFocus,
                 ),
-              ),
+                GetPassword(
+                  setPage: (target) => setState(() {
+                    index = target;
+                  }),
+                  passwordController: passwordController,
+                  confirmPasswordController: confirmPasswordController,
+                  passwordFocus: passwordFocus,
+                  confirmPasswordFocus: confirmPasswordFocus,
+                  signUp: signUp,
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 
@@ -419,49 +371,44 @@ class _GetInfoState extends State<GetInfo> {
   Widget build(BuildContext context) {
     final width = c.widthGetter(context);
     final height = MediaQuery.sizeOf(context).height;
+    final l10n = AppLocalizations.of(context)!;
+
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+      padding:
+          EdgeInsets.symmetric(horizontal: width * c.authPaddingHorizontal),
       child: ListView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
+          SizedBox(height: height * 0.01),
           SizedBox(
-            height: height * 0.02,
-          ),
-          SizedBox(
-            height: height * .1,
+            height: height * .08,
             child: Align(
-              child: Text(AppLocalizations.of(context)!.createAnAccount,
-                  style: TextStyle(
-                      fontSize: 35,
-                      color: Theme.of(context).colorScheme.onSurface)),
+              child: Text(
+                l10n.createAnAccount,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
             ),
           ),
-          Divider(
-            height: 0,
-            thickness: height * 0.002,
-            indent: width * 0.07,
-            endIndent: width * 0.07,
-            color: Theme.of(context).colorScheme.onSurface,
+          const AuthDivider(
+            indent: 20,
+            endIndent: 20,
           ),
-          SizedBox(
-            height: height * 0.03,
-          ),
+          SizedBox(height: height * 0.02),
           CustomInputField(
             autofillHints: [AutofillHints.name],
             focus: widget.nameFocus,
-            label: AppLocalizations.of(context)!.name,
+            label: l10n.name,
             controller: widget.nameController,
             inputType: TextInputType.text,
-            // maxLen: c.maxNameChars,
           ),
-          // SizedBox(height: height * c.loginPadding),
           CustomInputField(
             autofillHints: [AutofillHints.username],
             focus: widget.usernameFocus,
-            label: AppLocalizations.of(context)!.userName,
+            label: l10n.userName,
             controller: widget.usernameController,
             inputType: TextInputType.text,
-            // maxLen: c.maxUsernameChars,
           ),
           UsernameCheckDisplay(
             controller: widget.usernameController,
@@ -470,85 +417,86 @@ class _GetInfoState extends State<GetInfo> {
               usernameValid = val;
             },
           ),
-          SizedBox(height: height * c.loginPadding),
+          const SizedBox(height: c.authElementSpacing),
           CustomInputField(
             autofillHints: [AutofillHints.email],
-            label: AppLocalizations.of(context)!.email,
+            label: l10n.email,
             focus: widget.emailFocus,
             controller: widget.emailController,
             inputType: TextInputType.emailAddress,
           ),
-
+          const SizedBox(height: c.authElementSpacing),
           Text(
-            AppLocalizations.of(context)!.birthday,
+            l10n.birthday,
             style: const TextStyle(
                 fontSize: 18, decoration: TextDecoration.underline),
           ),
           KeyboardListener(
-              onKeyEvent: onKey,
-              focusNode: widget.keyFocus,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
+            onKeyEvent: onKey,
+            focusNode: widget.keyFocus,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.month),
+                    CustomInputField(
+                      autofillHints: [AutofillHints.birthdayMonth],
+                      filter: r'[0-9]*',
+                      showCounter: false,
+                      maxLen: 2,
+                      padding: false,
+                      width: width * 0.15,
+                      focus: widget.monthFocus,
+                      controller: widget.monthController,
+                      inputType: TextInputType.number,
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(AppLocalizations.of(context)!.month),
+                      Text(l10n.day),
                       CustomInputField(
-                        autofillHints: [AutofillHints.birthdayMonth],
+                        autofillHints: [AutofillHints.birthdayDay],
                         filter: r'[0-9]*',
                         showCounter: false,
                         maxLen: 2,
                         padding: false,
                         width: width * 0.15,
-                        focus: widget.monthFocus,
-                        controller: widget.monthController,
+                        focus: widget.dayFocus,
+                        controller: widget.dayController,
                         inputType: TextInputType.number,
-                      ),
+                      )
                     ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(AppLocalizations.of(context)!.day),
-                        CustomInputField(
-                          autofillHints: [AutofillHints.birthdayDay],
-                          filter: r'[0-9]*',
-                          showCounter: false,
-                          maxLen: 2,
-                          padding: false,
-                          width: width * 0.15,
-                          focus: widget.dayFocus,
-                          controller: widget.dayController,
-                          inputType: TextInputType.number,
-                        )
-                      ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.year),
+                    CustomInputField(
+                      autofillHints: [AutofillHints.birthdayYear],
+                      filter: r'[0-9]*',
+                      showCounter: false,
+                      maxLen: 4,
+                      padding: false,
+                      width: width * 0.3,
+                      focus: widget.yearFocus,
+                      controller: widget.yearController,
+                      inputType: TextInputType.number,
                     ),
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(AppLocalizations.of(context)!.year),
-                      CustomInputField(
-                        autofillHints: [AutofillHints.birthdayYear],
-                        filter: r'[0-9]*',
-                        showCounter: false,
-                        maxLen: 4,
-                        padding: false,
-                        width: width * 0.3,
-                        focus: widget.yearFocus,
-                        controller: widget.yearController,
-                        inputType: TextInputType.number,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 5),
-                  Column(children: [
+                  ],
+                ),
+                const SizedBox(width: 5),
+                Column(
+                  children: [
                     const Text(''),
                     IconButton(
                       onPressed: () async {
@@ -560,70 +508,34 @@ class _GetInfoState extends State<GetInfo> {
                             firstDate: DateTime(1900),
                             lastDate: DateTime.now(),
                           ),
-                          //_getPageData(page);
-                          //_setPageData(page + 1);
                         );
                       },
                       icon: const Icon(CupertinoIcons.calendar),
                       iconSize: 35,
                     )
-                  ])
-                ],
-              )),
+                  ],
+                )
+              ],
+            ),
+          ),
           Text(
-            AppLocalizations.of(context)!.birthdayExplanation,
+            l10n.birthdayExplanation,
             style: TextStyle(
                 fontSize: 12,
                 color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
-          SizedBox(
-            height: height * 0.04,
+          SizedBox(height: height * 0.03),
+          AuthButton.primary(
+            label: l10n.cont,
+            onPressed: _nextPage,
           ),
-          // OR Divider
-          Row(
-            children: [
-              Expanded(
-                  child: Divider(color: Theme.of(context).colorScheme.outline)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'OR',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              Expanded(
-                  child: Divider(color: Theme.of(context).colorScheme.outline)),
-            ],
+          const SizedBox(height: c.authSectionSpacing),
+          const AuthDivider(
+            indent: 20,
+            endIndent: 20,
           ),
-          SizedBox(
-            height: height * 0.02,
-          ),
-          // Google Sign-Up Button
+          const SizedBox(height: c.authElementSpacing),
           const GoogleSignInButton(),
-          SizedBox(
-            height: height * 0.04,
-          ),
-          SizedBox(
-            width: width * 0.9,
-            height: width * 0.15,
-            child: TextButton(
-              onPressed: () => _nextPage(),
-              style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary),
-              child: Text(
-                AppLocalizations.of(context)!.cont,
-                style: TextStyle(
-                  fontSize: 18,
-                  letterSpacing: 1,
-                  fontWeight: FontWeight.normal,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -656,89 +568,67 @@ class _GetPasswordState extends State<GetPassword> {
   Widget build(BuildContext context) {
     final width = c.widthGetter(context);
     final height = MediaQuery.sizeOf(context).height;
-    return Scaffold(
-        body: Padding(
-      padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+    final l10n = AppLocalizations.of(context)!;
+
+    return Padding(
+      padding:
+          EdgeInsets.symmetric(horizontal: width * c.authPaddingHorizontal),
       child: Center(
         child: ListView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: [
-            SizedBox(
-                height: height * .1,
-                child: Align(
-                  child: Text(AppLocalizations.of(context)!.createAPassword,
-                      style: TextStyle(
-                          fontSize: 35,
-                          color: Theme.of(context).colorScheme.onSurface)),
-                )),
-            Divider(
-              height: 0,
-              thickness: height * 0.002,
-              indent: width * 0.07,
-              endIndent: width * 0.07,
-              color: Theme.of(context).colorScheme.onSurface,
+            SizedBox(height: height * .1),
+            SizedBox(height: height * .06),
+            Align(
+              child: Text(
+                l10n.createAPassword,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
             ),
-            SizedBox(height: height * 0.04),
+            const AuthDivider(
+              indent: 20,
+              endIndent: 20,
+            ),
+            SizedBox(height: height * 0.03),
             CreatePassword(
               passwordController: widget.passwordController,
               confirmPasswordController: widget.confirmPasswordController,
               passwordFocus: widget.passwordFocus,
               confirmPasswordFocus: widget.confirmPasswordFocus,
             ),
-            SizedBox(
-              height: height * 0.1,
+            SizedBox(height: height * 0.06),
+            AuthButton.primary(
+              label: l10n.cont,
+              isLoading: isLoading,
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      if (!isValidPassword(widget.passwordController.text,
+                          widget.confirmPasswordController.text)) {
+                        _showWeakPassword(context);
+                        return;
+                      }
+                      setState(() => isLoading = true);
+                      if (!(await widget.signUp())) {
+                        setState(() => isLoading = false);
+                      }
+                    },
             ),
-            SizedBox(
-              width: width * 0.9,
-              height: width * 0.15,
-              child: TextButton(
-                onPressed: () async {
-                  if (!isValidPassword(widget.passwordController.text,
-                      widget.confirmPasswordController.text)) {
-                    _showWeakPassword(context);
-                    return;
-                  }
-                  if (isLoading) return;
-                  setState(() {
-                    isLoading = true;
-                  });
-                  if (!(await widget.signUp())) {
-                    //only unlock the button if signup fails
-                    setState(() {
-                      isLoading = false;
-                    });
-                  }
-                },
-                style: TextButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                child: isLoading
-                    ? CircularProgressIndicator(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      )
-                    : Text(
-                        AppLocalizations.of(context)!.cont,
-                        style: TextStyle(
-                          fontSize: 18,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.normal,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
-              ),
-            ),
-            SizedBox(height: height * 0.008),
+            const SizedBox(height: c.authElementSpacing),
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: AppLocalizations.of(context)!.bySigningUp,
+                    text: l10n.bySigningUp,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   TextSpan(
-                    text: AppLocalizations.of(context)!.termsAndConditions,
+                    text: l10n.termsAndConditions,
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.surfaceTint),
                     recognizer: TapGestureRecognizer()
@@ -750,10 +640,16 @@ class _GetPasswordState extends State<GetPassword> {
                 ],
               ),
             ),
-            SizedBox(height: height * 0.03),
+            const SizedBox(height: c.authSectionSpacing),
+            const AuthDivider(
+              indent: 20,
+              endIndent: 20,
+            ),
+            const SizedBox(height: c.authElementSpacing),
+            const GoogleSignInButton(),
           ],
         ),
       ),
-    ));
+    );
   }
 }

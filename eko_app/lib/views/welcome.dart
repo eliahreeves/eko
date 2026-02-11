@@ -30,6 +30,7 @@ class WelcomePage extends StatelessWidget {
               height: height * .2,
             ),
             SizedBox(
+              height: height * .25,
               width: width * 0.7,
               child: Eko(
                 useDefault: true,
@@ -38,34 +39,56 @@ class WelcomePage extends StatelessWidget {
             SizedBox(
               height: height * .28,
             ),
-            OutlinedButton(
-              onPressed: () => context.push('/login'),
-              style: OutlinedButton.styleFrom(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.onSurface),
-                backgroundColor: Colors.transparent,
-                minimumSize: Size(width * .8, height * .07),
-              ),
-              child: Text(AppLocalizations.of(context)!.logIn,
-                  style: TextStyle(
-                      fontSize: 22,
-                      color: Theme.of(context).colorScheme.onSurface)),
-            ),
             SizedBox(
-              height: height * .03,
-            ),
-            OutlinedButton(
-              onPressed: () => context.push('/signup'),
-              style: OutlinedButton.styleFrom(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.onSurface),
-                backgroundColor: Colors.transparent,
-                minimumSize: Size(width * .8, height * .07),
-              ),
-              child: Text(AppLocalizations.of(context)!.createAccount,
+              width: width * 0.9,
+              height: c.authButtonHeight,
+              child: OutlinedButton(
+                onPressed: () => context.push('/login'),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.logIn,
                   style: TextStyle(
-                      fontSize: 22,
-                      color: Theme.of(context).colorScheme.onSurface)),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: c.authElementSpacing),
+            SizedBox(
+              width: width * 0.9,
+              height: c.authButtonHeight,
+              child: OutlinedButton(
+                onPressed: () => context.push('/signup'),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.createAccount,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

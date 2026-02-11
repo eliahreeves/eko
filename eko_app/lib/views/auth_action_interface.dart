@@ -7,8 +7,11 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/widgets/create_password.dart';
 import 'package:eko_app/widgets/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import '../custom_widgets/warning_dialog.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/custom_widgets/warning_dialog.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/auth/auth_button.dart';
+import 'package:eko_app/widgets/auth/auth_divider.dart';
 
 //Forgot password page + email verification link handler
 
@@ -83,7 +86,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
         }
 
         setState(() {
-          isLoading = true;
+          isLoading = false;
         });
       } else {
         showMyDialog(
@@ -153,6 +156,8 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height;
     final width = c.widthGetter(context);
+    final l10n = AppLocalizations.of(context)!;
+
     return PopScope(
       canPop: index == 1,
       onPopInvokedWithResult: (didPop, _) {
@@ -161,115 +166,117 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
           showExitWarning();
         }
       },
-      child: Center(
-        child: SizedBox(
-          width: width,
-          child: IndexedStack(
-            index: index,
-            children: <Widget>[
-              Center(child: LoadingSpinner()),
-              Scaffold(
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: index != 0
+            ? AuthAppBar(
+                onBack: index == 2 ? showExitWarning : () => context.go('/'),
+              )
+            : null,
+        body: Center(
+          child: SizedBox(
+            width: width,
+            child: IndexedStack(
+              index: index,
+              children: <Widget>[
+                Center(child: LoadingSpinner()),
+                // Index 1: Error State
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: width * c.authPaddingHorizontal),
+                  child: ListView(
+                    shrinkWrap: true,
                     children: [
-                      SizedBox(
-                        width: width * 0.8,
-                        child: Text(
-                          AppLocalizations.of(context)!.badAuthState,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 18),
-                        ),
+                      Text(
+                        l10n.defaultErrorTittle,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
-                      TextButton(
+                      const AuthDivider(
+                        indent: 20,
+                        endIndent: 20,
+                      ),
+                      const SizedBox(height: c.authSectionSpacing),
+                      Text(
+                        l10n.badAuthState,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 18),
+                      ),
+                      const SizedBox(height: c.authSectionSpacing),
+                      AuthButton.primary(
+                        label: l10n.exit,
                         onPressed: () => context.go('/'),
-                        style: TextButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary),
-                        child: Text(
-                          AppLocalizations.of(context)!.exit,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary),
-                        ),
-                      )
+                      ),
                     ],
                   ),
                 ),
-              ),
-              Scaffold(
-                body: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+                // Index 2: Reset Password Form
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: width * c.authPaddingHorizontal),
                   child: Center(
                     child: ListView(
                       keyboardDismissBehavior:
                           ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
                         SizedBox(
-                          height: height * 0.03,
+                          height: height * .08,
+                          child: Align(
+                            child: Text(
+                              l10n.resetPassword,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
                         ),
+                        const AuthDivider(
+                          indent: 20,
+                          endIndent: 20,
+                        ),
+                        SizedBox(height: height * 0.02),
                         Text(
-                          '${AppLocalizations.of(context)!.resetPasswordPromt} $email',
+                          '${l10n.resetPasswordPromt} $email',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 20),
+                              fontSize: 18),
                         ),
-                        SizedBox(height: height * c.loginPadding),
+                        SizedBox(height: c.authElementSpacing),
                         CreatePassword(
                           passwordController: passwordController,
                           confirmPasswordController: confirmPasswordController,
                           passwordFocus: passwordFocus,
                           confirmPasswordFocus: confirmPasswordFocus,
                         ),
-                        SizedBox(
-                          height: height * 0.05,
+                        SizedBox(height: c.authSectionSpacing),
+                        AuthButton.primary(
+                          label: l10n.setPassword,
+                          isLoading: isLoading,
+                          onPressed: isLoading ? null : setPasswordPressed,
                         ),
-                        SizedBox(
-                          width: width * 0.9,
-                          height: width * 0.15,
-                          child: TextButton(
-                            onPressed: () => setPasswordPressed(),
-                            style: TextButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary),
-                            child: isLoading
-                                ? CircularProgressIndicator(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  )
-                                : Text(
-                                    AppLocalizations.of(context)!.setPassword,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      letterSpacing: 1,
-                                      fontWeight: FontWeight.normal,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                        TextButton(
-                          child: Text(
-                            AppLocalizations.of(context)!.cancel,
-                            style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontSize: 18),
-                          ),
-                          onPressed: () => showExitWarning(),
+                        const SizedBox(height: c.authElementSpacing),
+                        AuthButton.tertiary(
+                          label: l10n.cancel,
+                          onPressed: showExitWarning,
                         ),
                         SizedBox(height: height * 0.03),
                       ],
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

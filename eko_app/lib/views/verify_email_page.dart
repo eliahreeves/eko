@@ -8,6 +8,8 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/auth/auth_button.dart';
 
 class VerifyEmailPage extends ConsumerStatefulWidget {
   const VerifyEmailPage({super.key});
@@ -76,29 +78,26 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: _signOutAndGoHome,
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: AuthAppBar(
+        onBack: _signOutAndGoHome,
       ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
+            constraints: BoxConstraints(maxWidth: c.maxAuthWidth),
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.symmetric(
+                  horizontal: width * c.authPaddingHorizontal),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.mail_lock_outlined,
                     size: 100,
-                    color: theme.colorScheme.primary.withValues(),
+                    color: theme.colorScheme.primary,
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: c.authSectionSpacing),
                   Text(
                     l10n.verifyEmailTitle,
                     style: theme.textTheme.headlineMedium?.copyWith(
@@ -107,7 +106,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: c.authElementSpacing),
                   Text(
                     l10n.verifyEmailBody,
                     style: theme.textTheme.bodyLarge?.copyWith(
@@ -115,58 +114,23 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: FilledButton(
-                      onPressed: (_resendLoading || _resendCountdown > 0)
-                          ? null
-                          : _resend,
-                      child: _resendLoading
-                          ? SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: theme.colorScheme.onPrimary,
-                              ),
-                            )
-                          : Text(
-                              _resendCountdown > 0
-                                  ? l10n.resendInSeconds(_resendCountdown)
-                                  : l10n.resendVerificationEmail,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
+                  SizedBox(height: c.authSectionSpacing * 1.5),
+                  AuthButton.primary(
+                    label: _resendCountdown > 0
+                        ? l10n.resendInSeconds(_resendCountdown)
+                        : l10n.resendVerificationEmail,
+                    isLoading: _resendLoading,
+                    onPressed: (_resendLoading || _resendCountdown > 0)
+                        ? null
+                        : _resend,
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: OutlinedButton(
-                      onPressed: _checkLoading ? null : _checkVerified,
-                      child: _checkLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              l10n.iveVerifiedMyEmail,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
+                  const SizedBox(height: c.authElementSpacing),
+                  AuthButton.secondary(
+                    label: l10n.iveVerifiedMyEmail,
+                    isLoading: _checkLoading,
+                    onPressed: _checkLoading ? null : _checkVerified,
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: c.authSectionSpacing),
                 ],
               ),
             ),
