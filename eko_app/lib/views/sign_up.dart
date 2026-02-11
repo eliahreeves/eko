@@ -11,6 +11,7 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/widgets/create_password.dart';
+import 'package:eko_app/widgets/google_sign_in_button.dart';
 import 'package:eko_app/widgets/username_check_display.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../custom_widgets/login_text_field.dart';
@@ -576,7 +577,34 @@ class _GetInfoState extends State<GetInfo> {
                 color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
           SizedBox(
-            height: height * 0.08,
+            height: height * 0.04,
+          ),
+          // OR Divider
+          Row(
+            children: [
+              Expanded(
+                  child: Divider(color: Theme.of(context).colorScheme.outline)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'OR',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Expanded(
+                  child: Divider(color: Theme.of(context).colorScheme.outline)),
+            ],
+          ),
+          SizedBox(
+            height: height * 0.02,
+          ),
+          // Google Sign-Up Button
+          const GoogleSignInButton(),
+          SizedBox(
+            height: height * 0.04,
           ),
           SizedBox(
             width: width * 0.9,

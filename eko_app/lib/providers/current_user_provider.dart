@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart' show debugPrint;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/interfaces/activity.dart';
 import 'package:eko_app/interfaces/user.dart';
@@ -221,17 +222,20 @@ class CurrentUser extends _$CurrentUser {
   Future<void> reload() async {
     final uid = ref.read(authProvider).uid!;
     final userRef = FirebaseFirestore.instance.collection('users');
-    final results =
-        await Future.wait([userRef.doc(uid).get(), _getPeopleWhoBlockedMe()]);
-    final mainData =
-        (results[0] as DocumentSnapshot<Map<String, dynamic>>).data();
-    if (mainData == null) {
-      await FirebaseAuth.instance.signOut();
-      return;
-    }
-    mainData['blockedBy'] = results[1];
 
-    state = CurrentUserModel.fromJson(mainData);
+    try {
+      final mainDoc =
+          await userRef.doc(uid).snapshots().firstWhere((doc) => doc.exists);
+
+      final blockedBy = await _getPeopleWhoBlockedMe();
+      final mainData = mainDoc.data();
+      if (mainData != null) {
+        mainData['blockedBy'] = blockedBy;
+        state = CurrentUserModel.fromJson(mainData);
+      }
+    } catch (e) {
+      debugPrint('Error reloading current user: $e');
+    }
   }
 
   Future<void> addFollower(String otherUid) async {

@@ -267,5 +267,6 @@
     "changeImage":"Cambiar imagen",
     "pickImage":"Escoger imagen",
     "verification":"Verificación",
-    "verificationUrl":"Verification Url"
+    "verificationUrl":"Verification Url",
+    "continueWithGoogle":"Continuar con Google"
 }
