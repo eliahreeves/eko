@@ -31,21 +31,16 @@ abstract class PostModel with _$PostModel {
     required String id,
     String? gifUrl,
     @JsonKey(
-        name: 'image',
-        fromJson: _asciiImageFromString,
-        toJson: _asciiImageToString)
+      name: 'image',
+      fromJson: _asciiImageFromString,
+      toJson: _asciiImageToString,
+    )
     AsciiImage? imageString,
     @Default(<String>[])
-    @JsonKey(
-      fromJson: parseTextToTags,
-      toJson: _joinList,
-    )
+    @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
     List<String> title,
     @Default(<String>[])
-    @JsonKey(
-      fromJson: parseTextToTags,
-      toJson: _joinList,
-    )
+    @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
     List<String> body,
     @Default(['public']) List<String> tags,
     @Default(0) int likes,
@@ -65,7 +60,8 @@ abstract class PostModel with _$PostModel {
   }
 
   static Future<PostModel> fromFireStoreDoc(
-      QueryDocumentSnapshot<Map<String, dynamic>> doc) async {
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) async {
     final json = doc.data();
     json['id'] = doc.id;
     json['commentCount'] = await countComments(doc.id);

@@ -14,6 +14,7 @@ import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/widgets/common/divider.dart';
 import 'package:eko_app/widgets/common/icons.dart' as icons;
+import 'package:eko_app/widgets/common/count.dart';
 import 'package:eko_app/widgets/posts/like_buttons.dart';
 import 'package:eko_app/widgets/posts/repost_card.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
@@ -38,9 +39,7 @@ Widget otherProfilePostCardBuilder(String id) {
 }
 
 Widget postCardBuilder(String id) {
-  return PostCard(
-    id: id,
-  );
+  return PostCard(id: id);
 }
 
 class GroupBadge extends ConsumerWidget {
@@ -62,16 +61,22 @@ class GroupBadge extends ConsumerWidget {
           if (group.members.contains(ref.watch(currentUserProvider).user.uid)) {
             context.push('/groups/sub_group/${group.id}', extra: group);
           } else {
-            showMyDialog(AppLocalizations.of(context)!.notInGroup, '',
-                [AppLocalizations.of(context)!.ok], [context.pop], context,
-                dismissable: true);
+            showMyDialog(
+              AppLocalizations.of(context)!.notInGroup,
+              '',
+              [AppLocalizations.of(context)!.ok],
+              [context.pop],
+              context,
+              dismissable: true,
+            );
           }
         },
         child: Container(
           padding: const EdgeInsets.only(left: 6, right: 6),
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(10)),
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -84,17 +89,20 @@ class GroupBadge extends ConsumerWidget {
                 data: (group) => Text(
                   group.name,
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 error: (_, __) => Text(
                   'Error',
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 loading: () => Text(
                   'loading...',
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
               ),
             ],
@@ -114,15 +122,16 @@ class PostCard extends ConsumerStatefulWidget {
   final bool showGroup;
   final bool visible;
 
-  const PostCard(
-      {super.key,
-      required this.id,
-      this.isPreview = false,
-      this.isPostPage = false,
-      this.isBuiltFromId = false,
-      this.isOnProfile = false,
-      this.showGroup = false,
-      this.visible = true});
+  const PostCard({
+    super.key,
+    required this.id,
+    this.isPreview = false,
+    this.isPostPage = false,
+    this.isBuiltFromId = false,
+    this.isOnProfile = false,
+    this.showGroup = false,
+    this.visible = true,
+  });
 
   @override
   ConsumerState<PostCard> createState() => _PostCardState();
@@ -156,15 +165,16 @@ class _PostCardState extends ConsumerState<PostCard> {
 
   void showLogInDialog() {
     showMyDialog(
-        AppLocalizations.of(context)!.logIntoApp,
-        AppLocalizations.of(context)!.logInRequired,
-        [
-          AppLocalizations.of(context)!.goBack,
-          AppLocalizations.of(context)!.signIn
-        ],
-        [_popDialog, _goToLogin],
-        context,
-        dismissable: true);
+      AppLocalizations.of(context)!.logIntoApp,
+      AppLocalizations.of(context)!.logInRequired,
+      [
+        AppLocalizations.of(context)!.goBack,
+        AppLocalizations.of(context)!.signIn,
+      ],
+      [_popDialog, _goToLogin],
+      context,
+      dismissable: true,
+    );
   }
 
   void _popDialog() {
@@ -177,16 +187,23 @@ class _PostCardState extends ConsumerState<PostCard> {
 
   void sharePressed(String id) async {
     if (kIsWeb) {
-      Clipboard.setData(ClipboardData(
-          text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id'));
+      Clipboard.setData(
+        ClipboardData(
+          text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id',
+        ),
+      );
       showSnackBar(
-          context: context,
-          text: AppLocalizations.of(context)!.coppiedToClipboard);
+        context: context,
+        text: AppLocalizations.of(context)!.coppiedToClipboard,
+      );
     } else {
       if (!sharing) {
         sharing = true;
-        await SharePlus.instance.share(ShareParams(
-            text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id'));
+        await SharePlus.instance.share(
+          ShareParams(
+            text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id',
+          ),
+        );
         sharing = false;
       }
     }
@@ -200,43 +217,52 @@ class _PostCardState extends ConsumerState<PostCard> {
     final asyncPost = ref.watch(postProvider(widget.id));
     final asyncRestrictedUsers = ref.watch(restrictedUserProvider);
 
-    return asyncRestrictedUsers.when(data: (restrictedUsers) {
-      return asyncPost.when(data: (post) {
-        final currentUser = ref.watch(currentUserProvider);
-        if (currentUser.blockedUsers.contains(post.uid) ||
-            currentUser.blockedBy.contains(post.uid)) {
-          return SizedBox.shrink();
-        }
+    return asyncRestrictedUsers.when(
+      data: (restrictedUsers) {
+        return asyncPost.when(
+          data: (post) {
+            final currentUser = ref.watch(currentUserProvider);
+            if (currentUser.blockedUsers.contains(post.uid) ||
+                currentUser.blockedBy.contains(post.uid)) {
+              return SizedBox.shrink();
+            }
 
-        // if (!(currentUser.user.following.contains(post.uid)) &&
-        //     !(currentUser.user.uid != post.uid) &&
-        //     restrictedUsers.contains(post.uid)) {
-        //   return SizedBox.shrink();
-        // }
-        final isMe = post.uid == currentUser.user.uid;
-        final isFollowing = currentUser.user.following.contains(post.uid);
-        final isRestricted = restrictedUsers.contains(post.uid);
-        if (isRestricted && !isMe && !isFollowing) {
-          return SizedBox.shrink();
-        }
-        return PostCardFromPost(
-            isOnProfile: widget.isOnProfile,
-            sharePressed: sharePressed,
-            isPreview: widget.isPreview,
-            isPostPage: widget.isPostPage,
-            isLoggedIn: isLoggedIn(),
-            showGroup: widget.showGroup,
-            post: post);
-      }, error: (object, stack) {
+            // if (!(currentUser.user.following.contains(post.uid)) &&
+            //     !(currentUser.user.uid != post.uid) &&
+            //     restrictedUsers.contains(post.uid)) {
+            //   return SizedBox.shrink();
+            // }
+            final isMe = post.uid == currentUser.user.uid;
+            final isFollowing = currentUser.user.following.contains(post.uid);
+            final isRestricted = restrictedUsers.contains(post.uid);
+            if (isRestricted && !isMe && !isFollowing) {
+              return SizedBox.shrink();
+            }
+            return PostCardFromPost(
+              isOnProfile: widget.isOnProfile,
+              sharePressed: sharePressed,
+              isPreview: widget.isPreview,
+              isPostPage: widget.isPostPage,
+              isLoggedIn: isLoggedIn(),
+              showGroup: widget.showGroup,
+              post: post,
+            );
+          },
+          error: (object, stack) {
+            return _Error();
+          },
+          loading: () {
+            return _Loading();
+          },
+        );
+      },
+      error: (object, stack) {
         return _Error();
-      }, loading: () {
+      },
+      loading: () {
         return _Loading();
-      });
-    }, error: (object, stack) {
-      return _Error();
-    }, loading: () {
-      return _Loading();
-    });
+      },
+    );
   }
 }
 
@@ -249,15 +275,16 @@ class PostCardFromPost extends ConsumerWidget {
   final bool showGroup;
   final void Function(String)? sharePressed;
 
-  const PostCardFromPost(
-      {this.isOnProfile = false,
-      this.sharePressed,
-      this.isPreview = false,
-      this.isPostPage = false,
-      this.isLoggedIn = true,
-      this.showGroup = false,
-      super.key,
-      required this.post});
+  const PostCardFromPost({
+    this.isOnProfile = false,
+    this.sharePressed,
+    this.isPreview = false,
+    this.isPostPage = false,
+    this.isLoggedIn = true,
+    this.showGroup = false,
+    super.key,
+    required this.post,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -267,8 +294,8 @@ class PostCardFromPost extends ConsumerWidget {
       child: InkWell(
         onTap: () => (!isPreview && !isPostPage && isLoggedIn)
             ? context
-                .push('/feed/post/${post.id}', extra: post)
-                .then((v) async {})
+                  .push('/feed/post/${post.id}', extra: post)
+                  .then((v) async {})
             : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +320,8 @@ class PostCardFromPost extends ConsumerWidget {
                           final user = ref.read(userProvider(post.uid)).value;
                           if (user != null) {
                             context.push(
-                                '/users/${user.username}?uid=${user.uid}');
+                              '/users/${user.username}?uid=${user.uid}',
+                            );
                           } else {
                             // Fallback to just uid if user data not available
                             context.push('/users/_?uid=${post.uid}');
@@ -317,20 +345,25 @@ class PostCardFromPost extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Expanded(
-                                child: UserTag(
-                              uid: post.uid,
-                              onPressedWithUser: (user) {
-                                if (!isPreview && !isOnProfile) {
-                                  if (post.uid !=
-                                      ref.read(currentUserProvider).user.uid) {
-                                    context.push(
-                                        '/users/${user.username}?uid=${user.uid}');
-                                  } else {
-                                    context.go('/profile');
+                              child: UserTag(
+                                uid: post.uid,
+                                onPressedWithUser: (user) {
+                                  if (!isPreview && !isOnProfile) {
+                                    if (post.uid !=
+                                        ref
+                                            .read(currentUserProvider)
+                                            .user
+                                            .uid) {
+                                      context.push(
+                                        '/users/${user.username}?uid=${user.uid}',
+                                      );
+                                    } else {
+                                      context.go('/profile');
+                                    }
                                   }
-                                }
-                              },
-                            )),
+                                },
+                              ),
+                            ),
                             if (!isPreview) TimeStamp(time: post.getDateTime()),
                           ],
                         ),
@@ -341,8 +374,9 @@ class PostCardFromPost extends ConsumerWidget {
                             baseTextStyle: TextStyle(
                               color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 15,
-                              fontFamily:
-                                  DefaultTextStyle.of(context).style.fontFamily,
+                              fontFamily: DefaultTextStyle.of(
+                                context,
+                              ).style.fontFamily,
                             ),
                           ),
                         const SizedBox(height: 6.0),
@@ -350,28 +384,28 @@ class PostCardFromPost extends ConsumerWidget {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 6),
                             child: RepostCard(
-                                postId: post.repostId!,
-                                isLoggedIn: isLoggedIn,
-                                isPreview: isPreview),
+                              postId: post.repostId!,
+                              isLoggedIn: isLoggedIn,
+                              isPreview: isPreview,
+                            ),
                           ),
                         if (post.gifUrl != null)
                           Padding(
-                              padding: EdgeInsets.only(bottom: 6),
-                              child: GifWidget(url: post.gifUrl!)),
+                            padding: EdgeInsets.only(bottom: 6),
+                            child: GifWidget(url: post.gifUrl!),
+                          ),
                         if (post.imageString != null)
                           Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 50, bottom: 6),
-                              child: ImageWidget(
-                                ascii: post.imageString!,
-                              )),
+                            padding: const EdgeInsets.only(
+                              right: 50,
+                              bottom: 6,
+                            ),
+                            child: ImageWidget(ascii: post.imageString!),
+                          ),
                         if (post.pollOptions != null)
                           Padding(
                             padding: EdgeInsets.only(bottom: 6),
-                            child: PollWidget(
-                              post: post,
-                              isPreview: isPreview,
-                            ),
+                            child: PollWidget(post: post, isPreview: isPreview),
                           ),
                         if (post.body.isNotEmpty) TextWithTags(text: post.body),
                       ],
@@ -392,38 +426,36 @@ class PostCardFromPost extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(width: width * 0.115 + 8),
-                        LikeButtons(
-                          post: post,
-                          disabled: isPreview,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        LikeButtons(post: post, disabled: isPreview),
+                        const SizedBox(width: 5),
                         InkWell(
                           onTap: () {
                             if (isLoggedIn) {
                               if (!isPreview && !isPostPage) {
-                                context.push('/feed/post/${post.id}',
-                                    extra: post);
+                                context.push(
+                                  '/feed/post/${post.id}',
+                                  extra: post,
+                                );
                               }
                             }
                           },
                           child: icons.Comment(
                             size: c.postIconSize,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        SizedBox(
-                          width: 3,
-                        ),
+                        SizedBox(width: 3),
                         Count(
                           count: post.commentCount,
                           onTap: () {
                             if (isLoggedIn) {
                               if (!isPreview && !isPostPage) {
-                                context.push('/feed/post/${post.id}',
-                                    extra: post);
+                                context.push(
+                                  '/feed/post/${post.id}',
+                                  extra: post,
+                                );
                               }
                             }
                           },
@@ -433,7 +465,7 @@ class PostCardFromPost extends ConsumerWidget {
                           onTap: () {
                             if (isLoggedIn && !isPreview) {
                               final Map<String, dynamic> queryParameters = {
-                                'repostId': post.id
+                                'repostId': post.id,
                               };
                               queryParameters['timestamp'] = DateTime.now()
                                   .millisecondsSinceEpoch
@@ -442,38 +474,44 @@ class PostCardFromPost extends ConsumerWidget {
                                   post.tags.first != 'public') {
                                 queryParameters['id'] = post.tags.first;
                               }
-                              context.goNamed('compose',
-                                  queryParameters: queryParameters);
+                              context.goNamed(
+                                'compose',
+                                queryParameters: queryParameters,
+                              );
                             }
                           },
                           child: icons.Repost(
                             size: c.postIconSize,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(width: 10),
                         InkWell(
-                            onTap: () {
-                              if (isLoggedIn) {
-                                isPreview || sharePressed == null
-                                    ? null
-                                    : sharePressed!(post.id);
-                              }
-                            },
-                            child: icons.Share(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                                size: c.postIconSize)),
+                          onTap: () {
+                            if (isLoggedIn) {
+                              isPreview || sharePressed == null
+                                  ? null
+                                  : sharePressed!(post.id);
+                            }
+                          },
+                          child: icons.Share(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            size: c.postIconSize,
+                          ),
+                        ),
                         const SizedBox(width: 5),
                       ],
                     ),
             ),
             if (!isPreview)
               Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: SizedBox(width: width, child: StyledDivider()))
+                padding: EdgeInsets.only(top: 8),
+                child: SizedBox(width: width, child: StyledDivider()),
+              ),
           ],
         ),
       ),
