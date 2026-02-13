@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/group_provider.dart';
-import '../custom_widgets/time_stamp.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/time_stamp.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 Widget groupCardBuilder(String groupId) {
   return GroupCard(
@@ -123,7 +123,7 @@ class GroupCard extends ConsumerWidget {
                         ),
                         if (onPressed == null)
                           TimeStamp(
-                            time: group.lastActivity,
+                            time: group.getDateTime(),
                           ),
                         SizedBox(
                           width: width * 0.05,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eko_app/custom_widgets/time_stamp.dart';
+import 'package:eko_app/widgets/time_stamp.dart';
 import 'package:eko_app/providers/activity_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
@@ -82,7 +82,7 @@ class ActivityCardWidget extends ConsumerWidget {
                       width: width * 0.8,
                       alignment: Alignment.centerLeft,
                       child: TimeStamp(
-                        time: activity.createdAt,
+                        time: activity.getDateTime(),
                         fontSize: 12,
                       ),
                     ),

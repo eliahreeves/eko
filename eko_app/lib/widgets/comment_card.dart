@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/custom_widgets/count_down_timer.dart';
 import 'package:eko_app/custom_widgets/gif_widget.dart';
-import 'package:eko_app/custom_widgets/time_stamp.dart';
+import 'package:eko_app/widgets/time_stamp.dart';
 import 'package:eko_app/custom_widgets/warning_dialog.dart';
 import 'package:eko_app/providers/comment_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
@@ -244,12 +244,10 @@ class _Card extends ConsumerWidget {
               children: [
                 ProfilePicture(
                   onPressed: () {
-                    if (comment.uid !=
-                        ref.read(currentUserProvider).user.uid) {
+                    if (comment.uid != ref.read(currentUserProvider).user.uid) {
                       final user = ref.read(userProvider(comment.uid)).value;
                       if (user != null) {
-                        context
-                            .push('/users/${user.username}?uid=${user.uid}');
+                        context.push('/users/${user.username}?uid=${user.uid}');
                       } else {
                         context.push('/users/_?uid=${comment.uid}');
                       }
@@ -319,7 +317,7 @@ class _Card extends ConsumerWidget {
                   ),
                 ),
                 Column(children: [
-                  TimeStamp(time: comment.createdAt),
+                  TimeStamp(time: comment.getDateTime()),
                   CommentLikeButtons(comment: comment),
                 ])
               ],

@@ -1,6 +1,5 @@
-// dart format width=80
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -145,6 +144,208 @@ class _$CurrentUserModelCopyWithImpl<$Res>
     return $UserModelCopyWith<$Res>(_self.user, (value) {
       return _then(_self.copyWith(user: value));
     });
+  }
+}
+
+/// Adds pattern-matching-related methods to [CurrentUserModel].
+extension CurrentUserModelPatterns on CurrentUserModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_CurrentUserModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _CurrentUserModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_CurrentUserModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _CurrentUserModel():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_CurrentUserModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _CurrentUserModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            UserModel user,
+            Set<String> likedPosts,
+            Set<String> dislikedPosts,
+            Set<String> blockedUsers,
+            Set<String> blockedBy,
+            Map<String, int> pollVotes,
+            bool unreadGroup)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _CurrentUserModel() when $default != null:
+        return $default(
+            _that.user,
+            _that.likedPosts,
+            _that.dislikedPosts,
+            _that.blockedUsers,
+            _that.blockedBy,
+            _that.pollVotes,
+            _that.unreadGroup);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            UserModel user,
+            Set<String> likedPosts,
+            Set<String> dislikedPosts,
+            Set<String> blockedUsers,
+            Set<String> blockedBy,
+            Map<String, int> pollVotes,
+            bool unreadGroup)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _CurrentUserModel():
+        return $default(
+            _that.user,
+            _that.likedPosts,
+            _that.dislikedPosts,
+            _that.blockedUsers,
+            _that.blockedBy,
+            _that.pollVotes,
+            _that.unreadGroup);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            UserModel user,
+            Set<String> likedPosts,
+            Set<String> dislikedPosts,
+            Set<String> blockedUsers,
+            Set<String> blockedBy,
+            Map<String, int> pollVotes,
+            bool unreadGroup)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _CurrentUserModel() when $default != null:
+        return $default(
+            _that.user,
+            _that.likedPosts,
+            _that.dislikedPosts,
+            _that.blockedUsers,
+            _that.blockedBy,
+            _that.pollVotes,
+            _that.unreadGroup);
+      case _:
+        return null;
+    }
   }
 }
 
