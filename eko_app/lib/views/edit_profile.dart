@@ -7,15 +7,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:eko_app/custom_widgets/edit_profile_text_field.dart';
-import 'package:eko_app/custom_widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/inputs/profile_input_field.dart';
+import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/user.dart';
-import 'package:eko_app/widgets/profile_picture.dart';
-import 'package:eko_app/widgets/username_check_display.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/users/profile_picture.dart';
+import 'package:eko_app/widgets/inputs/username_check_display.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class EditProfile extends ConsumerStatefulWidget {
   const EditProfile({super.key});

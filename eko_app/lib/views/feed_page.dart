@@ -6,10 +6,10 @@ import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
 
-import 'package:eko_app/widgets/icons.dart';
-import 'package:eko_app/widgets/infinite_scrolly.dart';
-import 'package:eko_app/widgets/post_card.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
+import 'package:eko_app/widgets/common/icons.dart';
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/posts/post_card.dart';
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 
 const appBarHeight = 80.0;
 const tabStorageKey = 'LAST_FEED_PAGE_INDEX';

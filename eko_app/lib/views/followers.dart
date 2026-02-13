@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/user_provider.dart';
-import 'package:eko_app/widgets/infinite_scrolly.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
-import '../widgets/user_card.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
+import 'package:eko_app/widgets/users/user_card.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class Followers extends ConsumerStatefulWidget {
   final String uid;

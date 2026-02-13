@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/group_list_provider.dart';
-import 'package:eko_app/widgets/infinite_scrolly.dart';
-import '../widgets/group_card.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/groups/group_card.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class GroupsPage extends ConsumerStatefulWidget {
   const GroupsPage({super.key});

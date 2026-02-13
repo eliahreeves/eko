@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/views/create_group_page.dart';
-import 'package:eko_app/widgets/loading_spinner.dart';
+import 'package:eko_app/widgets/loading/loading_spinner.dart';
 
 class AddPeoplePage extends ConsumerWidget {
   final String id;

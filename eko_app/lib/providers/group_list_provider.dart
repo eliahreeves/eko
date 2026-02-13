@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/group.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 part '../generated/providers/group_list_provider.g.dart';
 
 @riverpod

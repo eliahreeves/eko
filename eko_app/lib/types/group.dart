@@ -6,7 +6,7 @@ part '../generated/types/group.g.dart';
 
 @freezed
 abstract class GroupModel with _$GroupModel {
-  @JsonSerializable(explicitToJson: true)
+  const GroupModel._();
   const factory GroupModel({
     @Default('') String id,
     required String name,
@@ -30,4 +30,8 @@ abstract class GroupModel with _$GroupModel {
 
   static GroupModel fromFirestore(Map<String, dynamic> json, String id) =>
       GroupModel.fromJson(json).copyWith(id: id);
+
+  DateTime getDateTime() {
+    return DateTime.tryParse(lastActivity) ?? DateTime.now();
+  }
 }

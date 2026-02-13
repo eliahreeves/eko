@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/profile_picture.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/users/profile_picture.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class ProfilePictureDetail extends StatelessWidget {
   final String uid;

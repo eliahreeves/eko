@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/custom_widgets/download_button_if_web.dart';
+import 'package:eko_app/widgets/common/download_button.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/widgets/icons.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/common/icons.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});

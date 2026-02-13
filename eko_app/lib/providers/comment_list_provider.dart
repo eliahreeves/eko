@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/providers/pool_providers.dart';
-import '../types/comment.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/types/comment.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 part '../generated/providers/comment_list_provider.g.dart';
 
 @riverpod

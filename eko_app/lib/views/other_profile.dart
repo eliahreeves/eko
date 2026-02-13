@@ -2,20 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/custom_widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
-import 'package:eko_app/widgets/infinite_scrolly.dart';
-import 'package:eko_app/widgets/loading_spinner.dart';
-import 'package:eko_app/custom_widgets/profile_page_header.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/loading/loading_spinner.dart';
+import 'package:eko_app/widgets/users/profile_header.dart';
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/widgets/verification_badge.dart';
-import '../utilities/constants.dart' as c;
-import '../widgets/post_card.dart';
+import 'package:eko_app/widgets/users/verification_badge.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/posts/post_card.dart';
 
 class OtherProfile extends ConsumerStatefulWidget {
   final String username;

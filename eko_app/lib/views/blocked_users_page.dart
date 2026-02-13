@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/user_card.dart';
+import 'package:eko_app/widgets/users/user_card.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 
 class BlockedUsersPage extends ConsumerWidget {

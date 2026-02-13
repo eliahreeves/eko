@@ -6,9 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/infinite_scrolly.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
-import '../widgets/user_card.dart';
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
+import 'package:eko_app/widgets/users/user_card.dart';
 
 class ViewLikesPage extends ConsumerWidget {
   final String postId;

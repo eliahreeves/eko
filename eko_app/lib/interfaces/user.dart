@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:eko_app/interfaces/shared_pref_model.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 
 Future<bool> isUsernameAvailable(String username) async {
   final querySnapshot = await FirebaseFirestore.instance

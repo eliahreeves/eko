@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/custom_widgets/count_down_timer.dart';
-import 'package:eko_app/custom_widgets/error_snack_bar.dart';
-import 'package:eko_app/custom_widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/posts/count_down_timer.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
+import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/post.dart';
 import 'package:eko_app/interfaces/report.dart';
 import 'package:eko_app/providers/comment_list_provider.dart';
@@ -12,13 +12,13 @@ import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/types/comment.dart';
 
-import 'package:eko_app/widgets/loading_spinner.dart';
+import 'package:eko_app/widgets/loading/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/widgets/post_card.dart';
-import 'package:eko_app/widgets/tag_search.dart';
-import '../utilities/constants.dart' as c;
-import '../widgets/comment_card.dart';
-import '../widgets/infinite_scrolly.dart';
+import 'package:eko_app/widgets/posts/post_card.dart';
+import 'package:eko_app/widgets/search/tag_search.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/posts/comment_card.dart';
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 
 class ViewPostPage extends ConsumerStatefulWidget {
   final String id;

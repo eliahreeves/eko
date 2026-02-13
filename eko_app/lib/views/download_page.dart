@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import '../interfaces/uri_launcher.dart';
+import 'package:eko_app/interfaces/uri_launcher.dart';
 
 class DownloadPage extends StatelessWidget {
   const DownloadPage({super.key});
