@@ -105,7 +105,7 @@ untranslatedList = [
     "birthdayExplanation"
   ]
 
-# Path to app_en.arb relative to repo root (script lives in tools/i88n/)
+# Path to app_en.arb relative to repo root (script lives in scripts/i88n/)
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 _repo_root = os.path.dirname(os.path.dirname(_script_dir))
 arbpath = os.path.join(_repo_root, 'eko_app', 'lib', 'localization', 'l10n', 'app_en.arb')

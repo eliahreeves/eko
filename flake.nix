@@ -47,6 +47,7 @@
 
         shellHook = ''
           export GRADLE_OPTS="-Dorg.gradle.project.android.aapt2FromMavenOverride=${sdkPath}/build-tools/35.0.0/aapt2"
+          git config core.hooksPath scripts/git-hooks
         '';
       };
     });
