@@ -7,7 +7,7 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/widgets/create_password.dart';
 import 'package:eko_app/widgets/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/custom_widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/warning_dialog.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/auth/auth_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';

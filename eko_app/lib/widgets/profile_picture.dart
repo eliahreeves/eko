@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eko_app/custom_widgets/profile_picture_loading.dart';
+import 'package:eko_app/widgets/profile_picture_loading.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/widgets/online_indicator.dart';
 

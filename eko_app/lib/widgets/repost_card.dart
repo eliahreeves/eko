@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/custom_widgets/gif_widget.dart';
-import 'package:eko_app/custom_widgets/image_widget.dart';
-import 'package:eko_app/custom_widgets/poll_widget.dart';
+import 'package:eko_app/widgets/gif_widget.dart';
+import 'package:eko_app/widgets/image_widget.dart';
+import 'package:eko_app/widgets/poll_widget.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';

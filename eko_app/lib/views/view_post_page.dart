@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/custom_widgets/count_down_timer.dart';
-import 'package:eko_app/custom_widgets/error_snack_bar.dart';
-import 'package:eko_app/custom_widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/count_down_timer.dart';
+import 'package:eko_app/widgets/error_snack_bar.dart';
+import 'package:eko_app/widgets/warning_dialog.dart';
 import 'package:eko_app/interfaces/post.dart';
 import 'package:eko_app/interfaces/report.dart';
 import 'package:eko_app/providers/comment_list_provider.dart';
