@@ -6,9 +6,8 @@ part '../generated/types/gif_model.g.dart';
 @freezed
 abstract class KlipyResponse with _$KlipyResponse {
   @JsonSerializable(explicitToJson: true)
-  const factory KlipyResponse({
-    required List<KlipyResult> results,
-  }) = _KlipyResponse;
+  const factory KlipyResponse({required List<KlipyResult> results}) =
+      _KlipyResponse;
 
   factory KlipyResponse.fromJson(Map<String, dynamic> json) =>
       _$KlipyResponseFromJson(json);
@@ -34,9 +33,7 @@ abstract class KlipyResult with _$KlipyResult {
 @freezed
 abstract class MediaFormats with _$MediaFormats {
   @JsonSerializable(explicitToJson: true)
-  const factory MediaFormats({
-    required GifFormat gif,
-  }) = _MediaFormats;
+  const factory MediaFormats({required GifFormat gif}) = _MediaFormats;
 
   factory MediaFormats.fromJson(Map<String, dynamic> json) =>
       _$MediaFormatsFromJson(json);

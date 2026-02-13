@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/widgets/posts/gif_widget.dart';
@@ -23,7 +22,6 @@ import 'package:eko_app/widgets/common/text_with_tags.dart';
 import 'package:eko_app/widgets/common/time_stamp.dart';
 import 'package:eko_app/widgets/users/user_tag.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'dart:io' show Platform;
 import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';

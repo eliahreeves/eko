@@ -14,7 +14,6 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
-import 'package:eko_app/widgets/inputs/username_check_display.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 class EditProfile extends ConsumerStatefulWidget {
@@ -52,8 +51,9 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     nameController = TextEditingController(text: user.name);
     bioController = TextEditingController(text: user.bio);
     usernameController = TextEditingController(text: user.username);
-    verificationUrlController =
-        TextEditingController(text: user.verificationUrl);
+    verificationUrlController = TextEditingController(
+      text: user.verificationUrl,
+    );
     super.initState();
   }
 
@@ -83,8 +83,13 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         usernameFocus.requestFocus();
         isLoading = false;
         if (mounted) {
-          showMyDialog(AppLocalizations.of(context)!.usernameReqs, '',
-              [AppLocalizations.of(context)!.close], [context.pop], context);
+          showMyDialog(
+            AppLocalizations.of(context)!.usernameReqs,
+            '',
+            [AppLocalizations.of(context)!.close],
+            [context.pop],
+            context,
+          );
         }
 
         return;
@@ -93,20 +98,28 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         usernameFocus.requestFocus();
         isLoading = false;
         if (mounted) {
-          showMyDialog(AppLocalizations.of(context)!.usernameInUse, '',
-              [AppLocalizations.of(context)!.close], [context.pop], context);
+          showMyDialog(
+            AppLocalizations.of(context)!.usernameInUse,
+            '',
+            [AppLocalizations.of(context)!.close],
+            [context.pop],
+            context,
+          );
         }
         return;
       }
     }
     final name = nameController.text != user.name ? nameController.text : null;
     final bio = bioController.text != user.bio ? bioController.text : null;
-    ref.read(currentUserProvider.notifier).editProfile(
-        name: name,
-        bio: bio,
-        profilePicture: newProfileImage,
-        username: username,
-        verificationUrl: verificationUrlController.text.trim());
+    ref
+        .read(currentUserProvider.notifier)
+        .editProfile(
+          name: name,
+          bio: bio,
+          profilePicture: newProfileImage,
+          username: username,
+          verificationUrl: verificationUrlController.text.trim(),
+        );
     isLoading = false;
     if (mounted) context.pop();
   }
@@ -117,21 +130,22 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     );
     if (pickedFile == null) return null;
     final croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        // cropStyle: CropStyle.circle,
-        maxHeight: 300,
-        maxWidth: 300,
-        aspectRatio: const CropAspectRatio(ratioX: 150, ratioY: 150),
-        uiSettings: [
-          AndroidUiSettings(
-            showCropGrid: false,
-            hideBottomControls: true,
-            cropStyle: CropStyle.circle,
-            toolbarWidgetColor: Colors.black,
-            toolbarColor: Colors.white,
-          ),
-          IOSUiSettings(cropStyle: CropStyle.circle)
-        ]);
+      sourcePath: pickedFile.path,
+      // cropStyle: CropStyle.circle,
+      maxHeight: 300,
+      maxWidth: 300,
+      aspectRatio: const CropAspectRatio(ratioX: 150, ratioY: 150),
+      uiSettings: [
+        AndroidUiSettings(
+          showCropGrid: false,
+          hideBottomControls: true,
+          cropStyle: CropStyle.circle,
+          toolbarWidgetColor: Colors.black,
+          toolbarColor: Colors.white,
+        ),
+        IOSUiSettings(cropStyle: CropStyle.circle),
+      ],
+    );
     if (croppedFile == null) return null;
     return File(croppedFile.path);
   }
@@ -146,20 +160,18 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
   void _showWarning() {
     showMyDialog(
-        AppLocalizations.of(context)!.exitEditProfileTitle,
-        AppLocalizations.of(context)!.exitEditProfileBody,
-        [
-          AppLocalizations.of(context)!.exit,
-          AppLocalizations.of(context)!.stay
-        ],
-        [
-          () {
-            context.pop();
-            context.pop();
-          },
-          context.pop
-        ],
-        context);
+      AppLocalizations.of(context)!.exitEditProfileTitle,
+      AppLocalizations.of(context)!.exitEditProfileBody,
+      [AppLocalizations.of(context)!.exit, AppLocalizations.of(context)!.stay],
+      [
+        () {
+          context.pop();
+          context.pop();
+        },
+        context.pop,
+      ],
+      context,
+    );
   }
 
   bool _shouldShowSave(UserModel user) {
@@ -197,8 +209,10 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded,
-                  color: Theme.of(context).colorScheme.onSurface),
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               onPressed: () => Navigator.of(context).maybePop(),
             ),
             automaticallyImplyLeading: false,
@@ -219,7 +233,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                   bioController,
                   nameController,
                   usernameController,
-                  verificationUrlController
+                  verificationUrlController,
                 ]),
                 builder: (context, _) {
                   if (_shouldShowSave(user)) {
@@ -261,14 +275,17 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                                   onlineIndicatorEnabled: false,
                                 )
                               : ProfilePictureFromFile(
-                                  size: width * 0.4, file: newProfileImage!),
+                                  size: width * 0.4,
+                                  file: newProfileImage!,
+                                ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
-                                shape: const CircleBorder(),
-                                padding: const EdgeInsets.all(8)),
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(8),
+                            ),
                             onPressed: () {
                               if (newProfileImage == null) {
                                 _setProfilePicturePressed();
@@ -284,7 +301,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                                   : Icons.close,
                               size: 20,
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ],
@@ -319,8 +336,9 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                 Text(
                   AppLocalizations.of(context)!.verificationExp,
                   style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onSurface),
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 SizedBox(height: height * 0.01),
                 ElevatedButton(

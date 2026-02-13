@@ -5,7 +5,8 @@ class PrefsService {
 
   static Future<void> init() async {
     _prefs = await SharedPreferencesWithCache.create(
-        cacheOptions: const SharedPreferencesWithCacheOptions());
+      cacheOptions: const SharedPreferencesWithCacheOptions(),
+    );
   }
 
   static SharedPreferencesWithCache get instance {

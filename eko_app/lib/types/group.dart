@@ -22,7 +22,8 @@ abstract class GroupModel with _$GroupModel {
       _$GroupModelFromJson(json);
 
   static GroupModel fromFirestoreDoc(
-      QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final json = doc.data();
     json['id'] = doc.id;
     return GroupModel.fromJson(json);

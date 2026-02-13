@@ -34,7 +34,7 @@ class InfiniteScrolly<K, V> extends StatefulWidget {
   ///		must treat the list it recives as read only. The data may get out of date, but that is ok.
   ///   Also must return bool to signifiy if this is the last chunk
   final Future<(List<MapEntry<K, V>>, bool)> Function(List<MapEntry<K, V>>)
-      getter;
+  getter;
 
   /// Builder function that takes a key and returns a widget to display it.
   final Widget Function(K) widget;
@@ -60,17 +60,18 @@ class InfiniteScrolly<K, V> extends StatefulWidget {
   /// Optional controller
   final ScrollController? controller;
 
-  const InfiniteScrolly(
-      {super.key,
-      required this.getter,
-      required this.widget,
-      this.appBar,
-      this.controller,
-      this.header,
-      this.loadingWidget,
-      this.initialLoadingWidget,
-      this.emptySetNotice,
-      this.onRefresh});
+  const InfiniteScrolly({
+    super.key,
+    required this.getter,
+    required this.widget,
+    this.appBar,
+    this.controller,
+    this.header,
+    this.loadingWidget,
+    this.initialLoadingWidget,
+    this.emptySetNotice,
+    this.onRefresh,
+  });
 
   @override
   State<InfiniteScrolly<K, V>> createState() => _InfiniteScrollyState<K, V>();
@@ -153,19 +154,20 @@ class InfiniteScrollyShell<T> extends StatefulWidget {
   /// Optional controller
   final ScrollController? controller;
 
-  const InfiniteScrollyShell(
-      {super.key,
-      required this.getter,
-      required this.widget,
-      required this.list,
-      required this.isEnd,
-      this.onRefresh,
-      this.appBar,
-      this.header,
-      this.loadingWidget,
-      this.initialLoadingWidget,
-      this.emptySetNotice,
-      this.controller});
+  const InfiniteScrollyShell({
+    super.key,
+    required this.getter,
+    required this.widget,
+    required this.list,
+    required this.isEnd,
+    this.onRefresh,
+    this.appBar,
+    this.header,
+    this.loadingWidget,
+    this.initialLoadingWidget,
+    this.emptySetNotice,
+    this.controller,
+  });
 
   @override
   State<InfiniteScrollyShell<T>> createState() => _InfiniteScrollyShell<T>();
@@ -225,47 +227,48 @@ class _InfiniteScrollyShell<T> extends State<InfiniteScrollyShell<T>> {
         slivers: [
           if (widget.appBar != null) widget.appBar!,
           SliverList.builder(
-              itemCount: widget.list.length + 2,
-              itemBuilder: (BuildContext context, int index) {
-                // build header
-                if (index == 0) {
-                  return widget.header ?? SizedBox();
-                }
-                //normal case put cards
-                if (widget.list.isNotEmpty && index < widget.list.length + 1) {
-                  return widget.widget(widget.list[index - 1]);
-                }
-                //what to return if dataset is empty
-                if (isEmptySet) {
-                  return widget.emptySetNotice ??
-                      Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Center(
-                              child: Text(AppLocalizations.of(context)!
-                                  .nothingToSeeHere)));
-                }
-                //what to return if dataset is under initial load sequence
-                if (!widget.isEnd && widget.list.isEmpty) {
-                  return widget.initialLoadingWidget ??
-                      const _DefaultInitialLoader();
-                }
-                //end of feed
-                if (widget.isEnd && widget.list.isNotEmpty) {
-                  return const SizedBox();
-                }
-                // new posts are loading
-                return widget.loadingWidget ??
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: CircularProgressIndicator(),
+            itemCount: widget.list.length + 2,
+            itemBuilder: (BuildContext context, int index) {
+              // build header
+              if (index == 0) {
+                return widget.header ?? SizedBox();
+              }
+              //normal case put cards
+              if (widget.list.isNotEmpty && index < widget.list.length + 1) {
+                return widget.widget(widget.list[index - 1]);
+              }
+              //what to return if dataset is empty
+              if (isEmptySet) {
+                return widget.emptySetNotice ??
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Center(
+                        child: Text(
+                          AppLocalizations.of(context)!.nothingToSeeHere,
+                        ),
                       ),
                     );
-              }),
-          const SliverFillRemaining(
-            hasScrollBody: false,
-            child: SizedBox(),
+              }
+              //what to return if dataset is under initial load sequence
+              if (!widget.isEnd && widget.list.isEmpty) {
+                return widget.initialLoadingWidget ??
+                    const _DefaultInitialLoader();
+              }
+              //end of feed
+              if (widget.isEnd && widget.list.isNotEmpty) {
+                return const SizedBox();
+              }
+              // new posts are loading
+              return widget.loadingWidget ??
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+            },
           ),
+          const SliverFillRemaining(hasScrollBody: false, child: SizedBox()),
         ],
       ),
     );

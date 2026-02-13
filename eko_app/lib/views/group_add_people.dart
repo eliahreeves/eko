@@ -16,34 +16,33 @@ class AddPeoplePage extends ConsumerWidget {
       data: (group) {
         final members = ListenableSet(group.members);
         return Scaffold(
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(50),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        context.pop();
-                      },
-                      child: Text(AppLocalizations.of(context)!.cancel)),
-                  TextButton(
-                      onPressed: () async {
-                        ref
-                            .read(groupProvider(id).notifier)
-                            .updateGroupMembers([...members.set]);
-                        context.pop();
-                      },
-                      child: Text(AppLocalizations.of(context)!.done)),
-                ],
-              ),
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(50),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    context.pop();
+                  },
+                  child: Text(AppLocalizations.of(context)!.cancel),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    ref.read(groupProvider(id).notifier).updateGroupMembers([
+                      ...members.set,
+                    ]);
+                    context.pop();
+                  },
+                  child: Text(AppLocalizations.of(context)!.done),
+                ),
+              ],
             ),
-            body: AddPeople(
-              selectedPeople: members,
-            ));
+          ),
+          body: AddPeople(selectedPeople: members),
+        );
       },
-      loading: () => Center(
-        child: LoadingSpinner(),
-      ),
+      loading: () => Center(child: LoadingSpinner()),
       error: (_, __) => SizedBox(),
     );
   }

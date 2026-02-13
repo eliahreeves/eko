@@ -38,7 +38,8 @@ class _ErrorMessage extends StatelessWidget {
             child: TextButton(
               onPressed: () => context.go('/feed'),
               style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
               child: Text(
                 AppLocalizations.of(context)!.exit,
                 style: TextStyle(
@@ -69,8 +70,10 @@ SliverAppBar _appBar(BuildContext context, GroupModel group) {
       IconButton(
         color: Theme.of(context).colorScheme.onSurface,
         onPressed: () {
-          context.push('/groups/sub_group/${group.id}/edit_group',
-              extra: group);
+          context.push(
+            '/groups/sub_group/${group.id}/edit_group',
+            extra: group,
+          );
         },
         icon: const Icon(Icons.create),
       ),
@@ -87,18 +90,16 @@ SliverAppBar _appBar(BuildContext context, GroupModel group) {
           SizedBox(
             width: width * 0.13,
             height: width * 0.13,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Text(
-                group.icon,
-              ),
-            ),
+            child: FittedBox(fit: BoxFit.contain, child: Text(group.icon)),
           ),
         SizedBox(
-            width: width * 0.4,
-            child: Text(group.name,
-                style: TextStyle(fontSize: width * 0.06),
-                overflow: TextOverflow.ellipsis)),
+          width: width * 0.4,
+          child: Text(
+            group.name,
+            style: TextStyle(fontSize: width * 0.06),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     ),
     bottom: PreferredSize(
@@ -123,31 +124,31 @@ class SubGroupPage extends ConsumerWidget {
         width: 70,
         child: FloatingActionButton(
           onPressed: () {
-            context.goNamed('compose',
-                queryParameters: asyncGroup.hasValue
-                    ? {
-                        'id': asyncGroup.value?.id,
-                        'timestamp':
-                            DateTime.now().millisecondsSinceEpoch.toString()
-                      }
-                    : {});
+            context.goNamed(
+              'compose',
+              queryParameters: asyncGroup.hasValue
+                  ? {
+                      'id': asyncGroup.value?.id,
+                      'timestamp': DateTime.now().millisecondsSinceEpoch
+                          .toString(),
+                    }
+                  : {},
+            );
           },
           shape: const CircleBorder(),
           child: const Icon(Icons.add, size: 40),
         ),
       ),
       body: asyncGroup.when(
-        data: (group) => group.members
-                .contains(ref.watch(currentUserProvider).user.uid)
+        data: (group) =>
+            group.members.contains(ref.watch(currentUserProvider).user.uid)
             ? InfiniteScrolly<String, String>(
                 appBar: _appBar(context, group),
                 getter: (data) async {
                   return await getGroupPosts(data, ref, group.id);
                 },
                 widget: postCardBuilder,
-                initialLoadingWidget: PostLoader(
-                  length: 4,
-                ),
+                initialLoadingWidget: PostLoader(length: 4),
               )
             : _ErrorMessage(message: AppLocalizations.of(context)!.notInGroup),
         loading: () => Center(child: LoadingSpinner()),

@@ -17,7 +17,10 @@ class FloatingSearchBar extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return child;
   }
 
@@ -52,14 +55,16 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       isEnd = false;
     });
     if (debounce?.isActive ?? false) debounce!.cancel();
-    debounce =
-        Timer(const Duration(milliseconds: c.searchPageDebounce), () async {
-      final res = await SearchInterface.getter([], ref, controller.text);
-      setState(() {
-        data = res.$1;
-        isEnd = res.$2;
-      });
-    });
+    debounce = Timer(
+      const Duration(milliseconds: c.searchPageDebounce),
+      () async {
+        final res = await SearchInterface.getter([], ref, controller.text);
+        setState(() {
+          data = res.$1;
+          isEnd = res.$2;
+        });
+      },
+    );
   }
 
   @override
@@ -94,16 +99,17 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           list: data.map((item) => item.key).toList(),
           isEnd: isEnd,
           getter: () async {
-            final res =
-                await SearchInterface.getter(data, ref, controller.text);
+            final res = await SearchInterface.getter(
+              data,
+              ref,
+              controller.text,
+            );
             setState(() {
               data.addAll(res.$1);
               isEnd = res.$2;
             });
           },
-          initialLoadingWidget: UserLoader(
-            length: 12,
-          ),
+          initialLoadingWidget: UserLoader(length: 12),
           widget: userCardBuilder,
           header: UserSearchBar(controller: controller),
         ),

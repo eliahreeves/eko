@@ -55,10 +55,7 @@ class _AlwaysOrientedState extends State<AlwaysOriented> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       builder: (context, angle, child) {
-        return Transform.rotate(
-          angle: angle,
-          child: child,
-        );
+        return Transform.rotate(angle: angle, child: child);
       },
       child: widget.child,
     );

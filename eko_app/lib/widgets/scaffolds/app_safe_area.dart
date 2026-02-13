@@ -10,9 +10,7 @@ class AppSafeArea extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return DecoratedBox(
       decoration: BoxDecoration(color: ref.watch(colorThemeProvider).surface),
-      child: SafeArea(
-        child: child,
-      ),
+      child: SafeArea(child: child),
     );
   }
 }

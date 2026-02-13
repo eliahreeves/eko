@@ -23,11 +23,12 @@ import 'package:eko_app/widgets/auth/auth_divider.dart';
 
 void _showWeakPassword(BuildContext context) {
   showMyDialog(
-      AppLocalizations.of(context)!.weakPasswordTitle,
-      AppLocalizations.of(context)!.weakPasswordBody,
-      [AppLocalizations.of(context)!.tryAgain],
-      [context.pop],
-      context);
+    AppLocalizations.of(context)!.weakPasswordTitle,
+    AppLocalizations.of(context)!.weakPasswordBody,
+    [AppLocalizations.of(context)!.tryAgain],
+    [context.pop],
+    context,
+  );
 }
 
 class SignUp extends ConsumerStatefulWidget {
@@ -87,47 +88,51 @@ class _SignUpState extends ConsumerState<SignUp> {
         return true;
       case 'username-taken':
         showMyDialog(
-            l10n.usernameTakenTitle,
-            l10n.usernameTakenBody,
-            [l10n.goBack],
-            [
-              () {
-                context.pop();
-                usernameController.clear();
-                setState(() {
-                  index = 0;
-                });
-                usernameFocus.requestFocus();
-              }
-            ],
-            context);
+          l10n.usernameTakenTitle,
+          l10n.usernameTakenBody,
+          [l10n.goBack],
+          [
+            () {
+              context.pop();
+              usernameController.clear();
+              setState(() {
+                index = 0;
+              });
+              usernameFocus.requestFocus();
+            },
+          ],
+          context,
+        );
         break;
       case 'invalid-email':
-        showSnackBar(
-          text: l10n.invalidEmailBody,
-          context: context,
-        );
+        showSnackBar(text: l10n.invalidEmailBody, context: context);
         break;
       case 'weak-password':
         _showWeakPassword(context);
         break;
       case 'email-already-in-use':
         showMyDialog(
-            l10n.emailAlreadyInUseTitle,
-            l10n.emailAlreadyInUseBody,
-            [l10n.logIn, l10n.tryAgain],
-            [
-              () {
-                context.pop();
-                context.go('/');
-              },
-              context.pop
-            ],
-            context);
+          l10n.emailAlreadyInUseTitle,
+          l10n.emailAlreadyInUseBody,
+          [l10n.logIn, l10n.tryAgain],
+          [
+            () {
+              context.pop();
+              context.go('/');
+            },
+            context.pop,
+          ],
+          context,
+        );
         break;
       default:
-        showMyDialog(l10n.defaultErrorTittle, l10n.defaultErrorBody,
-            [l10n.tryAgain], [context.pop], context);
+        showMyDialog(
+          l10n.defaultErrorTittle,
+          l10n.defaultErrorBody,
+          [l10n.tryAgain],
+          [context.pop],
+          context,
+        );
         break;
     }
     return false;
@@ -137,13 +142,18 @@ class _SignUpState extends ConsumerState<SignUp> {
     //make sure this is true since user could be coming from settings
     ref.read(navBarProvider.notifier).enable();
     if (await isUsernameAvailable(usernameController.text.trim())) {
-      if (_handleError(await ref.read(authProvider.notifier).signUp(
-          email: emailController.text.trim(),
-          password: passwordController.text,
-          username: usernameController.text.trim(),
-          name: nameController.text,
-          birthday:
-              '${monthController.text}/${dayController.text}/${yearController.text}'))) {
+      if (_handleError(
+        await ref
+            .read(authProvider.notifier)
+            .signUp(
+              email: emailController.text.trim(),
+              password: passwordController.text,
+              username: usernameController.text.trim(),
+              name: nameController.text,
+              birthday:
+                  '${monthController.text}/${dayController.text}/${yearController.text}',
+            ),
+      )) {
         if (!mounted) return true;
         context.go('/feed');
         return true;
@@ -216,7 +226,7 @@ class _SignUpState extends ConsumerState<SignUp> {
 
 class GetInfo extends StatefulWidget {
   final TextEditingController nameController;
-//invalid
+  //invalid
   final FocusNode nameFocus;
   final TextEditingController usernameController;
   final FocusNode usernameFocus;
@@ -231,22 +241,23 @@ class GetInfo extends StatefulWidget {
   final FocusNode keyFocus;
   final void Function(int) setPage;
 
-  const GetInfo(
-      {super.key,
-      required this.setPage,
-      required this.nameFocus,
-      required this.emailController,
-      required this.emailFocus,
-      required this.nameController,
-      required this.usernameFocus,
-      required this.usernameController,
-      required this.monthFocus,
-      required this.dayFocus,
-      required this.yearFocus,
-      required this.monthController,
-      required this.dayController,
-      required this.keyFocus,
-      required this.yearController});
+  const GetInfo({
+    super.key,
+    required this.setPage,
+    required this.nameFocus,
+    required this.emailController,
+    required this.emailFocus,
+    required this.nameController,
+    required this.usernameFocus,
+    required this.usernameController,
+    required this.monthFocus,
+    required this.dayFocus,
+    required this.yearFocus,
+    required this.monthController,
+    required this.dayController,
+    required this.keyFocus,
+    required this.yearController,
+  });
 
   @override
   State<GetInfo> createState() => _GetInfoState();
@@ -273,7 +284,7 @@ class _GetInfoState extends State<GetInfo> {
     } else if (widget.yearFocus.hasFocus) {
       if (event.logicalKey.keyLabel == 'Backspace' &&
           widget.yearController.text.isEmpty) {
-//invalid
+        //invalid
         widget.dayFocus.requestFocus();
       }
     }
@@ -324,39 +335,44 @@ class _GetInfoState extends State<GetInfo> {
     final birthday = getDateTime();
     if (birthday != null) {
       if (birthday.compareTo(
-              DateTime.now().subtract(const Duration(days: 13 * 365))) >=
+            DateTime.now().subtract(const Duration(days: 13 * 365)),
+          ) >=
           0) {
         //too young
         showMyDialog(
-            AppLocalizations.of(context)!.tooYoungTitle,
-            AppLocalizations.of(context)!.tooYoungBody,
-            [AppLocalizations.of(context)!.ok],
-            [
-              () {
-                context.pop();
-              }
-            ],
-            context);
-        return;
-      }
-    } else {
-      showMyDialog(
-          AppLocalizations.of(context)!.invalidBirthdayTitle,
-          AppLocalizations.of(context)!.invalidBirthdayBody,
+          AppLocalizations.of(context)!.tooYoungTitle,
+          AppLocalizations.of(context)!.tooYoungBody,
           [AppLocalizations.of(context)!.ok],
           [
             () {
               context.pop();
-            }
+            },
           ],
-          context);
+          context,
+        );
+        return;
+      }
+    } else {
+      showMyDialog(
+        AppLocalizations.of(context)!.invalidBirthdayTitle,
+        AppLocalizations.of(context)!.invalidBirthdayBody,
+        [AppLocalizations.of(context)!.ok],
+        [
+          () {
+            context.pop();
+          },
+        ],
+        context,
+      );
       return;
     }
     if (widget.nameController.text == '') {
       widget.nameFocus.requestFocus();
     } else if (widget.nameController.text.length > c.maxNameChars) {
       showSnackBar(
-          text: AppLocalizations.of(context)!.tooManyChar, context: context);
+        text: AppLocalizations.of(context)!.tooManyChar,
+        context: context,
+      );
       widget.nameFocus.requestFocus();
     } else if (!usernameValid) {
       widget.usernameFocus.requestFocus();
@@ -374,8 +390,9 @@ class _GetInfoState extends State<GetInfo> {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding:
-          EdgeInsets.symmetric(horizontal: width * c.authPaddingHorizontal),
+      padding: EdgeInsets.symmetric(
+        horizontal: width * c.authPaddingHorizontal,
+      ),
       child: ListView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
@@ -386,15 +403,12 @@ class _GetInfoState extends State<GetInfo> {
               child: Text(
                 l10n.createAnAccount,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-          const AuthDivider(
-            indent: 20,
-            endIndent: 20,
-          ),
+          const AuthDivider(indent: 20, endIndent: 20),
           SizedBox(height: height * 0.02),
           CustomInputField(
             autofillHints: [AutofillHints.name],
@@ -429,7 +443,9 @@ class _GetInfoState extends State<GetInfo> {
           Text(
             l10n.birthday,
             style: const TextStyle(
-                fontSize: 18, decoration: TextDecoration.underline),
+              fontSize: 18,
+              decoration: TextDecoration.underline,
+            ),
           ),
           KeyboardListener(
             onKeyEvent: onKey,
@@ -472,7 +488,7 @@ class _GetInfoState extends State<GetInfo> {
                         focus: widget.dayFocus,
                         controller: widget.dayController,
                         inputType: TextInputType.number,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -512,28 +528,23 @@ class _GetInfoState extends State<GetInfo> {
                       },
                       icon: const Icon(CupertinoIcons.calendar),
                       iconSize: 35,
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
           Text(
             l10n.birthdayExplanation,
             style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           SizedBox(height: height * 0.03),
-          AuthButton.primary(
-            label: l10n.cont,
-            onPressed: _nextPage,
-          ),
+          AuthButton.primary(label: l10n.cont, onPressed: _nextPage),
           const SizedBox(height: c.authSectionSpacing),
-          const AuthDivider(
-            indent: 20,
-            endIndent: 20,
-          ),
+          const AuthDivider(indent: 20, endIndent: 20),
           const SizedBox(height: c.authElementSpacing),
           const GoogleSignInButton(),
         ],
@@ -549,14 +560,15 @@ class GetPassword extends StatefulWidget {
   final FocusNode passwordFocus;
   final FocusNode confirmPasswordFocus;
   final Future<bool> Function() signUp;
-  const GetPassword(
-      {super.key,
-      required this.setPage,
-      required this.passwordController,
-      required this.confirmPasswordController,
-      required this.passwordFocus,
-      required this.signUp,
-      required this.confirmPasswordFocus});
+  const GetPassword({
+    super.key,
+    required this.setPage,
+    required this.passwordController,
+    required this.confirmPasswordController,
+    required this.passwordFocus,
+    required this.signUp,
+    required this.confirmPasswordFocus,
+  });
 
   @override
   State<GetPassword> createState() => _GetPasswordState();
@@ -571,8 +583,9 @@ class _GetPasswordState extends State<GetPassword> {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding:
-          EdgeInsets.symmetric(horizontal: width * c.authPaddingHorizontal),
+      padding: EdgeInsets.symmetric(
+        horizontal: width * c.authPaddingHorizontal,
+      ),
       child: Center(
         child: ListView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -583,14 +596,11 @@ class _GetPasswordState extends State<GetPassword> {
               child: Text(
                 l10n.createAPassword,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            const AuthDivider(
-              indent: 20,
-              endIndent: 20,
-            ),
+            const AuthDivider(indent: 20, endIndent: 20),
             SizedBox(height: height * 0.03),
             CreatePassword(
               passwordController: widget.passwordController,
@@ -605,8 +615,10 @@ class _GetPasswordState extends State<GetPassword> {
               onPressed: isLoading
                   ? null
                   : () async {
-                      if (!isValidPassword(widget.passwordController.text,
-                          widget.confirmPasswordController.text)) {
+                      if (!isValidPassword(
+                        widget.passwordController.text,
+                        widget.confirmPasswordController.text,
+                      )) {
                         _showWeakPassword(context);
                         return;
                       }
@@ -630,7 +642,8 @@ class _GetPasswordState extends State<GetPassword> {
                   TextSpan(
                     text: l10n.termsAndConditions,
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.surfaceTint),
+                      color: Theme.of(context).colorScheme.surfaceTint,
+                    ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
                         var url = Uri.parse(c.termsUrl);
@@ -641,10 +654,7 @@ class _GetPasswordState extends State<GetPassword> {
               ),
             ),
             const SizedBox(height: c.authSectionSpacing),
-            const AuthDivider(
-              indent: 20,
-              endIndent: 20,
-            ),
+            const AuthDivider(indent: 20, endIndent: 20),
             const SizedBox(height: c.authElementSpacing),
             const GoogleSignInButton(),
           ],

@@ -21,24 +21,21 @@ class WelcomePage extends StatelessWidget {
         height: height,
         width: MediaQuery.sizeOf(context).width,
         decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('images/fog1.gif'), fit: BoxFit.cover)),
+          image: DecorationImage(
+            image: AssetImage('images/fog1.gif'),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
-              height: height * .2,
-            ),
+            SizedBox(height: height * .2),
             SizedBox(
               height: height * .25,
               width: width * 0.7,
-              child: Eko(
-                useDefault: true,
-              ),
+              child: Eko(useDefault: true),
             ),
-            SizedBox(
-              height: height * .28,
-            ),
+            SizedBox(height: height * .28),
             SizedBox(
               width: width * 0.9,
               height: c.authButtonHeight,

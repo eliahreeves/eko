@@ -16,11 +16,15 @@ class ViewLikesPage extends ConsumerWidget {
   const ViewLikesPage({super.key, required this.postId, this.dislikes = false});
 
   Future<(List<MapEntry<String, Never?>>, bool)> getter(
-      List<MapEntry<String, Never?>> list, WidgetRef ref) async {
+    List<MapEntry<String, Never?>> list,
+    WidgetRef ref,
+  ) async {
     final baseQuery = FirebaseFirestore.instance
         .collection('users')
-        .where('profileData.${dislikes ? 'dislikedPosts' : 'likedPosts'}',
-            arrayContains: postId)
+        .where(
+          'profileData.${dislikes ? 'dislikedPosts' : 'likedPosts'}',
+          arrayContains: postId,
+        )
         .limit(c.usersOnSearch);
     final query = list.isEmpty ? baseQuery : baseQuery.startAfter([list.last]);
     final snapshot = await query.get();
@@ -29,7 +33,7 @@ class ViewLikesPage extends ConsumerWidget {
     ref.read(userPoolProvider).putAll(userList);
     return ((
       userList.map((item) => MapEntry(item.uid, null)).toList(),
-      userList.length < c.usersOnSearch
+      userList.length < c.usersOnSearch,
     ));
   }
 
@@ -42,8 +46,10 @@ class ViewLikesPage extends ConsumerWidget {
             : Text(AppLocalizations.of(context)!.viewLikes),
         automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => context.pop(),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -53,9 +59,7 @@ class ViewLikesPage extends ConsumerWidget {
           return await getter(data, ref);
         },
         widget: userCardBuilder,
-        initialLoadingWidget: UserLoader(
-          length: 12,
-        ),
+        initialLoadingWidget: UserLoader(length: 12),
       ),
     );
   }

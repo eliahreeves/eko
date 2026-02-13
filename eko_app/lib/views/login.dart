@@ -43,16 +43,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       case 'success':
         return 0;
       case 'invalid-email':
-        showSnackBar(
-          text: l10n.invalidEmailBody,
-          context: context,
-        );
+        showSnackBar(text: l10n.invalidEmailBody, context: context);
         return 1;
       default:
-        showSnackBar(
-          text: l10n.loginFailedBody,
-          context: context,
-        );
+        showSnackBar(text: l10n.loginFailedBody, context: context);
         return 1;
     }
   }
@@ -66,9 +60,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         isLoading = true;
       });
-      if (handleError(await ref.read(authProvider.notifier).signIn(
-              email: emailController.text.trim(),
-              password: passwordController.text)) ==
+      if (handleError(
+            await ref
+                .read(authProvider.notifier)
+                .signIn(
+                  email: emailController.text.trim(),
+                  password: passwordController.text,
+                ),
+          ) ==
           0) {}
       setState(() {
         isLoading = false;
@@ -81,63 +80,66 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       context: context,
       builder: (BuildContext context) {
         bool isSending = false;
-        return StatefulBuilder(builder: (context, setDialogState) {
-          final l10n = AppLocalizations.of(context)!;
-          return AlertDialog(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            title: Text(l10n.resetPassword),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CustomInputField(
-                    autofillHints: [AutofillHints.email],
-                    label: l10n.email,
-                    controller: emailController,
-                    inputType: TextInputType.emailAddress,
-                  ),
-                ],
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final l10n = AppLocalizations.of(context)!;
+            return AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              title: Text(l10n.resetPassword),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomInputField(
+                      autofillHints: [AutofillHints.email],
+                      label: l10n.email,
+                      controller: emailController,
+                      inputType: TextInputType.emailAddress,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text(l10n.cancel),
-                onPressed: () {
-                  context.pop();
-                },
-              ),
-              TextButton(
-                onPressed: isSending
-                    ? null
-                    : () async {
-                        setDialogState(() {
-                          isSending = true;
-                        });
-                        // Vague approach: always show success message unless it's a structural error
-                        // and don't pop until done
-                        await user.forgotPassword(
+              actions: <Widget>[
+                TextButton(
+                  child: Text(l10n.cancel),
+                  onPressed: () {
+                    context.pop();
+                  },
+                ),
+                TextButton(
+                  onPressed: isSending
+                      ? null
+                      : () async {
+                          setDialogState(() {
+                            isSending = true;
+                          });
+                          // Vague approach: always show success message unless it's a structural error
+                          // and don't pop until done
+                          await user.forgotPassword(
                             countryCode: countryCode,
-                            email: emailController.text.trim());
-
-                        if (context.mounted) {
-                          context.pop();
-                          showSnackBar(
-                            text: l10n.forgotPasswordBody,
-                            context: context,
+                            email: emailController.text.trim(),
                           );
-                        }
-                      },
-                child: isSending
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.sendResetLink),
-              ),
-            ],
-          );
-        });
+
+                          if (context.mounted) {
+                            context.pop();
+                            showSnackBar(
+                              text: l10n.forgotPasswordBody,
+                              context: context,
+                            );
+                          }
+                        },
+                  child: isSending
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l10n.sendResetLink),
+                ),
+              ],
+            );
+          },
+        );
       },
     );
   }
@@ -160,7 +162,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: EdgeInsets.symmetric(
-                  horizontal: width * c.authPaddingHorizontal),
+                horizontal: width * c.authPaddingHorizontal,
+              ),
               child: Column(
                 children: [
                   SizedBox(height: height * .04),
@@ -206,8 +209,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ? null
                           : () => forgotPasswordPressed(l10n.localeName),
                       style: TextButton.styleFrom(
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onSurface,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
                       ),
                       child: Text(
                         l10n.forgotPassword,
@@ -219,10 +223,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: c.authSectionSpacing),
-                  const AuthDivider(
-                    indent: 20,
-                    endIndent: 20,
-                  ),
+                  const AuthDivider(indent: 20, endIndent: 20),
                   const SizedBox(height: c.authElementSpacing),
                   const GoogleSignInButton(),
                   SizedBox(height: height * 0.04),

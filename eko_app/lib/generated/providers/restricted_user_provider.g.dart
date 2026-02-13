@@ -12,14 +12,14 @@ String _$restrictedUserHash() => r'e7d7e5f8a39b24b7dc80fcc29039bef9c67df161';
 @ProviderFor(RestrictedUser)
 final restrictedUserProvider =
     AsyncNotifierProvider<RestrictedUser, List<String>>.internal(
-  RestrictedUser.new,
-  name: r'restrictedUserProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$restrictedUserHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      RestrictedUser.new,
+      name: r'restrictedUserProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$restrictedUserHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 typedef _$RestrictedUser = AsyncNotifier<List<String>>;
 // ignore_for_file: type=lint

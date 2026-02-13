@@ -79,7 +79,7 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
 
     final bool isMyOwnProfile =
         (widget.uid != null && widget.uid == currentUserId) ||
-            (widget.uid == null && widget.username == currentUsername);
+        (widget.uid == null && widget.username == currentUsername);
 
     // Helper function to build the leading widget (back button)
     Widget? buildLeadingWidget(BuildContext context, bool isMyProfile) {
@@ -163,7 +163,7 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
         AppLocalizations.of(context)!.blockBody,
         [
           AppLocalizations.of(context)!.cancel,
-          AppLocalizations.of(context)!.block
+          AppLocalizations.of(context)!.block,
         ],
         [popDialog, blockUser],
         context,
@@ -179,157 +179,152 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
     }
 
     return PopScope(
-        canPop: true,
-        child: Scaffold(
-          appBar: userAsync.when(
-            data: (profileUser) => (isBlockedByMe || blocksMe)
-                ? AppBar(
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    surfaceTintColor: Colors.transparent,
-                    automaticallyImplyLeading: false,
-                    leading: buildLeadingWidget(context, isCurrentUser),
-                  )
-                : null,
-            loading: () => AppBar(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              surfaceTintColor: Colors.transparent,
-              automaticallyImplyLeading: false,
-              leading: buildLeadingWidget(context, isCurrentUser),
-            ),
-            error: (_, __) => AppBar(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              surfaceTintColor: Colors.transparent,
-              automaticallyImplyLeading: false,
-              leading: buildLeadingWidget(context, isCurrentUser),
-            ),
-          ),
-          body: userAsync.when(
-            data: (profileUser) {
-              if (isBlockedByMe || blocksMe) {
-                return Center(
-                  child: SizedBox(
-                    width: width * 0.7,
-                    child: Text(
-                        AppLocalizations.of(context)!.blockedByUserMessage),
-                  ),
-                );
-              }
-              return InfiniteScrolly<String, String>(
-                getter: (data) async {
-                  if (isCurrentUser) {
-                    return await profilePageGetter(data, ref);
-                  } else {
-                    return await otherProfilePageGetter(data, ref, uid);
-                  }
-                },
-                widget: otherProfilePostCardBuilder,
-                onRefresh: onRefresh,
-                initialLoadingWidget: PostLoader(
-                  length: 3,
-                ),
-                header: _Header(
-                  user: profileUser,
-                  isCurrentUser: isCurrentUser,
-                ),
-                appBar: SliverAppBar(
-                  floating: true,
-                  pinned: false,
-                  scrolledUnderElevation: 0.0,
-                  centerTitle: false,
-                  leadingWidth:
-                      null, //ref.read(authProvider).uid == null ? 100 : null,
-                  leading: isCurrentUser
-                      ? null
-                      : IconButton(
-                          icon: Icon(
-                            Icons.arrow_back_ios_rounded,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            size: 20,
-                          ),
-                          onPressed: () => context.pop('popped')),
+      canPop: true,
+      child: Scaffold(
+        appBar: userAsync.when(
+          data: (profileUser) => (isBlockedByMe || blocksMe)
+              ? AppBar(
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '@${profileUser.username}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ),
-                      if (profileUser.isVerified)
-                        VerificationBadge(
-                          uid: uid,
-                        )
-                    ],
-                  ),
-                  actions: [
-                    if (isCurrentUser)
-                      InkWell(
-                        onTap: () {
-                          //ref.read(navBarProvider.notifier).disable();
-                          context
-                              .push(
-                                  '/users/${profileUser.username}/user_settings')
-                              .then((_) =>
-                                  {} /*ref.read(navBarProvider.notifier).enable()*/);
-                        },
-                        child: Icon(
-                          Icons.settings_outlined,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          size: 25,
-                          weight: 10,
-                        ),
-                      )
-                    else
-                      Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16),
-                        child: PopupMenuButton<void Function()>(
-                          itemBuilder: (context) {
-                            return [
-                              PopupMenuItem(
-                                height: 25,
-                                value: () => showBlockDialog(),
-                                child:
-                                    Text(AppLocalizations.of(context)!.block),
-                              )
-                            ];
-                          },
-                          onSelected: (fn) => fn(),
-                          color: Theme.of(context).colorScheme.outlineVariant,
-                          child: Icon(
-                            Icons.more_vert,
-                            size: 20,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      )
-                  ],
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(3),
-                    child: Divider(
-                      color: Theme.of(context).colorScheme.outline,
-                      height: c.dividerWidth,
-                    ),
+                  surfaceTintColor: Colors.transparent,
+                  automaticallyImplyLeading: false,
+                  leading: buildLeadingWidget(context, isCurrentUser),
+                )
+              : null,
+          loading: () => AppBar(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            surfaceTintColor: Colors.transparent,
+            automaticallyImplyLeading: false,
+            leading: buildLeadingWidget(context, isCurrentUser),
+          ),
+          error: (_, __) => AppBar(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            surfaceTintColor: Colors.transparent,
+            automaticallyImplyLeading: false,
+            leading: buildLeadingWidget(context, isCurrentUser),
+          ),
+        ),
+        body: userAsync.when(
+          data: (profileUser) {
+            if (isBlockedByMe || blocksMe) {
+              return Center(
+                child: SizedBox(
+                  width: width * 0.7,
+                  child: Text(
+                    AppLocalizations.of(context)!.blockedByUserMessage,
                   ),
                 ),
               );
-            },
-            // getter: (time) =>
-            //     locator<PostsHandling>().getSubProfilePosts(time, uid),
-            loading: () => const Center(child: LoadingSpinner()),
-            error: (error, stack) => Center(
-              child: Text('Error loading user profile: $error'),
-            ),
-          ),
-        ));
+            }
+            return InfiniteScrolly<String, String>(
+              getter: (data) async {
+                if (isCurrentUser) {
+                  return await profilePageGetter(data, ref);
+                } else {
+                  return await otherProfilePageGetter(data, ref, uid);
+                }
+              },
+              widget: otherProfilePostCardBuilder,
+              onRefresh: onRefresh,
+              initialLoadingWidget: PostLoader(length: 3),
+              header: _Header(user: profileUser, isCurrentUser: isCurrentUser),
+              appBar: SliverAppBar(
+                floating: true,
+                pinned: false,
+                scrolledUnderElevation: 0.0,
+                centerTitle: false,
+                leadingWidth:
+                    null, //ref.read(authProvider).uid == null ? 100 : null,
+                leading: isCurrentUser
+                    ? null
+                    : IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          size: 20,
+                        ),
+                        onPressed: () => context.pop('popped'),
+                      ),
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        '@${profileUser.username}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    if (profileUser.isVerified) VerificationBadge(uid: uid),
+                  ],
+                ),
+                actions: [
+                  if (isCurrentUser)
+                    InkWell(
+                      onTap: () {
+                        //ref.read(navBarProvider.notifier).disable();
+                        context
+                            .push(
+                              '/users/${profileUser.username}/user_settings',
+                            )
+                            .then(
+                              (_) =>
+                                  {} /*ref.read(navBarProvider.notifier).enable()*/,
+                            );
+                      },
+                      child: Icon(
+                        Icons.settings_outlined,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        size: 25,
+                        weight: 10,
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: EdgeInsets.only(left: 16, right: 16),
+                      child: PopupMenuButton<void Function()>(
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                              height: 25,
+                              value: () => showBlockDialog(),
+                              child: Text(AppLocalizations.of(context)!.block),
+                            ),
+                          ];
+                        },
+                        onSelected: (fn) => fn(),
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                        child: Icon(
+                          Icons.more_vert,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                ],
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(3),
+                  child: Divider(
+                    color: Theme.of(context).colorScheme.outline,
+                    height: c.dividerWidth,
+                  ),
+                ),
+              ),
+            );
+          },
+          // getter: (time) =>
+          //     locator<PostsHandling>().getSubProfilePosts(time, uid),
+          loading: () => const Center(child: LoadingSpinner()),
+          error: (error, stack) =>
+              Center(child: Text('Error loading user profile: $error')),
+        ),
+      ),
+    );
   }
 }
 
@@ -339,8 +334,11 @@ class _Header extends ConsumerWidget {
   const _Header({required this.user, required this.isCurrentUser});
 
   Future<void> _onFollowPressed(WidgetRef ref) async {
-    final isFollowing =
-        ref.watch(currentUserProvider).user.following.contains(user.uid);
+    final isFollowing = ref
+        .watch(currentUserProvider)
+        .user
+        .following
+        .contains(user.uid);
 
     if (isFollowing) {
       await ref.read(currentUserProvider.notifier).removeFollower(user.uid);
@@ -374,18 +372,22 @@ class _Header extends ConsumerWidget {
                           //ref.read(navBarProvider.notifier).disable();
                           context
                               .push('/users/${user.username}/edit_profile')
-                              .then((_) =>
-                                  {} /*ref.read(navBarProvider.notifier).enable()*/);
+                              .then(
+                                (_) =>
+                                    {} /*ref.read(navBarProvider.notifier).enable()*/,
+                              );
                         },
                         child: Container(
                           width: width * 0.45,
                           height: width * 0.09,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
-                            color:
-                                Theme.of(context).colorScheme.surfaceContainer,
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer,
                           ),
                           child: Text(
                             AppLocalizations.of(context)!.editProfile,
@@ -402,16 +404,19 @@ class _Header extends ConsumerWidget {
                         //ref.read(navBarProvider.notifier).disable();
                         context
                             .push('/users/${user.username}/share_profile')
-                            .then((_) =>
-                                {} /*ref.read(navBarProvider.notifier).enable()*/);
+                            .then(
+                              (_) =>
+                                  {} /*ref.read(navBarProvider.notifier).enable()*/,
+                            );
                       },
                       child: Container(
                         width: width * 0.45,
                         height: width * 0.09,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
                           color: Theme.of(context).colorScheme.surfaceContainer,
                         ),
                         child: Text(
@@ -433,8 +438,9 @@ class _Header extends ConsumerWidget {
                       height: width * 0.09,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
                         color: isFollowing
                             ? Theme.of(context).colorScheme.surfaceContainer
                             : Theme.of(context).colorScheme.primaryContainer,

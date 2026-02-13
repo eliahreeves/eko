@@ -12,22 +12,19 @@ const List<IconData> _passiveIconList = [
   Icons.group_outlined,
   Icons.add,
   Icons.search,
-  Icons.person_outline
+  Icons.person_outline,
 ];
 const List<IconData> _activeIconList = [
   Icons.home,
   Icons.group,
   Icons.add,
   Icons.search,
-  Icons.person
+  Icons.person,
 ];
 
 class ScaffoldWithNestedNavigation extends StatelessWidget {
-  const ScaffoldWithNestedNavigation({
-    Key? key,
-    required this.navigationShell,
-  }) : super(
-            key: key ?? const ValueKey<String>('ScaffoldWithNestedNavigation'));
+  const ScaffoldWithNestedNavigation({Key? key, required this.navigationShell})
+    : super(key: key ?? const ValueKey<String>('ScaffoldWithNestedNavigation'));
   final StatefulNavigationShell navigationShell;
 
   void goBranch(int index) {
@@ -44,21 +41,29 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
       builder: (context, constraints) {
         if (constraints.maxHeight > constraints.maxWidth) {
           return ScaffoldWithNavigationBar(
-            body: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              SizedBox(
+            body: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
                   width: (width < c.indealAppWidth) ? width : c.indealAppWidth,
-                  child: navigationShell)
-            ]),
+                  child: navigationShell,
+                ),
+              ],
+            ),
             selectedIndex: navigationShell.currentIndex,
             onDestinationSelected: goBranch,
           );
         } else {
           return ScaffoldWithNavigationRail(
-            body: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              SizedBox(
+            body: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
                   width: (width < c.indealAppWidth) ? width : c.indealAppWidth,
-                  child: navigationShell)
-            ]),
+                  child: navigationShell,
+                ),
+              ],
+            ),
             selectedIndex: navigationShell.currentIndex,
             onDestinationSelected: goBranch,
           );
@@ -111,49 +116,45 @@ class ScaffoldWithNavigationBar extends ConsumerWidget {
                   items: [
                     for (int i = 0; i < _passiveIconList.length; i++)
                       BottomNavigationBarItem(
-                          icon: Stack(
-                            children: [
-                              Icon(
-                                _passiveIconList[i],
-                                size: c.navBarIconSize,
-                              ),
-                              if (i == 1 && user.unreadGroup)
-                                Positioned(
-                                  right: 1.5,
-                                  child: Container(
-                                    width: 9,
-                                    height: 9,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error),
+                        icon: Stack(
+                          children: [
+                            Icon(_passiveIconList[i], size: c.navBarIconSize),
+                            if (i == 1 && user.unreadGroup)
+                              Positioned(
+                                right: 1.5,
+                                child: Container(
+                                  width: 9,
+                                  height: 9,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Theme.of(context).colorScheme.error,
                                   ),
-                                )
-                            ],
-                          ),
-                          activeIcon: Stack(
-                            children: [
-                              Icon(
-                                _activeIconList[i],
-                                size: c.navBarIconSize + c.navBarIconSizeAdder,
+                                ),
                               ),
-                              if (i == 1 && user.unreadGroup)
-                                Positioned(
-                                  right: 1.5,
-                                  child: Container(
-                                    width: 9,
-                                    height: 9,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error),
+                          ],
+                        ),
+                        activeIcon: Stack(
+                          children: [
+                            Icon(
+                              _activeIconList[i],
+                              size: c.navBarIconSize + c.navBarIconSizeAdder,
+                            ),
+                            if (i == 1 && user.unreadGroup)
+                              Positioned(
+                                right: 1.5,
+                                child: Container(
+                                  width: 9,
+                                  height: 9,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Theme.of(context).colorScheme.error,
                                   ),
-                                )
-                            ],
-                          ),
-                          label: ''),
+                                ),
+                              ),
+                          ],
+                        ),
+                        label: '',
+                      ),
                   ],
                   onTap: (index) => onDestinationSelected(index),
                 ),
@@ -197,10 +198,7 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
                       label: const Text(''),
                       icon: Stack(
                         children: [
-                          Icon(
-                            _passiveIconList[i],
-                            size: c.navBarIconSize,
-                          ),
+                          Icon(_passiveIconList[i], size: c.navBarIconSize),
                           if (i == 1 && user.unreadGroup)
                             Positioned(
                               right: 1.5,
@@ -208,10 +206,11 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
                                 width: 9,
                                 height: 9,
                                 decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Theme.of(context).colorScheme.error),
+                                  shape: BoxShape.circle,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                               ),
-                            )
+                            ),
                         ],
                       ),
                       selectedIcon: Stack(
@@ -227,10 +226,11 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
                                 width: 9,
                                 height: 9,
                                 decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Theme.of(context).colorScheme.error),
+                                  shape: BoxShape.circle,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                               ),
-                            )
+                            ),
                         ],
                       ),
                     ),
@@ -240,9 +240,7 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
               SizedBox(width: 80),
             //const VerticalDivider(thickness: 1, width: 1),
             // Main content on the right (end)
-            Expanded(
-              child: body,
-            ),
+            Expanded(child: body),
           ],
         ),
       ),

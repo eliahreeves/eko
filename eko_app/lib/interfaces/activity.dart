@@ -3,10 +3,9 @@ import 'package:eko_app/types/activity.dart';
 
 Future<void> setNewActivityBool(bool value, String uid) async {
   final firestore = FirebaseFirestore.instance;
-  await firestore
-      .collection('users')
-      .doc(uid)
-      .set({'newActivity': value}, SetOptions(merge: true));
+  await firestore.collection('users').doc(uid).set({
+    'newActivity': value,
+  }, SetOptions(merge: true));
 }
 
 Future<void> uploadActivity(ActivityModel activity, String user) async {
@@ -17,6 +16,6 @@ Future<void> uploadActivity(ActivityModel activity, String user) async {
         .doc(user)
         .collection('newActivity')
         .add(activity.toJson()),
-    setNewActivityBool(true, user)
+    setNewActivityBool(true, user),
   ]);
 }

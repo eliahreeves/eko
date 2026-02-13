@@ -51,8 +51,9 @@ List<String> parseTextToTags(String? text) {
 Future<String> uploadPost(PostModel post, WidgetRef ref) async {
   final firestore = FirebaseFirestore.instance;
   // update time (the server should probably do this itself)
-  final fixedPost =
-      post.copyWith(createdAt: DateTime.now().toUtc().toIso8601String());
+  final fixedPost = post.copyWith(
+    createdAt: DateTime.now().toUtc().toIso8601String(),
+  );
   final json = fixedPost.toJson();
 
   //don't put these in firebase
@@ -112,12 +113,13 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
     }
 
     final activity = ActivityModel(
-        id: '',
-        createdAt: post.createdAt,
-        type: 'tag',
-        content: content,
-        path: postId,
-        sourceUid: post.uid);
+      id: '',
+      createdAt: post.createdAt,
+      type: 'tag',
+      content: content,
+      path: postId,
+      sourceUid: post.uid,
+    );
     activityFutures.add(uploadActivity(activity, user));
   }
 
@@ -143,12 +145,13 @@ Future<String> uploadComment(CommentModel comment, WidgetRef ref) async {
 
   if (ref.watch(currentUserProvider).user.uid != post.uid) {
     final activity = ActivityModel(
-        id: '',
-        createdAt: comment.createdAt,
-        type: 'comment',
-        content: json['body'] ?? 'Click to see gif',
-        path: comment.postId,
-        sourceUid: comment.uid);
+      id: '',
+      createdAt: comment.createdAt,
+      type: 'comment',
+      content: json['body'] ?? 'Click to see gif',
+      path: comment.postId,
+      sourceUid: comment.uid,
+    );
 
     uploadActivity(activity, post.uid);
   }
@@ -178,12 +181,13 @@ Future<String> uploadComment(CommentModel comment, WidgetRef ref) async {
     sentActivites.add(user);
 
     final activity = ActivityModel(
-        id: '',
-        createdAt: comment.createdAt,
-        type: 'tag',
-        content: content,
-        path: comment.postId,
-        sourceUid: comment.uid);
+      id: '',
+      createdAt: comment.createdAt,
+      type: 'tag',
+      content: content,
+      path: comment.postId,
+      sourceUid: comment.uid,
+    );
     activityFutures.add(uploadActivity(activity, user));
   }
 

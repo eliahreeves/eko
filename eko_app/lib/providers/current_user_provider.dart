@@ -28,29 +28,33 @@ class CurrentUser extends _$CurrentUser {
     return CurrentUserModel.loading();
   }
 
-  Future<void> editProfile(
-      {String? name,
-      String? bio,
-      String? username,
-      File? profilePicture,
-      String? verificationUrl}) async {
+  Future<void> editProfile({
+    String? name,
+    String? bio,
+    String? username,
+    File? profilePicture,
+    String? verificationUrl,
+  }) async {
     final prev = state.user;
     state = state.copyWith(
-        user: state.user.copyWith(
-      name: name ?? prev.name,
-      bio: bio ?? prev.bio,
-      verificationUrl: verificationUrl ?? prev.verificationUrl,
-      isVerified:
-          verificationUrl == prev.verificationUrl ? prev.isVerified : false,
-    ));
+      user: state.user.copyWith(
+        name: name ?? prev.name,
+        bio: bio ?? prev.bio,
+        verificationUrl: verificationUrl ?? prev.verificationUrl,
+        isVerified: verificationUrl == prev.verificationUrl
+            ? prev.isVerified
+            : false,
+      ),
+    );
 
     try {
       String? pic;
       if (profilePicture != null) {
         pic = await _uploadProfilePicture(profilePicture);
         if (pic != null) {
-          state =
-              state.copyWith(user: state.user.copyWith(profilePicture: pic));
+          state = state.copyWith(
+            user: state.user.copyWith(profilePicture: pic),
+          );
         }
       }
       String? validUsername;
@@ -85,8 +89,9 @@ class CurrentUser extends _$CurrentUser {
           .doc(state.user.uid)
           .update(json);
       if (validUsername != null) {
-        state =
-            state.copyWith(user: state.user.copyWith(username: validUsername));
+        state = state.copyWith(
+          user: state.user.copyWith(username: validUsername),
+        );
       }
     } catch (_) {
       state = state.copyWith(user: prev);
@@ -110,9 +115,9 @@ class CurrentUser extends _$CurrentUser {
           .ref()
           .child('profile_pictures/$uid/profile.jpg')
           .putFile(img);
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('profile_pictures/$uid/profile.jpg');
+      final ref = FirebaseStorage.instance.ref().child(
+        'profile_pictures/$uid/profile.jpg',
+      );
 
       final pic = await ref.getDownloadURL();
       return pic;
@@ -168,10 +173,9 @@ class CurrentUser extends _$CurrentUser {
   Future<void> setUnreadGroup(bool toggle) async {
     final firestore = FirebaseFirestore.instance;
     final uid = ref.read(authProvider).uid!;
-    await firestore
-        .collection('users')
-        .doc(uid)
-        .update({'unreadGroup': toggle});
+    await firestore.collection('users').doc(uid).update({
+      'unreadGroup': toggle,
+    });
     state = state.copyWith(unreadGroup: toggle);
   }
 
@@ -194,7 +198,7 @@ class CurrentUser extends _$CurrentUser {
     try {
       final firestore = FirebaseFirestore.instance;
       await firestore.collection('users').doc(state.user.uid).update({
-        'blockedUsers': FieldValue.arrayUnion([uid])
+        'blockedUsers': FieldValue.arrayUnion([uid]),
       });
     } catch (e) {
       final blocked = <String>{...state.blockedUsers};
@@ -211,11 +215,12 @@ class CurrentUser extends _$CurrentUser {
     try {
       final firestore = FirebaseFirestore.instance;
       await firestore.collection('users').doc(state.user.uid).update({
-        'blockedUsers': FieldValue.arrayRemove([uid])
+        'blockedUsers': FieldValue.arrayRemove([uid]),
       });
     } catch (e) {
-      state =
-          state.copyWith(blockedUsers: <String>{...state.blockedUsers, uid});
+      state = state.copyWith(
+        blockedUsers: <String>{...state.blockedUsers, uid},
+      );
     }
   }
 
@@ -224,8 +229,10 @@ class CurrentUser extends _$CurrentUser {
     final userRef = FirebaseFirestore.instance.collection('users');
 
     try {
-      final mainDoc =
-          await userRef.doc(uid).snapshots().firstWhere((doc) => doc.exists);
+      final mainDoc = await userRef
+          .doc(uid)
+          .snapshots()
+          .firstWhere((doc) => doc.exists);
 
       final blockedBy = await _getPeopleWhoBlockedMe();
       final mainData = mainDoc.data();
@@ -243,7 +250,8 @@ class CurrentUser extends _$CurrentUser {
       // Update state of current user and other user
       final updatedFollowing = [...state.user.following, otherUid];
       state = state.copyWith(
-          user: state.user.copyWith(following: updatedFollowing));
+        user: state.user.copyWith(following: updatedFollowing),
+      );
       final userState = ref.read(userProvider(otherUid));
       userState.whenData((otherUser) {
         if (!otherUser.followers.contains(state.user.uid)) {
@@ -259,30 +267,35 @@ class CurrentUser extends _$CurrentUser {
       final uid = state.user.uid;
       await Future.wait([
         firestore.collection('users').doc(uid).update({
-          'profileData.following': FieldValue.arrayUnion([otherUid])
+          'profileData.following': FieldValue.arrayUnion([otherUid]),
         }),
         firestore.collection('users').doc(otherUid).update({
-          'profileData.followers': FieldValue.arrayUnion([uid])
+          'profileData.followers': FieldValue.arrayUnion([uid]),
         }),
         uploadActivity(
-            ActivityModel(
-                createdAt: DateTime.now().toUtc().toIso8601String(),
-                id: '',
-                content: 'Someone followed you',
-                type: 'follow',
-                path: uid),
-            uid),
+          ActivityModel(
+            createdAt: DateTime.now().toUtc().toIso8601String(),
+            id: '',
+            content: 'Someone followed you',
+            type: 'follow',
+            path: uid,
+          ),
+          uid,
+        ),
       ]);
     } catch (e) {
       // Revert state updates on error
-      final revertedFollowing =
-          state.user.following.where((id) => id != otherUid).toList();
+      final revertedFollowing = state.user.following
+          .where((id) => id != otherUid)
+          .toList();
       state = state.copyWith(
-          user: state.user.copyWith(following: revertedFollowing));
+        user: state.user.copyWith(following: revertedFollowing),
+      );
       final userState = ref.read(userProvider(otherUid));
       userState.whenData((otherUser) {
-        final revertedFollowers =
-            otherUser.followers.where((id) => id != state.user.uid).toList();
+        final revertedFollowers = otherUser.followers
+            .where((id) => id != state.user.uid)
+            .toList();
         ref
             .read(userProvider(otherUid).notifier)
             .updateFollowers(revertedFollowers);
@@ -293,14 +306,17 @@ class CurrentUser extends _$CurrentUser {
   Future<void> removeFollower(String otherUid) async {
     try {
       // Update state of current user and other user
-      final updatedFollowing =
-          state.user.following.where((id) => id != otherUid).toList();
+      final updatedFollowing = state.user.following
+          .where((id) => id != otherUid)
+          .toList();
       state = state.copyWith(
-          user: state.user.copyWith(following: updatedFollowing));
+        user: state.user.copyWith(following: updatedFollowing),
+      );
       final userState = ref.read(userProvider(otherUid));
       userState.whenData((otherUser) {
-        final updatedFollowers =
-            otherUser.followers.where((id) => id != state.user.uid).toList();
+        final updatedFollowers = otherUser.followers
+            .where((id) => id != state.user.uid)
+            .toList();
         ref
             .read(userProvider(otherUid).notifier)
             .updateFollowers(updatedFollowers);
@@ -311,17 +327,18 @@ class CurrentUser extends _$CurrentUser {
       final uid = ref.read(authProvider).uid!;
       await Future.wait([
         firestore.collection('users').doc(uid).update({
-          'profileData.following': FieldValue.arrayRemove([otherUid])
+          'profileData.following': FieldValue.arrayRemove([otherUid]),
         }),
         firestore.collection('users').doc(otherUid).update({
-          'profileData.followers': FieldValue.arrayRemove([uid])
-        })
+          'profileData.followers': FieldValue.arrayRemove([uid]),
+        }),
       ]);
     } catch (e) {
       // Revert state updates on error
       final revertedFollowing = [...state.user.following, otherUid];
       state = state.copyWith(
-          user: state.user.copyWith(following: revertedFollowing));
+        user: state.user.copyWith(following: revertedFollowing),
+      );
       final userState = ref.read(userProvider(otherUid));
       userState.whenData((otherUser) {
         if (!otherUser.followers.contains(state.user.uid)) {

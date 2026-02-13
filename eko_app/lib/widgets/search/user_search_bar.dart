@@ -19,11 +19,12 @@ class UserSearchBar extends StatelessWidget {
           prefixIcon: Padding(
             padding: EdgeInsets.all(width * 0.035),
             child: Image.asset(
-                (Theme.of(context).brightness == Brightness.dark)
-                    ? 'images/algolia_logo_white.png'
-                    : 'images/algolia_logo_blue.png',
-                width: width * 0.05,
-                height: width * 0.05),
+              (Theme.of(context).brightness == Brightness.dark)
+                  ? 'images/algolia_logo_white.png'
+                  : 'images/algolia_logo_blue.png',
+              width: width * 0.05,
+              height: width * 0.05,
+            ),
           ),
           hintText: AppLocalizations.of(context)!.search,
           filled: true,

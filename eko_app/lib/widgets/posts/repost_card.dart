@@ -17,151 +17,159 @@ class RepostCard extends ConsumerWidget {
   final String postId;
   final bool isLoggedIn;
   final bool isPreview;
-  const RepostCard(
-      {super.key,
-      required this.postId,
-      required this.isLoggedIn,
-      required this.isPreview});
+  const RepostCard({
+    super.key,
+    required this.postId,
+    required this.isLoggedIn,
+    required this.isPreview,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
     final asyncPost = ref.watch(postProvider(postId));
     return asyncPost.when(
-        data: (post) => DecoratedBox(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  border: BoxBorder.all(
-                    color: Theme.of(context).colorScheme.outline,
-                    width: c.dividerWidth,
-                  )),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5, bottom: 3),
-                child: InkWell(
-                  onTap: () => (!isPreview && isLoggedIn)
-                      ? context
-                          .push('/feed/post/${post.id}', extra: post)
-                          .then((v) async {})
-                      : null,
-                  child: Column(
+      data: (post) => DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          border: BoxBorder.all(
+            color: Theme.of(context).colorScheme.outline,
+            width: c.dividerWidth,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 5, bottom: 3),
+          child: InkWell(
+            onTap: () => (!isPreview && isLoggedIn)
+                ? context
+                      .push('/feed/post/${post.id}', extra: post)
+                      .then((v) async {})
+                : null,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: c.postPaddingHoriz,
+                    //vertical: c.postPaddingVert,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: c.postPaddingHoriz,
-                          //vertical: c.postPaddingVert,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                      // Display the profile picture as a CircleAvatar
+                      ProfilePicture(
+                        onPressed: () {
+                          if (!isPreview) {
+                            if (post.uid !=
+                                ref.read(currentUserProvider).user.uid) {
+                              final user = ref
+                                  .read(userProvider(post.uid))
+                                  .value;
+                              if (user != null) {
+                                context.push(
+                                  '/users/${user.username}?uid=${user.uid}',
+                                );
+                              } else {
+                                context.push('/users/_?uid=${post.uid}');
+                              }
+                            } else {
+                              context.go('/profile');
+                            }
+                          }
+                        },
+                        uid: post.uid,
+                        size: width * 0.085,
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Display the profile picture as a CircleAvatar
-                            ProfilePicture(
-                              onPressed: () {
-                                if (!isPreview) {
-                                  if (post.uid !=
-                                      ref.read(currentUserProvider).user.uid) {
-                                    final user =
-                                        ref.read(userProvider(post.uid)).value;
-                                    if (user != null) {
-                                      context.push(
-                                          '/users/${user.username}?uid=${user.uid}');
-                                    } else {
-                                      context.push('/users/_?uid=${post.uid}');
-                                    }
-                                  } else {
-                                    context.go('/profile');
-                                  }
-                                }
-                              },
-                              uid: post.uid,
-                              size: width * 0.085,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                            ),
-                            const SizedBox(width: 5),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                          child: UserTag(
-                                        uid: post.uid,
-                                        onPressedWithUser: (user) {
-                                          if (!isPreview) {
-                                            if (post.uid !=
-                                                ref
-                                                    .read(currentUserProvider)
-                                                    .user
-                                                    .uid) {
-                                              context.push(
-                                                  '/users/${user.username}?uid=${user.uid}');
-                                            } else {
-                                              context.go('/profile');
-                                            }
-                                          }
-                                        },
-                                      )),
-                                      TimeStamp(time: post.getDateTime()),
-                                    ],
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: UserTag(
+                                    uid: post.uid,
+                                    onPressedWithUser: (user) {
+                                      if (!isPreview) {
+                                        if (post.uid !=
+                                            ref
+                                                .read(currentUserProvider)
+                                                .user
+                                                .uid) {
+                                          context.push(
+                                            '/users/${user.username}?uid=${user.uid}',
+                                          );
+                                        } else {
+                                          context.go('/profile');
+                                        }
+                                      }
+                                    },
                                   ),
-                                  const SizedBox(height: 6.0),
-                                  if (post.title.isNotEmpty)
-                                    TextWithTags(
-                                      text: post.title,
-                                      baseTextStyle: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                        fontSize: 15,
-                                        fontFamily: DefaultTextStyle.of(context)
-                                            .style
-                                            .fontFamily,
-                                      ),
-                                    ),
-                                  const SizedBox(height: 6.0),
-                                  if (post.gifUrl != null)
-                                    Padding(
-                                        padding: EdgeInsets.only(bottom: 6),
-                                        child: GifWidget(url: post.gifUrl!)),
-                                  if (post.imageString != null)
-                                    Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 50, bottom: 6),
-                                        child: ImageWidget(
-                                          ascii: post.imageString!,
-                                        )),
-                                  if (post.pollOptions != null)
-                                    Padding(
-                                      padding: EdgeInsets.only(bottom: 6),
-                                      child: PollWidget(
-                                        post: post,
-                                        isPreview: isPreview,
-                                      ),
-                                    ),
-                                  if (post.body.isNotEmpty)
-                                    Padding(
-                                      padding: EdgeInsets.only(bottom: 6),
-                                      child: TextWithTags(text: post.body),
-                                    ),
-                                ],
-                              ),
+                                ),
+                                TimeStamp(time: post.getDateTime()),
+                              ],
                             ),
+                            const SizedBox(height: 6.0),
+                            if (post.title.isNotEmpty)
+                              TextWithTags(
+                                text: post.title,
+                                baseTextStyle: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                  fontSize: 15,
+                                  fontFamily: DefaultTextStyle.of(
+                                    context,
+                                  ).style.fontFamily,
+                                ),
+                              ),
+                            const SizedBox(height: 6.0),
+                            if (post.gifUrl != null)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 6),
+                                child: GifWidget(url: post.gifUrl!),
+                              ),
+                            if (post.imageString != null)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 50,
+                                  bottom: 6,
+                                ),
+                                child: ImageWidget(ascii: post.imageString!),
+                              ),
+                            if (post.pollOptions != null)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 6),
+                                child: PollWidget(
+                                  post: post,
+                                  isPreview: isPreview,
+                                ),
+                              ),
+                            if (post.body.isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 6),
+                                child: TextWithTags(text: post.body),
+                              ),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
-        error: (e, __) {
-          debugPrint(e.toString());
-          return Text('Failed to Load');
-        },
-        loading: () => CircularProgressIndicator());
+          ),
+        ),
+      ),
+      error: (e, __) {
+        debugPrint(e.toString());
+        return Text('Failed to Load');
+      },
+      loading: () => CircularProgressIndicator(),
+    );
   }
 }

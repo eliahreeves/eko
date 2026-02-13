@@ -78,9 +78,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AuthAppBar(
-        onBack: _signOutAndGoHome,
-      ),
+      appBar: AuthAppBar(onBack: _signOutAndGoHome),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -88,7 +86,8 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: EdgeInsets.symmetric(
-                  horizontal: width * c.authPaddingHorizontal),
+                horizontal: width * c.authPaddingHorizontal,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

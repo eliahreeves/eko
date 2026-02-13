@@ -35,27 +35,30 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
         return 0;
       case 'wrong-password':
         showMyDialog(
-            AppLocalizations.of(context)!.wrongPasswordTittle,
-            AppLocalizations.of(context)!.wrongPasswordBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+          AppLocalizations.of(context)!.wrongPasswordTittle,
+          AppLocalizations.of(context)!.wrongPasswordBody,
+          [AppLocalizations.of(context)!.tryAgain],
+          [context.pop],
+          context,
+        );
         return 1;
       case 'user-disabled':
         showMyDialog(
-            AppLocalizations.of(context)!.userDisabledTittle,
-            AppLocalizations.of(context)!.userDisabledBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+          AppLocalizations.of(context)!.userDisabledTittle,
+          AppLocalizations.of(context)!.userDisabledBody,
+          [AppLocalizations.of(context)!.tryAgain],
+          [context.pop],
+          context,
+        );
         return 1;
       default:
         showMyDialog(
-            AppLocalizations.of(context)!.defaultErrorTittle,
-            AppLocalizations.of(context)!.defaultErrorBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+          AppLocalizations.of(context)!.defaultErrorTittle,
+          AppLocalizations.of(context)!.defaultErrorBody,
+          [AppLocalizations.of(context)!.tryAgain],
+          [context.pop],
+          context,
+        );
         return 1;
     }
   }
@@ -74,7 +77,8 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
           child: ListView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: EdgeInsets.symmetric(
-                horizontal: width * c.authPaddingHorizontal),
+              horizontal: width * c.authPaddingHorizontal,
+            ),
             children: [
               SizedBox(height: height * .04),
               SizedBox(
@@ -83,15 +87,12 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
                   child: Text(
                     l10n.deleteAccount,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              const AuthDivider(
-                indent: 20,
-                endIndent: 20,
-              ),
+              const AuthDivider(indent: 20, endIndent: 20),
               SizedBox(height: height * .04),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -128,8 +129,9 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
                           final result = await ref
                               .read(authProvider.notifier)
                               .signIn(
-                                  password: password,
-                                  email: ref.read(authProvider).email!);
+                                password: password,
+                                email: ref.read(authProvider).email!,
+                              );
                           if (handleError(result) == 0) {
                             await ref
                                 .read(authProvider.notifier)

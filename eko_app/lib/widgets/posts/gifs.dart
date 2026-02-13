@@ -12,24 +12,19 @@ class GifData {
   final int width;
   final int height;
 
-  GifData(
-      {required this.id,
-      required this.url,
-      required this.width,
-      required this.height});
+  GifData({
+    required this.id,
+    required this.url,
+    required this.width,
+    required this.height,
+  });
 }
 
-Future<void> registerGifShare({
-  required String gifId,
-}) async {
-  final uri = Uri.https(
-    'api.klipy.com',
-    '/v1/gifs/registershare',
-    {
-      'key': const String.fromEnvironment('KLIPY_API_KEY'),
-      'id': gifId,
-    },
-  );
+Future<void> registerGifShare({required String gifId}) async {
+  final uri = Uri.https('api.klipy.com', '/v1/gifs/registershare', {
+    'key': const String.fromEnvironment('KLIPY_API_KEY'),
+    'id': gifId,
+  });
 
   try {
     await http.post(uri);
@@ -153,7 +148,11 @@ class _GifSearchSectionState extends State<GifSearchSection> {
                 }
 
                 return GifData(
-                    id: id, url: url, width: dims[0], height: dims[1]);
+                  id: id,
+                  url: url,
+                  width: dims[0],
+                  height: dims[1],
+                );
               })
               .whereType<GifData>()
               .toList();
@@ -172,101 +171,103 @@ class _GifSearchSectionState extends State<GifSearchSection> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: TextField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  onChanged: _fetchSuggestions,
-                  onSubmitted: (value) {
-                    _fetchGifs(value.trim());
-                    setState(() => _suggestions = []);
-                  },
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.outlineVariant,
-                    hintText: 'Search KLIPY',
-                    prefixIcon: Icon(Icons.search),
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: IgnorePointer(
-                        child: SvgPicture.asset(
-                          'images/klipy-search.svg',
-                          height: 12,
-                          fit: BoxFit.contain,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    onChanged: _fetchSuggestions,
+                    onSubmitted: (value) {
+                      _fetchGifs(value.trim());
+                      setState(() => _suggestions = []);
+                    },
+                    textAlignVertical: TextAlignVertical.center,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.outlineVariant,
+                      hintText: 'Search KLIPY',
+                      prefixIcon: Icon(Icons.search),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: IgnorePointer(
+                          child: SvgPicture.asset(
+                            'images/klipy-search.svg',
+                            height: 12,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
+                      border: InputBorder.none,
                     ),
-                    border: InputBorder.none,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              height: 45,
-              width: 45,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(10),
+              const SizedBox(width: 8),
+              Container(
+                height: 45,
+                width: 45,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(Icons.close),
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.close),
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 9),
-        if (_suggestions.isNotEmpty)
-          Expanded(
-            child: ListView.builder(
-              itemCount: _suggestions.length,
-              itemBuilder: (context, index) {
-                final suggestion = _suggestions[index];
-                return ListTile(
-                  title: Text(suggestion),
-                  onTap: () {
-                    _controller.text = suggestion;
-                    _controller.selection = TextSelection.fromPosition(
-                      TextPosition(offset: suggestion.length),
-                    );
-                    setState(() => _suggestions = []);
-                    _focusNode.unfocus();
-                    _fetchGifs(suggestion.trim());
-                  },
-                );
-              },
-            ),
-          )
-        else if (_error.isNotEmpty)
-          Center(child: Text(_error))
-        else
-          Expanded(
-            child: MasonryGridView.count(
-              controller: _scrollController,
-              padding: const EdgeInsets.only(bottom: 16),
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              itemCount: _gifData.length,
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () {
-                  registerGifShare(gifId: _gifData[index].id);
-                  context.pop(_gifData[index].url);
+            ],
+          ),
+          const SizedBox(height: 9),
+          if (_suggestions.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                itemCount: _suggestions.length,
+                itemBuilder: (context, index) {
+                  final suggestion = _suggestions[index];
+                  return ListTile(
+                    title: Text(suggestion),
+                    onTap: () {
+                      _controller.text = suggestion;
+                      _controller.selection = TextSelection.fromPosition(
+                        TextPosition(offset: suggestion.length),
+                      );
+                      setState(() => _suggestions = []);
+                      _focusNode.unfocus();
+                      _fetchGifs(suggestion.trim());
+                    },
+                  );
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ClipRRect(
+              ),
+            )
+          else if (_error.isNotEmpty)
+            Center(child: Text(_error))
+          else
+            Expanded(
+              child: MasonryGridView.count(
+                controller: _scrollController,
+                padding: const EdgeInsets.only(bottom: 16),
+                crossAxisCount: 2,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                itemCount: _gifData.length,
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () {
+                    registerGifShare(gifId: _gifData[index].id);
+                    context.pop(_gifData[index].url);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: AspectRatio(
                         aspectRatio:
@@ -284,21 +285,23 @@ class _GifSearchSectionState extends State<GifSearchSection> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
+                                value:
+                                    loadingProgress.expectedTotalBytes != null
                                     ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
+                                          loadingProgress.expectedTotalBytes!
                                     : null,
                               ),
                             );
                           },
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          )
-      ]),
+        ],
+      ),
     );
   }
 }

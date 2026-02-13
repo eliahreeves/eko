@@ -32,9 +32,7 @@ class _SystemHash {
 abstract class _$User extends BuildlessAutoDisposeAsyncNotifier<UserModel> {
   late final String uid;
 
-  FutureOr<UserModel> build(
-    String uid,
-  );
+  FutureOr<UserModel> build(String uid);
 }
 
 /// See also [User].
@@ -47,21 +45,13 @@ class UserFamily extends Family<AsyncValue<UserModel>> {
   const UserFamily();
 
   /// See also [User].
-  UserProvider call(
-    String uid,
-  ) {
-    return UserProvider(
-      uid,
-    );
+  UserProvider call(String uid) {
+    return UserProvider(uid);
   }
 
   @override
-  UserProvider getProviderOverride(
-    covariant UserProvider provider,
-  ) {
-    return call(
-      provider.uid,
-    );
+  UserProvider getProviderOverride(covariant UserProvider provider) {
+    return call(provider.uid);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -83,18 +73,18 @@ class UserFamily extends Family<AsyncValue<UserModel>> {
 class UserProvider
     extends AutoDisposeAsyncNotifierProviderImpl<User, UserModel> {
   /// See also [User].
-  UserProvider(
-    String uid,
-  ) : this._internal(
-          () => User()..uid = uid,
-          from: userProvider,
-          name: r'userProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product') ? null : _$userHash,
-          dependencies: UserFamily._dependencies,
-          allTransitiveDependencies: UserFamily._allTransitiveDependencies,
-          uid: uid,
-        );
+  UserProvider(String uid)
+    : this._internal(
+        () => User()..uid = uid,
+        from: userProvider,
+        name: r'userProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$userHash,
+        dependencies: UserFamily._dependencies,
+        allTransitiveDependencies: UserFamily._allTransitiveDependencies,
+        uid: uid,
+      );
 
   UserProvider._internal(
     super._createNotifier, {
@@ -109,12 +99,8 @@ class UserProvider
   final String uid;
 
   @override
-  FutureOr<UserModel> runNotifierBuild(
-    covariant User notifier,
-  ) {
-    return notifier.build(
-      uid,
-    );
+  FutureOr<UserModel> runNotifierBuild(covariant User notifier) {
+    return notifier.build(uid);
   }
 
   @override
@@ -167,5 +153,6 @@ class _UserProviderElement
   @override
   String get uid => (origin as UserProvider).uid;
 }
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

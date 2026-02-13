@@ -11,16 +11,13 @@ class PostLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Shimmer(
       child: Column(
-        children: List.generate(
-          length * 2,
-          (index) {
-            if (index % 2 == 0) {
-              return _BlankPost();
-            } else {
-              return StyledDivider();
-            }
-          },
-        ),
+        children: List.generate(length * 2, (index) {
+          if (index % 2 == 0) {
+            return _BlankPost();
+          } else {
+            return StyledDivider();
+          }
+        }),
       ),
     );
   }
@@ -34,12 +31,9 @@ class UserLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Shimmer(
       child: Column(
-        children: List.generate(
-          length,
-          (_) {
-            return _BlankUser();
-          },
-        ),
+        children: List.generate(length, (_) {
+          return _BlankUser();
+        }),
       ),
     );
   }
@@ -104,7 +98,7 @@ class _BlankPost extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -153,7 +147,7 @@ class _BlankUser extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -167,20 +161,17 @@ class _Shimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer(
-        gradient: LinearGradient(
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? c.darkModeGradient
-              : c.lightModeGradient,
-          stops: const [
-            0.1,
-            0.3,
-            0.4,
-          ],
-          begin: const Alignment(-1.0, -0.3),
-          end: const Alignment(1.0, 0.3),
-          tileMode: TileMode.clamp,
-        ),
-        enabled: true,
-        child: child);
+      gradient: LinearGradient(
+        colors: Theme.of(context).brightness == Brightness.dark
+            ? c.darkModeGradient
+            : c.lightModeGradient,
+        stops: const [0.1, 0.3, 0.4],
+        begin: const Alignment(-1.0, -0.3),
+        end: const Alignment(1.0, 0.3),
+        tileMode: TileMode.clamp,
+      ),
+      enabled: true,
+      child: child,
+    );
   }
 }

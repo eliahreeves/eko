@@ -10,11 +10,7 @@ class PollWidget extends ConsumerWidget {
   final PostModel post;
   final bool isPreview;
 
-  const PollWidget({
-    required this.post,
-    this.isPreview = false,
-    super.key,
-  });
+  const PollWidget({required this.post, this.isPreview = false, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,8 +18,10 @@ class PollWidget extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider);
     int totalVotes = 0;
     if (post.pollVoteCounts != null) {
-      totalVotes =
-          post.pollVoteCounts!.values.fold(0, (sum, count) => sum + count);
+      totalVotes = post.pollVoteCounts!.values.fold(
+        0,
+        (sum, count) => sum + count,
+      );
     }
 
     return SizedBox(
@@ -43,8 +41,8 @@ class PollWidget extends ConsumerWidget {
                 onTap: isPreview
                     ? null
                     : () => ref
-                        .read(postProvider(post.id).notifier)
-                        .addPollVote(optionIndex: index),
+                          .read(postProvider(post.id).notifier)
+                          .addPollVote(optionIndex: index),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -56,9 +54,9 @@ class PollWidget extends ConsumerWidget {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: isPreview
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest
                                 : Theme.of(context).colorScheme.outlineVariant,
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -68,18 +66,19 @@ class PollWidget extends ConsumerWidget {
                           duration: Duration(milliseconds: 500),
                           curve: Curves.easeInOut,
                           height: 48,
-                          width: MediaQuery.of(context).size.width *
+                          width:
+                              MediaQuery.of(context).size.width *
                               0.7 *
                               percentage,
                           decoration: BoxDecoration(
                             color: currentUser.pollVotes.containsKey(post.id)
                                 ? (currentUser.pollVotes[post.id] == index)
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerHighest
+                                      ? Theme.of(
+                                          context,
+                                        ).colorScheme.primaryContainer
+                                      : Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainerHighest
                                 : Theme.of(context).colorScheme.outlineVariant,
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -94,8 +93,9 @@ class PollWidget extends ConsumerWidget {
                                 child: Text(
                                   option,
                                   style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -104,9 +104,9 @@ class PollWidget extends ConsumerWidget {
                                 Text(
                                   '${(percentage * 100).toStringAsFixed(0)}%',
                                   style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                             ],
@@ -143,7 +143,7 @@ class PollWidget extends ConsumerWidget {
                         fontSize: 12,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

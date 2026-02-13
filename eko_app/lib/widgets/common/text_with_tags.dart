@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 
 Future<void> defaultTagPressed(
-    String username, BuildContext context, WidgetRef ref) async {
+  String username,
+  BuildContext context,
+  WidgetRef ref,
+) async {
   if (ref.watch(currentUserProvider).user.username == username) {
     context.go('/profile');
   } else {
@@ -18,12 +21,13 @@ class TextWithTags extends ConsumerStatefulWidget {
   final TextStyle? tagTextStyle;
   final List<String> text;
   final Future<void> Function(String)? onTagPressed;
-  const TextWithTags(
-      {super.key,
-      required this.text,
-      this.tagTextStyle,
-      this.baseTextStyle,
-      this.onTagPressed});
+  const TextWithTags({
+    super.key,
+    required this.text,
+    this.tagTextStyle,
+    this.baseTextStyle,
+    this.onTagPressed,
+  });
 
   @override
   ConsumerState<TextWithTags> createState() => _TextWithTagsState();
@@ -35,7 +39,8 @@ class _TextWithTagsState extends ConsumerState<TextWithTags> {
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
-        style: widget.baseTextStyle ??
+        style:
+            widget.baseTextStyle ??
             TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontFamily: DefaultTextStyle.of(context).style.fontFamily,
@@ -45,7 +50,8 @@ class _TextWithTagsState extends ConsumerState<TextWithTags> {
             // This is a username, create a hyperlink
             return TextSpan(
               text: chunk,
-              style: widget.tagTextStyle ??
+              style:
+                  widget.tagTextStyle ??
                   TextStyle(color: Theme.of(context).colorScheme.surfaceTint),
               recognizer: TapGestureRecognizer()
                 ..onTap = () async {
@@ -61,9 +67,7 @@ class _TextWithTagsState extends ConsumerState<TextWithTags> {
             );
           } else {
             // This is a normal text, create a TextSpan
-            return TextSpan(
-              text: chunk,
-            );
+            return TextSpan(text: chunk);
           }
         }).toList(),
       ),

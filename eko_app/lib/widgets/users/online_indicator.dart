@@ -7,11 +7,7 @@ class OnlineIndicator extends ConsumerWidget {
   final String uid;
   final int? size;
 
-  const OnlineIndicator({
-    super.key,
-    required this.uid,
-    this.size,
-  });
+  const OnlineIndicator({super.key, required this.uid, this.size});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

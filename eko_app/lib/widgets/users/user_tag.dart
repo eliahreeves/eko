@@ -9,12 +9,13 @@ class UserTag extends ConsumerWidget {
   final void Function(UserModel)? onPressedWithUser;
   final TextStyle? style;
   final String uid;
-  const UserTag(
-      {required this.uid,
-      this.style,
-      this.onPressed,
-      this.onPressedWithUser,
-      super.key});
+  const UserTag({
+    required this.uid,
+    this.style,
+    this.onPressed,
+    this.onPressedWithUser,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +24,8 @@ class UserTag extends ConsumerWidget {
     return asyncUser.when(
       data: (user) {
         return InkWell(
-          onTap: onPressed ??
+          onTap:
+              onPressed ??
               (onPressedWithUser != null
                   ? () => onPressedWithUser!(user)
                   : null),
@@ -31,17 +33,15 @@ class UserTag extends ConsumerWidget {
             children: [
               Text(
                 '@${user.username}',
-                style: style ??
+                style:
+                    style ??
                     TextStyle(
                       fontSize: 17,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                 overflow: TextOverflow.ellipsis,
               ),
-              if (user.isVerified)
-                VerificationBadge(
-                  uid: user.uid,
-                )
+              if (user.isVerified) VerificationBadge(uid: user.uid),
             ],
           ),
         );

@@ -25,59 +25,61 @@ class ActivityCardWidget extends ConsumerWidget {
     final asyncActivity = ref.watch(activityProvider(id));
 
     return asyncActivity.when(
-        data: (activity) {
-          final bool hasUser = activity.sourceUid != null;
-          return InkWell(
-            onTap: () {
-              if (activity.type == 'comment' || activity.type == 'tag') {
-                context.push('/feed/post/${activity.path}');
-              } else if (activity.type == 'follow') {
-                context.push('/users/${activity.path}');
-              }
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: height * 0.01),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: width * 0.03, right: width * 0.015),
-                    child: hasUser
-                        ? ProfilePicture(
-                            uid: activity.sourceUid!, size: width * 0.115)
-                        : Container(
-                            alignment: Alignment.center,
-                            height: width * 0.14,
-                            width: width * 0.14,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outlineVariant),
-                            child: Icon(
-                              Icons.comment,
-                              size: width * 0.08,
-                            ),
-                          ),
+      data: (activity) {
+        final bool hasUser = activity.sourceUid != null;
+        return InkWell(
+          onTap: () {
+            if (activity.type == 'comment' || activity.type == 'tag') {
+              context.push('/feed/post/${activity.path}');
+            } else if (activity.type == 'follow') {
+              context.push('/users/${activity.path}');
+            }
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: height * 0.01),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: width * 0.03,
+                    right: width * 0.015,
                   ),
-                  Column(children: [
+                  child: hasUser
+                      ? ProfilePicture(
+                          uid: activity.sourceUid!,
+                          size: width * 0.115,
+                        )
+                      : Container(
+                          alignment: Alignment.center,
+                          height: width * 0.14,
+                          width: width * 0.14,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                          child: Icon(Icons.comment, size: width * 0.08),
+                        ),
+                ),
+                Column(
+                  children: [
                     SizedBox(
-                        width: width * 0.8,
-                        child: activity.type == 'follow'
-                            ? Text(
-                                '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.followText}',
-                                softWrap: true,
-                              )
-                            : activity.type == 'tag'
-                                ? Text(
-                                    '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.taggedText} ${activity.content}',
-                                    softWrap: true,
-                                  )
-                                : Text(
-                                    '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.commentText}${activity.content.isEmpty ? '' : ': ${activity.content}'}',
-                                    softWrap: true,
-                                  )),
+                      width: width * 0.8,
+                      child: activity.type == 'follow'
+                          ? Text(
+                              '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.followText}',
+                              softWrap: true,
+                            )
+                          : activity.type == 'tag'
+                          ? Text(
+                              '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.taggedText} ${activity.content}',
+                              softWrap: true,
+                            )
+                          : Text(
+                              '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.commentText}${activity.content.isEmpty ? '' : ': ${activity.content}'}',
+                              softWrap: true,
+                            ),
+                    ),
                     Container(
                       width: width * 0.8,
                       alignment: Alignment.centerLeft,
@@ -86,20 +88,23 @@ class ActivityCardWidget extends ConsumerWidget {
                         fontSize: 12,
                       ),
                     ),
-                  ])
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-          );
-        },
-        error: (_, __) => Text('error'),
-        loading: () => UserLoader());
+          ),
+        );
+      },
+      error: (_, __) => Text('error'),
+      loading: () => UserLoader(),
+    );
   }
 }
 
 String _username(AsyncValue<UserModel> asyncUser, String someone) {
   return asyncUser.when(
-      data: (user) => '@${user.username}',
-      error: (_, __) => someone,
-      loading: () => someone);
+    data: (user) => '@${user.username}',
+    error: (_, __) => someone,
+    loading: () => someone,
+  );
 }

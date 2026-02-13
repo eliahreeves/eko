@@ -15,24 +15,31 @@ class RecentActivity extends ConsumerWidget {
   const RecentActivity({super.key});
 
   Future<(List<MapEntry<String, String>>, bool)> getter(
-      List<MapEntry<String, String>> list, WidgetRef ref) async {
+    List<MapEntry<String, String>> list,
+    WidgetRef ref,
+  ) async {
     final uid = ref.read(currentUserProvider).user.uid;
     final baseQuery = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('newActivity')
         .orderBy('time', descending: true)
-        .where('type',
-            whereIn: const ['comment', 'follow', 'tag']) //update for new types
+        .where(
+          'type',
+          whereIn: const ['comment', 'follow', 'tag'],
+        ) //update for new types
         .limit(c.activitiesPerRequest);
-    final query =
-        list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
+    final query = list.isEmpty
+        ? baseQuery
+        : baseQuery.startAfter([list.last.value]);
 
     final activityList = await query.get().then(
-        (data) => data.docs.map((doc) => ActivityModel.fromFirestoreDoc(doc)));
+      (data) => data.docs.map((doc) => ActivityModel.fromFirestoreDoc(doc)),
+    );
     ref.read(activityPoolProvider).putAll(activityList);
-    final retList =
-        activityList.map((item) => MapEntry(item.id, item.createdAt)).toList();
+    final retList = activityList
+        .map((item) => MapEntry(item.id, item.createdAt))
+        .toList();
     return (retList, retList.length < c.postsOnRefresh);
   }
 
@@ -42,8 +49,10 @@ class RecentActivity extends ConsumerWidget {
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => context.pop('poped'),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -58,9 +67,7 @@ class RecentActivity extends ConsumerWidget {
       body: InfiniteScrolly<String, String>(
         getter: (data) => getter(data, ref),
         widget: recentActivityCardBuilder,
-        initialLoadingWidget: UserLoader(
-          length: 12,
-        ),
+        initialLoadingWidget: UserLoader(length: 12),
       ),
     );
   }

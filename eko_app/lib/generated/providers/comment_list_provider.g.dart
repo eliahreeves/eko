@@ -33,9 +33,7 @@ abstract class _$CommentList
     extends BuildlessAutoDisposeNotifier<(List<String>, bool)> {
   late final String postId;
 
-  (List<String>, bool) build(
-    String postId,
-  );
+  (List<String>, bool) build(String postId);
 }
 
 /// See also [CommentList].
@@ -48,21 +46,15 @@ class CommentListFamily extends Family<(List<String>, bool)> {
   const CommentListFamily();
 
   /// See also [CommentList].
-  CommentListProvider call(
-    String postId,
-  ) {
-    return CommentListProvider(
-      postId,
-    );
+  CommentListProvider call(String postId) {
+    return CommentListProvider(postId);
   }
 
   @override
   CommentListProvider getProviderOverride(
     covariant CommentListProvider provider,
   ) {
-    return call(
-      provider.postId,
-    );
+    return call(provider.postId);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -84,21 +76,18 @@ class CommentListFamily extends Family<(List<String>, bool)> {
 class CommentListProvider
     extends AutoDisposeNotifierProviderImpl<CommentList, (List<String>, bool)> {
   /// See also [CommentList].
-  CommentListProvider(
-    String postId,
-  ) : this._internal(
-          () => CommentList()..postId = postId,
-          from: commentListProvider,
-          name: r'commentListProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$commentListHash,
-          dependencies: CommentListFamily._dependencies,
-          allTransitiveDependencies:
-              CommentListFamily._allTransitiveDependencies,
-          postId: postId,
-        );
+  CommentListProvider(String postId)
+    : this._internal(
+        () => CommentList()..postId = postId,
+        from: commentListProvider,
+        name: r'commentListProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$commentListHash,
+        dependencies: CommentListFamily._dependencies,
+        allTransitiveDependencies: CommentListFamily._allTransitiveDependencies,
+        postId: postId,
+      );
 
   CommentListProvider._internal(
     super._createNotifier, {
@@ -113,12 +102,8 @@ class CommentListProvider
   final String postId;
 
   @override
-  (List<String>, bool) runNotifierBuild(
-    covariant CommentList notifier,
-  ) {
-    return notifier.build(
-      postId,
-    );
+  (List<String>, bool) runNotifierBuild(covariant CommentList notifier) {
+    return notifier.build(postId);
   }
 
   @override
@@ -139,7 +124,7 @@ class CommentListProvider
 
   @override
   AutoDisposeNotifierProviderElement<CommentList, (List<String>, bool)>
-      createElement() {
+  createElement() {
     return _CommentListProviderElement(this);
   }
 
@@ -164,12 +149,15 @@ mixin CommentListRef on AutoDisposeNotifierProviderRef<(List<String>, bool)> {
   String get postId;
 }
 
-class _CommentListProviderElement extends AutoDisposeNotifierProviderElement<
-    CommentList, (List<String>, bool)> with CommentListRef {
+class _CommentListProviderElement
+    extends
+        AutoDisposeNotifierProviderElement<CommentList, (List<String>, bool)>
+    with CommentListRef {
   _CommentListProviderElement(super.provider);
 
   @override
   String get postId => (origin as CommentListProvider).postId;
 }
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

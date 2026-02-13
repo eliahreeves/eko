@@ -10,10 +10,7 @@ part '../generated/providers/following_feed_provider.g.dart';
 class _Chunk {
   final List<String> uids;
   PostModel newestUnshownPost;
-  _Chunk({
-    required this.uids,
-    required this.newestUnshownPost,
-  });
+  _Chunk({required this.uids, required this.newestUnshownPost});
 }
 
 @riverpod
@@ -35,20 +32,23 @@ class FollowingFeed extends _$FollowingFeed {
     if (_feedChunks.isEmpty) {
       final List<String> following = [
         ref.read(currentUserProvider).user.uid,
-        ...ref.read(currentUserProvider).user.following
+        ...ref.read(currentUserProvider).user.following,
       ];
       final slicedFollowing = following.slices(30).toList();
-      final initResults = await Future.wait(slicedFollowing.map((slice) async {
-        return (await baseQuery.where('author', whereIn: slice).get()).docs;
-      }));
+      final initResults = await Future.wait(
+        slicedFollowing.map((slice) async {
+          return (await baseQuery.where('author', whereIn: slice).get()).docs;
+        }),
+      );
       final List<Future<_Chunk>> asyncChunks = [];
       for (int i = 0; i < slicedFollowing.length; i++) {
         if (initResults[i].isNotEmpty) {
           asyncChunks.add(() async {
             return _Chunk(
               uids: slicedFollowing[i],
-              newestUnshownPost:
-                  await PostModel.fromFireStoreDoc(initResults[i].first),
+              newestUnshownPost: await PostModel.fromFireStoreDoc(
+                initResults[i].first,
+              ),
             );
           }());
         }
@@ -58,20 +58,26 @@ class FollowingFeed extends _$FollowingFeed {
         return;
       }
       _feedChunks.addAll(await Future.wait(asyncChunks));
-      _feedChunks.sort((a, b) => b.newestUnshownPost.createdAt
-          .compareTo(a.newestUnshownPost.createdAt));
+      _feedChunks.sort(
+        (a, b) => b.newestUnshownPost.createdAt.compareTo(
+          a.newestUnshownPost.createdAt,
+        ),
+      );
       gottenPosts.add(_feedChunks.first.newestUnshownPost);
     }
     while (gottenPosts.length < c.postsOnRefresh) {
       final snapshot = await baseQuery
           .where('author', whereIn: _feedChunks.first.uids)
-          .startAfter([_feedChunks.first.newestUnshownPost.createdAt]).get();
+          .startAfter([_feedChunks.first.newestUnshownPost.createdAt])
+          .get();
       if (snapshot.docs.isNotEmpty) {
-        _feedChunks.first.newestUnshownPost =
-            await PostModel.fromFireStoreDoc(snapshot.docs.first);
+        _feedChunks.first.newestUnshownPost = await PostModel.fromFireStoreDoc(
+          snapshot.docs.first,
+        );
         _feedChunks.sort(
-          (a, b) => b.newestUnshownPost.createdAt
-              .compareTo(a.newestUnshownPost.createdAt),
+          (a, b) => b.newestUnshownPost.createdAt.compareTo(
+            a.newestUnshownPost.createdAt,
+          ),
         );
         gottenPosts.add(_feedChunks.first.newestUnshownPost);
       } else {

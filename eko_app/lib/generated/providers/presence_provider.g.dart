@@ -12,13 +12,14 @@ String _$presenceHash() => r'017eb59bdb84d9038f0853f2f28fd253d4ea7531';
 @ProviderFor(Presence)
 final presenceProvider =
     AutoDisposeNotifierProvider<Presence, OnlineStatus>.internal(
-  Presence.new,
-  name: r'presenceProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$presenceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      Presence.new,
+      name: r'presenceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$presenceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 typedef _$Presence = AutoDisposeNotifier<OnlineStatus>;
 // ignore_for_file: type=lint

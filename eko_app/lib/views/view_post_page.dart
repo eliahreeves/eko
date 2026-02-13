@@ -73,16 +73,18 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                 cursorColor: Theme.of(context).colorScheme.onSurface,
                 keyboardType: TextInputType.multiline,
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.normal,
-                    color: Theme.of(context).colorScheme.onSurface),
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(height * 0.01),
                   hintText: AppLocalizations.of(context)!.addText,
                   hintStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.normal,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ),
@@ -104,8 +106,9 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                   _popDialog();
                 } else {
                   showSnackBar(
-                      context: context,
-                      text: AppLocalizations.of(context)!.commentRequired);
+                    context: context,
+                    text: AppLocalizations.of(context)!.commentRequired,
+                  );
                 }
               },
             ),
@@ -139,33 +142,33 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         .add(const Duration(hours: 48))
         .difference(DateTime.now())
         .isNegative) {
-    //delete
-    showMyDialog(
+      //delete
+      showMyDialog(
         AppLocalizations.of(context)!.deletePostWarningTitle,
         AppLocalizations.of(context)!.deletePostWarningBody,
         [
           AppLocalizations.of(context)!.cancel,
-          AppLocalizations.of(context)!.delete
+          AppLocalizations.of(context)!.delete,
         ],
         [_popDialog, _deletePostFromDialog],
-        context);
+        context,
+      );
     } else {
       //too early
       showMyDialog(
-          AppLocalizations.of(context)!.tooEarlyDeleteTitle,
-          AppLocalizations.of(context)!.tooEarlyDeleteBody,
-          [AppLocalizations.of(context)!.ok],
-          [_popDialog],
-          context);
+        AppLocalizations.of(context)!.tooEarlyDeleteTitle,
+        AppLocalizations.of(context)!.tooEarlyDeleteBody,
+        [AppLocalizations.of(context)!.ok],
+        [_popDialog],
+        context,
+      );
     }
   }
 
-  addGifPressed() async {
+  Future<void> addGifPressed() async {
     String? url = await context.pushNamed('gif');
-    if (url != null) {
-      gif = url;
-      postCommentPressed();
-    }
+    gif = url;
+    postCommentPressed();
   }
 
   Future<void> postCommentPressed() async {
@@ -175,13 +178,16 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
       commentField.text = commentField.text.trim();
       if (commentField.text.length > c.maxCommentChars) {
         showSnackBar(
-            text: AppLocalizations.of(context)!.tooManyChar, context: context);
+          text: AppLocalizations.of(context)!.tooManyChar,
+          context: context,
+        );
         return;
       } else if (commentField.text == '') {
         commentFieldFocus.requestFocus();
         showSnackBar(
-            text: AppLocalizations.of(context)!.emptyFieldError,
-            context: context);
+          text: AppLocalizations.of(context)!.emptyFieldError,
+          context: context,
+        );
         return;
       } else {
         String body = commentField.text;
@@ -239,10 +245,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
   }
 
   Widget commentCardBuilder(String id) {
-    return CommentCard(
-      id: id,
-      onReply: (username) => replyPressed(username),
-    );
+    return CommentCard(id: id, onReply: (username) => replyPressed(username));
   }
 
   @override
@@ -280,8 +283,10 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
               surfaceTintColor: Colors.transparent,
               automaticallyImplyLeading: false,
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios_rounded,
-                    color: Theme.of(context).colorScheme.onSurface),
+                icon: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 onPressed: () => context.pop(),
               ),
               actions: [
@@ -303,15 +308,16 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                             children: [
                               Text(AppLocalizations.of(context)!.delete),
                               CountDownTimer(
-                                dateTime: DateTime.parse(post.createdAt)
-                                    .toLocal()
-                                    .add(const Duration(hours: 48)),
+                                dateTime: DateTime.parse(
+                                  post.createdAt,
+                                ).toLocal().add(const Duration(hours: 48)),
                                 textStyle: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                    fontSize: 13),
-                              )
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -343,8 +349,10 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                         controller: commentsScrollController,
                       ),
                       AnimatedBuilder(
-                        animation:
-                            Listenable.merge([commentFieldFocus, commentField]),
+                        animation: Listenable.merge([
+                          commentFieldFocus,
+                          commentField,
+                        ]),
                         builder: (context, _) {
                           final text = searchText(commentField);
                           if (text != null && commentFieldFocus.hasFocus) {
@@ -356,7 +364,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                           }
                           return SizedBox();
                         },
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -378,8 +386,9 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.all(height * 0.01),
                             hintText: AppLocalizations.of(context)!.addComment,
-                            fillColor:
-                                Theme.of(context).colorScheme.outlineVariant,
+                            fillColor: Theme.of(
+                              context,
+                            ).colorScheme.outlineVariant,
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -395,7 +404,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                                 IconButton(
                                   onPressed: () => postCommentPressed(),
                                   icon: const Icon(Icons.send),
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -410,16 +419,10 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         );
       },
       error: (error, stackTrace) {
-        return Center(
-          child: Text(
-            AppLocalizations.of(context)!.postNotFound,
-          ),
-        );
+        return Center(child: Text(AppLocalizations.of(context)!.postNotFound));
       },
       loading: () {
-        return const Center(
-          child: LoadingSpinner(),
-        );
+        return const Center(child: LoadingSpinner());
       },
     );
   }

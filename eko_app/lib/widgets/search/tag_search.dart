@@ -69,13 +69,14 @@ class TagSearch extends StatefulWidget {
   final void Function()? onLoad;
   final double? height;
   final void Function(String) onCardTap;
-  const TagSearch(
-      {super.key,
-      required this.searchText,
-      this.getter = _userSearch,
-      this.onLoad,
-      this.height,
-      required this.onCardTap});
+  const TagSearch({
+    super.key,
+    required this.searchText,
+    this.getter = _userSearch,
+    this.onLoad,
+    this.height,
+    required this.onCardTap,
+  });
 
   @override
   State<TagSearch> createState() => _TagSearchState();

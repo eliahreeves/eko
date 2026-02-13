@@ -31,7 +31,7 @@ class GifWidget extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
+                            loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               );
@@ -39,16 +39,17 @@ class GifWidget extends StatelessWidget {
           ),
           if (isKlipyGif)
             Positioned(
-                bottom: 5,
-                left: 5,
-                child: Opacity(
-                  opacity: 0.7,
-                  child: SvgPicture.asset(
-                    'images/klipy-light.svg',
-                    width: 7,
-                    height: 7,
-                  ),
-                )),
+              bottom: 5,
+              left: 5,
+              child: Opacity(
+                opacity: 0.7,
+                child: SvgPicture.asset(
+                  'images/klipy-light.svg',
+                  width: 7,
+                  height: 7,
+                ),
+              ),
+            ),
         ],
       ),
     );

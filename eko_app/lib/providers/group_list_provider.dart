@@ -43,14 +43,13 @@ class GroupList extends _$GroupList {
         .where('members', arrayContains: user)
         .orderBy('lastActivity', descending: true)
         .limit(c.postsOnRefresh);
-    final query =
-        state.$1.isEmpty ? baseQuery : baseQuery.startAfter([_timestamps.last]);
+    final query = state.$1.isEmpty
+        ? baseQuery
+        : baseQuery.startAfter([_timestamps.last]);
 
-    final groupList = (await query.get()).docs.map(
-      (doc) {
-        return GroupModel.fromFirestoreDoc(doc);
-      },
-    );
+    final groupList = (await query.get()).docs.map((doc) {
+      return GroupModel.fromFirestoreDoc(doc);
+    });
 
     ref.read(groupPoolProvider).putAll(groupList);
     final newList = [...state.$1];

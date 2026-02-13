@@ -47,46 +47,49 @@ class _CommentCardState extends ConsumerState<CommentCard> {
 
   Future<void> scrollToStart() async {
     if (scrollController.offset != 0) {
-      await scrollController.animateTo(0,
-          duration: const Duration(milliseconds: 80), curve: Curves.linear);
+      await scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 80),
+        curve: Curves.linear,
+      );
     }
   }
 
   Future<void> scrollToEnd() async {
-    await scrollController.animateTo(scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 80), curve: Curves.linear);
+    await scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 80),
+      curve: Curves.linear,
+    );
   }
 
   void onScrollEnd(WidgetRef ref, CommentModel comment) async {
-    Timer(
-      const Duration(milliseconds: 1),
-      () {
-        final scrollPercentage = scrollController.position.pixels /
-            scrollController.position.maxScrollExtent;
-        if (comment.uid == ref.watch(currentUserProvider).user.uid) {
-          if (scrollPercentage >= 0.8) {
-            scrollToEnd();
-          } else {
-            scrollToStart();
-          }
+    Timer(const Duration(milliseconds: 1), () {
+      final scrollPercentage =
+          scrollController.position.pixels /
+          scrollController.position.maxScrollExtent;
+      if (comment.uid == ref.watch(currentUserProvider).user.uid) {
+        if (scrollPercentage >= 0.8) {
+          scrollToEnd();
         } else {
-          if (scrollPercentage >= 0.9) {
-            scrollToStart();
-            widget
-                .onReply(ref.watch(userProvider(comment.uid)).value!.username);
-          } else {
-            scrollToStart();
-          }
+          scrollToStart();
         }
-      },
-    );
+      } else {
+        if (scrollPercentage >= 0.9) {
+          scrollToStart();
+          widget.onReply(ref.watch(userProvider(comment.uid)).value!.username);
+        } else {
+          scrollToStart();
+        }
+      }
+    });
   }
 
   void _popDialog() {
     Navigator.of(context, rootNavigator: true).pop();
   }
 
-// TODO: delete comment
+  // TODO: delete comment
   void _deletePostFromDialog() async {
     _popDialog();
     // await locator<PostsHandling>()
@@ -105,22 +108,24 @@ class _CommentCardState extends ConsumerState<CommentCard> {
         .isNegative) {
       //delete
       showMyDialog(
-          AppLocalizations.of(context)!.deleteCommentWarningTitle,
-          AppLocalizations.of(context)!.deletePostWarningBody,
-          [
-            AppLocalizations.of(context)!.cancel,
-            AppLocalizations.of(context)!.delete
-          ],
-          [_popDialog, _deletePostFromDialog],
-          context);
+        AppLocalizations.of(context)!.deleteCommentWarningTitle,
+        AppLocalizations.of(context)!.deletePostWarningBody,
+        [
+          AppLocalizations.of(context)!.cancel,
+          AppLocalizations.of(context)!.delete,
+        ],
+        [_popDialog, _deletePostFromDialog],
+        context,
+      );
     } else {
       //too early
       showMyDialog(
-          AppLocalizations.of(context)!.tooEarlyDeleteTitle,
-          AppLocalizations.of(context)!.tooEarlyDeleteBody,
-          [AppLocalizations.of(context)!.ok],
-          [_popDialog],
-          context);
+        AppLocalizations.of(context)!.tooEarlyDeleteTitle,
+        AppLocalizations.of(context)!.tooEarlyDeleteBody,
+        [AppLocalizations.of(context)!.ok],
+        [_popDialog],
+        context,
+      );
     }
   }
 
@@ -149,20 +154,23 @@ class _CommentCardState extends ConsumerState<CommentCard> {
               scrollDirection: Axis.horizontal,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                    color: (comment.uid == currentUser.user.uid)
-                        ? Colors.red
-                        : Theme.of(context).colorScheme.outlineVariant),
+                  color: (comment.uid == currentUser.user.uid)
+                      ? Colors.red
+                      : Theme.of(context).colorScheme.outlineVariant,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
-                        onTapDown: (v) => scrollToStart(),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface),
-                            width: width,
-                            child: _Card(
-                                comment: comment, onReply: widget.onReply))),
+                      onTapDown: (v) => scrollToStart(),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                        ),
+                        width: width,
+                        child: _Card(comment: comment, onReply: widget.onReply),
+                      ),
+                    ),
                     SizedBox(
                       width: width * 0.2,
                       //color: Colors.red,
@@ -176,18 +184,19 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                                     size: 32,
                                   ),
                                   CountDownTimer(
-                                    dateTime: DateTime.parse(comment.createdAt)
-                                        .toLocal()
-                                        .add(const Duration(hours: 48)),
+                                    dateTime: DateTime.parse(
+                                      comment.createdAt,
+                                    ).toLocal().add(const Duration(hours: 48)),
                                     textStyle: const TextStyle(fontSize: 13),
-                                  )
+                                  ),
                                 ],
-                              ))
+                              ),
+                            )
                           : const Icon(
                               CupertinoIcons.arrow_turn_up_left,
                               size: 32,
                             ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -211,8 +220,11 @@ class _Card extends ConsumerWidget {
 
   const _Card({required this.comment, required this.onReply});
 
-  avatarPressed(
-      BuildContext context, WidgetRef ref, CommentModel comment) async {
+  Future<void> avatarPressed(
+    BuildContext context,
+    WidgetRef ref,
+    CommentModel comment,
+  ) async {
     if (comment.uid == ref.watch(currentUserProvider).user.uid) {
       context.go('/profile');
     } else {
@@ -270,11 +282,13 @@ class _Card extends ConsumerWidget {
                             onPressed: () {
                               if (comment.uid !=
                                   ref.read(currentUserProvider).user.uid) {
-                                final user =
-                                    ref.read(userProvider(comment.uid)).value;
+                                final user = ref
+                                    .read(userProvider(comment.uid))
+                                    .value;
                                 if (user != null) {
                                   context.push(
-                                      '/users/${user.username}?uid=${user.uid}');
+                                    '/users/${user.username}?uid=${user.uid}',
+                                  );
                                 } else {
                                   context.push('/users/_?uid=${comment.uid}');
                                 }
@@ -294,10 +308,12 @@ class _Card extends ConsumerWidget {
                       const SizedBox(height: 4.0),
                       TextButton(
                         onPressed: () {
-                          onReply(ref
-                              .watch(userProvider(comment.uid))
-                              .value!
-                              .username);
+                          onReply(
+                            ref
+                                .watch(userProvider(comment.uid))
+                                .value!
+                                .username,
+                          );
                         },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -316,10 +332,12 @@ class _Card extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Column(children: [
-                  TimeStamp(time: comment.getDateTime()),
-                  CommentLikeButtons(comment: comment),
-                ])
+                Column(
+                  children: [
+                    TimeStamp(time: comment.getDateTime()),
+                    CommentLikeButtons(comment: comment),
+                  ],
+                ),
               ],
             ),
           ),

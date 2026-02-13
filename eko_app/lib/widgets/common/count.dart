@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 class Count extends StatelessWidget {
   final int count;
   final VoidCallback? onTap;
-  const Count({
-    super.key,
-    required this.count,
-    this.onTap,
-  });
+  const Count({super.key, required this.count, this.onTap});
 
   @override
   Widget build(BuildContext context) {

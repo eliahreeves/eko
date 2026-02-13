@@ -12,13 +12,14 @@ String _$currentUserHash() => r'd2562f3030f3850f4db6eb45e2246aa65ac4322d';
 @ProviderFor(CurrentUser)
 final currentUserProvider =
     NotifierProvider<CurrentUser, CurrentUserModel>.internal(
-  CurrentUser.new,
-  name: r'currentUserProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$currentUserHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      CurrentUser.new,
+      name: r'currentUserProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$currentUserHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 typedef _$CurrentUser = Notifier<CurrentUserModel>;
 // ignore_for_file: type=lint

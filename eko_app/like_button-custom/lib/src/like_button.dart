@@ -30,16 +30,18 @@ class LikeButton extends StatefulWidget {
       dotThirdColor: Color(0xFFFF5722),
       dotLastColor: Color(0xFFF44336),
     ),
-    this.circleColor =
-        const CircleColor(start: Color(0xFFFF5722), end: Color(0xFFFFC107)),
+    this.circleColor = const CircleColor(
+      start: Color(0xFFFF5722),
+      end: Color(0xFFFFC107),
+    ),
     this.onTap,
     this.countPostion = CountPostion.right,
     this.padding,
     this.countDecoration,
     this.postFrameCallback,
-  })  : bubblesSize = bubblesSize ?? size * 2.0,
-        circleSize = circleSize ?? size * 0.8,
-        super(key: key);
+  }) : bubblesSize = bubblesSize ?? size * 2.0,
+       circleSize = circleSize ?? size * 0.8,
+       super(key: key);
 
   /// size of like widget
   final double size;
@@ -144,17 +146,22 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
     _likeCount = widget.likeCount;
     _preLikeCount = _likeCount;
 
-    _controller =
-        AnimationController(duration: widget.animationDuration, vsync: this);
+    _controller = AnimationController(
+      duration: widget.animationDuration,
+      vsync: this,
+    );
     _likeCountController = AnimationController(
-        duration: widget.likeCountAnimationDuration, vsync: this);
+      duration: widget.likeCountAnimationDuration,
+      vsync: this,
+    );
 
     _initAnimations();
 
     if (widget.postFrameCallback != null) {
       // ignore: unnecessary_cast
-      (WidgetsBinding.instance as WidgetsBinding)
-          .addPostFrameCallback((Duration timeStamp) {
+      (WidgetsBinding.instance as WidgetsBinding).addPostFrameCallback((
+        Duration timeStamp,
+      ) {
         widget.postFrameCallback!.call(this);
       });
     }
@@ -168,15 +175,19 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
 
     if (_controller?.duration != widget.animationDuration) {
       _controller?.dispose();
-      _controller =
-          AnimationController(duration: widget.animationDuration, vsync: this);
+      _controller = AnimationController(
+        duration: widget.animationDuration,
+        vsync: this,
+      );
       _initControlAnimation();
     }
 
     if (_likeCountController?.duration != widget.likeCountAnimationDuration) {
       _likeCountController?.dispose();
       _likeCountController = AnimationController(
-          duration: widget.likeCountAnimationDuration, vsync: this);
+        duration: widget.likeCountAnimationDuration,
+        vsync: this,
+      );
       _initLikeCountControllerAnimation();
     }
 
@@ -194,7 +205,8 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     Widget likeCountWidget = _getLikeCountWidget();
     if (widget.countDecoration != null) {
-      likeCountWidget = widget.countDecoration!(likeCountWidget, _likeCount) ??
+      likeCountWidget =
+          widget.countDecoration!(likeCountWidget, _likeCount) ??
           likeCountWidget;
     }
     if (widget.likeCountPadding != null) {
@@ -210,7 +222,7 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         builder: (BuildContext c, Widget? w) {
           final Widget likeWidget =
               widget.likeBuilder?.call(_isLiked ?? true) ??
-                  defaultWidgetBuilder(_isLiked ?? true, widget.size);
+              defaultWidgetBuilder(_isLiked ?? true, widget.size);
           return Stack(
             clipBehavior: Clip.none,
             children: <Widget>[
@@ -259,14 +271,15 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
           );
         },
       ),
-      likeCountWidget
+      likeCountWidget,
     ];
 
     if (widget.countPostion == CountPostion.left ||
         widget.countPostion == CountPostion.top) {
       children = children.reversed.toList();
     }
-    Widget result = (widget.countPostion == CountPostion.left ||
+    Widget result =
+        (widget.countPostion == CountPostion.left ||
             widget.countPostion == CountPostion.right)
         ? Row(
             mainAxisAlignment: widget.mainAxisAlignment,
@@ -280,10 +293,7 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
           );
 
     if (widget.padding != null) {
-      result = Padding(
-        padding: widget.padding!,
-        child: result,
-      );
+      result = Padding(padding: widget.padding!, child: result);
     }
 
     return GestureDetector(
@@ -316,65 +326,85 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
     if (widget.likeCountAnimationType == LikeCountAnimationType.none ||
         _likeCount == _preLikeCount) {
       result = _createLikeCountWidget(
-          _likeCount, _isLiked ?? true, _likeCount.toString());
+        _likeCount,
+        _isLiked ?? true,
+        _likeCount.toString(),
+      );
     } else if (widget.likeCountAnimationType == LikeCountAnimationType.part &&
         !allChange) {
       final String samePart = likeCount.substring(0, didIndex);
-      final String preText =
-          preLikeCount.substring(didIndex, preLikeCount.length);
+      final String preText = preLikeCount.substring(
+        didIndex,
+        preLikeCount.length,
+      );
       final String text = likeCount.substring(didIndex, likeCount.length);
-      final Widget preSameWidget =
-          _createLikeCountWidget(_preLikeCount, !(_isLiked ?? true), samePart);
-      final Widget currentSameWidget =
-          _createLikeCountWidget(_likeCount, _isLiked ?? true, samePart);
-      final Widget preWidget =
-          _createLikeCountWidget(_preLikeCount, !(_isLiked ?? true), preText);
-      final Widget currentWidget =
-          _createLikeCountWidget(_likeCount, _isLiked ?? true, text);
+      final Widget preSameWidget = _createLikeCountWidget(
+        _preLikeCount,
+        !(_isLiked ?? true),
+        samePart,
+      );
+      final Widget currentSameWidget = _createLikeCountWidget(
+        _likeCount,
+        _isLiked ?? true,
+        samePart,
+      );
+      final Widget preWidget = _createLikeCountWidget(
+        _preLikeCount,
+        !(_isLiked ?? true),
+        preText,
+      );
+      final Widget currentWidget = _createLikeCountWidget(
+        _likeCount,
+        _isLiked ?? true,
+        text,
+      );
 
       result = AnimatedBuilder(
-          animation: _likeCountController!,
-          builder: (BuildContext b, Widget? w) {
-            return Directionality(
-              textDirection: TextDirection.ltr,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Stack(
-                    fit: StackFit.passthrough,
-                    clipBehavior: Clip.hardEdge,
-                    children: <Widget>[
-                      Opacity(
-                        child: currentSameWidget,
-                        opacity: _opacityAnimation.value,
-                      ),
-                      Opacity(
-                        child: preSameWidget,
-                        opacity: 1.0 - _opacityAnimation.value,
-                      ),
-                    ],
-                  ),
-                  Stack(
-                    fit: StackFit.passthrough,
-                    clipBehavior: Clip.hardEdge,
-                    children: <Widget>[
-                      FractionalTranslation(
-                          translation: _preLikeCount! > _likeCount!
-                              ? _slideCurrentValueAnimation.value
-                              : -_slideCurrentValueAnimation.value,
-                          child: currentWidget),
-                      FractionalTranslation(
-                          translation: _preLikeCount! > _likeCount!
-                              ? _slidePreValueAnimation.value
-                              : -_slidePreValueAnimation.value,
-                          child: preWidget),
-                    ],
-                  )
-                ],
-              ),
-            );
-          });
+        animation: _likeCountController!,
+        builder: (BuildContext b, Widget? w) {
+          return Directionality(
+            textDirection: TextDirection.ltr,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Stack(
+                  fit: StackFit.passthrough,
+                  clipBehavior: Clip.hardEdge,
+                  children: <Widget>[
+                    Opacity(
+                      child: currentSameWidget,
+                      opacity: _opacityAnimation.value,
+                    ),
+                    Opacity(
+                      child: preSameWidget,
+                      opacity: 1.0 - _opacityAnimation.value,
+                    ),
+                  ],
+                ),
+                Stack(
+                  fit: StackFit.passthrough,
+                  clipBehavior: Clip.hardEdge,
+                  children: <Widget>[
+                    FractionalTranslation(
+                      translation: _preLikeCount! > _likeCount!
+                          ? _slideCurrentValueAnimation.value
+                          : -_slideCurrentValueAnimation.value,
+                      child: currentWidget,
+                    ),
+                    FractionalTranslation(
+                      translation: _preLikeCount! > _likeCount!
+                          ? _slidePreValueAnimation.value
+                          : -_slidePreValueAnimation.value,
+                      child: preWidget,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
     } else {
       result = AnimatedBuilder(
         animation: _likeCountController!,
@@ -384,27 +414,32 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
             clipBehavior: Clip.hardEdge,
             children: <Widget>[
               FractionalTranslation(
-                  translation: _preLikeCount! > _likeCount!
-                      ? _slideCurrentValueAnimation.value
-                      : -_slideCurrentValueAnimation.value,
-                  child: _createLikeCountWidget(
-                      _likeCount, _isLiked ?? true, _likeCount.toString())),
+                translation: _preLikeCount! > _likeCount!
+                    ? _slideCurrentValueAnimation.value
+                    : -_slideCurrentValueAnimation.value,
+                child: _createLikeCountWidget(
+                  _likeCount,
+                  _isLiked ?? true,
+                  _likeCount.toString(),
+                ),
+              ),
               FractionalTranslation(
-                  translation: _preLikeCount! > _likeCount!
-                      ? _slidePreValueAnimation.value
-                      : -_slidePreValueAnimation.value,
-                  child: _createLikeCountWidget(_preLikeCount,
-                      !(_isLiked ?? true), _preLikeCount.toString())),
+                translation: _preLikeCount! > _likeCount!
+                    ? _slidePreValueAnimation.value
+                    : -_slidePreValueAnimation.value,
+                child: _createLikeCountWidget(
+                  _preLikeCount,
+                  !(_isLiked ?? true),
+                  _preLikeCount.toString(),
+                ),
+              ),
             ],
           );
         },
       );
     }
 
-    result = ClipRect(
-      child: result,
-      clipper: LikeCountClip(),
-    );
+    result = ClipRect(child: result, clipper: LikeCountClip());
 
     return result;
   }
@@ -479,73 +514,43 @@ class LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
   }
 
   void _initLikeCountControllerAnimation() {
-    _slidePreValueAnimation = _likeCountController!.drive(Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0.0, 1.0),
-    ));
-    _slideCurrentValueAnimation = _likeCountController!.drive(Tween<Offset>(
-      begin: const Offset(0.0, -1.0),
-      end: Offset.zero,
-    ));
+    _slidePreValueAnimation = _likeCountController!.drive(
+      Tween<Offset>(begin: Offset.zero, end: const Offset(0.0, 1.0)),
+    );
+    _slideCurrentValueAnimation = _likeCountController!.drive(
+      Tween<Offset>(begin: const Offset(0.0, -1.0), end: Offset.zero),
+    );
 
-    _opacityAnimation = _likeCountController!.drive(Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ));
+    _opacityAnimation = _likeCountController!.drive(
+      Tween<double>(begin: 0.0, end: 1.0),
+    );
   }
 
   void _initControlAnimation() {
-    _outerCircleAnimation = Tween<double>(
-      begin: 0.1,
-      end: 1.0,
-    ).animate(
+    _outerCircleAnimation = Tween<double>(begin: 0.1, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller!,
-        curve: const Interval(
-          0.0,
-          0.3,
-          curve: Curves.ease,
-        ),
+        curve: const Interval(0.0, 0.3, curve: Curves.ease),
       ),
     );
-    _innerCircleAnimation = Tween<double>(
-      begin: 0.2,
-      end: 1.0,
-    ).animate(
+    _innerCircleAnimation = Tween<double>(begin: 0.2, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller!,
-        curve: const Interval(
-          0.2,
-          0.5,
-          curve: Curves.ease,
-        ),
+        curve: const Interval(0.2, 0.5, curve: Curves.ease),
       ),
     );
-    final Animation<double> animate = Tween<double>(
-      begin: 0.2,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller!,
-        curve: const Interval(
-          0.35,
-          0.7,
-          curve: OvershootCurve(),
-        ),
-      ),
-    );
+    final Animation<double> animate = Tween<double>(begin: 0.2, end: 1.0)
+        .animate(
+          CurvedAnimation(
+            parent: _controller!,
+            curve: const Interval(0.35, 0.7, curve: OvershootCurve()),
+          ),
+        );
     _scaleAnimation = animate;
-    _bubblesAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
+    _bubblesAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller!,
-        curve: const Interval(
-          0.1,
-          1.0,
-          curve: Curves.decelerate,
-        ),
+        curve: const Interval(0.1, 1.0, curve: Curves.decelerate),
       ),
     );
   }

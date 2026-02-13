@@ -47,10 +47,7 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
     File imgFile = File('${appDocumentsDir.path}/qr.png');
     await imgFile.writeAsBytes(pngBytes);
 
-    Share.shareXFiles(
-      [XFile(imgFile.path)],
-      text: url,
-    );
+    Share.shareXFiles([XFile(imgFile.path)], text: url);
     sharing = false;
   }
 
@@ -67,13 +64,15 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
     final icon = kIsWeb
         ? CupertinoIcons.arrowshape_turn_up_right
         : Platform.isIOS
-            ? CupertinoIcons.share
-            : CupertinoIcons.arrowshape_turn_up_right;
+        ? CupertinoIcons.share
+        : CupertinoIcons.arrowshape_turn_up_right;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => context.pop('poped'),
         ),
         automaticallyImplyLeading: false,
@@ -93,10 +92,9 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
                 key: repaintKey,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                      color: Theme.of(context).colorScheme.surface),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -111,12 +109,14 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
                         data: shareUrl,
                         //backgroundColor: Theme.of(context).colorScheme.surface,
                         dataModuleStyle: QrDataModuleStyle(
-                            borderRadius: 4,
-                            color: Theme.of(context).colorScheme.onSurface),
+                          borderRadius: 4,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                         eyeStyle: QrEyeStyle(
-                            borderRadius: 4,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            eyeShape: QrEyeShape.square),
+                          borderRadius: 4,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          eyeShape: QrEyeShape.square,
+                        ),
                       ),
                     ],
                   ),
@@ -141,9 +141,9 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
                         ? AppLocalizations.of(context)!.copied
                         : AppLocalizations.of(context)!.copyLink,
                     onTap: () => copyLinkPressed(shareUrl),
-                  )
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -167,22 +167,18 @@ class _Icon extends StatelessWidget {
         width: width * 0.395,
         height: width * 0.2,
         decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            color: Theme.of(context).colorScheme.onSurface),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: Theme.of(context).colorScheme.surface,
-            ),
+            Icon(icon, color: Theme.of(context).colorScheme.surface),
             Text(
               text,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.surface,
-              ),
-            )
+              style: TextStyle(color: Theme.of(context).colorScheme.surface),
+            ),
           ],
         ),
       ),

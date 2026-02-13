@@ -15,16 +15,20 @@ class DownloadButtonIfWeb extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       style: ButtonStyle(
-        backgroundColor:
-            WidgetStateProperty.all(Theme.of(context).colorScheme.primary),
+        backgroundColor: WidgetStateProperty.all(
+          Theme.of(context).colorScheme.primary,
+        ),
         side: WidgetStateProperty.all(BorderSide.none),
         // Set the shape of the button
         shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
       ),
       // Set the button label
-      child: Text(AppLocalizations.of(context)!.getTheApp,
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+      child: Text(
+        AppLocalizations.of(context)!.getTheApp,
+        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+      ),
       // Set the button action
       onPressed: () => context.go('/download'),
     );

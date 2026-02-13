@@ -3,14 +3,17 @@ class PoolService<T> {
   final String Function(T) keySelector;
   final void Function(String) onInsert;
   final Duration? validTime;
-  PoolService(
-      {required this.keySelector, required this.onInsert, this.validTime});
+  PoolService({
+    required this.keySelector,
+    required this.onInsert,
+    this.validTime,
+  });
 
   void put(T item, {DateTime? time}) {
     final now = time ?? DateTime.now();
-    final key = this.keySelector(item);
+    final key = keySelector(item);
     _map[key] = _CacheEntry(value: item, insertedAt: now);
-    this.onInsert(key);
+    onInsert(key);
   }
 
   void putAll(Iterable<T> items) {
@@ -29,11 +32,11 @@ class PoolService<T> {
       _map.remove(key);
     }
     // if there is no duration we don't need to check if the data is fresh
-    if (this.validTime == null) {
+    if (validTime == null) {
       return item.value;
     }
     // make sure data is fresh
-    if (DateTime.now().difference(item.insertedAt) > this.validTime!) {
+    if (DateTime.now().difference(item.insertedAt) > validTime!) {
       return null;
     }
     return item.value;

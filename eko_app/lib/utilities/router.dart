@@ -44,14 +44,18 @@ import 'package:eko_app/views/re_auth_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorFeedKey = GlobalKey<NavigatorState>(debugLabel: 'Feed');
-final _shellNavigatorSearchKey =
-    GlobalKey<NavigatorState>(debugLabel: 'Search');
-final _shellNavigatorComposeKey =
-    GlobalKey<NavigatorState>(debugLabel: 'Compose');
-final _shellNavigatorProfileKey =
-    GlobalKey<NavigatorState>(debugLabel: 'Profile');
-final _shellNavigatorGroupsKey =
-    GlobalKey<NavigatorState>(debugLabel: 'Groups');
+final _shellNavigatorSearchKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Search',
+);
+final _shellNavigatorComposeKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Compose',
+);
+final _shellNavigatorProfileKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Profile',
+);
+final _shellNavigatorGroupsKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Groups',
+);
 
 class GoRouterRefreshNotifier extends ChangeNotifier {
   void refresh() => notifyListeners();
@@ -78,7 +82,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             loc == '/signup' ||
             loc == '/login' ||
             loc == '/auth' ||
-            loc == '/download') return null;
+            loc == '/download') {
+          return null;
+        }
         return '/';
       }
       if (loc == '/' || loc == '/signup' || loc == '/login') return '/feed';
@@ -119,7 +125,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             name: 'login',
             builder: (context, state) {
               return const RequireNoAuth(
-                  child: AppSafeArea(child: LoginPage()));
+                child: AppSafeArea(child: LoginPage()),
+              );
             },
           ),
           GoRoute(
@@ -299,21 +306,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         child: GifSearchSection(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(0.0, 1.0);
-                          const end = Offset.zero;
-                          const curve = Curves.easeOut;
+                              const begin = Offset(0.0, 1.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeOut;
 
-                          final tween = Tween(
-                            begin: begin,
-                            end: end,
-                          ).chain(CurveTween(curve: curve));
-                          final offsetAnimation = animation.drive(tween);
+                              final tween = Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: curve));
+                              final offsetAnimation = animation.drive(tween);
 
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
                       );
                     },
                   ),

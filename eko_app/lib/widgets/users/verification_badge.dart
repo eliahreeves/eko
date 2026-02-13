@@ -24,8 +24,10 @@ class VerificationBadge extends ConsumerWidget {
                     Overlay.of(context).context.findRenderObject() as RenderBox;
                 final RenderBox button =
                     context.findRenderObject() as RenderBox;
-                final position =
-                    button.localToGlobal(Offset.zero, ancestor: overlay);
+                final position = button.localToGlobal(
+                  Offset.zero,
+                  ancestor: overlay,
+                );
 
                 showMenu(
                   context: context,
@@ -38,14 +40,17 @@ class VerificationBadge extends ConsumerWidget {
                   items: [
                     PopupMenuItem(
                       onTap: () async {
-                        final hasProtocol =
-                            verificationUrl.startsWith(RegExp(r'https?://'));
+                        final hasProtocol = verificationUrl.startsWith(
+                          RegExp(r'https?://'),
+                        );
                         final String validUrl = hasProtocol
                             ? verificationUrl
                             : 'https://$verificationUrl';
                         final uri = Uri.parse(validUrl);
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -59,8 +64,9 @@ class VerificationBadge extends ConsumerWidget {
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.surfaceTint,
                               decoration: TextDecoration.underline,
-                              decorationColor:
-                                  Theme.of(context).colorScheme.surfaceTint,
+                              decorationColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceTint,
                             ),
                           ),
                         ],

@@ -88,7 +88,7 @@ class CommentLikeButtons extends ConsumerWidget {
               bubblesColor: const BubblesColor(
                 dotPrimaryColor: Color.fromARGB(255, 52, 105, 165),
                 dotSecondaryColor: Color.fromARGB(255, 65, 43, 161),
-            dotThirdColor: Color.fromARGB(255, 196, 68, 211),
+                dotThirdColor: Color.fromARGB(255, 196, 68, 211),
                 dotLastColor: Color(0xFFff3040),
               ),
             ),

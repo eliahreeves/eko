@@ -6,11 +6,12 @@ class PollCreator extends StatefulWidget {
   final double height;
   final double width;
   final List<String> pollOptions;
-  const PollCreator(
-      {required this.width,
-      required this.height,
-      required this.pollOptions,
-      super.key});
+  const PollCreator({
+    required this.width,
+    required this.height,
+    required this.pollOptions,
+    super.key,
+  });
 
   @override
   State<PollCreator> createState() => _PollCreatorState();
@@ -25,8 +26,9 @@ class _PollCreatorState extends State<PollCreator> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-            color: Theme.of(context).colorScheme.outline,
-            width: c.dividerWidth),
+          color: Theme.of(context).colorScheme.outline,
+          width: c.dividerWidth,
+        ),
       ),
       padding: EdgeInsets.all(16),
       child: Column(
@@ -46,20 +48,24 @@ class _PollCreatorState extends State<PollCreator> {
                         hintText:
                             '${AppLocalizations.of(context)!.option} ${index + 1}',
                         border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         errorText: widget.pollOptions[index].length > 50
                             ? AppLocalizations.of(context)!.tooManyChar
                             : null,
                       ),
                       maxLength: 50, // Set maximum lengths
-                      buildCounter: (context,
-                              {required currentLength,
-                              required isFocused,
-                              maxLength}) =>
-                          null, // Hide default counter
+                      buildCounter:
+                          (
+                            context, {
+                            required currentLength,
+                            required isFocused,
+                            maxLength,
+                          }) => null, // Hide default counter
                       onChanged: (value) {
                         if (value.length <= 50) {
                           setState(() {

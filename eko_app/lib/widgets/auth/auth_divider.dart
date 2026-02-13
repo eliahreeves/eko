@@ -6,11 +6,7 @@ class AuthDivider extends StatelessWidget {
   final double indent;
   final double endIndent;
 
-  const AuthDivider({
-    super.key,
-    this.indent = 0,
-    this.endIndent = 0,
-  });
+  const AuthDivider({super.key, this.indent = 0, this.endIndent = 0});
 
   @override
   Widget build(BuildContext context) {

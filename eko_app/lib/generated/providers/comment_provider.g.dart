@@ -33,9 +33,7 @@ abstract class _$Comment
     extends BuildlessAutoDisposeAsyncNotifier<CommentModel> {
   late final String id;
 
-  FutureOr<CommentModel> build(
-    String id,
-  );
+  FutureOr<CommentModel> build(String id);
 }
 
 /// See also [Comment].
@@ -48,21 +46,13 @@ class CommentFamily extends Family<AsyncValue<CommentModel>> {
   const CommentFamily();
 
   /// See also [Comment].
-  CommentProvider call(
-    String id,
-  ) {
-    return CommentProvider(
-      id,
-    );
+  CommentProvider call(String id) {
+    return CommentProvider(id);
   }
 
   @override
-  CommentProvider getProviderOverride(
-    covariant CommentProvider provider,
-  ) {
-    return call(
-      provider.id,
-    );
+  CommentProvider getProviderOverride(covariant CommentProvider provider) {
+    return call(provider.id);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -84,20 +74,18 @@ class CommentFamily extends Family<AsyncValue<CommentModel>> {
 class CommentProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Comment, CommentModel> {
   /// See also [Comment].
-  CommentProvider(
-    String id,
-  ) : this._internal(
-          () => Comment()..id = id,
-          from: commentProvider,
-          name: r'commentProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$commentHash,
-          dependencies: CommentFamily._dependencies,
-          allTransitiveDependencies: CommentFamily._allTransitiveDependencies,
-          id: id,
-        );
+  CommentProvider(String id)
+    : this._internal(
+        () => Comment()..id = id,
+        from: commentProvider,
+        name: r'commentProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$commentHash,
+        dependencies: CommentFamily._dependencies,
+        allTransitiveDependencies: CommentFamily._allTransitiveDependencies,
+        id: id,
+      );
 
   CommentProvider._internal(
     super._createNotifier, {
@@ -112,12 +100,8 @@ class CommentProvider
   final String id;
 
   @override
-  FutureOr<CommentModel> runNotifierBuild(
-    covariant Comment notifier,
-  ) {
-    return notifier.build(
-      id,
-    );
+  FutureOr<CommentModel> runNotifierBuild(covariant Comment notifier) {
+    return notifier.build(id);
   }
 
   @override
@@ -138,7 +122,7 @@ class CommentProvider
 
   @override
   AutoDisposeAsyncNotifierProviderElement<Comment, CommentModel>
-      createElement() {
+  createElement() {
     return _CommentProviderElement(this);
   }
 
@@ -171,5 +155,6 @@ class _CommentProviderElement
   @override
   String get id => (origin as CommentProvider).id;
 }
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

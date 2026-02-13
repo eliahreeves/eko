@@ -32,9 +32,7 @@ class _SystemHash {
 abstract class _$Group extends BuildlessAutoDisposeAsyncNotifier<GroupModel> {
   late final String id;
 
-  FutureOr<GroupModel> build(
-    String id,
-  );
+  FutureOr<GroupModel> build(String id);
 }
 
 /// See also [Group].
@@ -47,21 +45,13 @@ class GroupFamily extends Family<AsyncValue<GroupModel>> {
   const GroupFamily();
 
   /// See also [Group].
-  GroupProvider call(
-    String id,
-  ) {
-    return GroupProvider(
-      id,
-    );
+  GroupProvider call(String id) {
+    return GroupProvider(id);
   }
 
   @override
-  GroupProvider getProviderOverride(
-    covariant GroupProvider provider,
-  ) {
-    return call(
-      provider.id,
-    );
+  GroupProvider getProviderOverride(covariant GroupProvider provider) {
+    return call(provider.id);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -83,20 +73,18 @@ class GroupFamily extends Family<AsyncValue<GroupModel>> {
 class GroupProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Group, GroupModel> {
   /// See also [Group].
-  GroupProvider(
-    String id,
-  ) : this._internal(
-          () => Group()..id = id,
-          from: groupProvider,
-          name: r'groupProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$groupHash,
-          dependencies: GroupFamily._dependencies,
-          allTransitiveDependencies: GroupFamily._allTransitiveDependencies,
-          id: id,
-        );
+  GroupProvider(String id)
+    : this._internal(
+        () => Group()..id = id,
+        from: groupProvider,
+        name: r'groupProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$groupHash,
+        dependencies: GroupFamily._dependencies,
+        allTransitiveDependencies: GroupFamily._allTransitiveDependencies,
+        id: id,
+      );
 
   GroupProvider._internal(
     super._createNotifier, {
@@ -111,12 +99,8 @@ class GroupProvider
   final String id;
 
   @override
-  FutureOr<GroupModel> runNotifierBuild(
-    covariant Group notifier,
-  ) {
-    return notifier.build(
-      id,
-    );
+  FutureOr<GroupModel> runNotifierBuild(covariant Group notifier) {
+    return notifier.build(id);
   }
 
   @override
@@ -169,5 +153,6 @@ class _GroupProviderElement
   @override
   String get id => (origin as GroupProvider).id;
 }
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

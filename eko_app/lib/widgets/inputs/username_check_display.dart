@@ -29,16 +29,17 @@ class _UserNameCheckLoading extends StatelessWidget {
 
 void showUserNameReqs(BuildContext context, {FocusNode? focus}) {
   showMyDialog(
-      AppLocalizations.of(context)!.invalidUserName,
-      AppLocalizations.of(context)!.usernameReqs,
-      [AppLocalizations.of(context)!.ok],
-      [
-        () {
-          context.pop();
-          focus?.requestFocus();
-        }
-      ],
-      context);
+    AppLocalizations.of(context)!.invalidUserName,
+    AppLocalizations.of(context)!.usernameReqs,
+    [AppLocalizations.of(context)!.ok],
+    [
+      () {
+        context.pop();
+        focus?.requestFocus();
+      },
+    ],
+    context,
+  );
 }
 
 class UsernameCheckDisplay extends StatefulWidget {
@@ -47,12 +48,13 @@ class UsernameCheckDisplay extends StatefulWidget {
   final void Function(bool)? onValidate;
   //useful for not showing when username is current user;
   final String skipVal;
-  const UsernameCheckDisplay(
-      {super.key,
-      required this.controller,
-      this.skipVal = '',
-      this.focus,
-      this.onValidate});
+  const UsernameCheckDisplay({
+    super.key,
+    required this.controller,
+    this.skipVal = '',
+    this.focus,
+    this.onValidate,
+  });
 
   @override
   State<UsernameCheckDisplay> createState() => _UsernameCheckDisplayState();
@@ -70,12 +72,14 @@ class _UsernameCheckDisplayState extends State<UsernameCheckDisplay> {
       });
     }
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce =
-        Timer(const Duration(milliseconds: c.searchPageDebounce), () async {
-      setState(() {
-        isUsernameAvailableAsync = isUsernameAvailable(username);
-      });
-    });
+    _debounce = Timer(
+      const Duration(milliseconds: c.searchPageDebounce),
+      () async {
+        setState(() {
+          isUsernameAvailableAsync = isUsernameAvailable(username);
+        });
+      },
+    );
   }
 
   @override
@@ -109,10 +113,11 @@ class _UsernameCheckDisplayState extends State<UsernameCheckDisplay> {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               IconButton(
-                  onPressed: () {
-                    showUserNameReqs(context, focus: widget.focus);
-                  },
-                  icon: const Icon(Icons.help_outline_outlined))
+                onPressed: () {
+                  showUserNameReqs(context, focus: widget.focus);
+                },
+                icon: const Icon(Icons.help_outline_outlined),
+              ),
             ],
           );
         }
@@ -129,8 +134,9 @@ class _UsernameCheckDisplayState extends State<UsernameCheckDisplay> {
                   padding: const EdgeInsets.only(top: 5),
                   child: Text(
                     AppLocalizations.of(context)!.available,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 );
               } else {
@@ -138,8 +144,9 @@ class _UsernameCheckDisplayState extends State<UsernameCheckDisplay> {
                   padding: const EdgeInsets.only(top: 5),
                   child: Text(
                     AppLocalizations.of(context)!.usernameInUse,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 );
               }

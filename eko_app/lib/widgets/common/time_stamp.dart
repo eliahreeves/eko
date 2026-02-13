@@ -28,8 +28,9 @@ class TimeStamp extends StatelessWidget {
     return Text(
       formatTime(time),
       style: TextStyle(
-          fontSize: fontSize,
-          color: Theme.of(context).colorScheme.onSurfaceVariant),
+        fontSize: fontSize,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
     );
   }
 }

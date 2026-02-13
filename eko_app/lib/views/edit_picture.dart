@@ -34,10 +34,16 @@ class _EditPictureState extends State<EditPicture> {
     setState(() {
       isLoading = true;
     });
-    final cropped = await cropToAspectRatio(widget.picture.path,
-        desiredWidth: density, vScale: 0.75);
-    final img =
-        await convertImageToAscii(cropped, dark: isDark, color: isColor);
+    final cropped = await cropToAspectRatio(
+      widget.picture.path,
+      desiredWidth: density,
+      vScale: 0.75,
+    );
+    final img = await convertImageToAscii(
+      cropped,
+      dark: isDark,
+      color: isColor,
+    );
     setState(() {
       asciiPicture = img;
       isLoading = false;
@@ -101,8 +107,10 @@ class _EditPictureState extends State<EditPicture> {
     await tempFile.writeAsBytes(pngBytes);
 
     // Save to gallery
-    await GallerySaver.saveImage(tempPath, toDcim: true)
-        .then((_) => tempFile.delete());
+    await GallerySaver.saveImage(
+      tempPath,
+      toDcim: true,
+    ).then((_) => tempFile.delete());
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -158,15 +166,18 @@ class _EditPictureState extends State<EditPicture> {
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(Icons.arrow_forward,
-                        color:
-                            Theme.of(context).colorScheme.onPrimaryContainer),
+                    child: Icon(
+                      Icons.arrow_forward,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
                   ),
                 ),
               ],
@@ -185,17 +196,15 @@ class _EditPictureState extends State<EditPicture> {
                       key: imageKey,
                       child: Stack(
                         children: [
-                          Align(
-                            child: ImageWidget(ascii: asciiPicture!),
-                          ),
+                          Align(child: ImageWidget(ascii: asciiPicture!)),
                           if (isLoading)
                             SizedBox.expand(
                               child: BackdropFilter(
-                                filter:
-                                    ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                child: Container(
-                                  color: Colors.transparent,
+                                filter: ui.ImageFilter.blur(
+                                  sigmaX: 5,
+                                  sigmaY: 5,
                                 ),
+                                child: Container(color: Colors.transparent),
                               ),
                             ),
                         ],
@@ -220,8 +229,9 @@ class _EditPictureState extends State<EditPicture> {
                             min: 0,
                             max: 100,
                             divisions: 100,
-                            label:
-                                mapDensityToSlider(density).toInt().toString(),
+                            label: mapDensityToSlider(
+                              density,
+                            ).toInt().toString(),
                             onChanged: (value) {
                               setState(() {
                                 density = mapSliderToDensity(value);

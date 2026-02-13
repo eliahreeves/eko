@@ -21,17 +21,18 @@ import 'package:eko_app/utilities/constants.dart' as c;
 
 void _showConfirmExit(BuildContext context) {
   showMyDialog(
-      AppLocalizations.of(context)!.exitCreateGroupTitle,
-      AppLocalizations.of(context)!.exitCreateGroupBody,
-      [AppLocalizations.of(context)!.exit, AppLocalizations.of(context)!.stay],
-      [
-        () {
-          context.pop();
-          context.pop();
-        },
-        context.pop
-      ],
-      context);
+    AppLocalizations.of(context)!.exitCreateGroupTitle,
+    AppLocalizations.of(context)!.exitCreateGroupBody,
+    [AppLocalizations.of(context)!.exit, AppLocalizations.of(context)!.stay],
+    [
+      () {
+        context.pop();
+        context.pop();
+      },
+      context.pop,
+    ],
+    context,
+  );
 }
 
 class ListenableSet<T> extends ChangeNotifier {
@@ -120,64 +121,67 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
                       : Text(AppLocalizations.of(context)!.previous),
                 ),
                 TextButton(
-                    onPressed: () async {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      if (index == 0) {
-                        if (nameController.text.trim().length <
-                            c.minGroupName) {
-                          await showMyDialog(
-                              'Name too short',
-                              'Name must be at least ${c.minGroupName} characters.',
-                              [AppLocalizations.of(context)!.ok],
-                              [context.pop],
-                              context);
-                          nameFocus.requestFocus();
-                          return;
-                        }
-                        setState(() {
-                          index = 1;
-                        });
-                      } else {
-                        isLoading = true;
-                        showDialog(
-                          barrierDismissible: false,
-                          barrierColor: Theme.of(context).colorScheme.surface,
-                          context: context,
-                          builder: (context) => PopScope(
-                              canPop: false,
-                              child: Center(
-                                child: LoadingSpinner(),
-                              )),
+                  onPressed: () async {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    if (index == 0) {
+                      if (nameController.text.trim().length < c.minGroupName) {
+                        await showMyDialog(
+                          'Name too short',
+                          'Name must be at least ${c.minGroupName} characters.',
+                          [AppLocalizations.of(context)!.ok],
+                          [context.pop],
+                          context,
                         );
-                        final now = DateTime.now().toUtc().toIso8601String();
-                        final group = GroupModel(
-                            name: nameController.text.trim(),
-                            description: descriptionController.text.trim(),
-                            lastActivity: now,
-                            createdOn: now,
-                            icon: groupIcon,
-                            members: List<String>.from([
-                              ref.read(currentUserProvider).user.uid,
-                              ...selectedPeople.set
-                            ]),
-                            notSeen: []);
-                        final doc = await FirebaseFirestore.instance
-                            .collection('groups')
-                            .add(group.toJson());
-                        final newGroup = group.copyWith(id: doc.id);
-                        ref
-                            .read(groupListProvider.notifier)
-                            .insertAtIndex(0, newGroup);
-                        if (context.mounted) {
-                          context.pop();
-                          context.pop();
-                        }
-                        isLoading = false;
+                        nameFocus.requestFocus();
+                        return;
                       }
-                    },
-                    child: Text(index == 0
+                      setState(() {
+                        index = 1;
+                      });
+                    } else {
+                      isLoading = true;
+                      showDialog(
+                        barrierDismissible: false,
+                        barrierColor: Theme.of(context).colorScheme.surface,
+                        context: context,
+                        builder: (context) => PopScope(
+                          canPop: false,
+                          child: Center(child: LoadingSpinner()),
+                        ),
+                      );
+                      final now = DateTime.now().toUtc().toIso8601String();
+                      final group = GroupModel(
+                        name: nameController.text.trim(),
+                        description: descriptionController.text.trim(),
+                        lastActivity: now,
+                        createdOn: now,
+                        icon: groupIcon,
+                        members: List<String>.from([
+                          ref.read(currentUserProvider).user.uid,
+                          ...selectedPeople.set,
+                        ]),
+                        notSeen: [],
+                      );
+                      final doc = await FirebaseFirestore.instance
+                          .collection('groups')
+                          .add(group.toJson());
+                      final newGroup = group.copyWith(id: doc.id);
+                      ref
+                          .read(groupListProvider.notifier)
+                          .insertAtIndex(0, newGroup);
+                      if (context.mounted) {
+                        context.pop();
+                        context.pop();
+                      }
+                      isLoading = false;
+                    }
+                  },
+                  child: Text(
+                    index == 0
                         ? AppLocalizations.of(context)!.next
-                        : AppLocalizations.of(context)!.create)),
+                        : AppLocalizations.of(context)!.create,
+                  ),
+                ),
               ],
             ),
           ),
@@ -192,9 +196,7 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
                   groupIcon: groupIcon,
                   setGroupIcon: setGroupIcon,
                 ),
-                AddPeople(
-                  selectedPeople: selectedPeople,
-                ),
+                AddPeople(selectedPeople: selectedPeople),
               ],
             ),
           ),
@@ -211,13 +213,14 @@ class GetInfo extends ConsumerWidget {
   final String groupIcon;
   final void Function(String) setGroupIcon;
 
-  const GetInfo(
-      {super.key,
-      required this.nameFocus,
-      required this.nameController,
-      required this.descriptionController,
-      required this.groupIcon,
-      required this.setGroupIcon});
+  const GetInfo({
+    super.key,
+    required this.nameFocus,
+    required this.nameController,
+    required this.descriptionController,
+    required this.groupIcon,
+    required this.setGroupIcon,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -258,10 +261,11 @@ class GetInfo extends ConsumerWidget {
                           onPressed: () => setGroupIcon(''),
                           icon: DecoratedBox(
                             decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outlineVariant),
+                              shape: BoxShape.circle,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.outlineVariant,
+                            ),
                             child: Icon(
                               Icons.cancel,
                               color: Theme.of(context).colorScheme.onSurface,
@@ -273,14 +277,16 @@ class GetInfo extends ConsumerWidget {
                   ),
           ),
           ProfileInputField(
-              focus: nameFocus,
-              maxLength: c.maxGroupName,
-              label: AppLocalizations.of(context)!.name,
-              controller: nameController),
+            focus: nameFocus,
+            maxLength: c.maxGroupName,
+            label: AppLocalizations.of(context)!.name,
+            controller: nameController,
+          ),
           ProfileInputField(
-              maxLength: c.maxGroupDesc,
-              label: AppLocalizations.of(context)!.description,
-              controller: descriptionController),
+            maxLength: c.maxGroupDesc,
+            label: AppLocalizations.of(context)!.description,
+            controller: descriptionController,
+          ),
         ],
       ),
     );
@@ -313,16 +319,21 @@ class _AddPeopleState extends ConsumerState<AddPeople> {
       isEnd = false;
     });
     if (debounce?.isActive ?? false) debounce!.cancel();
-    debounce =
-        Timer(const Duration(milliseconds: c.searchPageDebounce), () async {
-      final res = await SearchInterface.getter(
-          [], ref, searchTextController.text,
-          excludeCurrent: true);
-      setState(() {
-        data = res.$1;
-        isEnd = res.$2;
-      });
-    });
+    debounce = Timer(
+      const Duration(milliseconds: c.searchPageDebounce),
+      () async {
+        final res = await SearchInterface.getter(
+          [],
+          ref,
+          searchTextController.text,
+          excludeCurrent: true,
+        );
+        setState(() {
+          data = res.$1;
+          isEnd = res.$2;
+        });
+      },
+    );
   }
 
   @override
@@ -348,89 +359,97 @@ class _AddPeopleState extends ConsumerState<AddPeople> {
         onPanDown: (details) => FocusManager.instance.primaryFocus?.unfocus(),
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
-            body: Column(
-          children: [
-            UserSearchBar(controller: searchTextController),
-            ListenableBuilder(
+          body: Column(
+            children: [
+              UserSearchBar(controller: searchTextController),
+              ListenableBuilder(
                 listenable: widget.selectedPeople,
                 builder: (context, _) {
                   final list = widget.selectedPeople.set.toList();
                   return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: SizedBox(
-                        height: list.isNotEmpty ? 40 : 0,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: list.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: SelectedUser(
-                                uid: list[index],
-                                selected: (list[index] == selectedToDelete),
-                                onPressed: (uid) {
-                                  if (uid == selectedToDelete) {
-                                    widget.selectedPeople.remove(uid);
-                                  } else {
-                                    setState(() {
-                                      selectedToDelete = uid;
-                                    });
-                                  }
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ));
-                }),
-            Expanded(
-              child: InfiniteScrollyShell<String>(
-                controller: scrollController,
-                onRefresh: () async {
-                  if (debounce?.isActive ?? false) debounce!.cancel();
-                  final res = await SearchInterface.getter(
-                      [], ref, searchTextController.text,
-                      excludeCurrent: true);
-                  setState(() {
-                    data = res.$1;
-                    isEnd = res.$2;
-                  });
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: SizedBox(
+                      height: list.isNotEmpty ? 40 : 0,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: list.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: SelectedUser(
+                              uid: list[index],
+                              selected: (list[index] == selectedToDelete),
+                              onPressed: (uid) {
+                                if (uid == selectedToDelete) {
+                                  widget.selectedPeople.remove(uid);
+                                } else {
+                                  setState(() {
+                                    selectedToDelete = uid;
+                                  });
+                                }
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
                 },
-                list: data.map((item) => item.key).toList(),
-                isEnd: isEnd,
-                getter: () async {
-                  final res = await SearchInterface.getter(
-                      data, ref, searchTextController.text,
-                      excludeCurrent: true);
-                  setState(() {
-                    data.addAll(res.$1);
-                    isEnd = res.$2;
-                  });
-                },
-                initialLoadingWidget: UserLoader(
-                  length: 12,
-                ),
-                widget: (uid) => UserCard(
-                  uid: uid,
-                  onCardPressed: (user) {
-                    if (widget.selectedPeople.set.contains(user.uid)) {
-                      widget.selectedPeople.remove(user.uid);
-                    } else {
-                      widget.selectedPeople.add(user.uid);
-                    }
+              ),
+              Expanded(
+                child: InfiniteScrollyShell<String>(
+                  controller: scrollController,
+                  onRefresh: () async {
+                    if (debounce?.isActive ?? false) debounce!.cancel();
+                    final res = await SearchInterface.getter(
+                      [],
+                      ref,
+                      searchTextController.text,
+                      excludeCurrent: true,
+                    );
+                    setState(() {
+                      data = res.$1;
+                      isEnd = res.$2;
+                    });
                   },
-                  actionWidget: (user) => ListenableBuilder(
+                  list: data.map((item) => item.key).toList(),
+                  isEnd: isEnd,
+                  getter: () async {
+                    final res = await SearchInterface.getter(
+                      data,
+                      ref,
+                      searchTextController.text,
+                      excludeCurrent: true,
+                    );
+                    setState(() {
+                      data.addAll(res.$1);
+                      isEnd = res.$2;
+                    });
+                  },
+                  initialLoadingWidget: UserLoader(length: 12),
+                  widget: (uid) => UserCard(
+                    uid: uid,
+                    onCardPressed: (user) {
+                      if (widget.selectedPeople.set.contains(user.uid)) {
+                        widget.selectedPeople.remove(user.uid);
+                      } else {
+                        widget.selectedPeople.add(user.uid);
+                      }
+                    },
+                    actionWidget: (user) => ListenableBuilder(
                       listenable: widget.selectedPeople,
                       builder: (context, _) =>
                           widget.selectedPeople.set.contains(user.uid)
-                              ? Icon(Icons.check_circle)
-                              : Icon(Icons.circle_outlined)),
+                          ? Icon(Icons.check_circle)
+                          : Icon(Icons.circle_outlined),
+                    ),
+                  ),
                 ),
               ),
-            )
-          ],
-        )),
+            ],
+          ),
+        ),
       ),
     );
   }

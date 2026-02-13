@@ -5,11 +5,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 /// Use [AuthButtonType.primary] for main CTAs
 /// Use [AuthButtonType.secondary] for alternative actions
 /// Use [AuthButtonType.tertiary] for low-priority actions
-enum AuthButtonType {
-  primary,
-  secondary,
-  tertiary,
-}
+enum AuthButtonType { primary, secondary, tertiary }
 
 class AuthButton extends StatelessWidget {
   final String label;

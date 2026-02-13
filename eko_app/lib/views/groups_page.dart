@@ -39,10 +39,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
             IconButton(
               color: Theme.of(context).colorScheme.onSurface,
               onPressed: () => context.push('/groups/create_group'),
-              icon: const Icon(
-                Icons.group_add,
-                size: 20,
-              ),
+              icon: const Icon(Icons.group_add, size: 20),
             ),
           ],
           bottom: PreferredSize(

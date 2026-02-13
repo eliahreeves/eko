@@ -18,8 +18,9 @@ abstract class CurrentUserModel with _$CurrentUserModel {
     return CurrentUserModel(
       user: UserModel.fromJson(json),
       likedPosts: Set<String>.from(json['profileData']['likedPosts'] ?? []),
-      dislikedPosts:
-          Set<String>.from(json['profileData']['dislikedPosts'] ?? []),
+      dislikedPosts: Set<String>.from(
+        json['profileData']['dislikedPosts'] ?? [],
+      ),
       pollVotes: Map<String, int>.from(json['profileData']['pollVotes'] ?? {}),
       blockedBy: Set<String>.from(json['blockedBy'] ?? []),
       blockedUsers: Set<String>.from(json['blockedUsers'] ?? []),

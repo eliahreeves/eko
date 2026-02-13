@@ -1,18 +1,19 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part '../generated/providers/nav_bar_provider.g.dart';
+
 @Riverpod(keepAlive: true)
 class NavBar extends _$NavBar {
-	@override
+  @override
   bool build() {
     return true;
   }
 
-  disable() {
+  void disable() {
     state = false;
   }
 
-  enable() {
+  void enable() {
     state = true;
   }
 }

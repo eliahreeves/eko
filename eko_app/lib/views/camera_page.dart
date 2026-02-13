@@ -16,7 +16,8 @@ class CameraPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InnerCameraPage(
-        isDark: Theme.of(context).brightness == Brightness.dark);
+      isDark: Theme.of(context).brightness == Brightness.dark,
+    );
   }
 }
 
@@ -73,14 +74,20 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
   @override
   void initState() {
     super.initState();
-    _ctrl =
-        AsciiCameraController(darkMode: widget.isDark, width: 150, height: 150);
-    _ctrl.initialize().then((_) => setState(() {
-          cameraAvailable = true;
-        }));
+    _ctrl = AsciiCameraController(
+      darkMode: widget.isDark,
+      width: 150,
+      height: 150,
+    );
+    _ctrl.initialize().then(
+      (_) => setState(() {
+        cameraAvailable = true;
+      }),
+    );
 
-    _accelerometer =
-        accelerometerEventStream().listen((AccelerometerEvent event) {
+    _accelerometer = accelerometerEventStream().listen((
+      AccelerometerEvent event,
+    ) {
       final x = event.x;
       final y = event.y;
       if (x.abs() < 5 && y < -7) {
@@ -142,7 +149,8 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
                   } else if (snapshot.hasData && snapshot.data != null) {
                     return Align(
                       child: ImageWidget(
-                          ascii: AsciiImage.fromSimpleString(snapshot.data!)),
+                        ascii: AsciiImage.fromSimpleString(snapshot.data!),
+                      ),
                     );
                   }
                   return Center(child: CircularProgressIndicator());
@@ -184,15 +192,16 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 AlwaysOriented(
-                    orientation: orientation,
-                    child: IconButton(
-                      onPressed: pickImage,
-                      icon: Icon(
-                        size: 35,
-                        Icons.perm_media,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    )),
+                  orientation: orientation,
+                  child: IconButton(
+                    onPressed: pickImage,
+                    icon: Icon(
+                      size: 35,
+                      Icons.perm_media,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 90,
                   child: GestureDetector(
@@ -221,8 +230,9 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
                   orientation: orientation,
                   child: IconButton(
                     onPressed: () async {
-                      if (_ctrl.backCameras
-                          .contains(_ctrl.currentCameraIndex)) {
+                      if (_ctrl.backCameras.contains(
+                        _ctrl.currentCameraIndex,
+                      )) {
                         await _ctrl.switchToFront();
                       } else {
                         await _ctrl.switchToBack();
@@ -234,7 +244,7 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

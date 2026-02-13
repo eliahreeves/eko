@@ -10,11 +10,7 @@ class ProfileHeader extends StatelessWidget {
   final UserModel user;
   final bool loggedIn;
 
-  const ProfileHeader({
-    super.key,
-    required this.user,
-    this.loggedIn = true,
-  });
+  const ProfileHeader({super.key, required this.user, this.loggedIn = true});
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +22,19 @@ class ProfileHeader extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                  onPressed: () async {
-                    if (loggedIn) {
-                      await context.pushNamed('profile_picture_detail',
-                          pathParameters: {'id': user.uid});
-                    }
-                  },
-                  icon: ProfilePicture(
-                      uid: user.uid, size: c.widthGetter(context) * 0.24)),
+                onPressed: () async {
+                  if (loggedIn) {
+                    await context.pushNamed(
+                      'profile_picture_detail',
+                      pathParameters: {'id': user.uid},
+                    );
+                  }
+                },
+                icon: ProfilePicture(
+                  uid: user.uid,
+                  size: c.widthGetter(context) * 0.24,
+                ),
+              ),
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10),
@@ -48,8 +49,10 @@ class ProfileHeader extends StatelessWidget {
                             label: AppLocalizations.of(context)!.followers,
                             onPressed: () {
                               if (loggedIn) {
-                                context.push('/users/${user.username}/followers',
-                                    extra: user);
+                                context.push(
+                                  '/users/${user.username}/followers',
+                                  extra: user,
+                                );
                               }
                             },
                           ),
@@ -58,8 +61,10 @@ class ProfileHeader extends StatelessWidget {
                             label: AppLocalizations.of(context)!.following,
                             onPressed: () {
                               if (loggedIn) {
-                                context.push('/users/${user.username}/following',
-                                    extra: user);
+                                context.push(
+                                  '/users/${user.username}/following',
+                                  extra: user,
+                                );
                               }
                             },
                           ),
@@ -87,9 +92,7 @@ class ProfileHeader extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              Text(
-                user.bio,
-              )
+              Text(user.bio),
             ],
           ),
         ],
@@ -120,15 +123,12 @@ class _ProfilePageTopNumberDisplay extends StatelessWidget {
           text: TextSpan(
             text: NumberFormat.compact().format(number),
             style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.normal,
-                fontFamily: DefaultTextStyle.of(context).style.fontFamily,
-                fontSize: 17),
-            children: [
-              TextSpan(
-                text: '\n$label',
-              )
-            ],
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.normal,
+              fontFamily: DefaultTextStyle.of(context).style.fontFamily,
+              fontSize: 17,
+            ),
+            children: [TextSpan(text: '\n$label')],
           ),
         ),
       ),

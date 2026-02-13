@@ -11,9 +11,7 @@ import 'package:eko_app/widgets/users/verification_badge.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 Widget userCardBuilder(String uid) {
-  return UserCard(
-    uid: uid,
-  );
+  return UserCard(uid: uid);
 }
 
 class FollowButton extends ConsumerWidget {
@@ -21,8 +19,11 @@ class FollowButton extends ConsumerWidget {
   const FollowButton({super.key, required this.user});
 
   Future<void> onFollowPressed(WidgetRef ref, UserModel user) async {
-    final isFollowing =
-        ref.watch(currentUserProvider).user.following.contains(user.uid);
+    final isFollowing = ref
+        .watch(currentUserProvider)
+        .user
+        .following
+        .contains(user.uid);
     if (isFollowing) {
       await ref.read(currentUserProvider.notifier).removeFollower(user.uid);
     } else {
@@ -105,17 +106,16 @@ class UserCard extends ConsumerWidget {
             }
           },
           child: Padding(
-            padding:
-                EdgeInsets.symmetric(vertical: height * 0.01, horizontal: 6),
+            padding: EdgeInsets.symmetric(
+              vertical: height * 0.01,
+              horizontal: 6,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    ProfilePicture(
-                      uid: user.uid,
-                      size: width * 0.115,
-                    ),
+                    ProfilePicture(uid: user.uid, size: width * 0.115),
                     Padding(
                       padding: EdgeInsets.all(width * 0.02),
                       child: SizedBox(
@@ -129,17 +129,18 @@ class UserCard extends ConsumerWidget {
                                   Text(
                                     user.name,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   if (user.isVerified)
-                                    VerificationBadge(
-                                      uid: uid,
-                                    )
+                                    VerificationBadge(uid: uid),
                                 ],
                               ),
-                            Text('@${user.username}',
-                                overflow: TextOverflow.ellipsis),
+                            Text(
+                              '@${user.username}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
                         ),
                       ),
@@ -149,7 +150,7 @@ class UserCard extends ConsumerWidget {
                 if (actionWidget != null)
                   actionWidget!(user)
                 else
-                  FollowButton(user: user)
+                  FollowButton(user: user),
               ],
             ),
           ),

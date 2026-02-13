@@ -14,16 +14,8 @@ class ProfileRedirect extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) context.go('/users/${currentUser.user.username}');
       });
-      return const Scaffold(
-        body: Center(
-          child: LoadingSpinner(),
-        ),
-      );
+      return const Scaffold(body: Center(child: LoadingSpinner()));
     }
-    return const Scaffold(
-      body: Center(
-        child: LoadingSpinner(),
-      ),
-    );
+    return const Scaffold(body: Center(child: LoadingSpinner()));
   }
 }

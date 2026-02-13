@@ -83,7 +83,9 @@ class Presence extends _$Presence with WidgetsBindingObserver {
 
     //null aware assignment to avoid creating two timers on accident.
     _periodicUpdate ??= Timer.periodic(
-        const Duration(minutes: 8), (_) => maybeUpdateTimestamp());
+      const Duration(minutes: 8),
+      (_) => maybeUpdateTimestamp(),
+    );
 
     _onlineRef ??= FirebaseDatabase.instance.ref('status/$uid');
 

@@ -12,7 +12,8 @@ class NotificationHelper {
     if (!kIsWeb) {
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       FirebaseMessaging.onBackgroundMessage(
-          _firebaseMessagingBackgroundHandler);
+        _firebaseMessagingBackgroundHandler,
+      );
       await Future.wait([
         FirebaseMessaging.instance.setAutoInitEnabled(true),
         messaging.requestPermission(
@@ -28,15 +29,19 @@ class NotificationHelper {
           alert: false,
           badge: false,
           sound: false,
-        )
+        ),
       ]);
     }
   }
 
   static void setupNotificationsWithContext(
-      BuildContext context, void Function() callback) {
+    BuildContext context,
+    void Function() callback,
+  ) {
     Future<void> onNotification(
-        BuildContext context, RemoteMessage message) async {
+      BuildContext context,
+      RemoteMessage message,
+    ) async {
       String path = message.data['path'];
       String type = message.data['type'];
       Eraser.clearAllAppNotifications();
@@ -85,7 +90,8 @@ class NotificationHelper {
 
   @pragma('vm:entry-point')
   static Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
+    RemoteMessage message,
+  ) async {
     // await Firebase.initializeApp(
     //     options: DefaultFirebaseOptions.currentPlatform);
   }

@@ -67,12 +67,11 @@ class Post extends _$Post {
     final uid = ref.read(currentUserProvider).user.uid;
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayUnion([id])
+        'profileData.likedPosts': FieldValue.arrayUnion([id]),
       }),
-      firestore
-          .collection('posts')
-          .doc(id)
-          .update({'likes': FieldValue.increment(1)})
+      firestore.collection('posts').doc(id).update({
+        'likes': FieldValue.increment(1),
+      }),
     ]);
   }
 
@@ -81,12 +80,11 @@ class Post extends _$Post {
     final uid = ref.read(currentUserProvider).user.uid;
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayRemove([id])
+        'profileData.likedPosts': FieldValue.arrayRemove([id]),
       }),
-      firestore
-          .collection('posts')
-          .doc(id)
-          .update({'likes': FieldValue.increment(-1)}),
+      firestore.collection('posts').doc(id).update({
+        'likes': FieldValue.increment(-1),
+      }),
     ]);
   }
 
@@ -95,12 +93,11 @@ class Post extends _$Post {
     final uid = ref.read(currentUserProvider).user.uid;
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayUnion([id])
+        'profileData.dislikedPosts': FieldValue.arrayUnion([id]),
       }),
-      firestore
-          .collection('posts')
-          .doc(id)
-          .update({'dislikes': FieldValue.increment(1)})
+      firestore.collection('posts').doc(id).update({
+        'dislikes': FieldValue.increment(1),
+      }),
     ]);
   }
 
@@ -109,12 +106,11 @@ class Post extends _$Post {
     final uid = ref.read(currentUserProvider).user.uid;
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayRemove([id])
+        'profileData.dislikedPosts': FieldValue.arrayRemove([id]),
       }),
-      firestore
-          .collection('posts')
-          .doc(id)
-          .update({'dislikes': FieldValue.increment(-1)}),
+      firestore.collection('posts').doc(id).update({
+        'dislikes': FieldValue.increment(-1),
+      }),
     ]);
   }
 
@@ -142,8 +138,12 @@ class Post extends _$Post {
         ref
             .read(currentUserProvider.notifier)
             .removeIdFromDisliked(prevState.id);
-        state = AsyncData(prevState.copyWith(
-            dislikes: prevState.dislikes - 1, likes: prevState.likes + 1));
+        state = AsyncData(
+          prevState.copyWith(
+            dislikes: prevState.dislikes - 1,
+            likes: prevState.likes + 1,
+          ),
+        );
         ops.add(_removeDisikeFromDb(prevState.id));
       } else {
         state = AsyncData(prevState.copyWith(likes: prevState.likes + 1));
@@ -181,8 +181,12 @@ class Post extends _$Post {
       if (ref.read(currentUserProvider).likedPosts.contains(prevState.id)) {
         wasLiked = true;
         ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-        state = AsyncData(prevState.copyWith(
-            likes: prevState.likes - 1, dislikes: prevState.dislikes + 1));
+        state = AsyncData(
+          prevState.copyWith(
+            likes: prevState.likes - 1,
+            dislikes: prevState.dislikes + 1,
+          ),
+        );
         ops.add(_removeLikeFromDb(prevState.id));
       } else {
         state = AsyncData(prevState.copyWith(dislikes: prevState.dislikes + 1));
@@ -206,14 +210,12 @@ class Post extends _$Post {
     final firestore = FirebaseFirestore.instance;
     final uid = ref.read(currentUserProvider).user.uid;
     await Future.wait([
-      firestore
-          .collection('users')
-          .doc(uid)
-          .update({'profileData.pollVotes.$id': optionIndex}),
-      firestore
-          .collection('posts')
-          .doc(id)
-          .update({'pollVoteCounts.$optionIndex': FieldValue.increment(1)}),
+      firestore.collection('users').doc(uid).update({
+        'profileData.pollVotes.$id': optionIndex,
+      }),
+      firestore.collection('posts').doc(id).update({
+        'pollVoteCounts.$optionIndex': FieldValue.increment(1),
+      }),
     ]);
   }
 
@@ -221,14 +223,12 @@ class Post extends _$Post {
     final firestore = FirebaseFirestore.instance;
     final uid = ref.read(currentUserProvider).user.uid;
     await Future.wait([
-      firestore
-          .collection('users')
-          .doc(uid)
-          .update({'profileData.pollVotes.$id': FieldValue.delete()}),
-      firestore
-          .collection('posts')
-          .doc(id)
-          .update({'pollVoteCounts.$currentVote': FieldValue.increment(-1)}),
+      firestore.collection('users').doc(uid).update({
+        'profileData.pollVotes.$id': FieldValue.delete(),
+      }),
+      firestore.collection('posts').doc(id).update({
+        'pollVoteCounts.$currentVote': FieldValue.increment(-1),
+      }),
     ]);
   }
 
@@ -244,13 +244,15 @@ class Post extends _$Post {
         .read(currentUserProvider.notifier)
         .addPollVote(prevState.id, optionIndex);
 
-    final updatedPollVoteCounts =
-        Map<String, int>.from(prevState.pollVoteCounts ?? {});
+    final updatedPollVoteCounts = Map<String, int>.from(
+      prevState.pollVoteCounts ?? {},
+    );
     updatedPollVoteCounts[optionIndex.toString()] =
         (updatedPollVoteCounts[optionIndex.toString()] ?? 0) + 1;
 
-    state =
-        AsyncData(prevState.copyWith(pollVoteCounts: updatedPollVoteCounts));
+    state = AsyncData(
+      prevState.copyWith(pollVoteCounts: updatedPollVoteCounts),
+    );
 
     try {
       await _addVoteToDb(prevState.id, optionIndex);
@@ -273,13 +275,15 @@ class Post extends _$Post {
 
     ref.read(currentUserProvider.notifier).removePollVote(prevState.id);
 
-    final updatedPollVoteCounts =
-        Map<String, int>.from(prevState.pollVoteCounts!);
+    final updatedPollVoteCounts = Map<String, int>.from(
+      prevState.pollVoteCounts!,
+    );
     updatedPollVoteCounts[currentVote.toString()] =
         (updatedPollVoteCounts[currentVote.toString()] ?? 1) - 1;
 
-    state =
-        AsyncData(prevState.copyWith(pollVoteCounts: updatedPollVoteCounts));
+    state = AsyncData(
+      prevState.copyWith(pollVoteCounts: updatedPollVoteCounts),
+    );
 
     try {
       await _removeVoteFromDb(prevState.id, currentVote);

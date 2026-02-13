@@ -17,9 +17,11 @@ const tabStorageKey = 'LAST_FEED_PAGE_INDEX';
 class RoundedTabIndicator extends Decoration {
   final BoxPainter _painter;
 
-  RoundedTabIndicator(
-      {required Color color, required double radius, required double thickness})
-      : _painter = _RoundedPainter(color, radius, thickness);
+  RoundedTabIndicator({
+    required Color color,
+    required double radius,
+    required double thickness,
+  }) : _painter = _RoundedPainter(color, radius, thickness);
 
   @override
   BoxPainter createBoxPainter([VoidCallback? onChanged]) => _painter;
@@ -31,16 +33,14 @@ class _RoundedPainter extends BoxPainter {
   final double thickness;
 
   _RoundedPainter(Color color, this.radius, this.thickness)
-      : _paint = Paint()
-          ..color = color
-          ..style = PaintingStyle.fill;
+    : _paint = Paint()
+        ..color = color
+        ..style = PaintingStyle.fill;
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration cfg) {
-    final Rect rect = Offset(
-          offset.dx - 5,
-          cfg.size!.height - thickness,
-        ) &
+    final Rect rect =
+        Offset(offset.dx - 5, cfg.size!.height - thickness) &
         Size(cfg.size!.width + 10, thickness);
     final RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
     canvas.drawRRect(rRect, _paint);
@@ -51,8 +51,11 @@ class _Tab extends StatelessWidget {
   final String label;
   final bool selected;
   final ScrollController controller;
-  const _Tab(
-      {required this.label, required this.selected, required this.controller});
+  const _Tab({
+    required this.label,
+    required this.selected,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +65,11 @@ class _Tab extends StatelessWidget {
           if (!controller.hasClients) {
             return;
           }
-          controller.animateTo(0,
-              duration: Duration(milliseconds: 300), curve: ElasticInCurve());
+          controller.animateTo(
+            0,
+            duration: Duration(milliseconds: 300),
+            curve: ElasticInCurve(),
+          );
         },
         child: Padding(
           padding: EdgeInsetsDirectional.only(top: 0, bottom: 10),
@@ -82,10 +88,11 @@ class _AppBar extends StatelessWidget {
   final double height;
   final TabController tabController;
   final List<ScrollController> scrollControllers;
-  const _AppBar(
-      {required this.height,
-      required this.tabController,
-      required this.scrollControllers});
+  const _AppBar({
+    required this.height,
+    required this.tabController,
+    required this.scrollControllers,
+  });
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
@@ -110,7 +117,7 @@ class _AppBar extends StatelessWidget {
                       onTap: () => context.pushNamed('recent'),
                       child: Bell(),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -141,9 +148,10 @@ class _AppBar extends StatelessWidget {
               indicatorPadding: EdgeInsets.only(bottom: 5, top: 4),
               labelColor: Theme.of(context).colorScheme.onSurface,
               labelPadding: EdgeInsets.all(0),
-              unselectedLabelColor:
-                  Theme.of(context).colorScheme.onSurface.withAlpha(200),
-            )
+              unselectedLabelColor: Theme.of(
+                context,
+              ).colorScheme.onSurface.withAlpha(200),
+            ),
           ],
         ),
       ),
@@ -226,10 +234,13 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
     newScrollController.addListener(scrollListener);
     popScrollController.addListener(scrollListener);
     tabController = TabController(
-        length: numTabs,
-        vsync: this,
-        initialIndex: (PrefsService.instance.getInt(tabStorageKey) ?? 0)
-            .clamp(0, numTabs));
+      length: numTabs,
+      vsync: this,
+      initialIndex: (PrefsService.instance.getInt(tabStorageKey) ?? 0).clamp(
+        0,
+        numTabs,
+      ),
+    );
     tabController.addListener(tabListener);
   }
 
@@ -251,63 +262,66 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
     return Stack(
       children: [
         NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification is ScrollEndNotification) {
-                if (appBarOffset <= -appBarHeight * 0.9 &&
-                    getCurrentScrollController().offset > appBarHeight) {
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification) {
+              if (appBarOffset <= -appBarHeight * 0.9 &&
+                  getCurrentScrollController().offset > appBarHeight) {
+                setState(() {
+                  appBarOffset = -appBarHeight;
+                });
+              } else {
+                setState(() {
+                  appBarOffset = 0.0;
+                });
+              }
+            } else if (notification is ScrollUpdateNotification) {
+              if (appBarOffset == 0.0) {
+                return false;
+              }
+              final modulatedOffset = tabController.offset % 1;
+              if (modulatedOffset != 0) {
+                revealDelta = 0.0;
+                if (tabController.offset.sign == -1.0) {
                   setState(() {
-                    appBarOffset = -appBarHeight;
+                    appBarOffset = modulatedOffset * -appBarHeight;
                   });
                 } else {
                   setState(() {
-                    appBarOffset = 0.0;
+                    appBarOffset = (1 - modulatedOffset) * -appBarHeight;
                   });
                 }
-              } else if (notification is ScrollUpdateNotification) {
-                if (appBarOffset == 0.0) {
-                  return false;
-                }
-                final modulatedOffset = tabController.offset % 1;
-                if (modulatedOffset != 0) {
-                  revealDelta = 0.0;
-                  if (tabController.offset.sign == -1.0) {
-                    setState(() {
-                      appBarOffset = modulatedOffset * -appBarHeight;
-                    });
-                  } else {
-                    setState(() {
-                      appBarOffset = (1 - modulatedOffset) * -appBarHeight;
-                    });
-                  }
-                }
               }
-              return false;
-            },
-            child: GestureDetector(
-                child: TabBarView(
+            }
+            return false;
+          },
+          child: GestureDetector(
+            child: TabBarView(
               controller: tabController,
               children: [
                 _FollowingTab(controller: followingScrollController),
                 _NewTab(controller: newScrollController),
                 _PopTab(controller: popScrollController),
               ],
-            ))),
+            ),
+          ),
+        ),
         AnimatedPositioned(
-            duration: Duration(milliseconds: 100),
-            curve: Curves.easeOut,
-            top: appBarOffset,
-            left: 0,
-            right: 0,
+          duration: Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+          top: appBarOffset,
+          left: 0,
+          right: 0,
+          height: appBarHeight,
+          child: _AppBar(
             height: appBarHeight,
-            child: _AppBar(
-              height: appBarHeight,
-              tabController: tabController,
-              scrollControllers: [
-                followingScrollController,
-                newScrollController,
-                popScrollController
-              ],
-            )),
+            tabController: tabController,
+            scrollControllers: [
+              followingScrollController,
+              newScrollController,
+              popScrollController,
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -333,14 +347,10 @@ class __FollowingTabState extends ConsumerState<_FollowingTab>
     return InfiniteScrollyShell<String>(
       isEnd: provider.$2,
       list: provider.$1,
-      header: SizedBox(
-        height: appBarHeight,
-      ),
+      header: SizedBox(height: appBarHeight),
       getter: ref.read(followingFeedProvider.notifier).getter,
       onRefresh: ref.read(followingFeedProvider.notifier).refresh,
-      initialLoadingWidget: PostLoader(
-        length: 3,
-      ),
+      initialLoadingWidget: PostLoader(length: 3),
       widget: postCardBuilder,
       controller: widget.controller,
     );
@@ -367,14 +377,10 @@ class __NewTabState extends ConsumerState<_NewTab>
     return InfiniteScrollyShell<String>(
       isEnd: provider.$2,
       list: provider.$1,
-      header: SizedBox(
-        height: appBarHeight,
-      ),
+      header: SizedBox(height: appBarHeight),
       getter: ref.read(newFeedProvider.notifier).getter,
       onRefresh: ref.read(newFeedProvider.notifier).refresh,
-      initialLoadingWidget: PostLoader(
-        length: 3,
-      ),
+      initialLoadingWidget: PostLoader(length: 3),
       widget: postCardBuilder,
       controller: widget.controller,
     );
@@ -398,15 +404,11 @@ class __PopTabState extends ConsumerState<_PopTab>
   Widget build(BuildContext context) {
     super.build(context);
     return InfiniteScrolly<String, (int, String)>(
-      header: SizedBox(
-        height: appBarHeight,
-      ),
+      header: SizedBox(height: appBarHeight),
       getter: (data) async {
         return await popGetter(data, ref);
       },
-      initialLoadingWidget: PostLoader(
-        length: 3,
-      ),
+      initialLoadingWidget: PostLoader(length: 3),
       widget: postCardBuilder,
       controller: widget.controller,
     );

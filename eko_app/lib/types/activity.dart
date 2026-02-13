@@ -25,7 +25,8 @@ abstract class ActivityModel with _$ActivityModel {
   }
 
   static ActivityModel fromFirestoreDoc(
-      DocumentSnapshot<Map<String, dynamic>> doc) {
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final json = doc.data()!;
     json['id'] = doc.id;
     return ActivityModel.fromJson(json);

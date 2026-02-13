@@ -21,10 +21,7 @@ class BubblesColor {
 }
 
 class CircleColor {
-  const CircleColor({
-    required this.start,
-    required this.end,
-  });
+  const CircleColor({required this.start, required this.end});
   final Color start;
   final Color end;
 }

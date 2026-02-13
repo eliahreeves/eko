@@ -17,7 +17,9 @@ class Followers extends ConsumerStatefulWidget {
 
 class _FollowersState extends ConsumerState<Followers> {
   Future<(List<MapEntry<String, Never?>>, bool)> getter(
-      List<MapEntry<String, Never?>> data, List<String> fullFollowers) async {
+    List<MapEntry<String, Never?>> data,
+    List<String> fullFollowers,
+  ) async {
     // // value form constants
     const chunkSize = c.usersOnSearch;
     // // this is just to put queries in while they are waiting to finish
@@ -25,8 +27,9 @@ class _FollowersState extends ConsumerState<Followers> {
     // // list of uids to render next
     final List<MapEntry<String, Never?>> returnData = [];
     final currentDataSet = data.map((item) => item.key).toSet();
-    var unfetchedFollowers =
-        fullFollowers.where((e) => !currentDataSet.contains(e)).toList();
+    var unfetchedFollowers = fullFollowers
+        .where((e) => !currentDataSet.contains(e))
+        .toList();
     final end = unfetchedFollowers.length < chunkSize
         ? unfetchedFollowers.length
         : chunkSize;
@@ -48,35 +51,33 @@ class _FollowersState extends ConsumerState<Followers> {
     final asyncUser = ref.watch(userProvider(widget.uid));
     return switch (asyncUser) {
       AsyncData(:final value) => Scaffold(
-          appBar: AppBar(
-            surfaceTintColor: Colors.transparent,
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: Theme.of(context).colorScheme.onSurface,
-                size: 20,
-              ),
-              onPressed: () => context.pop(),
+        appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: Theme.of(context).colorScheme.onSurface,
+              size: 20,
             ),
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            title: Text(
-              AppLocalizations.of(context)!.followers,
-              style: TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 20,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
+            onPressed: () => context.pop(),
           ),
-          body: InfiniteScrolly<String, Never?>(
-            getter: (data) => getter(data, value.followers),
-            widget: (uid) => UserCard(uid: uid),
-            onRefresh: onRefresh,
-            initialLoadingWidget: UserLoader(
-              length: 12,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Text(
+            AppLocalizations.of(context)!.followers,
+            style: TextStyle(
+              fontWeight: FontWeight.normal,
+              fontSize: 20,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
+        body: InfiniteScrolly<String, Never?>(
+          getter: (data) => getter(data, value.followers),
+          widget: (uid) => UserCard(uid: uid),
+          onRefresh: onRefresh,
+          initialLoadingWidget: UserLoader(length: 12),
+        ),
+      ),
       AsyncError(:final error) => Center(child: Text('Error: $error')),
       _ => const Center(child: CircularProgressIndicator()),
     };

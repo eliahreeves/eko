@@ -38,9 +38,7 @@ Future<void> main() async {
   //init
   await Future.wait([
     PrefsService.init(),
-    Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    )
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
   // setupLocator();
   //protected/dependent services
@@ -48,21 +46,17 @@ Future<void> main() async {
     _checkFirstInstall(),
     LogoService.init(),
     NotificationHelper.setupNotifications(),
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true)
+    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true),
   ]);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  final List<ProviderObserver>? observers =
-      kDebugMode ? [ProviderDebuggerObserver()] : null;
-  runApp(
-    ProviderScope(
-      observers: observers,
-      child: MyApp(),
-    ),
-  );
+  final List<ProviderObserver>? observers = kDebugMode
+      ? [ProviderDebuggerObserver()]
+      : null;
+  runApp(ProviderScope(observers: observers, child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

@@ -20,10 +20,7 @@ abstract class CommentModel with _$CommentModel {
     required String postId,
     String? gifUrl,
     @Default(<String>[])
-    @JsonKey(
-      fromJson: parseTextToTags,
-      toJson: _joinList,
-    )
+    @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
     List<String> body,
     @Default(0) int likes,
     @Default(0) int dislikes,
@@ -38,7 +35,8 @@ abstract class CommentModel with _$CommentModel {
   }
 
   static Future<CommentModel> fromFireStoreDoc(
-      QueryDocumentSnapshot<Map<String, dynamic>> doc) async {
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) async {
     final json = doc.data();
     json['id'] = doc.id;
     json['postId'] = doc.reference.parent.parent?.id;

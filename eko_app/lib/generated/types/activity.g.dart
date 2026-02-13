@@ -13,7 +13,7 @@ _ActivityModel _$ActivityModelFromJson(Map<String, dynamic> json) =>
       createdAt: json['time'] as String,
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-              const <String>[],
+          const <String>[],
       type: json['type'] as String? ?? '',
       content: json['content'] as String? ?? '',
       path: json['path'] as String? ?? '',

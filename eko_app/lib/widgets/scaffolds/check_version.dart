@@ -73,8 +73,8 @@ class _CheckVersonMobileState extends State<_CheckVersonMobile> {
                     child: TextButton(
                       onPressed: () => UriLauncher.launchCorrectStore(),
                       style: TextButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
                       child: Text(
                         AppLocalizations.of(context)!.update,
                         style: TextStyle(

@@ -26,8 +26,9 @@ bool isUsernameValid(String username) {
 Future<void> addFCM(String uid) async {
   if (!kIsWeb) {
     // TODO: eventually needs to support timestamp
-    final DocumentReference userDocRef =
-        FirebaseFirestore.instance.collection('users').doc(uid);
+    final DocumentReference userDocRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid);
     try {
       // Get the current data
       final DocumentSnapshot userSnapshot = await userDocRef.get();
@@ -60,18 +61,20 @@ Future<void> addFCM(String uid) async {
 Future<void> removeFCM(String uid) async {
   if (!kIsWeb) {
     // TODO: eventually needs to support timestamp
-    final DocumentReference userDocRef =
-        FirebaseFirestore.instance.collection('users').doc(uid);
+    final DocumentReference userDocRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid);
 
     try {
       // Get the current data
       final DocumentSnapshot userSnapshot = await userDocRef.get();
       if (userSnapshot.exists) {
         // Retrieve the FCM tokens array
-        List<String> fcmTokens =
-            List<String>.from(userSnapshot['fcmTokens'] ?? []);
-        final String? currentDeviceToken =
-            await FirebaseMessaging.instance.getToken();
+        List<String> fcmTokens = List<String>.from(
+          userSnapshot['fcmTokens'] ?? [],
+        );
+        final String? currentDeviceToken = await FirebaseMessaging.instance
+            .getToken();
         // Remove the current device's FCM token from the array
         fcmTokens.remove(currentDeviceToken);
 
@@ -85,8 +88,10 @@ Future<void> removeFCM(String uid) async {
   }
 }
 
-Future<String> forgotPassword(
-    {required String? countryCode, required String email}) async {
+Future<String> forgotPassword({
+  required String? countryCode,
+  required String email,
+}) async {
   await FirebaseAuth.instance.setLanguageCode(countryCode);
   try {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -118,8 +123,10 @@ Future<String> verifyPasswordReset(String code) async {
 
 Future<String> resetPassword(String code, String password) async {
   try {
-    await FirebaseAuth.instance
-        .confirmPasswordReset(code: code, newPassword: password);
+    await FirebaseAuth.instance.confirmPasswordReset(
+      code: code,
+      newPassword: password,
+    );
     return 'success';
   } on FirebaseAuthException catch (e) {
     return (e.code);

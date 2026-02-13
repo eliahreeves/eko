@@ -9,8 +9,13 @@ num degToRad(num deg) => deg * (math.pi / 180.0);
 
 num radToDeg(num rad) => rad * (180.0 / math.pi);
 
-double mapValueFromRangeToRange(double value, double fromLow, double fromHigh,
-    double toLow, double toHigh) {
+double mapValueFromRangeToRange(
+  double value,
+  double fromLow,
+  double fromHigh,
+  double toLow,
+  double toHigh,
+) {
   return toLow + ((value - fromLow) / (fromHigh - fromLow) * (toHigh - toLow));
 }
 

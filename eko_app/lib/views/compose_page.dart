@@ -42,25 +42,28 @@ class _CornerClose extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 1, horizontal: 1),
-                child: child),
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(vertical: 1, horizontal: 1),
+              child: child,
+            ),
             Positioned(
-                right: -17,
-                top: -17,
-                child: IconButton(
-                  iconSize: 25,
-                  onPressed: onPressed,
-                  icon: DecoratedBox(
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).colorScheme.surface),
-                    child: Icon(
-                      Icons.cancel,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+              right: -17,
+              top: -17,
+              child: IconButton(
+                iconSize: 25,
+                onPressed: onPressed,
+                icon: DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
-                ))
+                  child: Icon(
+                    Icons.cancel,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -155,13 +158,11 @@ class _ComposePageState extends ConsumerState<ComposePage> {
 
   void _addGifPressed() async {
     String? url = await context.pushNamed('gif');
-    if (url != null) {
-      setState(() {
-        gif = url;
-        image = null;
-        repostId = null;
-      });
-    }
+    setState(() {
+      gif = url;
+      image = null;
+      repostId = null;
+    });
   }
 
   Future<void> _addImagePressed() async {
@@ -173,8 +174,10 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       return;
     }
 
-    final asciiImage = await context.pushNamed<AsciiImage?>('edit_picture',
-        extra: pickedImage);
+    final asciiImage = await context.pushNamed<AsciiImage?>(
+      'edit_picture',
+      extra: pickedImage,
+    );
 
     setState(() {
       image = asciiImage;
@@ -216,42 +219,53 @@ class _ComposePageState extends ConsumerState<ComposePage> {
     if (title == '' && body == '' && gif == null && image == null && !isPoll) {
       titleFocus.requestFocus();
       showSnackBar(
-          text: AppLocalizations.of(context)!.emptyFieldError,
-          context: context);
+        text: AppLocalizations.of(context)!.emptyFieldError,
+        context: context,
+      );
       isChecking = false;
       return;
     }
     if (title.length > c.maxTitleChars) {
       titleFocus.requestFocus();
       showSnackBar(
-          text: AppLocalizations.of(context)!.tooManyChar, context: context);
+        text: AppLocalizations.of(context)!.tooManyChar,
+        context: context,
+      );
       isChecking = false;
       return;
     }
     if (body.length > c.maxPostChars) {
       bodyFocus.requestFocus();
       showSnackBar(
-          text: AppLocalizations.of(context)!.tooManyChar, context: context);
+        text: AppLocalizations.of(context)!.tooManyChar,
+        context: context,
+      );
       isChecking = false;
       return;
     }
     if (_countNewLines(body) > c.maxPostLines) {
       bodyFocus.requestFocus();
       showSnackBar(
-          text: AppLocalizations.of(context)!.tooManyLine, context: context);
+        text: AppLocalizations.of(context)!.tooManyLine,
+        context: context,
+      );
       isChecking = false;
       return;
     }
     if (isPoll &&
         pollOptions.where((option) => option.trim().isNotEmpty).length < 2) {
       showSnackBar(
-          text: AppLocalizations.of(context)!.needTwoOptions, context: context);
+        text: AppLocalizations.of(context)!.needTwoOptions,
+        context: context,
+      );
       isChecking = false;
       return;
     }
     if (isPoll && pollOptions.any((option) => option.length > c.maxPollChars)) {
       showSnackBar(
-          text: AppLocalizations.of(context)!.tooManyChar, context: context);
+        text: AppLocalizations.of(context)!.tooManyChar,
+        context: context,
+      );
       isChecking = false;
       return;
     }
@@ -263,8 +277,9 @@ class _ComposePageState extends ConsumerState<ComposePage> {
           post.tags.first != audiance) {
         if (mounted) {
           showSnackBar(
-              text: AppLocalizations.of(context)!.crossGroupRepost,
-              context: context);
+            text: AppLocalizations.of(context)!.crossGroupRepost,
+            context: context,
+          );
         }
         isChecking = false;
         return;
@@ -295,7 +310,8 @@ class _ComposePageState extends ConsumerState<ComposePage> {
           return AlertDialog(
             backgroundColor: Theme.of(context).colorScheme.outlineVariant,
             title: Text(
-                'Post to ${audiance == null ? AppLocalizations.of(context)!.public : ref.watch(groupProvider(audiance!)).when(data: (group) => group.name, loading: () => '--', error: (_, __) => '--')}?'),
+              'Post to ${audiance == null ? AppLocalizations.of(context)!.public : ref.watch(groupProvider(audiance!)).when(data: (group) => group.name, loading: () => '--', error: (_, __) => '--')}?',
+            ),
             content: SingleChildScrollView(
               child: PostCardFromPost(post: post, isPreview: true),
             ),
@@ -312,15 +328,14 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                   if (isUploading) return;
                   isUploading = true;
                   final postToUpload = post.copyWith(
-                      createdAt: DateTime.now().toUtc().toIso8601String());
+                    createdAt: DateTime.now().toUtc().toIso8601String(),
+                  );
                   final id = await uploadPost(postToUpload, ref);
                   if (context.mounted) context.pop();
                   _clear();
                   if (context.mounted) {
                     if (post.tags.contains('public')) {
-                      final completePost = postToUpload.copyWith(
-                        id: id,
-                      );
+                      final completePost = postToUpload.copyWith(id: id);
                       ref
                           .read(newFeedProvider.notifier)
                           .insertAtIndex(0, completePost);
@@ -383,15 +398,16 @@ class _ComposePageState extends ConsumerState<ComposePage> {
               ),
               if (!kIsWeb)
                 FloatingActionButton.small(
-                    heroTag: null,
-                    child: const Icon(Icons.perm_media),
-                    onPressed: () async {
-                      final state = _key.currentState;
-                      if (state != null) {
-                        state.toggle();
-                      }
-                      _addImagePressed();
-                    }),
+                  heroTag: null,
+                  child: const Icon(Icons.perm_media),
+                  onPressed: () async {
+                    final state = _key.currentState;
+                    if (state != null) {
+                      state.toggle();
+                    }
+                    _addImagePressed();
+                  },
+                ),
               FloatingActionButton.small(
                 heroTag: null,
                 onPressed: () {
@@ -417,19 +433,22 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                   _clear();
                 },
                 style: TextButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.surface),
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                ),
                 child: Text(
                   AppLocalizations.of(context)!.clear,
                   style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface),
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
               TextButton(
                 onPressed: () => _postPressed(),
                 style: TextButton.styleFrom(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer,
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -443,12 +462,11 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                     Text(
                       AppLocalizations.of(context)!.postButton,
                       style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).colorScheme.onSurface),
+                        fontSize: 18,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
-                    SizedBox(
-                      width: 6,
-                    ),
+                    SizedBox(width: 6),
                     Icon(
                       Icons.send,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -470,9 +488,10 @@ class _ComposePageState extends ConsumerState<ComposePage> {
               Row(
                 children: [
                   ProfilePicture(
-                      uid: ref.watch(currentUserProvider).user.uid,
-                      onlineIndicatorEnabled: false,
-                      size: width * 0.115),
+                    uid: ref.watch(currentUserProvider).user.uid,
+                    onlineIndicatorEnabled: false,
+                    size: width * 0.115,
+                  ),
                   const SizedBox(width: 9),
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
@@ -484,19 +503,22 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                       ),
                     ),
                     onPressed: () => _audianceButtonPressed(
-                        context,
-                        (id) => setState(() {
-                              audiance = id;
-                            })),
+                      context,
+                      (id) => setState(() {
+                        audiance = id;
+                      }),
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _AudianceText(id: audiance),
-                        Icon(Icons.expand_more_rounded,
-                            color: Theme.of(context).colorScheme.onSurface),
+                        Icon(
+                          Icons.expand_more_rounded,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
               SizedBox(height: height * 0.01),
@@ -508,15 +530,17 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                 cursorColor: Theme.of(context).colorScheme.onSurface,
                 keyboardType: TextInputType.text,
                 style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(height * 0.01),
                   hintText: AppLocalizations.of(context)!.postTitle,
                   hintStyle: TextStyle(
-                      fontSize: 22,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    fontSize: 22,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   border: InputBorder.none,
                 ),
                 // ),
@@ -527,29 +551,33 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnimatedBuilder(
-                          animation:
-                              Listenable.merge([titleController, titleFocus]),
-                          builder: (context, _) {
-                            if (titleFocus.hasPrimaryFocus &&
-                                titleController.text.isNotEmpty) {
-                              return Text(
-                                  '${titleController.text.length}/${c.maxTitleChars} ${AppLocalizations.of(context)!.characters}');
-                            }
-                            return SizedBox();
-                          }),
+                        animation: Listenable.merge([
+                          titleController,
+                          titleFocus,
+                        ]),
+                        builder: (context, _) {
+                          if (titleFocus.hasPrimaryFocus &&
+                              titleController.text.isNotEmpty) {
+                            return Text(
+                              '${titleController.text.length}/${c.maxTitleChars} ${AppLocalizations.of(context)!.characters}',
+                            );
+                          }
+                          return SizedBox();
+                        },
+                      ),
                       if (repostId != null)
                         _CornerClose(
                           onPressed: () => setState(() {
                             repostId = null;
                           }),
                           child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                minWidth: width * 0.8,
-                              ),
-                              child: RepostCard(
-                                  postId: widget.repostId!,
-                                  isLoggedIn: true,
-                                  isPreview: true)),
+                            constraints: BoxConstraints(minWidth: width * 0.8),
+                            child: RepostCard(
+                              postId: widget.repostId!,
+                              isLoggedIn: true,
+                              isPreview: true,
+                            ),
+                          ),
                         ),
                       if (gif != null)
                         _CornerClose(
@@ -567,9 +595,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                         ),
                       if (isPoll &&
                           (image != null || gif != null || repostId != null))
-                        SizedBox(
-                          height: 5,
-                        ),
+                        SizedBox(height: 5),
                       if (isPoll)
                         Padding(
                           padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
@@ -594,36 +620,42 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                           cursorColor: Theme.of(context).colorScheme.onSurface,
                           keyboardType: TextInputType.multiline,
                           style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                              color: Theme.of(context).colorScheme.onSurface),
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.all(height * 0.01),
                             hintText: AppLocalizations.of(context)!.addText,
                             hintStyle: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant),
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                             border: InputBorder.none,
                           ),
                         ),
                       ),
                       AnimatedBuilder(
-                        animation:
-                            Listenable.merge([bodyController, bodyFocus]),
+                        animation: Listenable.merge([
+                          bodyController,
+                          bodyFocus,
+                        ]),
                         builder: (context, _) {
                           if (bodyFocus.hasPrimaryFocus &&
                               bodyController.text.isNotEmpty) {
                             return Row(
                               children: [
                                 Text(
-                                    '${bodyController.text.length}/${c.maxPostChars} ${AppLocalizations.of(context)!.characters}'),
+                                  '${bodyController.text.length}/${c.maxPostChars} ${AppLocalizations.of(context)!.characters}',
+                                ),
                                 const Spacer(),
                                 if (bodyNewLines != 0 || true)
                                   Text(
-                                      '${_countNewLines(bodyController.text.trim())}/${c.maxPostLines} ${AppLocalizations.of(context)!.newLines}'),
+                                    '${_countNewLines(bodyController.text.trim())}/${c.maxPostLines} ${AppLocalizations.of(context)!.newLines}',
+                                  ),
                               ],
                             );
                           }
@@ -631,14 +663,17 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                         },
                       ),
                       AnimatedBuilder(
-                        animation:
-                            Listenable.merge([bodyController, bodyFocus]),
+                        animation: Listenable.merge([
+                          bodyController,
+                          bodyFocus,
+                        ]),
                         builder: (context, _) {
                           final text = searchText(bodyController);
                           if (text != null && bodyFocus.hasFocus) {
                             WidgetsBinding.instance.addPostFrameCallback(
                               (_) => scrollController.jumpTo(
-                                  scrollController.position.maxScrollExtent),
+                                scrollController.position.maxScrollExtent,
+                              ),
                             );
                             return TagSearch(
                               onCardTap: (username) =>
@@ -668,7 +703,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                     },
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -684,15 +719,20 @@ class _AudianceText extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (id == null) {
-      return Text(AppLocalizations.of(context)!.public,
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurface));
+      return Text(
+        AppLocalizations.of(context)!.public,
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      );
     }
     final asyncGroup = ref.watch(groupProvider(id!));
     return asyncGroup.when(
-        data: (group) => Text(group.name,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-        error: (_, __) => SizedBox.shrink(),
-        loading: () => SizedBox.shrink());
+      data: (group) => Text(
+        group.name,
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      ),
+      error: (_, __) => SizedBox.shrink(),
+      loading: () => SizedBox.shrink(),
+    );
   }
 }
 
@@ -707,11 +747,12 @@ class _GroupListHeader extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-            padding: const EdgeInsets.only(bottom: 5),
-            child: Text(
-              AppLocalizations.of(context)!.selectAudience,
-              style: const TextStyle(fontSize: 24),
-            )),
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(
+            AppLocalizations.of(context)!.selectAudience,
+            style: const TextStyle(fontSize: 24),
+          ),
+        ),
         Divider(
           color: Theme.of(context).colorScheme.outline,
           height: c.dividerWidth,
@@ -724,17 +765,13 @@ class _GroupListHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Row(
               children: [
-                SizedBox(
-                  width: width * 0.05,
-                ),
+                SizedBox(width: width * 0.05),
                 Icon(Icons.public, size: width * 0.18),
-                SizedBox(
-                  width: width * 0.05,
-                ),
+                SizedBox(width: width * 0.05),
                 Text(
                   AppLocalizations.of(context)!.public,
                   style: const TextStyle(fontSize: 19),
-                )
+                ),
               ],
             ),
           ),
@@ -750,7 +787,7 @@ class _GroupListHeader extends StatelessWidget {
             AppLocalizations.of(context)!.myGroups,
             style: const TextStyle(fontSize: 18),
           ),
-        )
+        ),
       ],
     );
   }
@@ -764,36 +801,38 @@ class _GroupList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsData = ref.watch(groupListProvider);
     return InfiniteScrollyShell<String>(
-        header: _GroupListHeader(
-          onPopularPressed: () {
-            onItemPressed(null);
-            context.pop();
-          },
-        ),
-        getter: ref.read(groupListProvider.notifier).getter,
-        onRefresh: ref.read(groupListProvider.notifier).refresh,
-        widget: (id) => GroupCard(
-            groupId: id,
-            onPressed: (id) {
-              onItemPressed(id);
-              context.pop();
-            }),
-        list: groupsData.$1,
-        isEnd: groupsData.$2);
+      header: _GroupListHeader(
+        onPopularPressed: () {
+          onItemPressed(null);
+          context.pop();
+        },
+      ),
+      getter: ref.read(groupListProvider.notifier).getter,
+      onRefresh: ref.read(groupListProvider.notifier).refresh,
+      widget: (id) => GroupCard(
+        groupId: id,
+        onPressed: (id) {
+          onItemPressed(id);
+          context.pop();
+        },
+      ),
+      list: groupsData.$1,
+      isEnd: groupsData.$2,
+    );
   }
 }
 
 void _audianceButtonPressed(
-    BuildContext context, void Function(String?) onItemPressed) {
+  BuildContext context,
+  void Function(String?) onItemPressed,
+) {
   showModalBottomSheet(
     showDragHandle: true,
     backgroundColor: Theme.of(context).colorScheme.outlineVariant,
     isScrollControlled: true,
     context: context,
     builder: (BuildContext context) {
-      return _GroupList(
-        onItemPressed: onItemPressed,
-      );
+      return _GroupList(onItemPressed: onItemPressed);
     },
   );
 }

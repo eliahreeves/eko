@@ -35,20 +35,18 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
 
   void showExitWarning() {
     showMyDialog(
-        AppLocalizations.of(context)!.exitEditProfileTitle,
-        '',
-        [
-          AppLocalizations.of(context)!.exit,
-          AppLocalizations.of(context)!.stay
-        ],
-        [
-          () {
-            context.pop();
-            context.pop();
-          },
-          context.pop
-        ],
-        context);
+      AppLocalizations.of(context)!.exitEditProfileTitle,
+      '',
+      [AppLocalizations.of(context)!.exit, AppLocalizations.of(context)!.stay],
+      [
+        () {
+          context.pop();
+          context.pop();
+        },
+        context.pop,
+      ],
+      context,
+    );
   }
 
   Future<void> setPasswordPressed() async {
@@ -57,25 +55,30 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
       passwordFocus.requestFocus();
     } else {
       if (isValidPassword(
-          passwordController.text, confirmPasswordController.text)) {
+        passwordController.text,
+        confirmPasswordController.text,
+      )) {
         setState(() {
           isLoading = true;
         });
         if ((await resetPassword(
-                widget.urlData['oobCode'] ?? '', passwordController.text)) ==
+              widget.urlData['oobCode'] ?? '',
+              passwordController.text,
+            )) ==
             'success') {
           if (mounted) {
             showMyDialog(
-                AppLocalizations.of(context)!.passwordResetTitle,
-                AppLocalizations.of(context)!.passwordResetBody,
-                [AppLocalizations.of(context)!.ok],
-                [
-                  () {
-                    context.pop();
-                    context.go('/login');
-                  }
-                ],
-                context);
+              AppLocalizations.of(context)!.passwordResetTitle,
+              AppLocalizations.of(context)!.passwordResetBody,
+              [AppLocalizations.of(context)!.ok],
+              [
+                () {
+                  context.pop();
+                  context.go('/login');
+                },
+              ],
+              context,
+            );
           }
         } else {
           passwordController.text = '';
@@ -90,11 +93,12 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
         });
       } else {
         showMyDialog(
-            AppLocalizations.of(context)!.weakPasswordTitle,
-            AppLocalizations.of(context)!.weakPasswordBody,
-            [AppLocalizations.of(context)!.tryAgain],
-            [context.pop],
-            context);
+          AppLocalizations.of(context)!.weakPasswordTitle,
+          AppLocalizations.of(context)!.weakPasswordBody,
+          [AppLocalizations.of(context)!.tryAgain],
+          [context.pop],
+          context,
+        );
       }
     }
   }
@@ -183,31 +187,26 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                 // Index 1: Error State
                 Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: width * c.authPaddingHorizontal),
+                    horizontal: width * c.authPaddingHorizontal,
+                  ),
                   child: ListView(
                     shrinkWrap: true,
                     children: [
                       Text(
                         l10n.defaultErrorTittle,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      const AuthDivider(
-                        indent: 20,
-                        endIndent: 20,
-                      ),
+                      const AuthDivider(indent: 20, endIndent: 20),
                       const SizedBox(height: c.authSectionSpacing),
                       Text(
                         l10n.badAuthState,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 18),
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 18,
+                        ),
                       ),
                       const SizedBox(height: c.authSectionSpacing),
                       AuthButton.primary(
@@ -220,7 +219,8 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                 // Index 2: Reset Password Form
                 Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: width * c.authPaddingHorizontal),
+                    horizontal: width * c.authPaddingHorizontal,
+                  ),
                   child: Center(
                     child: ListView(
                       keyboardDismissBehavior:
@@ -231,26 +231,20 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                           child: Align(
                             child: Text(
                               l10n.resetPassword,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
-                        const AuthDivider(
-                          indent: 20,
-                          endIndent: 20,
-                        ),
+                        const AuthDivider(indent: 20, endIndent: 20),
                         SizedBox(height: height * 0.02),
                         Text(
                           '${l10n.resetPasswordPromt} $email',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 18),
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 18,
+                          ),
                         ),
                         SizedBox(height: c.authElementSpacing),
                         CreatePassword(

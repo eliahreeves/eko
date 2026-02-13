@@ -13,8 +13,9 @@ String _$groupPoolHash() => r'ec686bcc1d7befd4572b3c032fd54c57ae38c604';
 final groupPoolProvider = Provider<PoolService<GroupModel>>.internal(
   groupPool,
   name: r'groupPoolProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$groupPoolHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$groupPoolHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
@@ -29,8 +30,9 @@ String _$postPoolHash() => r'35eebdddef5e558ab5b8d023914a10dc7e66d66b';
 final postPoolProvider = Provider<PoolService<PostModel>>.internal(
   postPool,
   name: r'postPoolProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$postPoolHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$postPoolHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
@@ -45,8 +47,9 @@ String _$commentPoolHash() => r'1f30813c89175a6709ea0621bba92d2d790c04cf';
 final commentPoolProvider = Provider<PoolService<CommentModel>>.internal(
   commentPool,
   name: r'commentPoolProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$commentPoolHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$commentPoolHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
@@ -61,8 +64,9 @@ String _$userPoolHash() => r'dd987357b9f387f152d26e6a981c531c78a17501';
 final userPoolProvider = Provider<PoolService<UserModel>>.internal(
   userPool,
   name: r'userPoolProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$userPoolHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$userPoolHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
@@ -77,8 +81,9 @@ String _$activityPoolHash() => r'3aafab11eb0ce7b69258a97731b9eee6efddf915';
 final activityPoolProvider = Provider<PoolService<ActivityModel>>.internal(
   activityPool,
   name: r'activityPoolProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$activityPoolHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$activityPoolHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );

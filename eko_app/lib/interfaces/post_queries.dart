@@ -6,58 +6,65 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/post.dart';
 
-Future<List<PostModel>> getPosts(
-  Query<Map<String, dynamic>> query,
-) async {
+Future<List<PostModel>> getPosts(Query<Map<String, dynamic>> query) async {
   final postList = await Future.wait(
     await query.get().then(
-          (data) => data.docs.map(
-            (doc) async {
-              return await PostModel.fromFireStoreDoc(doc);
-            },
-          ),
-        ),
+      (data) => data.docs.map((doc) async {
+        return await PostModel.fromFireStoreDoc(doc);
+      }),
+    ),
   );
   return postList;
 }
 
 Future<(List<MapEntry<String, String>>, bool)> profilePageGetter(
-    List<MapEntry<String, String>> list, WidgetRef ref) async {
+  List<MapEntry<String, String>> list,
+  WidgetRef ref,
+) async {
   final uid = ref.read(currentUserProvider).user.uid;
   final baseQuery = FirebaseFirestore.instance
       .collection('posts')
       .where('author', isEqualTo: uid)
       .orderBy('time', descending: true)
       .limit(c.postsOnRefresh);
-  final query =
-      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
+  final query = list.isEmpty
+      ? baseQuery
+      : baseQuery.startAfter([list.last.value]);
 
   final postList = await getPosts(query);
   ref.read(postPoolProvider).putAll(postList);
-  final retList =
-      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
+  final retList = postList
+      .map((item) => MapEntry(item.id, item.createdAt))
+      .toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
 Future<(List<MapEntry<String, String>>, bool)> otherProfilePageGetter(
-    List<MapEntry<String, String>> list, WidgetRef ref, String uid) async {
+  List<MapEntry<String, String>> list,
+  WidgetRef ref,
+  String uid,
+) async {
   final baseQuery = FirebaseFirestore.instance
       .collection('posts')
       .where('tags', arrayContains: 'public')
       .where('author', isEqualTo: uid)
       .orderBy('time', descending: true)
       .limit(c.postsOnRefresh);
-  final query =
-      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
+  final query = list.isEmpty
+      ? baseQuery
+      : baseQuery.startAfter([list.last.value]);
   final postList = await getPosts(query);
   ref.read(postPoolProvider).putAll(postList);
-  final retList =
-      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
+  final retList = postList
+      .map((item) => MapEntry(item.id, item.createdAt))
+      .toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
 Future<(List<MapEntry<String, (int, String)>>, bool)> popGetter(
-    List<MapEntry<String, (int, String)>> list, WidgetRef ref) async {
+  List<MapEntry<String, (int, String)>> list,
+  WidgetRef ref,
+) async {
   final baseQuery = FirebaseFirestore.instance
       .collection('posts')
       .where('tags', arrayContains: 'public')
@@ -76,31 +83,35 @@ Future<(List<MapEntry<String, (int, String)>>, bool)> popGetter(
 }
 
 Future<(List<MapEntry<String, String>>, bool)> getGroupPosts(
-    List<MapEntry<String, String>> list, WidgetRef ref, String groupId) async {
+  List<MapEntry<String, String>> list,
+  WidgetRef ref,
+  String groupId,
+) async {
   final baseQuery = FirebaseFirestore.instance
       .collection('posts')
       .where('tags', arrayContains: groupId)
       .orderBy('time', descending: true)
       .limit(c.postsOnRefresh);
-  final query =
-      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
+  final query = list.isEmpty
+      ? baseQuery
+      : baseQuery.startAfter([list.last.value]);
   final postList = await getPosts(query);
   ref.read(postPoolProvider).putAll(postList);
-  final retList =
-      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
+  final retList = postList
+      .map((item) => MapEntry(item.id, item.createdAt))
+      .toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
 Future<List<CommentModel>> getComments(
-    Query<Map<String, dynamic>> query) async {
+  Query<Map<String, dynamic>> query,
+) async {
   final commentList = await Future.wait(
     await query.get().then(
-          (data) => data.docs.map(
-            (doc) async {
-              return await CommentModel.fromFireStoreDoc(doc);
-            },
-          ),
-        ),
+      (data) => data.docs.map((doc) async {
+        return await CommentModel.fromFireStoreDoc(doc);
+      }),
+    ),
   );
   return commentList;
 }

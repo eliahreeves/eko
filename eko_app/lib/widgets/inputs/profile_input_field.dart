@@ -20,24 +20,25 @@ class ProfileInputField extends StatelessWidget {
   final void Function()? onTap;
   final void Function(PointerDownEvent)? onTapOutside;
   final void Function()? onEditingComplete;
-  const ProfileInputField(
-      {required this.label,
-      this.controller,
-      this.onChanged,
-      this.onTap,
-      this.onTapOutside,
-      this.onEditingComplete,
-      this.focus,
-      this.width,
-      this.inputType = TextInputType.text,
-      this.filter = r'[\s\S]*',
-      this.validator = AutovalidateMode.disabled,
-      this.validatorFunction,
-      this.enabled = true,
-      this.password = false,
-      this.textInputAction = TextInputAction.next,
-      this.maxLength,
-      super.key});
+  const ProfileInputField({
+    required this.label,
+    this.controller,
+    this.onChanged,
+    this.onTap,
+    this.onTapOutside,
+    this.onEditingComplete,
+    this.focus,
+    this.width,
+    this.inputType = TextInputType.text,
+    this.filter = r'[\s\S]*',
+    this.validator = AutovalidateMode.disabled,
+    this.validatorFunction,
+    this.enabled = true,
+    this.password = false,
+    this.textInputAction = TextInputAction.next,
+    this.maxLength,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +56,7 @@ class ProfileInputField extends StatelessWidget {
       child: TextFormField(
         cursorColor: Theme.of(context).colorScheme.onSurface,
         enabled: enabled,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(filter)),
-        ],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(filter))],
         // TODO: somehow make it so that IOS users can press '123' on your keyboard and you can put in newline
         textInputAction: TextInputAction.done,
         autovalidateMode: validator,
@@ -73,9 +72,10 @@ class ProfileInputField extends StatelessWidget {
         maxLines: 3,
         maxLength: maxLength,
         style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).colorScheme.onSurface),
+          fontSize: 18,
+          fontWeight: FontWeight.normal,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
@@ -92,9 +92,11 @@ class ProfileInputField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide:
-                  BorderSide(color: Theme.of(context).colorScheme.onSurface)),
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
         ),
       ),
     );

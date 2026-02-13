@@ -26,8 +26,9 @@ class EmojiSelector extends StatelessWidget {
           },
           config: Config(
             viewOrderConfig: ViewOrderConfig(
-                top: EmojiPickerItem.categoryBar,
-                middle: EmojiPickerItem.emojiView),
+              top: EmojiPickerItem.categoryBar,
+              middle: EmojiPickerItem.emojiView,
+            ),
             bottomActionBarConfig: BottomActionBarConfig(enabled: false),
             categoryViewConfig: CategoryViewConfig(
               iconColor: Theme.of(context).colorScheme.onSurface,
@@ -38,7 +39,8 @@ class EmojiSelector extends StatelessWidget {
               extraTab: CategoryExtraTab.SEARCH,
             ),
             emojiViewConfig: EmojiViewConfig(
-                backgroundColor: Theme.of(context).colorScheme.surface),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+            ),
             searchViewConfig: SearchViewConfig(
               backgroundColor: Theme.of(context).colorScheme.surface,
               buttonIconColor: Theme.of(context).colorScheme.onSurface,

@@ -15,16 +15,18 @@ class Like extends StatelessWidget {
   final Color? fillColor;
   final BoxFit fit;
   final double? size;
-  const Like(
-      {super.key,
-      this.strokeColor,
-      this.fillColor,
-      this.fit = BoxFit.contain,
-      this.size});
+  const Like({
+    super.key,
+    this.strokeColor,
+    this.fillColor,
+    this.fit = BoxFit.contain,
+    this.size,
+  });
   @override
   Widget build(BuildContext context) {
-    final strStrokeColor =
-        colorToHex(strokeColor ?? Theme.of(context).colorScheme.onSurface);
+    final strStrokeColor = colorToHex(
+      strokeColor ?? Theme.of(context).colorScheme.onSurface,
+    );
     final strFillColor = fillColor == null ? 'none' : colorToHex(fillColor!);
     return SvgPicture.string(
       '''<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -45,16 +47,18 @@ class Dislike extends StatelessWidget {
   final Color? fillColor;
   final BoxFit fit;
   final double? size;
-  const Dislike(
-      {super.key,
-      this.strokeColor,
-      this.fillColor,
-      this.fit = BoxFit.contain,
-      this.size});
+  const Dislike({
+    super.key,
+    this.strokeColor,
+    this.fillColor,
+    this.fit = BoxFit.contain,
+    this.size,
+  });
   @override
   Widget build(BuildContext context) {
-    final strStrokeColor =
-        colorToHex(strokeColor ?? Theme.of(context).colorScheme.onSurface);
+    final strStrokeColor = colorToHex(
+      strokeColor ?? Theme.of(context).colorScheme.onSurface,
+    );
     final strFillColor = fillColor == null ? 'none' : colorToHex(fillColor!);
     return SvgPicture.string(
       '''<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -77,8 +81,9 @@ class Comment extends StatelessWidget {
   const Comment({super.key, this.color, this.fit = BoxFit.contain, this.size});
   @override
   Widget build(BuildContext context) {
-    final strColor =
-        colorToHex(color ?? Theme.of(context).colorScheme.onSurface);
+    final strColor = colorToHex(
+      color ?? Theme.of(context).colorScheme.onSurface,
+    );
     return SvgPicture.string(
       '''<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="$strColor"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>''',
       fit: fit,
@@ -95,8 +100,9 @@ class Repost extends StatelessWidget {
   const Repost({super.key, this.color, this.fit = BoxFit.contain, this.size});
   @override
   Widget build(BuildContext context) {
-    final strColor =
-        colorToHex(color ?? Theme.of(context).colorScheme.onSurface);
+    final strColor = colorToHex(
+      color ?? Theme.of(context).colorScheme.onSurface,
+    );
     return SvgPicture.string(
       '''<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="$strColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-repeat-icon lucide-repeat"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>''',
       fit: fit,
@@ -113,8 +119,9 @@ class Share extends StatelessWidget {
   const Share({super.key, this.color, this.fit = BoxFit.contain, this.size});
   @override
   Widget build(BuildContext context) {
-    final strColor =
-        colorToHex(color ?? Theme.of(context).colorScheme.onSurface);
+    final strColor = colorToHex(
+      color ?? Theme.of(context).colorScheme.onSurface,
+    );
     return SvgPicture.string(
       kIsWeb || Platform.isIOS
           ? '''<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="$strColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>'''
@@ -132,8 +139,9 @@ class Bell extends StatelessWidget {
   const Bell({super.key, this.color, this.fit = BoxFit.contain});
   @override
   Widget build(BuildContext context) {
-    final strColor =
-        colorToHex(color ?? Theme.of(context).colorScheme.onSurface);
+    final strColor = colorToHex(
+      color ?? Theme.of(context).colorScheme.onSurface,
+    );
     return SvgPicture.string(
       '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="$strColor" stroke="$strColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell-icon lucide-bell"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>',
       fit: fit,
@@ -147,8 +155,9 @@ class Link extends StatelessWidget {
   const Link({super.key, this.color, this.fit = BoxFit.contain});
   @override
   Widget build(BuildContext context) {
-    final strColor =
-        colorToHex(color ?? Theme.of(context).colorScheme.onSurface);
+    final strColor = colorToHex(
+      color ?? Theme.of(context).colorScheme.onSurface,
+    );
     return SvgPicture.string(
       '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="$strColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link-icon lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
       fit: fit,
@@ -162,10 +171,10 @@ class _DefaultEko extends StatelessWidget {
   const _DefaultEko({this.color, this.fit = BoxFit.contain});
   @override
   Widget build(BuildContext context) {
-    final strColor =
-        colorToHex(color ?? Theme.of(context).colorScheme.onSurface);
-    return SvgPicture.string(
-      '''<svg
+    final strColor = colorToHex(
+      color ?? Theme.of(context).colorScheme.onSurface,
+    );
+    return SvgPicture.string('''<svg
    width="149.23592mm"
    height="68.278572mm"
    viewBox="0 0 149.23592 68.278572"
@@ -182,9 +191,7 @@ class _DefaultEko extends StatelessWidget {
        id="text1"
        aria-label="eko" />
   </g>
-</svg>''',
-      fit: fit,
-    );
+</svg>''', fit: fit);
   }
 }
 
@@ -208,7 +215,9 @@ class Eko extends ConsumerWidget {
       LogoService.instance!,
       fit: fit,
       colorFilter: ColorFilter.mode(
-          Theme.of(context).colorScheme.onSurface, BlendMode.srcIn),
+        Theme.of(context).colorScheme.onSurface,
+        BlendMode.srcIn,
+      ),
     );
   }
 }

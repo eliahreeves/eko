@@ -65,14 +65,14 @@ class Comment extends _$Comment {
 
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayUnion([id])
+        'profileData.likedPosts': FieldValue.arrayUnion([id]),
       }),
       firestore
           .collection('posts')
           .doc(postId)
           .collection('comments')
           .doc(id)
-          .update({'likes': FieldValue.increment(1)})
+          .update({'likes': FieldValue.increment(1)}),
     ]);
   }
 
@@ -84,7 +84,7 @@ class Comment extends _$Comment {
 
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayRemove([commentId])
+        'profileData.likedPosts': FieldValue.arrayRemove([commentId]),
       }),
       firestore
           .collection('posts')
@@ -103,14 +103,14 @@ class Comment extends _$Comment {
 
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayUnion([commentId])
+        'profileData.dislikedPosts': FieldValue.arrayUnion([commentId]),
       }),
       firestore
           .collection('posts')
           .doc(postId)
           .collection('comments')
           .doc(commentId)
-          .update({'dislikes': FieldValue.increment(1)})
+          .update({'dislikes': FieldValue.increment(1)}),
     ]);
   }
 
@@ -122,7 +122,7 @@ class Comment extends _$Comment {
 
     await Future.wait([
       firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayRemove([commentId])
+        'profileData.dislikedPosts': FieldValue.arrayRemove([commentId]),
       }),
       firestore
           .collection('posts')
@@ -157,8 +157,12 @@ class Comment extends _$Comment {
         ref
             .read(currentUserProvider.notifier)
             .removeIdFromDisliked(prevState.id);
-        state = AsyncData(prevState.copyWith(
-            dislikes: prevState.dislikes - 1, likes: prevState.likes + 1));
+        state = AsyncData(
+          prevState.copyWith(
+            dislikes: prevState.dislikes - 1,
+            likes: prevState.likes + 1,
+          ),
+        );
         ops.add(_removeDisikeFromDb(prevState.id));
       } else {
         state = AsyncData(prevState.copyWith(likes: prevState.likes + 1));
@@ -196,8 +200,12 @@ class Comment extends _$Comment {
       if (ref.read(currentUserProvider).likedPosts.contains(prevState.id)) {
         wasLiked = true;
         ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-        state = AsyncData(prevState.copyWith(
-            likes: prevState.likes - 1, dislikes: prevState.dislikes + 1));
+        state = AsyncData(
+          prevState.copyWith(
+            likes: prevState.likes - 1,
+            dislikes: prevState.dislikes + 1,
+          ),
+        );
         ops.add(_removeLikeFromDb(prevState.id));
       } else {
         state = AsyncData(prevState.copyWith(dislikes: prevState.dislikes + 1));

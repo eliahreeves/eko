@@ -22,26 +22,27 @@ class CustomInputField extends StatefulWidget {
 
   final void Function(String)? onChanged;
   final void Function()? onEditingComplete;
-  const CustomInputField(
-      {this.label,
-      required this.controller,
-      this.onChanged,
-      this.maxLen,
-      this.padding = true,
-      this.onEditingComplete,
-      this.focus,
-      this.autofillHints,
-      this.width,
-      this.height,
-      this.showCounter = true,
-      this.inputType = TextInputType.text,
-      this.filter = r'[\s\S]*',
-      this.validator = AutovalidateMode.disabled,
-      this.validatorFunction,
-      this.enabled = true,
-      this.password = false,
-      this.textInputAction = TextInputAction.next,
-      super.key});
+  const CustomInputField({
+    this.label,
+    required this.controller,
+    this.onChanged,
+    this.maxLen,
+    this.padding = true,
+    this.onEditingComplete,
+    this.focus,
+    this.autofillHints,
+    this.width,
+    this.height,
+    this.showCounter = true,
+    this.inputType = TextInputType.text,
+    this.filter = r'[\s\S]*',
+    this.validator = AutovalidateMode.disabled,
+    this.validatorFunction,
+    this.enabled = true,
+    this.password = false,
+    this.textInputAction = TextInputAction.next,
+    super.key,
+  });
 
   @override
   State<CustomInputField> createState() => _CustomInputField();
@@ -91,9 +92,10 @@ class _CustomInputField extends State<CustomInputField> {
         onEditingComplete: widget.onEditingComplete,
         keyboardType: widget.inputType,
         style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).colorScheme.onSurface),
+          fontSize: 18,
+          fontWeight: FontWeight.normal,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         decoration: InputDecoration(
           counterText: widget.showCounter ? null : '',
           labelText: widget.label,
@@ -103,18 +105,22 @@ class _CustomInputField extends State<CustomInputField> {
             fontWeight: FontWeight.normal,
             color: Theme.of(context).colorScheme.onSurface,
           ),
-          fillColor:
-              Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+          fillColor: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.2),
           filled: true,
           enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide:
-                  BorderSide(color: Theme.of(context).colorScheme.onSurface)),
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
           suffixIcon: widget.password
               ? IconButton(
                   icon: Icon(hidden ? Icons.visibility_off : Icons.visibility),
@@ -122,7 +128,8 @@ class _CustomInputField extends State<CustomInputField> {
                     setState(() {
                       hidden = !hidden;
                     });
-                  })
+                  },
+                )
               : null,
         ),
       ),

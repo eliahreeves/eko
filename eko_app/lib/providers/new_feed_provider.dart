@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/interfaces/post_queries.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
-import 'package:eko_app/providers/restricted_user_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 part '../generated/providers/new_feed_provider.g.dart';
@@ -25,8 +23,9 @@ class NewFeed extends _$NewFeed {
         .where('tags', arrayContains: 'public')
         .orderBy('time', descending: true)
         .limit(c.postsOnRefresh);
-    final query =
-        state.$1.isEmpty ? baseQuery : baseQuery.startAfter([_timestamps.last]);
+    final query = state.$1.isEmpty
+        ? baseQuery
+        : baseQuery.startAfter([_timestamps.last]);
     final postList = await getPosts(query);
     ref.read(postPoolProvider).putAll(postList);
     // postList.addAll(intermediatePostList.where((post) {

@@ -14,7 +14,7 @@ Future<void> addReport(WidgetRef ref, String id, String message) async {
     'postId': id,
     'postAuthor': post.uid,
     'message': message,
-    'time': DateTime.now().toUtc().toIso8601String()
+    'time': DateTime.now().toUtc().toIso8601String(),
   };
 
   await firestore.collection('reports').add(report);

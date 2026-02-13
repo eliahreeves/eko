@@ -14,13 +14,13 @@ class Version {
     lessThanTarget = compareVersions(currentVersion, targetVersion) == -1;
   }
 
-// Function to retrieve the current app version
-  Future<void> getCurrentAppVersion() async  {
+  // Function to retrieve the current app version
+  Future<void> getCurrentAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     currentVersion = packageInfo.version;
   }
 
-// Replace this function with the actual function to retrieve the version from Firebase
+  // Replace this function with the actual function to retrieve the version from Firebase
   Future<void> getAppVersion() async {
     bool ios = Platform.isIOS;
     bool android = Platform.isAndroid;

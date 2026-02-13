@@ -46,8 +46,10 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => context.pop('poped'),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -67,7 +69,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             onChanged: (value) {
               ref.read(colorThemeProvider.notifier).changeTheme(value);
             },
-            activeColor: Theme.of(context).colorScheme.primary,
+            activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
           SwitchListTile(
             title: Text(AppLocalizations.of(context)!.newActivityNotifications),
@@ -76,7 +78,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             onChanged: (value1) {
               toggleActivityNotification(value1);
             },
-            activeColor: Theme.of(context).colorScheme.primary,
+            activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
           SwitchListTile(
             title: Text(AppLocalizations.of(context)!.shareOnlineStatus),
@@ -86,7 +88,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
                   .read(currentUserProvider.notifier)
                   .toggleShareOnlineStatus(value);
             },
-            activeColor: Theme.of(context).colorScheme.primary,
+            activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
           ListTile(
             title: Text(AppLocalizations.of(context)!.blockedAccounts),
@@ -107,27 +109,28 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
           TextButton(
             onPressed: () {
               showMyDialog(
-                  AppLocalizations.of(context)!.deleteAcountTitle,
-                  AppLocalizations.of(context)!.deleteAcountBody,
-                  [
-                    AppLocalizations.of(context)!.goBack,
-                    AppLocalizations.of(context)!.delete
-                  ],
-                  [
-                    context.pop,
-                    () async {
-                      context.pop();
-                      try {
-                        await FirebaseAuth.instance.currentUser?.delete();
-                        ref.read(navBarProvider.notifier).enable();
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'requires-recent-login') {
-                          if (context.mounted) context.pushNamed('re_auth');
-                        }
+                AppLocalizations.of(context)!.deleteAcountTitle,
+                AppLocalizations.of(context)!.deleteAcountBody,
+                [
+                  AppLocalizations.of(context)!.goBack,
+                  AppLocalizations.of(context)!.delete,
+                ],
+                [
+                  context.pop,
+                  () async {
+                    context.pop();
+                    try {
+                      await FirebaseAuth.instance.currentUser?.delete();
+                      ref.read(navBarProvider.notifier).enable();
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'requires-recent-login') {
+                        if (context.mounted) context.pushNamed('re_auth');
                       }
                     }
-                  ],
-                  context);
+                  },
+                ],
+                context,
+              );
             },
             child: Text(
               AppLocalizations.of(context)!.deleteAccount,

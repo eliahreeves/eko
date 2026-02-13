@@ -22,8 +22,10 @@ class DownloadPage extends StatelessWidget {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_rounded,
-                color: Theme.of(context).colorScheme.onSurface),
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             onPressed: () => context.pop(),
           ),
           title: Text(AppLocalizations.of(context)!.download),
@@ -36,42 +38,40 @@ class DownloadPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              SizedBox(
-                width: width * 0.8,
-                child: QrImageView(
-                  //gapless: true,
-                  data: '${c.appURL}/download',
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  dataModuleStyle: QrDataModuleStyle(
-                      borderRadius: 4,
-                      color: Theme.of(context).colorScheme.onSurface),
-                  eyeStyle: QrEyeStyle(
+                SizedBox(
+                  width: width * 0.8,
+                  child: QrImageView(
+                    //gapless: true,
+                    data: '${c.appURL}/download',
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    dataModuleStyle: QrDataModuleStyle(
                       borderRadius: 4,
                       color: Theme.of(context).colorScheme.onSurface,
-                      eyeShape: QrEyeShape.square),
+                    ),
+                    eyeStyle: QrEyeStyle(
+                      borderRadius: 4,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      eyeShape: QrEyeShape.square,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              InkWell(
-                onTap: () => UriLauncher.launchPlayStore(),
-                child: SvgPicture.asset(
-                  'images/playStoreButton.svg',
-                  width: width * 0.45,
+                const SizedBox(height: 5),
+                InkWell(
+                  onTap: () => UriLauncher.launchPlayStore(),
+                  child: SvgPicture.asset(
+                    'images/playStoreButton.svg',
+                    width: width * 0.45,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              InkWell(
-                onTap: () => UriLauncher.launchAppStore(),
-                child: SvgPicture.asset(
-                  'images/appStoreButton.svg',
-                  width: width * 0.45,
+                const SizedBox(height: 5),
+                InkWell(
+                  onTap: () => UriLauncher.launchAppStore(),
+                  child: SvgPicture.asset(
+                    'images/appStoreButton.svg',
+                    width: width * 0.45,
+                  ),
                 ),
-              ),
-            ],
+              ],
             ),
           ),
         ),

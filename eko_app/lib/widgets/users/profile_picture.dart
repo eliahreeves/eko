@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/loading/profile_picture_loading.dart';
@@ -14,13 +13,14 @@ class ProfilePicture extends ConsumerWidget {
   final void Function()? onPressed;
   final EdgeInsets? padding;
   final double size;
-  const ProfilePicture(
-      {required this.uid,
-      this.onlineIndicatorEnabled = true,
-      this.onPressed,
-      this.padding,
-      required this.size,
-      super.key});
+  const ProfilePicture({
+    required this.uid,
+    this.onlineIndicatorEnabled = true,
+    this.onPressed,
+    this.padding,
+    required this.size,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,31 +30,32 @@ class ProfilePicture extends ConsumerWidget {
       child: Padding(
         padding: padding ?? const EdgeInsets.all(0),
         child: SizedBox(
-            width: size,
-            height: size,
-            child: Stack(
-              children: [
-                ClipOval(
-                  child: asyncUser.when(
-                    data: (user) {
-                      return CachedNetworkImage(
-                        fit: BoxFit.fill,
-                        imageUrl: user.profilePicture,
-                        placeholder: (context, url) =>
-                            const LoadingProfileImage(),
-                        errorWidget: (context, url, error) =>
-                            Image.asset('images/default.jpg'),
-                      );
-                    },
-                    error: (_, __) {
-                      return const Text('Error');
-                    },
-                    loading: () => LoadingProfileImage(),
-                  ),
+          width: size,
+          height: size,
+          child: Stack(
+            children: [
+              ClipOval(
+                child: asyncUser.when(
+                  data: (user) {
+                    return CachedNetworkImage(
+                      fit: BoxFit.fill,
+                      imageUrl: user.profilePicture,
+                      placeholder: (context, url) =>
+                          const LoadingProfileImage(),
+                      errorWidget: (context, url, error) =>
+                          Image.asset('images/default.jpg'),
+                    );
+                  },
+                  error: (_, __) {
+                    return const Text('Error');
+                  },
+                  loading: () => LoadingProfileImage(),
                 ),
-                if (onlineIndicatorEnabled) OnlineIndicator(uid: uid)
-              ],
-            )),
+              ),
+              if (onlineIndicatorEnabled) OnlineIndicator(uid: uid),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -65,12 +66,13 @@ class ProfilePictureFromFile extends StatelessWidget {
   final EdgeInsets? padding;
   final double size;
   final File file;
-  const ProfilePictureFromFile(
-      {this.onPressed,
-      this.padding,
-      required this.size,
-      required this.file,
-      super.key});
+  const ProfilePictureFromFile({
+    this.onPressed,
+    this.padding,
+    required this.size,
+    required this.file,
+    super.key,
+  });
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -80,12 +82,7 @@ class ProfilePictureFromFile extends StatelessWidget {
         child: SizedBox(
           width: size,
           height: size,
-          child: ClipOval(
-            child: Image.file(
-              file,
-              fit: BoxFit.fill,
-            ),
-          ),
+          child: ClipOval(child: Image.file(file, fit: BoxFit.fill)),
         ),
       ),
     );

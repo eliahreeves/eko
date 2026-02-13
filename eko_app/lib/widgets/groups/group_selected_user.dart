@@ -7,11 +7,12 @@ class SelectedUser extends ConsumerWidget {
   final String uid;
   final void Function(String) onPressed;
   final bool selected;
-  const SelectedUser(
-      {super.key,
-      required this.uid,
-      required this.onPressed,
-      required this.selected});
+  const SelectedUser({
+    super.key,
+    required this.uid,
+    required this.onPressed,
+    required this.selected,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,9 +24,7 @@ class SelectedUser extends ConsumerWidget {
           color: selected
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.outlineVariant,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(15),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(15)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -35,11 +34,12 @@ class SelectedUser extends ConsumerWidget {
               const SizedBox(width: 5),
               Text(
                 asyncUser.when(
-                    data: (user) =>
-                        user.name.isNotEmpty ? user.name : user.username,
-                    error: (_, __) => '',
-                    loading: () => ''),
-              )
+                  data: (user) =>
+                      user.name.isNotEmpty ? user.name : user.username,
+                  error: (_, __) => '',
+                  loading: () => '',
+                ),
+              ),
             ],
           ),
         ),

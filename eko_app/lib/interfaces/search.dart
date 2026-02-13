@@ -8,14 +8,19 @@ import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 class SearchInterface {
-  static Future<List<MapEntry<String, int>>> hitsQuery(String query,
-      {required int page}) async {
+  static Future<List<MapEntry<String, int>>> hitsQuery(
+    String query, {
+    required int page,
+  }) async {
     final response = await http.post(
       Uri.parse(
-          'https://${const String.fromEnvironment("ALGOLIA_APP_ID")}-dsn.algolia.net/1/indexes/users/query'),
+        'https://${const String.fromEnvironment("ALGOLIA_APP_ID")}-dsn.algolia.net/1/indexes/users/query',
+      ),
       headers: <String, String>{
         'X-Algolia-API-Key': const String.fromEnvironment('SEARCH_API_KEY'),
-        'X-Algolia-Application-Id': const String.fromEnvironment('ALGOLIA_APP_ID'),
+        'X-Algolia-Application-Id': const String.fromEnvironment(
+          'ALGOLIA_APP_ID',
+        ),
       },
       body: jsonEncode(<String, String>{
         'params': 'query=$query&hitsPerPage=${c.usersOnSearch}&page=$page',
@@ -25,7 +30,8 @@ class SearchInterface {
     if (response.statusCode == 200) {
       return (json.decode(response.body)['hits'] as List)
           .map<MapEntry<String, int>>(
-              (item) => MapEntry(UserModel.fromJson(item).uid, page))
+            (item) => MapEntry(UserModel.fromJson(item).uid, page),
+          )
           .toList();
     } else {
       return [];
@@ -33,10 +39,15 @@ class SearchInterface {
   }
 
   static Future<(List<MapEntry<String, int>>, bool)> getter(
-      List<MapEntry<String, int>> list, WidgetRef ref, String query,
-      {excludeCurrent = false}) async {
-    final hits =
-        await hitsQuery(query, page: list.isEmpty ? 0 : list.last.value + 1);
+    List<MapEntry<String, int>> list,
+    WidgetRef ref,
+    String query, {
+    excludeCurrent = false,
+  }) async {
+    final hits = await hitsQuery(
+      query,
+      page: list.isEmpty ? 0 : list.last.value + 1,
+    );
     final List<Future<UserModel>> asyncUsers = [];
     List<MapEntry<String, int>> filteredHits = [];
     if (excludeCurrent) {
@@ -48,8 +59,9 @@ class SearchInterface {
       }
     } else {
       filteredHits = hits;
-      asyncUsers
-          .addAll(hits.map((obj) => ref.read(userProvider(obj.key).future)));
+      asyncUsers.addAll(
+        hits.map((obj) => ref.read(userProvider(obj.key).future)),
+      );
     }
     await Future.wait(asyncUsers);
     return (filteredHits, hits.length < c.usersOnSearch);
