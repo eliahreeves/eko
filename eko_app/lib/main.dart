@@ -11,7 +11,7 @@ import 'package:eko_app/utilities/provider_debugger.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/widgets/check_verson.dart';
+import 'package:eko_app/widgets/check_version.dart';
 import 'utilities/router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import '../interfaces/shared_pref_model.dart';

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/download_button_if_web.dart';
-import 'package:eko_app/widgets/error_snack_bar.dart';
+import 'package:eko_app/widgets/download_button.dart';
+import 'package:eko_app/widgets/snack_bar.dart';
 import 'package:eko_app/interfaces/user.dart' as user;
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/widgets/google_sign_in_button.dart';
 import 'package:eko_app/widgets/icons.dart';
-import 'package:eko_app/widgets/login_text_field.dart';
+import 'package:eko_app/widgets/custom_input_field.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/auth/auth_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';

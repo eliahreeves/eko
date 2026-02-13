@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/dialogs.dart';
 import 'package:eko_app/interfaces/search.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
@@ -15,7 +15,7 @@ import 'package:eko_app/widgets/loading_spinner.dart';
 import 'package:eko_app/widgets/shimmer_loaders.dart';
 import 'package:eko_app/widgets/user_card.dart';
 import 'package:eko_app/widgets/user_search_bar.dart';
-import 'package:eko_app/widgets/edit_profile_text_field.dart';
+import 'package:eko_app/widgets/profile_input_field.dart';
 import 'package:eko_app/widgets/group_selected_user.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/download_button_if_web.dart';
-import 'package:eko_app/widgets/safe_area.dart';
+import 'package:eko_app/widgets/download_button.dart';
+import 'package:eko_app/widgets/app_safe_area.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import '../utilities/constants.dart' as c;

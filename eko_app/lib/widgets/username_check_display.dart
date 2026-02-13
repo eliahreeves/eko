@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/utilities/constants.dart' as c;

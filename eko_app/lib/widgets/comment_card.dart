@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/count_down_timer.dart';
 import 'package:eko_app/widgets/gif_widget.dart';
 import 'package:eko_app/widgets/time_stamp.dart';
-import 'package:eko_app/widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/dialogs.dart';
 import 'package:eko_app/providers/comment_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';

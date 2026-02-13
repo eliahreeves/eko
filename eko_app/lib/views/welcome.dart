@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/download_button_if_web.dart';
+import 'package:eko_app/widgets/download_button.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/icons.dart';
 import '../utilities/constants.dart' as c;

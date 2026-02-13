@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eko_app/widgets/login_text_field.dart';
+import 'package:eko_app/widgets/custom_input_field.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 

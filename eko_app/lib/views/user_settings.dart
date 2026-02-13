@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eko_app/widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/interfaces/shared_pref_model.dart';

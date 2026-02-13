@@ -6,7 +6,7 @@ import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/infinite_scrolly.dart';
-import 'package:eko_app/widgets/recent_activity_card.dart';
+import 'package:eko_app/widgets/activity_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/shimmer_loaders.dart';

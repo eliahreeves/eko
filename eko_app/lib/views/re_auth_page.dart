@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/login_text_field.dart';
-import 'package:eko_app/widgets/warning_dialog.dart';
+import 'package:eko_app/widgets/custom_input_field.dart';
+import 'package:eko_app/widgets/dialogs.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
