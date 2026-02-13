@@ -66,8 +66,7 @@ dependencies:
   cloud_functions: ^5.3.4
   emoji_picker_flutter: ^4.3.0
   firebase_database: ^11.3.7
-  like_button: 
-    path: ./like_button-custom/
+  like_button: ^2.1.0 
   flutter_expandable_fab: ^2.3.0
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
