@@ -14,7 +14,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 
 GlobalKey repaintKey = GlobalKey();
 

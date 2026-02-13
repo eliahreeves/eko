@@ -6,9 +6,9 @@ import 'package:image_to_ascii/image_to_ascii.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:eko_app/widgets/image_widget.dart';
+import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:image/image.dart' as img;
-import 'package:eko_app/widgets/always_oriented.dart';
+import 'package:eko_app/widgets/scaffolds/always_oriented.dart';
 
 class CameraPage extends StatelessWidget {
   const CameraPage({super.key});

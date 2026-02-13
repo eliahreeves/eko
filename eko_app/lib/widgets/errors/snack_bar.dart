@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 
 showSnackBar(
     {String text = '', int time = 1500, required BuildContext context}) {

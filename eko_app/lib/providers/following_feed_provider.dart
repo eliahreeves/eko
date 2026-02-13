@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/post.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 part '../generated/providers/following_feed_provider.g.dart';
 
 class _Chunk {

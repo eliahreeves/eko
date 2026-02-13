@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/divider.dart';
+import 'package:eko_app/widgets/common/divider.dart';
 
 class PostLoader extends StatelessWidget {
   final int length;

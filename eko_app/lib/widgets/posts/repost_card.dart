@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/gif_widget.dart';
-import 'package:eko_app/widgets/image_widget.dart';
-import 'package:eko_app/widgets/poll_widget.dart';
+import 'package:eko_app/widgets/posts/gif_widget.dart';
+import 'package:eko_app/widgets/posts/image_widget.dart';
+import 'package:eko_app/widgets/posts/poll_widget.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/profile_picture.dart';
-import 'package:eko_app/widgets/text_with_tags.dart';
-import 'package:eko_app/widgets/time_stamp.dart';
-import 'package:eko_app/widgets/user_tag.dart';
+import 'package:eko_app/widgets/users/profile_picture.dart';
+import 'package:eko_app/widgets/common/text_with_tags.dart';
+import 'package:eko_app/widgets/common/time_stamp.dart';
+import 'package:eko_app/widgets/users/user_tag.dart';
 
 class RepostCard extends ConsumerWidget {
   final String postId;

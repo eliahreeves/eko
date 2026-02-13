@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/icons.dart';
+import 'package:eko_app/widgets/common/icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VerificationBadge extends ConsumerWidget {

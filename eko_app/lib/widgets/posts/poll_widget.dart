@@ -4,7 +4,7 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/types/post.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class PollWidget extends ConsumerWidget {
   final PostModel post;

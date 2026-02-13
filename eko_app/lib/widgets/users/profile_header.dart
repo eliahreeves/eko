@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/types/user.dart';
-import 'package:eko_app/widgets/profile_picture.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/users/profile_picture.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class ProfileHeader extends StatelessWidget {
   final UserModel user;

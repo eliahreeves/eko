@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_to_ascii/image_to_ascii.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:eko_app/widgets/image_widget.dart';
+import 'package:eko_app/widgets/posts/image_widget.dart';
 
 class EditPicture extends StatefulWidget {
   final XFile picture;

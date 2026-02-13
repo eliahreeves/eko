@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/interfaces/search.dart';
-import 'package:eko_app/widgets/infinite_scrolly.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
-import 'package:eko_app/widgets/user_search_bar.dart';
-import '../widgets/user_card.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
+import 'package:eko_app/widgets/search/user_search_bar.dart';
+import 'package:eko_app/widgets/users/user_card.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class FloatingSearchBar extends SliverPersistentHeaderDelegate {
   final Widget child;

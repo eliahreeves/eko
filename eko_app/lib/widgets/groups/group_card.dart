@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/group_provider.dart';
-import 'package:eko_app/widgets/time_stamp.dart';
+import 'package:eko_app/widgets/common/time_stamp.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 Widget groupCardBuilder(String groupId) {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eko_app/widgets/time_stamp.dart';
+import 'package:eko_app/widgets/common/time_stamp.dart';
 import 'package:eko_app/providers/activity_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
-import 'package:eko_app/widgets/profile_picture.dart';
+import 'package:eko_app/widgets/users/profile_picture.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 Widget recentActivityCardBuilder(String id) {
   return ActivityCardWidget(id: id);

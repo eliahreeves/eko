@@ -7,7 +7,7 @@ import 'package:eko_app/providers/email_verification_cutoff_provider.dart';
 import 'package:eko_app/providers/presence_provider.dart';
 import 'package:eko_app/views/invalid_session_page.dart';
 import 'package:eko_app/views/verify_email_page.dart';
-import 'package:eko_app/widgets/loading_spinner.dart';
+import 'package:eko_app/widgets/loading/loading_spinner.dart';
 
 class RequireAuth extends ConsumerWidget {
   final Widget child;

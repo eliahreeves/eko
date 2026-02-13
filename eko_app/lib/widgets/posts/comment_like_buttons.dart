@@ -6,8 +6,8 @@ import 'package:like_button/like_button.dart';
 import 'package:eko_app/providers/comment_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/comment.dart';
-import 'package:eko_app/widgets/icons.dart' as icons;
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/common/icons.dart' as icons;
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class Count extends StatelessWidget {
   final int count;

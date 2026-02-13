@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
-import 'package:eko_app/widgets/verification_badge.dart';
+import 'package:eko_app/widgets/users/verification_badge.dart';
 
 class UserTag extends ConsumerWidget {
   final void Function()? onPressed;

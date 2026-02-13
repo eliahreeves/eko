@@ -4,13 +4,13 @@ import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/types/group.dart';
-import 'package:eko_app/widgets/infinite_scrolly.dart';
-import 'package:eko_app/widgets/loading_spinner.dart';
+import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/loading/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/post_card.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/posts/post_card.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class _ErrorMessage extends StatelessWidget {
   final String message;

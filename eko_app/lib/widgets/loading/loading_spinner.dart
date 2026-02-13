@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 
 class LoadingSpinner extends StatelessWidget {
   final double? width;

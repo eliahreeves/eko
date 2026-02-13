@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/widgets/loading_spinner.dart';
+import 'package:eko_app/widgets/loading/loading_spinner.dart';
 
 class _DefaultInitialLoader extends StatelessWidget {
   const _DefaultInitialLoader();

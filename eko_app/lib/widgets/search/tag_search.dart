@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eko_app/interfaces/search.dart';
-import 'package:eko_app/widgets/user_card.dart';
+import 'package:eko_app/widgets/users/user_card.dart';
 
 bool _isSeparator(String char) {
   return char == ' ' ||

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/providers/user_provider.dart';
-import 'package:eko_app/widgets/profile_picture.dart';
+import 'package:eko_app/widgets/users/profile_picture.dart';
 
 class SelectedUser extends ConsumerWidget {
   final String uid;

@@ -5,10 +5,10 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
-import 'package:eko_app/widgets/profile_picture.dart';
-import 'package:eko_app/widgets/shimmer_loaders.dart';
-import 'package:eko_app/widgets/verification_badge.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/widgets/users/profile_picture.dart';
+import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
+import 'package:eko_app/widgets/users/verification_badge.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 Widget userCardBuilder(String uid) {
   return UserCard(

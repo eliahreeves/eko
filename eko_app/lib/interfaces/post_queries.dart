@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/comment.dart';
-import '../utilities/constants.dart' as c;
+import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/post.dart';
