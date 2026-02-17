@@ -26,9 +26,8 @@ bool isUsernameValid(String username) {
 Future<void> addFCM(String uid) async {
   if (!kIsWeb) {
     // TODO: eventually needs to support timestamp
-    final DocumentReference userDocRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid);
+    final DocumentReference userDocRef =
+        FirebaseFirestore.instance.collection('users').doc(uid);
     try {
       // Get the current data
       final DocumentSnapshot userSnapshot = await userDocRef.get();
@@ -61,9 +60,8 @@ Future<void> addFCM(String uid) async {
 Future<void> removeFCM(String uid) async {
   if (!kIsWeb) {
     // TODO: eventually needs to support timestamp
-    final DocumentReference userDocRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid);
+    final DocumentReference userDocRef =
+        FirebaseFirestore.instance.collection('users').doc(uid);
 
     try {
       // Get the current data
@@ -73,8 +71,8 @@ Future<void> removeFCM(String uid) async {
         List<String> fcmTokens = List<String>.from(
           userSnapshot['fcmTokens'] ?? [],
         );
-        final String? currentDeviceToken = await FirebaseMessaging.instance
-            .getToken();
+        final String? currentDeviceToken =
+            await FirebaseMessaging.instance.getToken();
         // Remove the current device's FCM token from the array
         fcmTokens.remove(currentDeviceToken);
 

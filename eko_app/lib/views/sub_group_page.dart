@@ -129,8 +129,8 @@ class SubGroupPage extends ConsumerWidget {
               queryParameters: asyncGroup.hasValue
                   ? {
                       'id': asyncGroup.value?.id,
-                      'timestamp': DateTime.now().millisecondsSinceEpoch
-                          .toString(),
+                      'timestamp':
+                          DateTime.now().millisecondsSinceEpoch.toString(),
                     }
                   : {},
             );
@@ -140,8 +140,8 @@ class SubGroupPage extends ConsumerWidget {
         ),
       ),
       body: asyncGroup.when(
-        data: (group) =>
-            group.members.contains(ref.watch(currentUserProvider).user.uid)
+        data: (group) => group.members
+                .contains(ref.watch(currentUserProvider).user.uid)
             ? InfiniteScrolly<String, String>(
                 appBar: _appBar(context, group),
                 getter: (data) async {

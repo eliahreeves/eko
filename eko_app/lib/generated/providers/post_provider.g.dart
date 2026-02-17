@@ -74,17 +74,16 @@ class PostProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Post, PostModel> {
   /// See also [Post].
   PostProvider(String id)
-    : this._internal(
-        () => Post()..id = id,
-        from: postProvider,
-        name: r'postProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$postHash,
-        dependencies: PostFamily._dependencies,
-        allTransitiveDependencies: PostFamily._allTransitiveDependencies,
-        id: id,
-      );
+      : this._internal(
+          () => Post()..id = id,
+          from: postProvider,
+          name: r'postProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product') ? null : _$postHash,
+          dependencies: PostFamily._dependencies,
+          allTransitiveDependencies: PostFamily._allTransitiveDependencies,
+          id: id,
+        );
 
   PostProvider._internal(
     super._createNotifier, {

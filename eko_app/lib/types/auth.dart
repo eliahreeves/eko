@@ -11,18 +11,18 @@ abstract class AuthModel with _$AuthModel {
     DateTime? creationTime,
   }) = _AuthModel;
   factory AuthModel.loading() => const AuthModel(
-    uid: null,
-    email: null,
-    isLoading: true,
-    emailVerified: null,
-    creationTime: null,
-  );
+        uid: null,
+        email: null,
+        isLoading: true,
+        emailVerified: null,
+        creationTime: null,
+      );
 
   factory AuthModel.signedOut() => const AuthModel(
-    uid: null,
-    email: null,
-    isLoading: false,
-    emailVerified: null,
-    creationTime: null,
-  );
+        uid: null,
+        email: null,
+        isLoading: false,
+        emailVerified: null,
+        creationTime: null,
+      );
 }

@@ -16,19 +16,17 @@ class LogoService {
         return;
       }
 
-      int date =
-          DateTime.now().toUtc().millisecondsSinceEpoch ~/
+      int date = DateTime.now().toUtc().millisecondsSinceEpoch ~/
           Duration.millisecondsPerDay;
       int logoIndex = date % numLogos;
       final storageRef = logos.items[logoIndex];
 
       final url = await storageRef.getDownloadURL().timeout(
-        const Duration(seconds: 1),
-      );
+            const Duration(seconds: 1),
+          );
 
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 1));
+      final response =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 1));
 
       if (response.statusCode == 200) {
         _logo = response.body;

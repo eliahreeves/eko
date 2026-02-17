@@ -71,14 +71,14 @@ class ActivityCardWidget extends ConsumerWidget {
                               softWrap: true,
                             )
                           : activity.type == 'tag'
-                          ? Text(
-                              '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.taggedText} ${activity.content}',
-                              softWrap: true,
-                            )
-                          : Text(
-                              '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.commentText}${activity.content.isEmpty ? '' : ': ${activity.content}'}',
-                              softWrap: true,
-                            ),
+                              ? Text(
+                                  '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.taggedText} ${activity.content}',
+                                  softWrap: true,
+                                )
+                              : Text(
+                                  '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.commentText}${activity.content.isEmpty ? '' : ': ${activity.content}'}',
+                                  softWrap: true,
+                                ),
                     ),
                     Container(
                       width: width * 0.8,

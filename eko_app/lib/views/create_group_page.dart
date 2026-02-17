@@ -441,8 +441,8 @@ class _AddPeopleState extends ConsumerState<AddPeople> {
                       listenable: widget.selectedPeople,
                       builder: (context, _) =>
                           widget.selectedPeople.set.contains(user.uid)
-                          ? Icon(Icons.check_circle)
-                          : Icon(Icons.circle_outlined),
+                              ? Icon(Icons.check_circle)
+                              : Icon(Icons.circle_outlined),
                     ),
                   ),
                 ),

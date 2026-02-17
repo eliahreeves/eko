@@ -79,7 +79,7 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
 
     final bool isMyOwnProfile =
         (widget.uid != null && widget.uid == currentUserId) ||
-        (widget.uid == null && widget.username == currentUsername);
+            (widget.uid == null && widget.username == currentUsername);
 
     // Helper function to build the leading widget (back button)
     Widget? buildLeadingWidget(BuildContext context, bool isMyProfile) {
@@ -334,11 +334,8 @@ class _Header extends ConsumerWidget {
   const _Header({required this.user, required this.isCurrentUser});
 
   Future<void> _onFollowPressed(WidgetRef ref) async {
-    final isFollowing = ref
-        .watch(currentUserProvider)
-        .user
-        .following
-        .contains(user.uid);
+    final isFollowing =
+        ref.watch(currentUserProvider).user.following.contains(user.uid);
 
     if (isFollowing) {
       await ref.read(currentUserProvider.notifier).removeFollower(user.uid);

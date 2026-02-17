@@ -61,9 +61,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         isLoading = true;
       });
       if (handleError(
-            await ref
-                .read(authProvider.notifier)
-                .signIn(
+            await ref.read(authProvider.notifier).signIn(
                   email: emailController.text.trim(),
                   password: passwordController.text,
                 ),

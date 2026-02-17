@@ -74,17 +74,18 @@ class GroupProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Group, GroupModel> {
   /// See also [Group].
   GroupProvider(String id)
-    : this._internal(
-        () => Group()..id = id,
-        from: groupProvider,
-        name: r'groupProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$groupHash,
-        dependencies: GroupFamily._dependencies,
-        allTransitiveDependencies: GroupFamily._allTransitiveDependencies,
-        id: id,
-      );
+      : this._internal(
+          () => Group()..id = id,
+          from: groupProvider,
+          name: r'groupProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$groupHash,
+          dependencies: GroupFamily._dependencies,
+          allTransitiveDependencies: GroupFamily._allTransitiveDependencies,
+          id: id,
+        );
 
   GroupProvider._internal(
     super._createNotifier, {

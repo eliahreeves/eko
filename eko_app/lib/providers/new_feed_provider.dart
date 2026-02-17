@@ -23,9 +23,8 @@ class NewFeed extends _$NewFeed {
         .where('tags', arrayContains: 'public')
         .orderBy('time', descending: true)
         .limit(c.postsOnRefresh);
-    final query = state.$1.isEmpty
-        ? baseQuery
-        : baseQuery.startAfter([_timestamps.last]);
+    final query =
+        state.$1.isEmpty ? baseQuery : baseQuery.startAfter([_timestamps.last]);
     final postList = await getPosts(query);
     ref.read(postPoolProvider).putAll(postList);
     // postList.addAll(intermediatePostList.where((post) {

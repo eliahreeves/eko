@@ -37,8 +37,7 @@ class RequireAuth extends ConsumerWidget {
         data: (d) => d,
         orElse: () => null,
       );
-      final mustVerify =
-          auth.emailVerified == false &&
+      final mustVerify = auth.emailVerified == false &&
           auth.creationTime != null &&
           cutoffDate != null &&
           !auth.creationTime!.isBefore(cutoffDate);

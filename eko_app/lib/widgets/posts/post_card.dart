@@ -292,8 +292,8 @@ class PostCardFromPost extends ConsumerWidget {
       child: InkWell(
         onTap: () => (!isPreview && !isPostPage && isLoggedIn)
             ? context
-                  .push('/feed/post/${post.id}', extra: post)
-                  .then((v) async {})
+                .push('/feed/post/${post.id}', extra: post)
+                .then((v) async {})
             : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,10 +9,10 @@ import 'package:eko_app/types/post.dart';
 Future<List<PostModel>> getPosts(Query<Map<String, dynamic>> query) async {
   final postList = await Future.wait(
     await query.get().then(
-      (data) => data.docs.map((doc) async {
-        return await PostModel.fromFireStoreDoc(doc);
-      }),
-    ),
+          (data) => data.docs.map((doc) async {
+            return await PostModel.fromFireStoreDoc(doc);
+          }),
+        ),
   );
   return postList;
 }
@@ -27,15 +27,13 @@ Future<(List<MapEntry<String, String>>, bool)> profilePageGetter(
       .where('author', isEqualTo: uid)
       .orderBy('time', descending: true)
       .limit(c.postsOnRefresh);
-  final query = list.isEmpty
-      ? baseQuery
-      : baseQuery.startAfter([list.last.value]);
+  final query =
+      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
 
   final postList = await getPosts(query);
   ref.read(postPoolProvider).putAll(postList);
-  final retList = postList
-      .map((item) => MapEntry(item.id, item.createdAt))
-      .toList();
+  final retList =
+      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
@@ -50,14 +48,12 @@ Future<(List<MapEntry<String, String>>, bool)> otherProfilePageGetter(
       .where('author', isEqualTo: uid)
       .orderBy('time', descending: true)
       .limit(c.postsOnRefresh);
-  final query = list.isEmpty
-      ? baseQuery
-      : baseQuery.startAfter([list.last.value]);
+  final query =
+      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
   final postList = await getPosts(query);
   ref.read(postPoolProvider).putAll(postList);
-  final retList = postList
-      .map((item) => MapEntry(item.id, item.createdAt))
-      .toList();
+  final retList =
+      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
@@ -92,14 +88,12 @@ Future<(List<MapEntry<String, String>>, bool)> getGroupPosts(
       .where('tags', arrayContains: groupId)
       .orderBy('time', descending: true)
       .limit(c.postsOnRefresh);
-  final query = list.isEmpty
-      ? baseQuery
-      : baseQuery.startAfter([list.last.value]);
+  final query =
+      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
   final postList = await getPosts(query);
   ref.read(postPoolProvider).putAll(postList);
-  final retList = postList
-      .map((item) => MapEntry(item.id, item.createdAt))
-      .toList();
+  final retList =
+      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
@@ -108,10 +102,10 @@ Future<List<CommentModel>> getComments(
 ) async {
   final commentList = await Future.wait(
     await query.get().then(
-      (data) => data.docs.map((doc) async {
-        return await CommentModel.fromFireStoreDoc(doc);
-      }),
-    ),
+          (data) => data.docs.map((doc) async {
+            return await CommentModel.fromFireStoreDoc(doc);
+          }),
+        ),
   );
   return commentList;
 }

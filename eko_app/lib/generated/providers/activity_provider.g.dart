@@ -75,17 +75,18 @@ class ActivityProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Activity, ActivityModel> {
   /// See also [Activity].
   ActivityProvider(String id)
-    : this._internal(
-        () => Activity()..id = id,
-        from: activityProvider,
-        name: r'activityProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$activityHash,
-        dependencies: ActivityFamily._dependencies,
-        allTransitiveDependencies: ActivityFamily._allTransitiveDependencies,
-        id: id,
-      );
+      : this._internal(
+          () => Activity()..id = id,
+          from: activityProvider,
+          name: r'activityProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$activityHash,
+          dependencies: ActivityFamily._dependencies,
+          allTransitiveDependencies: ActivityFamily._allTransitiveDependencies,
+          id: id,
+        );
 
   ActivityProvider._internal(
     super._createNotifier, {
@@ -122,7 +123,7 @@ class ActivityProvider
 
   @override
   AutoDisposeAsyncNotifierProviderElement<Activity, ActivityModel>
-  createElement() {
+      createElement() {
     return _ActivityProviderElement(this);
   }
 

@@ -74,17 +74,18 @@ class OnlineProvider
     extends AutoDisposeNotifierProviderImpl<Online, OnlineStatus> {
   /// See also [Online].
   OnlineProvider(String id)
-    : this._internal(
-        () => Online()..id = id,
-        from: onlineProvider,
-        name: r'onlineProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$onlineHash,
-        dependencies: OnlineFamily._dependencies,
-        allTransitiveDependencies: OnlineFamily._allTransitiveDependencies,
-        id: id,
-      );
+      : this._internal(
+          () => Online()..id = id,
+          from: onlineProvider,
+          name: r'onlineProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$onlineHash,
+          dependencies: OnlineFamily._dependencies,
+          allTransitiveDependencies: OnlineFamily._allTransitiveDependencies,
+          id: id,
+        );
 
   OnlineProvider._internal(
     super._createNotifier, {

@@ -42,11 +42,11 @@ class Auth extends _$Auth {
     required String birthday,
   }) async {
     try {
-      final UserCredential user = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: email.trim(),
-            password: password,
-          );
+      final UserCredential user =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
       if (user.user?.uid == null) return 'unknown';
 
       final userData = _buildNewUserDoc(
@@ -116,14 +116,13 @@ class Auth extends _$Auth {
     );
 
     // firebase sign in
-    final UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithCredential(credential);
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
     final user = userCredential.user!;
 
     // Check if user document exists
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid);
+    final userRef =
+        FirebaseFirestore.instance.collection('users').doc(user.uid);
     final docSnapshot = await userRef.get();
 
     if (!docSnapshot.exists) {

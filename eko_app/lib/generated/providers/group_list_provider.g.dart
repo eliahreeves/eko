@@ -12,14 +12,13 @@ String _$groupListHash() => r'd1feb0d4db8d0aa6dbcf3e784047ef2435f57d7d';
 @ProviderFor(GroupList)
 final groupListProvider =
     AutoDisposeNotifierProvider<GroupList, (List<String>, bool)>.internal(
-      GroupList.new,
-      name: r'groupListProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$groupListHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  GroupList.new,
+  name: r'groupListProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$groupListHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$GroupList = AutoDisposeNotifier<(List<String>, bool)>;
 // ignore_for_file: type=lint

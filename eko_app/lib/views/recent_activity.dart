@@ -25,21 +25,19 @@ class RecentActivity extends ConsumerWidget {
         .collection('newActivity')
         .orderBy('time', descending: true)
         .where(
-          'type',
-          whereIn: const ['comment', 'follow', 'tag'],
-        ) //update for new types
+      'type',
+      whereIn: const ['comment', 'follow', 'tag'],
+    ) //update for new types
         .limit(c.activitiesPerRequest);
-    final query = list.isEmpty
-        ? baseQuery
-        : baseQuery.startAfter([list.last.value]);
+    final query =
+        list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
 
     final activityList = await query.get().then(
-      (data) => data.docs.map((doc) => ActivityModel.fromFirestoreDoc(doc)),
-    );
+          (data) => data.docs.map((doc) => ActivityModel.fromFirestoreDoc(doc)),
+        );
     ref.read(activityPoolProvider).putAll(activityList);
-    final retList = activityList
-        .map((item) => MapEntry(item.id, item.createdAt))
-        .toList();
+    final retList =
+        activityList.map((item) => MapEntry(item.id, item.createdAt)).toList();
     return (retList, retList.length < c.postsOnRefresh);
   }
 

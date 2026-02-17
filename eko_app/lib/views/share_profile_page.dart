@@ -64,8 +64,8 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
     final icon = kIsWeb
         ? CupertinoIcons.arrowshape_turn_up_right
         : Platform.isIOS
-        ? CupertinoIcons.share
-        : CupertinoIcons.arrowshape_turn_up_right;
+            ? CupertinoIcons.share
+            : CupertinoIcons.arrowshape_turn_up_right;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

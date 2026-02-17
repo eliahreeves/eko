@@ -195,7 +195,9 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                       Text(
                         l10n.defaultErrorTittle,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const AuthDivider(indent: 20, endIndent: 20),
@@ -231,7 +233,9 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                           child: Align(
                             child: Text(
                               l10n.resetPassword,
-                              style: Theme.of(context).textTheme.headlineMedium
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
                                   ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),

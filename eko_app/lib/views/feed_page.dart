@@ -33,14 +33,13 @@ class _RoundedPainter extends BoxPainter {
   final double thickness;
 
   _RoundedPainter(Color color, this.radius, this.thickness)
-    : _paint = Paint()
-        ..color = color
-        ..style = PaintingStyle.fill;
+      : _paint = Paint()
+          ..color = color
+          ..style = PaintingStyle.fill;
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration cfg) {
-    final Rect rect =
-        Offset(offset.dx - 5, cfg.size!.height - thickness) &
+    final Rect rect = Offset(offset.dx - 5, cfg.size!.height - thickness) &
         Size(cfg.size!.width + 10, thickness);
     final RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
     canvas.drawRRect(rRect, _paint);

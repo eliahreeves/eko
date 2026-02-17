@@ -41,8 +41,8 @@ class PollWidget extends ConsumerWidget {
                 onTap: isPreview
                     ? null
                     : () => ref
-                          .read(postProvider(post.id).notifier)
-                          .addPollVote(optionIndex: index),
+                        .read(postProvider(post.id).notifier)
+                        .addPollVote(optionIndex: index),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -66,19 +66,18 @@ class PollWidget extends ConsumerWidget {
                           duration: Duration(milliseconds: 500),
                           curve: Curves.easeInOut,
                           height: 48,
-                          width:
-                              MediaQuery.of(context).size.width *
+                          width: MediaQuery.of(context).size.width *
                               0.7 *
                               percentage,
                           decoration: BoxDecoration(
                             color: currentUser.pollVotes.containsKey(post.id)
                                 ? (currentUser.pollVotes[post.id] == index)
-                                      ? Theme.of(
-                                          context,
-                                        ).colorScheme.primaryContainer
-                                      : Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainerHighest
+                                    ? Theme.of(
+                                        context,
+                                      ).colorScheme.primaryContainer
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainerHighest
                                 : Theme.of(context).colorScheme.outlineVariant,
                             borderRadius: BorderRadius.circular(8),
                           ),

@@ -34,7 +34,7 @@ class InfiniteScrolly<K, V> extends StatefulWidget {
   ///		must treat the list it recives as read only. The data may get out of date, but that is ok.
   ///   Also must return bool to signifiy if this is the last chunk
   final Future<(List<MapEntry<K, V>>, bool)> Function(List<MapEntry<K, V>>)
-  getter;
+      getter;
 
   /// Builder function that takes a key and returns a widget to display it.
   final Widget Function(K) widget;

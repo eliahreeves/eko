@@ -75,17 +75,18 @@ class CommentProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Comment, CommentModel> {
   /// See also [Comment].
   CommentProvider(String id)
-    : this._internal(
-        () => Comment()..id = id,
-        from: commentProvider,
-        name: r'commentProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$commentHash,
-        dependencies: CommentFamily._dependencies,
-        allTransitiveDependencies: CommentFamily._allTransitiveDependencies,
-        id: id,
-      );
+      : this._internal(
+          () => Comment()..id = id,
+          from: commentProvider,
+          name: r'commentProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$commentHash,
+          dependencies: CommentFamily._dependencies,
+          allTransitiveDependencies: CommentFamily._allTransitiveDependencies,
+          id: id,
+        );
 
   CommentProvider._internal(
     super._createNotifier, {
@@ -122,7 +123,7 @@ class CommentProvider
 
   @override
   AutoDisposeAsyncNotifierProviderElement<Comment, CommentModel>
-  createElement() {
+      createElement() {
     return _CommentProviderElement(this);
   }
 

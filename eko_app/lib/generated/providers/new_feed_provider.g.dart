@@ -12,14 +12,13 @@ String _$newFeedHash() => r'2552ca9bf47ed600f4c82322150e732cdb076fbb';
 @ProviderFor(NewFeed)
 final newFeedProvider =
     AutoDisposeNotifierProvider<NewFeed, (List<String>, bool)>.internal(
-      NewFeed.new,
-      name: r'newFeedProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$newFeedHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  NewFeed.new,
+  name: r'newFeedProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$newFeedHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$NewFeed = AutoDisposeNotifier<(List<String>, bool)>;
 // ignore_for_file: type=lint

@@ -87,8 +87,8 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
                   child: Text(
                     l10n.deleteAccount,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
               ),
@@ -126,12 +126,11 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
                         if (password == '') {
                           passwordFocus.requestFocus();
                         } else {
-                          final result = await ref
-                              .read(authProvider.notifier)
-                              .signIn(
-                                password: password,
-                                email: ref.read(authProvider).email!,
-                              );
+                          final result =
+                              await ref.read(authProvider.notifier).signIn(
+                                    password: password,
+                                    email: ref.read(authProvider).email!,
+                                  );
                           if (handleError(result) == 0) {
                             await ref
                                 .read(authProvider.notifier)

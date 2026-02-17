@@ -77,17 +77,19 @@ class CommentListProvider
     extends AutoDisposeNotifierProviderImpl<CommentList, (List<String>, bool)> {
   /// See also [CommentList].
   CommentListProvider(String postId)
-    : this._internal(
-        () => CommentList()..postId = postId,
-        from: commentListProvider,
-        name: r'commentListProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$commentListHash,
-        dependencies: CommentListFamily._dependencies,
-        allTransitiveDependencies: CommentListFamily._allTransitiveDependencies,
-        postId: postId,
-      );
+      : this._internal(
+          () => CommentList()..postId = postId,
+          from: commentListProvider,
+          name: r'commentListProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$commentListHash,
+          dependencies: CommentListFamily._dependencies,
+          allTransitiveDependencies:
+              CommentListFamily._allTransitiveDependencies,
+          postId: postId,
+        );
 
   CommentListProvider._internal(
     super._createNotifier, {
@@ -124,7 +126,7 @@ class CommentListProvider
 
   @override
   AutoDisposeNotifierProviderElement<CommentList, (List<String>, bool)>
-  createElement() {
+      createElement() {
     return _CommentListProviderElement(this);
   }
 
@@ -149,10 +151,8 @@ mixin CommentListRef on AutoDisposeNotifierProviderRef<(List<String>, bool)> {
   String get postId;
 }
 
-class _CommentListProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<CommentList, (List<String>, bool)>
-    with CommentListRef {
+class _CommentListProviderElement extends AutoDisposeNotifierProviderElement<
+    CommentList, (List<String>, bool)> with CommentListRef {
   _CommentListProviderElement(super.provider);
 
   @override

@@ -13,9 +13,8 @@ String _$authHash() => r'd158c79fbd54f685dd48102eb82ac1adc475483a';
 final authProvider = NotifierProvider<Auth, AuthModel>.internal(
   Auth.new,
   name: r'authProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$authHash,
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$authHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );

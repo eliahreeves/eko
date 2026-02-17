@@ -7,17 +7,19 @@ part of '../../types/group.dart';
 // **************************************************************************
 
 _GroupModel _$GroupModelFromJson(Map<String, dynamic> json) => _GroupModel(
-  id: json['id'] as String? ?? '',
-  name: json['name'] as String,
-  description: json['description'] as String,
-  lastActivity: json['lastActivity'] as String,
-  createdOn: json['createdOn'] as String,
-  icon: json['icon'] as String,
-  members: (json['members'] as List<dynamic>).map((e) => e as String).toList(),
-  notSeen:
-      (json['notSeen'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-);
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String,
+      description: json['description'] as String,
+      lastActivity: json['lastActivity'] as String,
+      createdOn: json['createdOn'] as String,
+      icon: json['icon'] as String,
+      members:
+          (json['members'] as List<dynamic>).map((e) => e as String).toList(),
+      notSeen: (json['notSeen'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+    );
 
 Map<String, dynamic> _$GroupModelToJson(_GroupModel instance) =>
     <String, dynamic>{

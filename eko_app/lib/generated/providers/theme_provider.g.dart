@@ -13,9 +13,8 @@ String _$colorThemeHash() => r'695047ffa55c91581155ddf03845a1a5cc7ba8f8';
 final colorThemeProvider = NotifierProvider<ColorTheme, ColorScheme>.internal(
   ColorTheme.new,
   name: r'colorThemeProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$colorThemeHash,
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$colorThemeHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );

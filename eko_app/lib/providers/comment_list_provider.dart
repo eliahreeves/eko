@@ -21,9 +21,8 @@ class CommentList extends _$CommentList {
         .collection('comments')
         .orderBy('time', descending: false)
         .limit(c.postsOnRefresh);
-    final query = state.$1.isEmpty
-        ? baseQuery
-        : baseQuery.startAfter([_timestamps.last]);
+    final query =
+        state.$1.isEmpty ? baseQuery : baseQuery.startAfter([_timestamps.last]);
 
     final commentList = await getComments(query);
     ref.read(commentPoolProvider).putAll(commentList);

@@ -74,17 +74,16 @@ class UserProvider
     extends AutoDisposeAsyncNotifierProviderImpl<User, UserModel> {
   /// See also [User].
   UserProvider(String uid)
-    : this._internal(
-        () => User()..uid = uid,
-        from: userProvider,
-        name: r'userProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$userHash,
-        dependencies: UserFamily._dependencies,
-        allTransitiveDependencies: UserFamily._allTransitiveDependencies,
-        uid: uid,
-      );
+      : this._internal(
+          () => User()..uid = uid,
+          from: userProvider,
+          name: r'userProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product') ? null : _$userHash,
+          dependencies: UserFamily._dependencies,
+          allTransitiveDependencies: UserFamily._allTransitiveDependencies,
+          uid: uid,
+        );
 
   UserProvider._internal(
     super._createNotifier, {

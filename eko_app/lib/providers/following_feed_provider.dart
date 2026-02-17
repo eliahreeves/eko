@@ -68,8 +68,7 @@ class FollowingFeed extends _$FollowingFeed {
     while (gottenPosts.length < c.postsOnRefresh) {
       final snapshot = await baseQuery
           .where('author', whereIn: _feedChunks.first.uids)
-          .startAfter([_feedChunks.first.newestUnshownPost.createdAt])
-          .get();
+          .startAfter([_feedChunks.first.newestUnshownPost.createdAt]).get();
       if (snapshot.docs.isNotEmpty) {
         _feedChunks.first.newestUnshownPost = await PostModel.fromFireStoreDoc(
           snapshot.docs.first,

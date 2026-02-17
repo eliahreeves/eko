@@ -88,18 +88,16 @@ class GroupCard extends ConsumerWidget {
                           group.name,
                           style: TextStyle(
                             fontSize: 17,
-                            fontWeight: unseen
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                            fontWeight:
+                                unseen ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
                         Text(
                           group.description,
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: unseen
-                                ? FontWeight.bold
-                                : FontWeight.w300,
+                            fontWeight:
+                                unseen ? FontWeight.bold : FontWeight.w300,
                           ),
                         ),
                       ],

@@ -53,9 +53,8 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  final List<ProviderObserver>? observers = kDebugMode
-      ? [ProviderDebuggerObserver()]
-      : null;
+  final List<ProviderObserver>? observers =
+      kDebugMode ? [ProviderDebuggerObserver()] : null;
   runApp(ProviderScope(observers: observers, child: MyApp()));
 }
 

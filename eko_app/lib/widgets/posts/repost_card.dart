@@ -42,8 +42,8 @@ class RepostCard extends ConsumerWidget {
           child: InkWell(
             onTap: () => (!isPreview && isLoggedIn)
                 ? context
-                      .push('/feed/post/${post.id}', extra: post)
-                      .then((v) async {})
+                    .push('/feed/post/${post.id}', extra: post)
+                    .then((v) async {})
                 : null,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,9 +63,8 @@ class RepostCard extends ConsumerWidget {
                           if (!isPreview) {
                             if (post.uid !=
                                 ref.read(currentUserProvider).user.uid) {
-                              final user = ref
-                                  .read(userProvider(post.uid))
-                                  .value;
+                              final user =
+                                  ref.read(userProvider(post.uid)).value;
                               if (user != null) {
                                 context.push(
                                   '/users/${user.username}?uid=${user.uid}',

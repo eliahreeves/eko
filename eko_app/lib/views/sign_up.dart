@@ -143,9 +143,7 @@ class _SignUpState extends ConsumerState<SignUp> {
     ref.read(navBarProvider.notifier).enable();
     if (await isUsernameAvailable(usernameController.text.trim())) {
       if (_handleError(
-        await ref
-            .read(authProvider.notifier)
-            .signUp(
+        await ref.read(authProvider.notifier).signUp(
               email: emailController.text.trim(),
               password: passwordController.text,
               username: usernameController.text.trim(),
@@ -403,8 +401,8 @@ class _GetInfoState extends State<GetInfo> {
               child: Text(
                 l10n.createAnAccount,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
           ),
@@ -596,8 +594,8 @@ class _GetPasswordState extends State<GetPassword> {
               child: Text(
                 l10n.createAPassword,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
             const AuthDivider(indent: 20, endIndent: 20),

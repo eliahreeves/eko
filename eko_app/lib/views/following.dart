@@ -27,9 +27,8 @@ class _FollowingState extends ConsumerState<Following> {
     // // list of uids to render next
     final List<MapEntry<String, Never?>> returnData = [];
     final currentDataSet = data.map((item) => item.key).toSet();
-    var unfetchedFollowing = fullFollowing
-        .where((e) => !currentDataSet.contains(e))
-        .toList();
+    var unfetchedFollowing =
+        fullFollowing.where((e) => !currentDataSet.contains(e)).toList();
     final end = unfetchedFollowing.length < chunkSize
         ? unfetchedFollowing.length
         : chunkSize;
@@ -52,32 +51,32 @@ class _FollowingState extends ConsumerState<Following> {
 
     return switch (asyncUser) {
       AsyncData(:final value) => Scaffold(
-        appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface,
-              size: 20,
+          appBar: AppBar(
+            surfaceTintColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: Theme.of(context).colorScheme.onSurface,
+                size: 20,
+              ),
+              onPressed: () => context.pop(),
             ),
-            onPressed: () => context.pop(),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text(
+              AppLocalizations.of(context)!.following,
+              style: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 20,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
           ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: Text(
-            AppLocalizations.of(context)!.following,
-            style: TextStyle(
-              fontWeight: FontWeight.normal,
-              fontSize: 20,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+          body: InfiniteScrolly<String, Never?>(
+            getter: (data) => getter(data, value.following),
+            widget: (uid) => UserCard(uid: uid),
+            initialLoadingWidget: UserLoader(length: 12),
           ),
         ),
-        body: InfiniteScrolly<String, Never?>(
-          getter: (data) => getter(data, value.following),
-          widget: (uid) => UserCard(uid: uid),
-          initialLoadingWidget: UserLoader(length: 12),
-        ),
-      ),
       AsyncError(:final error) => Center(child: Text('Error: $error')),
       _ => const Center(child: CircularProgressIndicator()),
     };

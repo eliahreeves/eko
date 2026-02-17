@@ -39,8 +39,7 @@ class _TextWithTagsState extends ConsumerState<TextWithTags> {
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
-        style:
-            widget.baseTextStyle ??
+        style: widget.baseTextStyle ??
             TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontFamily: DefaultTextStyle.of(context).style.fontFamily,
@@ -50,8 +49,7 @@ class _TextWithTagsState extends ConsumerState<TextWithTags> {
             // This is a username, create a hyperlink
             return TextSpan(
               text: chunk,
-              style:
-                  widget.tagTextStyle ??
+              style: widget.tagTextStyle ??
                   TextStyle(color: Theme.of(context).colorScheme.surfaceTint),
               recognizer: TapGestureRecognizer()
                 ..onTap = () async {

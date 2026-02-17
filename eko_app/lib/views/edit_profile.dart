@@ -111,9 +111,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     }
     final name = nameController.text != user.name ? nameController.text : null;
     final bio = bioController.text != user.bio ? bioController.text : null;
-    ref
-        .read(currentUserProvider.notifier)
-        .editProfile(
+    ref.read(currentUserProvider.notifier).editProfile(
           name: name,
           bio: bio,
           profilePicture: newProfileImage,

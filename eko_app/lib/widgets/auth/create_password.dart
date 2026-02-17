@@ -71,9 +71,8 @@ class CreatePassword extends StatelessWidget {
               growable: false,
             );
             final filteredListLength = passed.where((item) => item).length;
-            final passedPercent = pass1.isEmpty
-                ? 0.0
-                : filteredListLength / passed.length;
+            final passedPercent =
+                pass1.isEmpty ? 0.0 : filteredListLength / passed.length;
             return Column(
               children: [
                 Padding(
