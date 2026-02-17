@@ -189,7 +189,7 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
             child: IndexedStack(
               index: index,
               children: <Widget>[
-                GetInfo(
+                GroupInfo(
                   nameController: nameController,
                   nameFocus: nameFocus,
                   descriptionController: descriptionController,
@@ -206,14 +206,14 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
   }
 }
 
-class GetInfo extends ConsumerWidget {
+class GroupInfo extends ConsumerWidget {
   final TextEditingController nameController;
   final FocusNode nameFocus;
   final TextEditingController descriptionController;
   final String groupIcon;
   final void Function(String) setGroupIcon;
 
-  const GetInfo({
+  const GroupInfo({
     super.key,
     required this.nameFocus,
     required this.nameController,

@@ -185,7 +185,7 @@ class _SignUpState extends ConsumerState<SignUp> {
             child: IndexedStack(
               index: index,
               children: <Widget>[
-                GetInfo(
+                SignupInfo(
                   setPage: (target) => setState(() {
                     index = target;
                   }),
@@ -222,7 +222,7 @@ class _SignUpState extends ConsumerState<SignUp> {
   }
 }
 
-class GetInfo extends StatefulWidget {
+class SignupInfo extends StatefulWidget {
   final TextEditingController nameController;
   //invalid
   final FocusNode nameFocus;
@@ -239,7 +239,7 @@ class GetInfo extends StatefulWidget {
   final FocusNode keyFocus;
   final void Function(int) setPage;
 
-  const GetInfo({
+  const SignupInfo({
     super.key,
     required this.setPage,
     required this.nameFocus,
@@ -258,10 +258,10 @@ class GetInfo extends StatefulWidget {
   });
 
   @override
-  State<GetInfo> createState() => _GetInfoState();
+  State<SignupInfo> createState() => _SignupInfoState();
 }
 
-class _GetInfoState extends State<GetInfo> {
+class _SignupInfoState extends State<SignupInfo> {
   bool usernameValid = false;
   void onKey(KeyEvent event) {
     if (widget.monthFocus.hasFocus) {

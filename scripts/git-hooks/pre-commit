@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep "eko_app/.*\.dart$")
-if [ -z "$STAGED_FILES" ]; then
+STAGED_DART_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep "eko_app/.*\.dart$")
+
+if [ -z "$STAGED_DART_FILES" ]; then
     exit 0
 fi
-echo "--- Pre-commit: Formatting Dart files in eko_app ---"
-for FILE in $STAGED_FILES; do
-    if [ -f "$FILE" ]; then
-        dart format "$FILE"
-        git add "$FILE"
-    fi
-done
-cd eko_app || exit
-dart fix --apply
-cd ..
-for FILE in $STAGED_FILES; do
+
+echo "--- Pre-commit: Formatting Dart files ---"
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+cd "$REPO_ROOT" || exit
+nix develop -c dart format .
+
+echo "$STAGED_DART_FILES" | while read -r FILE; do
     if [ -f "$FILE" ]; then
         git add "$FILE"
     fi
 done
+
 echo "--- Pre-commit: Done ---"
 exit 0
