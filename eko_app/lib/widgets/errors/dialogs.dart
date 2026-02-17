@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:eko_app/widgets/loading/loading_spinner.dart';
 
 void showLoadingDialog(BuildContext context) {
-  showGeneralDialog(
+  showDialog(
     context: context,
-    barrierColor: Theme.of(context).colorScheme.outlineVariant,
     barrierDismissible: false,
-    barrierLabel: 'Dialog',
-    transitionDuration: const Duration(milliseconds: 0),
-    pageBuilder: (context, __, ___) {
-      return const PopScope(
-        canPop: false,
-        child: Center(child: CircularProgressIndicator()),
-      );
-    },
+    barrierColor: Theme.of(context).colorScheme.surface,
+    builder: (context) => const PopScope(
+      canPop: false,
+      child: Center(child: LoadingSpinner()),
+    ),
   );
 }
 

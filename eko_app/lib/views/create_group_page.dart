@@ -140,15 +140,7 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
                       });
                     } else {
                       isLoading = true;
-                      showDialog(
-                        barrierDismissible: false,
-                        barrierColor: Theme.of(context).colorScheme.surface,
-                        context: context,
-                        builder: (context) => PopScope(
-                          canPop: false,
-                          child: Center(child: LoadingSpinner()),
-                        ),
-                      );
+                      showLoadingDialog(context);
                       final now = DateTime.now().toUtc().toIso8601String();
                       final group = GroupModel(
                         name: nameController.text.trim(),

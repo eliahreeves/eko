@@ -11,6 +11,7 @@ import 'package:image_to_ascii/image_to_ascii.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
 
 class EditPicture extends StatefulWidget {
   final XFile picture;
@@ -113,11 +114,10 @@ class _EditPictureState extends State<EditPicture> {
     ).then((_) => tempFile.delete());
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Image saved to gallery'),
-          duration: const Duration(seconds: 3),
-        ),
+      showSnackBar(
+        text: 'Image saved to gallery',
+        context: context,
+        time: 3000,
       );
     }
 
