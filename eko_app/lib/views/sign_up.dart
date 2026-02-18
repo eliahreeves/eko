@@ -25,7 +25,7 @@ void _showWeakPassword(BuildContext context) {
   showSnackBar(
     text: AppLocalizations.of(context)!.weakPasswordBody,
     context: context,
-    time: 3000,
+    variant: SnackBarVariant.destructive,
   );
 }
 
@@ -88,7 +88,7 @@ class _SignUpState extends ConsumerState<SignUp> {
         showSnackBar(
           text: l10n.usernameTakenBody,
           context: context,
-          time: 3000,
+          variant: SnackBarVariant.destructive,
         );
         usernameController.clear();
         setState(() {
@@ -97,7 +97,10 @@ class _SignUpState extends ConsumerState<SignUp> {
         usernameFocus.requestFocus();
         break;
       case 'invalid-email':
-        showSnackBar(text: l10n.invalidEmailBody, context: context);
+        showSnackBar(
+            text: l10n.invalidEmailBody,
+            context: context,
+            variant: SnackBarVariant.destructive);
         break;
       case 'weak-password':
         _showWeakPassword(context);
@@ -121,7 +124,7 @@ class _SignUpState extends ConsumerState<SignUp> {
         showSnackBar(
           text: l10n.defaultErrorBody,
           context: context,
-          time: 3000,
+          variant: SnackBarVariant.destructive,
         );
         break;
     }
@@ -330,7 +333,7 @@ class _SignupInfoState extends State<SignupInfo> {
         showSnackBar(
           text: AppLocalizations.of(context)!.tooYoungBody,
           context: context,
-          time: 3000,
+          variant: SnackBarVariant.destructive,
         );
         return;
       }
@@ -338,7 +341,7 @@ class _SignupInfoState extends State<SignupInfo> {
       showSnackBar(
         text: AppLocalizations.of(context)!.invalidBirthdayBody,
         context: context,
-        time: 3000,
+        variant: SnackBarVariant.destructive,
       );
       return;
     }
@@ -348,6 +351,7 @@ class _SignupInfoState extends State<SignupInfo> {
       showSnackBar(
         text: AppLocalizations.of(context)!.tooManyChar,
         context: context,
+        variant: SnackBarVariant.destructive,
       );
       widget.nameFocus.requestFocus();
     } else if (!usernameValid) {

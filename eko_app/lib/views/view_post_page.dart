@@ -158,7 +158,6 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
       showSnackBar(
         text: AppLocalizations.of(context)!.tooEarlyDeleteBody,
         context: context,
-        time: 3000,
       );
     }
   }
@@ -178,6 +177,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         showSnackBar(
           text: AppLocalizations.of(context)!.tooManyChar,
           context: context,
+          variant: SnackBarVariant.destructive,
         );
         return;
       } else if (commentField.text == '') {
@@ -185,6 +185,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         showSnackBar(
           text: AppLocalizations.of(context)!.emptyFieldError,
           context: context,
+          variant: SnackBarVariant.destructive,
         );
         return;
       } else {

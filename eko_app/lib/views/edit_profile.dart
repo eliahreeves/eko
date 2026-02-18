@@ -86,7 +86,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
           showSnackBar(
             text: AppLocalizations.of(context)!.usernameReqs,
             context: context,
-            time: 3000,
+            variant: SnackBarVariant.destructive,
           );
         }
 
@@ -99,7 +99,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
           showSnackBar(
             text: AppLocalizations.of(context)!.usernameInUse,
             context: context,
-            time: 3000,
+            variant: SnackBarVariant.destructive,
           );
         }
         return;

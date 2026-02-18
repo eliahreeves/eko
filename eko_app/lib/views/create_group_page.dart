@@ -113,7 +113,7 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
                           text:
                               'Name must be at least ${c.minGroupName} characters.',
                           context: context,
-                          time: 3000,
+                          variant: SnackBarVariant.destructive,
                         );
                         nameFocus.requestFocus();
                         return;

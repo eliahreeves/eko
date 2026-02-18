@@ -122,7 +122,6 @@ class _CommentCardState extends ConsumerState<CommentCard> {
       showSnackBar(
         text: AppLocalizations.of(context)!.tooEarlyDeleteBody,
         context: context,
-        time: 3000,
       );
     }
   }

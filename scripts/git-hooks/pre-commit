@@ -10,7 +10,8 @@ echo "--- Pre-commit: Formatting Dart files ---"
 REPO_ROOT=$(git rev-parse --show-toplevel)
 
 cd "$REPO_ROOT" || exit
-nix develop -c dart format .
+eval "$(direnv export bash 2>/dev/null)"
+dart format .
 
 echo "$STAGED_DART_FILES" | while read -r FILE; do
     if [ -f "$FILE" ]; then

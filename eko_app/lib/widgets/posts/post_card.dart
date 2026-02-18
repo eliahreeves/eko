@@ -62,7 +62,6 @@ class GroupBadge extends ConsumerWidget {
             showSnackBar(
               text: AppLocalizations.of(context)!.notInGroup,
               context: context,
-              time: 3000,
             );
           }
         },

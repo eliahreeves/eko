@@ -43,10 +43,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       case 'success':
         return 0;
       case 'invalid-email':
-        showSnackBar(text: l10n.invalidEmailBody, context: context);
+        showSnackBar(
+            text: l10n.invalidEmailBody,
+            context: context,
+            variant: SnackBarVariant.destructive);
         return 1;
       default:
-        showSnackBar(text: l10n.loginFailedBody, context: context);
+        showSnackBar(
+            text: l10n.loginFailedBody,
+            context: context,
+            variant: SnackBarVariant.destructive);
         return 1;
     }
   }

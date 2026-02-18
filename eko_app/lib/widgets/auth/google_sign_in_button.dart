@@ -27,6 +27,7 @@ class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
       showSnackBar(
         text: 'Failed to sign in with Google. Please try again.',
         context: context,
+        variant: SnackBarVariant.destructive,
       );
     } finally {
       if (mounted) {

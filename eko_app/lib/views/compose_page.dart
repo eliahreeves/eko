@@ -221,6 +221,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       showSnackBar(
         text: AppLocalizations.of(context)!.emptyFieldError,
         context: context,
+        variant: SnackBarVariant.destructive,
       );
       isChecking = false;
       return;
@@ -230,6 +231,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       showSnackBar(
         text: AppLocalizations.of(context)!.tooManyChar,
         context: context,
+        variant: SnackBarVariant.destructive,
       );
       isChecking = false;
       return;
@@ -239,6 +241,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       showSnackBar(
         text: AppLocalizations.of(context)!.tooManyChar,
         context: context,
+        variant: SnackBarVariant.destructive,
       );
       isChecking = false;
       return;
@@ -248,6 +251,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       showSnackBar(
         text: AppLocalizations.of(context)!.tooManyLine,
         context: context,
+        variant: SnackBarVariant.destructive,
       );
       isChecking = false;
       return;
@@ -257,6 +261,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       showSnackBar(
         text: AppLocalizations.of(context)!.needTwoOptions,
         context: context,
+        variant: SnackBarVariant.destructive,
       );
       isChecking = false;
       return;
@@ -265,6 +270,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       showSnackBar(
         text: AppLocalizations.of(context)!.tooManyChar,
         context: context,
+        variant: SnackBarVariant.destructive,
       );
       isChecking = false;
       return;
@@ -279,6 +285,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
           showSnackBar(
             text: AppLocalizations.of(context)!.crossGroupRepost,
             context: context,
+            variant: SnackBarVariant.destructive,
           );
         }
         isChecking = false;

@@ -30,7 +30,6 @@ void showUserNameReqs(BuildContext context, {FocusNode? focus}) {
   showSnackBar(
     text: AppLocalizations.of(context)!.usernameReqs,
     context: context,
-    time: 3000,
   );
   focus?.requestFocus();
 }

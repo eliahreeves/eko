@@ -117,7 +117,6 @@ class _EditPictureState extends State<EditPicture> {
       showSnackBar(
         text: 'Image saved to gallery',
         context: context,
-        time: 3000,
       );
     }
 

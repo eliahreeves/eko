@@ -80,7 +80,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
         showSnackBar(
           text: AppLocalizations.of(context)!.weakPasswordBody,
           context: context,
-          time: 3000,
+          variant: SnackBarVariant.destructive,
         );
       }
     }

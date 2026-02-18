@@ -36,21 +36,19 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
         showSnackBar(
           text: AppLocalizations.of(context)!.wrongPasswordBody,
           context: context,
-          time: 3000,
+          variant: SnackBarVariant.destructive,
         );
         return 1;
       case 'user-disabled':
         showSnackBar(
           text: AppLocalizations.of(context)!.userDisabledBody,
           context: context,
-          time: 3000,
         );
         return 1;
       default:
         showSnackBar(
           text: AppLocalizations.of(context)!.defaultErrorBody,
           context: context,
-          time: 3000,
         );
         return 1;
     }
