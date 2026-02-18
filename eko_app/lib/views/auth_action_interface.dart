@@ -34,22 +34,6 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
 
   bool isLoading = false;
 
-  void showExitWarning() {
-    showMyDialog(
-      AppLocalizations.of(context)!.exitEditProfileTitle,
-      '',
-      [AppLocalizations.of(context)!.exit, AppLocalizations.of(context)!.stay],
-      [
-        () {
-          context.pop();
-          context.pop();
-        },
-        context.pop,
-      ],
-      context,
-    );
-  }
-
   Future<void> setPasswordPressed() async {
     FocusManager.instance.primaryFocus?.unfocus();
     if (passwordController.text == '') {
@@ -166,14 +150,14 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         if (index == 2) {
-          showExitWarning();
+          context.go('/');
         }
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: index != 0
             ? AuthAppBar(
-                onBack: index == 2 ? showExitWarning : () => context.go('/'),
+                onBack: () => context.go('/'),
               )
             : null,
         body: Center(
@@ -265,7 +249,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                         const SizedBox(height: c.authElementSpacing),
                         AuthButton.tertiary(
                           label: l10n.cancel,
-                          onPressed: showExitWarning,
+                          onPressed: () => context.go('/'),
                         ),
                         SizedBox(height: height * 0.03),
                       ],

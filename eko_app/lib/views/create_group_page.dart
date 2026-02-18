@@ -19,22 +19,6 @@ import 'package:eko_app/widgets/inputs/profile_input_field.dart';
 import 'package:eko_app/widgets/groups/group_selected_user.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
-void _showConfirmExit(BuildContext context) {
-  showMyDialog(
-    AppLocalizations.of(context)!.exitCreateGroupTitle,
-    AppLocalizations.of(context)!.exitCreateGroupBody,
-    [AppLocalizations.of(context)!.exit, AppLocalizations.of(context)!.stay],
-    [
-      () {
-        context.pop();
-        context.pop();
-      },
-      context.pop,
-    ],
-    context,
-  );
-}
-
 class ListenableSet<T> extends ChangeNotifier {
   final Set<T> _set;
 
@@ -98,7 +82,7 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
         canPop: false,
         onPopInvokedWithResult: (didPop, _) {
           if (didPop) return;
-          _showConfirmExit(context);
+          context.pop();
         },
         child: Scaffold(
           appBar: PreferredSize(
@@ -114,7 +98,7 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
                       });
                       return;
                     }
-                    _showConfirmExit(context);
+                    context.pop();
                   },
                   child: index == 0
                       ? Text(AppLocalizations.of(context)!.cancel)

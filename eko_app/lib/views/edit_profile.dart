@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:eko_app/widgets/inputs/profile_input_field.dart';
-import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
@@ -153,22 +152,6 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     });
   }
 
-  void _showWarning() {
-    showMyDialog(
-      AppLocalizations.of(context)!.exitEditProfileTitle,
-      AppLocalizations.of(context)!.exitEditProfileBody,
-      [AppLocalizations.of(context)!.exit, AppLocalizations.of(context)!.stay],
-      [
-        () {
-          context.pop();
-          context.pop();
-        },
-        context.pop,
-      ],
-      context,
-    );
-  }
-
   bool _shouldShowSave(UserModel user) {
     final bioChanged = bioController.text != user.bio;
     final nameChanged = nameController.text != user.name;
@@ -193,11 +176,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       canPop: false,
       onPopInvokedWithResult: (didPop, Object? result) {
         if (didPop) return;
-        if (!_shouldShowSave(user)) {
-          context.pop();
-          return;
-        }
-        _showWarning();
+        context.pop();
       },
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
