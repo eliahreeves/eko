@@ -155,12 +155,10 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
       );
     } else {
       //too early
-      showMyDialog(
-        AppLocalizations.of(context)!.tooEarlyDeleteTitle,
-        AppLocalizations.of(context)!.tooEarlyDeleteBody,
-        [AppLocalizations.of(context)!.ok],
-        [_popDialog],
-        context,
+      showSnackBar(
+        text: AppLocalizations.of(context)!.tooEarlyDeleteBody,
+        context: context,
+        time: 3000,
       );
     }
   }

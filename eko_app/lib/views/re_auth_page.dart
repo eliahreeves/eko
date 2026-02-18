@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/inputs/custom_input_field.dart';
-import 'package:eko_app/widgets/errors/dialogs.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
@@ -34,30 +33,24 @@ class _ReAuthPageState extends ConsumerState<ReAuthPage> {
       case 'success':
         return 0;
       case 'wrong-password':
-        showMyDialog(
-          AppLocalizations.of(context)!.wrongPasswordTittle,
-          AppLocalizations.of(context)!.wrongPasswordBody,
-          [AppLocalizations.of(context)!.tryAgain],
-          [context.pop],
-          context,
+        showSnackBar(
+          text: AppLocalizations.of(context)!.wrongPasswordBody,
+          context: context,
+          time: 3000,
         );
         return 1;
       case 'user-disabled':
-        showMyDialog(
-          AppLocalizations.of(context)!.userDisabledTittle,
-          AppLocalizations.of(context)!.userDisabledBody,
-          [AppLocalizations.of(context)!.tryAgain],
-          [context.pop],
-          context,
+        showSnackBar(
+          text: AppLocalizations.of(context)!.userDisabledBody,
+          context: context,
+          time: 3000,
         );
         return 1;
       default:
-        showMyDialog(
-          AppLocalizations.of(context)!.defaultErrorTittle,
-          AppLocalizations.of(context)!.defaultErrorBody,
-          [AppLocalizations.of(context)!.tryAgain],
-          [context.pop],
-          context,
+        showSnackBar(
+          text: AppLocalizations.of(context)!.defaultErrorBody,
+          context: context,
+          time: 3000,
         );
         return 1;
     }

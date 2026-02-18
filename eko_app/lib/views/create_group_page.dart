@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/interfaces/search.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
@@ -11,7 +12,6 @@ import 'package:eko_app/providers/group_list_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/types/group.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
-import 'package:eko_app/widgets/loading/loading_spinner.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 import 'package:eko_app/widgets/search/user_search_bar.dart';
@@ -125,12 +125,11 @@ class _CreateGroupState extends ConsumerState<CreateGroup> {
                     FocusManager.instance.primaryFocus?.unfocus();
                     if (index == 0) {
                       if (nameController.text.trim().length < c.minGroupName) {
-                        await showMyDialog(
-                          'Name too short',
-                          'Name must be at least ${c.minGroupName} characters.',
-                          [AppLocalizations.of(context)!.ok],
-                          [context.pop],
-                          context,
+                        showSnackBar(
+                          text:
+                              'Name must be at least ${c.minGroupName} characters.',
+                          context: context,
+                          time: 3000,
                         );
                         nameFocus.requestFocus();
                         return;

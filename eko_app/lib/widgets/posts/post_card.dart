@@ -59,13 +59,10 @@ class GroupBadge extends ConsumerWidget {
           if (group.members.contains(ref.watch(currentUserProvider).user.uid)) {
             context.push('/groups/sub_group/${group.id}', extra: group);
           } else {
-            showMyDialog(
-              AppLocalizations.of(context)!.notInGroup,
-              '',
-              [AppLocalizations.of(context)!.ok],
-              [context.pop],
-              context,
-              dismissable: true,
+            showSnackBar(
+              text: AppLocalizations.of(context)!.notInGroup,
+              context: context,
+              time: 3000,
             );
           }
         },

@@ -22,12 +22,10 @@ import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
 
 void _showWeakPassword(BuildContext context) {
-  showMyDialog(
-    AppLocalizations.of(context)!.weakPasswordTitle,
-    AppLocalizations.of(context)!.weakPasswordBody,
-    [AppLocalizations.of(context)!.tryAgain],
-    [context.pop],
-    context,
+  showSnackBar(
+    text: AppLocalizations.of(context)!.weakPasswordBody,
+    context: context,
+    time: 3000,
   );
 }
 
@@ -87,22 +85,16 @@ class _SignUpState extends ConsumerState<SignUp> {
       case 'success':
         return true;
       case 'username-taken':
-        showMyDialog(
-          l10n.usernameTakenTitle,
-          l10n.usernameTakenBody,
-          [l10n.goBack],
-          [
-            () {
-              context.pop();
-              usernameController.clear();
-              setState(() {
-                index = 0;
-              });
-              usernameFocus.requestFocus();
-            },
-          ],
-          context,
+        showSnackBar(
+          text: l10n.usernameTakenBody,
+          context: context,
+          time: 3000,
         );
+        usernameController.clear();
+        setState(() {
+          index = 0;
+        });
+        usernameFocus.requestFocus();
         break;
       case 'invalid-email':
         showSnackBar(text: l10n.invalidEmailBody, context: context);
@@ -126,12 +118,10 @@ class _SignUpState extends ConsumerState<SignUp> {
         );
         break;
       default:
-        showMyDialog(
-          l10n.defaultErrorTittle,
-          l10n.defaultErrorBody,
-          [l10n.tryAgain],
-          [context.pop],
-          context,
+        showSnackBar(
+          text: l10n.defaultErrorBody,
+          context: context,
+          time: 3000,
         );
         break;
     }
@@ -337,30 +327,18 @@ class _SignupInfoState extends State<SignupInfo> {
           ) >=
           0) {
         //too young
-        showMyDialog(
-          AppLocalizations.of(context)!.tooYoungTitle,
-          AppLocalizations.of(context)!.tooYoungBody,
-          [AppLocalizations.of(context)!.ok],
-          [
-            () {
-              context.pop();
-            },
-          ],
-          context,
+        showSnackBar(
+          text: AppLocalizations.of(context)!.tooYoungBody,
+          context: context,
+          time: 3000,
         );
         return;
       }
     } else {
-      showMyDialog(
-        AppLocalizations.of(context)!.invalidBirthdayTitle,
-        AppLocalizations.of(context)!.invalidBirthdayBody,
-        [AppLocalizations.of(context)!.ok],
-        [
-          () {
-            context.pop();
-          },
-        ],
-        context,
+      showSnackBar(
+        text: AppLocalizations.of(context)!.invalidBirthdayBody,
+        context: context,
+        time: 3000,
       );
       return;
     }

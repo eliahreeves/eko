@@ -6,6 +6,7 @@ import 'package:eko_app/widgets/posts/count_down_timer.dart';
 import 'package:eko_app/widgets/posts/gif_widget.dart';
 import 'package:eko_app/widgets/common/time_stamp.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/providers/comment_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
@@ -118,12 +119,10 @@ class _CommentCardState extends ConsumerState<CommentCard> {
       );
     } else {
       //too early
-      showMyDialog(
-        AppLocalizations.of(context)!.tooEarlyDeleteTitle,
-        AppLocalizations.of(context)!.tooEarlyDeleteBody,
-        [AppLocalizations.of(context)!.ok],
-        [_popDialog],
-        context,
+      showSnackBar(
+        text: AppLocalizations.of(context)!.tooEarlyDeleteBody,
+        context: context,
+        time: 3000,
       );
     }
   }

@@ -8,6 +8,7 @@ import 'package:eko_app/widgets/auth/create_password.dart';
 import 'package:eko_app/widgets/loading/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/auth/auth_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
@@ -92,12 +93,10 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
           isLoading = false;
         });
       } else {
-        showMyDialog(
-          AppLocalizations.of(context)!.weakPasswordTitle,
-          AppLocalizations.of(context)!.weakPasswordBody,
-          [AppLocalizations.of(context)!.tryAgain],
-          [context.pop],
-          context,
+        showSnackBar(
+          text: AppLocalizations.of(context)!.weakPasswordBody,
+          context: context,
+          time: 3000,
         );
       }
     }

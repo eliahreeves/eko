@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/errors/dialogs.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
@@ -28,18 +27,12 @@ class _UserNameCheckLoading extends StatelessWidget {
 }
 
 void showUserNameReqs(BuildContext context, {FocusNode? focus}) {
-  showMyDialog(
-    AppLocalizations.of(context)!.invalidUserName,
-    AppLocalizations.of(context)!.usernameReqs,
-    [AppLocalizations.of(context)!.ok],
-    [
-      () {
-        context.pop();
-        focus?.requestFocus();
-      },
-    ],
-    context,
+  showSnackBar(
+    text: AppLocalizations.of(context)!.usernameReqs,
+    context: context,
+    time: 3000,
   );
+  focus?.requestFocus();
 }
 
 class UsernameCheckDisplay extends StatefulWidget {

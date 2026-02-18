@@ -9,6 +9,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:eko_app/widgets/inputs/profile_input_field.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
@@ -83,12 +84,10 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         usernameFocus.requestFocus();
         isLoading = false;
         if (mounted) {
-          showMyDialog(
-            AppLocalizations.of(context)!.usernameReqs,
-            '',
-            [AppLocalizations.of(context)!.close],
-            [context.pop],
-            context,
+          showSnackBar(
+            text: AppLocalizations.of(context)!.usernameReqs,
+            context: context,
+            time: 3000,
           );
         }
 
@@ -98,12 +97,10 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         usernameFocus.requestFocus();
         isLoading = false;
         if (mounted) {
-          showMyDialog(
-            AppLocalizations.of(context)!.usernameInUse,
-            '',
-            [AppLocalizations.of(context)!.close],
-            [context.pop],
-            context,
+          showSnackBar(
+            text: AppLocalizations.of(context)!.usernameInUse,
+            context: context,
+            time: 3000,
           );
         }
         return;
