@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/interfaces/shared_pref_model.dart';
+import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/theme_provider.dart';
@@ -24,7 +24,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
   late bool activityNotification;
 
   void toggleActivityNotification(bool value) {
-    setActivityNotification(value);
+    PrefsService.activityNotifications = value;
     setState(() {
       activityNotification = value;
     });
@@ -37,7 +37,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
 
   @override
   void initState() {
-    activityNotification = getActivityNotification();
+    activityNotification = PrefsService.activityNotifications;
     super.initState();
   }
 

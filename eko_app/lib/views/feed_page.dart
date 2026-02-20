@@ -189,7 +189,7 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
   }
 
   void tabListener() {
-    PrefsService.instance.setInt(tabStorageKey, tabController.index);
+    PrefsService.lastFeedPageIndex = tabController.index;
     final controller = getCurrentScrollController();
     if (!controller.hasClients) {
       return;
@@ -235,7 +235,7 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
     tabController = TabController(
       length: numTabs,
       vsync: this,
-      initialIndex: (PrefsService.instance.getInt(tabStorageKey) ?? 0).clamp(
+      initialIndex: PrefsService.lastFeedPageIndex.clamp(
         0,
         numTabs,
       ),
