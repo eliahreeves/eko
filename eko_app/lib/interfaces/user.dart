@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:eko_app/interfaces/shared_pref_model.dart';
+import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 Future<bool> isUsernameAvailable(String username) async {
@@ -49,7 +49,7 @@ Future<void> addFCM(String uid) async {
           List<String> fcmTokens = [currentDeviceToken];
           await userDocRef.update({'fcmTokens': fcmTokens});
         }
-        setActivityNotification(true);
+        PrefsService.activityNotifications = true;
       }
     } catch (e) {
       // TODO: Handle the error as needed
@@ -78,7 +78,7 @@ Future<void> removeFCM(String uid) async {
 
         // Update the Firestore document with the modified FCM tokens array
         await userDocRef.update({'fcmTokens': fcmTokens});
-        setActivityNotification(false);
+        PrefsService.activityNotifications = false;
       }
     } catch (e) {
       // TODO: Handle the error as needed

@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/interfaces/shared_pref_model.dart';
+import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/theme_provider.dart';
+import 'package:eko_app/providers/post_preview_provider.dart';
 import 'package:go_router/go_router.dart';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,7 +24,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
   late bool activityNotification;
 
   void toggleActivityNotification(bool value) {
-    setActivityNotification(value);
+    PrefsService.activityNotifications = value;
     setState(() {
       activityNotification = value;
     });
@@ -36,7 +37,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
 
   @override
   void initState() {
-    activityNotification = getActivityNotification();
+    activityNotification = PrefsService.activityNotifications;
     super.initState();
   }
 
@@ -87,6 +88,31 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
               ref
                   .read(currentUserProvider.notifier)
                   .toggleShareOnlineStatus(value);
+            },
+            activeThumbColor: Theme.of(context).colorScheme.primary,
+          ),
+          SwitchListTile(
+            title: Text(AppLocalizations.of(context)!.showPostPreview),
+            value: ref.watch(postPreviewProvider),
+            onChanged: (value) {
+              if (value == false &&
+                  !ref.read(postPreviewProvider.notifier).hasShownInfo()) {
+                showMyDialog(
+                  AppLocalizations.of(context)!.postPreviewInfoTitle,
+                  AppLocalizations.of(context)!.postPreviewInfoBody,
+                  [AppLocalizations.of(context)!.ok],
+                  [
+                    () {
+                      context.pop();
+                      ref.read(postPreviewProvider.notifier).toggle();
+                      ref.read(postPreviewProvider.notifier).markInfoShown();
+                    }
+                  ],
+                  context,
+                );
+              } else {
+                ref.read(postPreviewProvider.notifier).toggle();
+              }
             },
             activeThumbColor: Theme.of(context).colorScheme.primary,
           ),

@@ -624,6 +624,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get shareOnlineStatus => 'Compartir estado en línea';
 
   @override
+  String get showPostPreview => 'Mostrar vista previa';
+
+  @override
+  String get postPreviewInfoTitle => 'Vista previa desactivada';
+
+  @override
+  String get postPreviewInfoBody =>
+      'Las publicaciones se publicarán inmediatamente después de presionar el botón de publicar.';
+
+  @override
   String get blockedByUserMessage =>
       'Actualmente no tienes permiso para ver este contenido.';
 

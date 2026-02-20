@@ -18,6 +18,7 @@ import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
+import 'package:eko_app/providers/post_preview_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/posts/poll_creator.dart';
@@ -210,160 +211,188 @@ class _ComposePageState extends ConsumerState<ComposePage> {
     });
   }
 
+  Future<void> _uploadAndNavigate(PostModel post) async {
+    if (isUploading) return;
+    try {
+      isUploading = true;
+      final postToUpload = post.copyWith(
+        createdAt: DateTime.now().toUtc().toIso8601String(),
+      );
+      final id = await uploadPost(postToUpload, ref);
+      _clear();
+      if (mounted) {
+        if (post.tags.contains('public')) {
+          final completePost = postToUpload.copyWith(id: id);
+          ref.read(newFeedProvider.notifier).insertAtIndex(0, completePost);
+          ref
+              .read(followingFeedProvider.notifier)
+              .insertAtIndex(0, completePost);
+          ref.read(postPoolProvider).putAll([completePost]);
+          context.go('/feed');
+        } else {
+          context.go('/groups/sub_group/${post.tags.first}');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(
+          text: AppLocalizations.of(context)!.defaultErrorTittle,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+      }
+    } finally {
+      isUploading = false;
+    }
+  }
+
   Future<void> _postPressed() async {
     if (isChecking) return;
-    isChecking = true;
-    final title = titleController.text.trim();
-    final body = bodyController.text.trim();
-    final List<String> tags = [audiance ?? 'public'];
-    if (title == '' && body == '' && gif == null && image == null && !isPoll) {
-      titleFocus.requestFocus();
-      showSnackBar(
-        text: AppLocalizations.of(context)!.emptyFieldError,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      isChecking = false;
-      return;
-    }
-    if (title.length > c.maxTitleChars) {
-      titleFocus.requestFocus();
-      showSnackBar(
-        text: AppLocalizations.of(context)!.tooManyChar,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      isChecking = false;
-      return;
-    }
-    if (body.length > c.maxPostChars) {
-      bodyFocus.requestFocus();
-      showSnackBar(
-        text: AppLocalizations.of(context)!.tooManyChar,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      isChecking = false;
-      return;
-    }
-    if (_countNewLines(body) > c.maxPostLines) {
-      bodyFocus.requestFocus();
-      showSnackBar(
-        text: AppLocalizations.of(context)!.tooManyLine,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      isChecking = false;
-      return;
-    }
-    if (isPoll &&
-        pollOptions.where((option) => option.trim().isNotEmpty).length < 2) {
-      showSnackBar(
-        text: AppLocalizations.of(context)!.needTwoOptions,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      isChecking = false;
-      return;
-    }
-    if (isPoll && pollOptions.any((option) => option.length > c.maxPollChars)) {
-      showSnackBar(
-        text: AppLocalizations.of(context)!.tooManyChar,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      isChecking = false;
-      return;
-    }
-
-    if (repostId != null) {
-      final post = await ref.read(postProvider(repostId!).future);
-      if (post.tags.isNotEmpty &&
-          post.tags.first != 'public' &&
-          post.tags.first != audiance) {
-        if (mounted) {
-          showSnackBar(
-            text: AppLocalizations.of(context)!.crossGroupRepost,
-            context: context,
-            variant: SnackBarVariant.destructive,
-          );
-        }
-        isChecking = false;
+    try {
+      isChecking = true;
+      final title = titleController.text.trim();
+      final body = bodyController.text.trim();
+      final List<String> tags = [audiance ?? 'public'];
+      if (title == '' &&
+          body == '' &&
+          gif == null &&
+          image == null &&
+          !isPoll) {
+        titleFocus.requestFocus();
+        showSnackBar(
+          text: AppLocalizations.of(context)!.emptyFieldError,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
         return;
       }
-    }
+      if (title.length > c.maxTitleChars) {
+        titleFocus.requestFocus();
+        showSnackBar(
+          text: AppLocalizations.of(context)!.tooManyChar,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+        return;
+      }
+      if (body.length > c.maxPostChars) {
+        bodyFocus.requestFocus();
+        showSnackBar(
+          text: AppLocalizations.of(context)!.tooManyChar,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+        return;
+      }
+      if (_countNewLines(body) > c.maxPostLines) {
+        bodyFocus.requestFocus();
+        showSnackBar(
+          text: AppLocalizations.of(context)!.tooManyLine,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+        return;
+      }
+      if (isPoll &&
+          pollOptions.where((option) => option.trim().isNotEmpty).length < 2) {
+        showSnackBar(
+          text: AppLocalizations.of(context)!.needTwoOptions,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+        return;
+      }
+      if (isPoll &&
+          pollOptions.any((option) => option.length > c.maxPollChars)) {
+        showSnackBar(
+          text: AppLocalizations.of(context)!.tooManyChar,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+        return;
+      }
 
-    final post = PostModel(
-      uid: ref.watch(currentUserProvider).user.uid,
-      id: '',
-      tags: tags,
-      likes: 0,
-      dislikes: 0,
-      commentCount: 0,
-      createdAt: DateTime.now().toUtc().toIso8601String(),
-      pollOptions: isPoll ? pollOptions : null,
-      imageString: image,
-      gifUrl: gif,
-      repostId: repostId,
-      title: parseTextToTags(title),
-      body: parseTextToTags(body),
-    );
+      if (repostId != null) {
+        final post = await ref.read(postProvider(repostId!).future);
+        if (post.tags.isNotEmpty &&
+            post.tags.first != 'public' &&
+            post.tags.first != audiance) {
+          if (mounted) {
+            showSnackBar(
+              text: AppLocalizations.of(context)!.crossGroupRepost,
+              context: context,
+              variant: SnackBarVariant.destructive,
+            );
+          }
+          return;
+        }
+      }
 
-    if (mounted) {
-      showDialog(
-        barrierDismissible: true,
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Theme.of(context).colorScheme.outlineVariant,
-            title: Text(
-              'Post to ${audiance == null ? AppLocalizations.of(context)!.public : ref.watch(groupProvider(audiance!)).when(data: (group) => group.name, loading: () => '--', error: (_, __) => '--')}?',
-            ),
-            content: SingleChildScrollView(
-              child: PostCardFromPost(post: post, isPreview: true),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text(AppLocalizations.of(context)!.cancel),
-                onPressed: () {
-                  context.pop();
-                },
-              ),
-              TextButton(
-                child: Text(AppLocalizations.of(context)!.post),
-                onPressed: () async {
-                  if (isUploading) return;
-                  isUploading = true;
-                  final postToUpload = post.copyWith(
-                    createdAt: DateTime.now().toUtc().toIso8601String(),
-                  );
-                  final id = await uploadPost(postToUpload, ref);
-                  if (context.mounted) context.pop();
-                  _clear();
-                  if (context.mounted) {
-                    if (post.tags.contains('public')) {
-                      final completePost = postToUpload.copyWith(id: id);
-                      ref
-                          .read(newFeedProvider.notifier)
-                          .insertAtIndex(0, completePost);
-                      ref
-                          .read(followingFeedProvider.notifier)
-                          .insertAtIndex(0, completePost);
-                      ref.read(postPoolProvider).putAll([completePost]);
-                      context.go('/feed');
-                    } else {
-                      context.go('/groups/sub_group/${post.tags.first}');
-                    }
-                  }
-                  isUploading = false;
-                },
-              ),
-            ],
-          );
-        },
-      ).then((_) => FocusManager.instance.primaryFocus?.unfocus());
+      final post = PostModel(
+        uid: ref.read(currentUserProvider).user.uid,
+        id: '',
+        tags: tags,
+        likes: 0,
+        dislikes: 0,
+        commentCount: 0,
+        createdAt: DateTime.now().toUtc().toIso8601String(),
+        pollOptions: isPoll ? pollOptions : null,
+        imageString: image,
+        gifUrl: gif,
+        repostId: repostId,
+        title: parseTextToTags(title),
+        body: parseTextToTags(body),
+      );
+
+      if (mounted) {
+        if (ref.read(postPreviewProvider)) {
+          showDialog(
+            barrierDismissible: true,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Theme.of(context).colorScheme.outlineVariant,
+                title: Text(
+                  'Post to ${audiance == null ? AppLocalizations.of(context)!.public : ref.read(groupProvider(audiance!)).when(data: (group) => group.name, loading: () => '--', error: (_, __) => '--')}?',
+                ),
+                content: SingleChildScrollView(
+                  child: PostCardFromPost(post: post, isPreview: true),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text(AppLocalizations.of(context)!.cancel),
+                    onPressed: () {
+                      context.pop();
+                    },
+                  ),
+                  TextButton(
+                    child: Text(AppLocalizations.of(context)!.post),
+                    onPressed: () async {
+                      if (isUploading) return;
+                      if (context.mounted) context.pop();
+                      await _uploadAndNavigate(post);
+                    },
+                  ),
+                ],
+              );
+            },
+          ).then((_) => FocusManager.instance.primaryFocus?.unfocus());
+        } else {
+          await _uploadAndNavigate(post);
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(
+          text: AppLocalizations.of(context)!.defaultErrorTittle,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+      }
+    } finally {
+      isChecking = false;
     }
-    isChecking = false;
   }
 
   @override

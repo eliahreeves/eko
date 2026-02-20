@@ -1256,6 +1256,24 @@ abstract class AppLocalizations {
   /// **'Share Online Status'**
   String get shareOnlineStatus;
 
+  /// No description provided for @showPostPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Show post preview'**
+  String get showPostPreview;
+
+  /// No description provided for @postPreviewInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview Disabled'**
+  String get postPreviewInfoTitle;
+
+  /// No description provided for @postPreviewInfoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Posts will now be published immediately after you press the post button.'**
+  String get postPreviewInfoBody;
+
   /// No description provided for @blockedByUserMessage.
   ///
   /// In en, this message translates to:

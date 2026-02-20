@@ -3,6 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PrefsService {
   static SharedPreferencesWithCache? _prefs;
 
+  static const String _keyTheme = 'THEMESTATUS';
+  static const String _keyNotifications = 'ACTIVITY_NOTIFICATION';
+  static const String _keyPostPreview = 'SHOW_POST_PREVIEW';
+  static const String _keyHasShownPreviewInfo = 'HAS_SHOWN_PREVIEW_INFO';
+  static const String _keyNotFirstInstall = 'NOT_FIRST_INSTALL';
+  static const String _keyLastFeedPageIndex = 'LAST_FEED_PAGE_INDEX';
+  static const String _keyWebUdidPresence = 'web_udid_presence';
+
   static Future<void> init() async {
     _prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(),
@@ -14,5 +22,41 @@ class PrefsService {
       throw Exception('PrefsService not initialized');
     }
     return _prefs!;
+  }
+
+  static bool get isDarkMode => instance.getBool(_keyTheme) ?? true;
+  static set isDarkMode(bool value) => instance.setBool(_keyTheme, value);
+
+  static bool get activityNotifications =>
+      instance.getBool(_keyNotifications) ?? true;
+  static set activityNotifications(bool value) =>
+      instance.setBool(_keyNotifications, value);
+
+  static bool get showPostPreview => instance.getBool(_keyPostPreview) ?? true;
+  static set showPostPreview(bool value) =>
+      instance.setBool(_keyPostPreview, value);
+
+  static bool get hasShownPreviewInfo =>
+      instance.getBool(_keyHasShownPreviewInfo) ?? false;
+  static set hasShownPreviewInfo(bool value) =>
+      instance.setBool(_keyHasShownPreviewInfo, value);
+
+  static bool get notFirstInstall =>
+      instance.getBool(_keyNotFirstInstall) ?? false;
+  static set notFirstInstall(bool value) =>
+      instance.setBool(_keyNotFirstInstall, value);
+
+  static int get lastFeedPageIndex =>
+      instance.getInt(_keyLastFeedPageIndex) ?? 0;
+  static set lastFeedPageIndex(int value) =>
+      instance.setInt(_keyLastFeedPageIndex, value);
+
+  static String? get webUdidPresence => instance.getString(_keyWebUdidPresence);
+  static set webUdidPresence(String? value) {
+    if (value == null) {
+      instance.remove(_keyWebUdidPresence);
+    } else {
+      instance.setString(_keyWebUdidPresence, value);
+    }
   }
 }

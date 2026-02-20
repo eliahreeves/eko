@@ -12,10 +12,10 @@ import 'package:uuid/uuid.dart';
 part '../generated/providers/presence_provider.g.dart';
 
 String _getWebUdid() {
-  final fromPref = PrefsService.instance.getString('web_udid_presence');
+  final fromPref = PrefsService.webUdidPresence;
   if (fromPref == null) {
     final uid = Uuid().v4();
-    PrefsService.instance.setString('web_udid_presence', uid);
+    PrefsService.webUdidPresence = uid;
     return uid;
   }
   return fromPref;

@@ -280,6 +280,9 @@
     "blockedAccounts":"Blocked Accounts",
     "newActivityNotifications":"New Activity Notifications",
 	"shareOnlineStatus":"Share Online Status",
+    "showPostPreview":"Show post preview",
+    "postPreviewInfoTitle":"Preview Disabled",
+    "postPreviewInfoBody":"Posts will now be published immediately after you press the post button.",
 
 
     "blockedByUserMessage":"You do not currently have permission to view this content.",

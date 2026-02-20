@@ -21,9 +21,8 @@ Map<String, dynamic> _$KlipyResponseToJson(_KlipyResponse instance) =>
 _KlipyResult _$KlipyResultFromJson(Map<String, dynamic> json) => _KlipyResult(
       id: json['id'] as String,
       title: json['title'] as String,
-      mediaFormats: MediaFormats.fromJson(
-        json['media_formats'] as Map<String, dynamic>,
-      ),
+      mediaFormats:
+          MediaFormats.fromJson(json['media_formats'] as Map<String, dynamic>),
       contentDescription: json['content_description'] as String?,
       itemurl: json['itemurl'] as String,
       url: json['url'] as String,
@@ -42,10 +41,14 @@ Map<String, dynamic> _$KlipyResultToJson(_KlipyResult instance) =>
     };
 
 _MediaFormats _$MediaFormatsFromJson(Map<String, dynamic> json) =>
-    _MediaFormats(gif: GifFormat.fromJson(json['gif'] as Map<String, dynamic>));
+    _MediaFormats(
+      gif: GifFormat.fromJson(json['gif'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$MediaFormatsToJson(_MediaFormats instance) =>
-    <String, dynamic>{'gif': instance.gif.toJson()};
+    <String, dynamic>{
+      'gif': instance.gif.toJson(),
+    };
 
 _GifFormat _$GifFormatFromJson(Map<String, dynamic> json) => _GifFormat(
       url: json['url'] as String,

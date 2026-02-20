@@ -33,7 +33,9 @@ abstract class _$Activity
     extends BuildlessAutoDisposeAsyncNotifier<ActivityModel> {
   late final String id;
 
-  FutureOr<ActivityModel> build(String id);
+  FutureOr<ActivityModel> build(
+    String id,
+  );
 }
 
 /// See also [Activity].
@@ -46,13 +48,21 @@ class ActivityFamily extends Family<AsyncValue<ActivityModel>> {
   const ActivityFamily();
 
   /// See also [Activity].
-  ActivityProvider call(String id) {
-    return ActivityProvider(id);
+  ActivityProvider call(
+    String id,
+  ) {
+    return ActivityProvider(
+      id,
+    );
   }
 
   @override
-  ActivityProvider getProviderOverride(covariant ActivityProvider provider) {
-    return call(provider.id);
+  ActivityProvider getProviderOverride(
+    covariant ActivityProvider provider,
+  ) {
+    return call(
+      provider.id,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -74,8 +84,9 @@ class ActivityFamily extends Family<AsyncValue<ActivityModel>> {
 class ActivityProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Activity, ActivityModel> {
   /// See also [Activity].
-  ActivityProvider(String id)
-      : this._internal(
+  ActivityProvider(
+    String id,
+  ) : this._internal(
           () => Activity()..id = id,
           from: activityProvider,
           name: r'activityProvider',
@@ -101,8 +112,12 @@ class ActivityProvider
   final String id;
 
   @override
-  FutureOr<ActivityModel> runNotifierBuild(covariant Activity notifier) {
-    return notifier.build(id);
+  FutureOr<ActivityModel> runNotifierBuild(
+    covariant Activity notifier,
+  ) {
+    return notifier.build(
+      id,
+    );
   }
 
   @override
@@ -156,6 +171,5 @@ class _ActivityProviderElement
   @override
   String get id => (origin as ActivityProvider).id;
 }
-
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

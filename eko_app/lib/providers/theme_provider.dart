@@ -5,19 +5,16 @@ import 'package:eko_app/utilities/shared_pref_service.dart';
 
 part '../generated/providers/theme_provider.g.dart';
 
-const String key = 'THEMESTATUS';
-
 @Riverpod(keepAlive: true)
 class ColorTheme extends _$ColorTheme {
   @override
   ColorScheme build() {
-    final prefs = PrefsService.instance;
-    final isDarkTheme = prefs.getBool(key) ?? true;
+    final isDarkTheme = PrefsService.isDarkMode;
     return isDarkTheme ? darkThemeColors : lightThemeColors;
   }
 
   void changeTheme(bool isDarkTheme) {
-    PrefsService.instance.setBool(key, isDarkTheme);
+    PrefsService.isDarkMode = isDarkTheme;
     state = isDarkTheme ? darkThemeColors : lightThemeColors;
   }
 }

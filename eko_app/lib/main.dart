@@ -14,17 +14,16 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/scaffolds/check_version.dart';
 import 'utilities/router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:eko_app/interfaces/shared_pref_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:eko_app/firebase_options.dart';
 
 Future<void> _checkFirstInstall() async {
-  if ((PrefsService.instance.getBool('NOT_FIRST_INSTALL')) == null) {
+  if (!PrefsService.notFirstInstall) {
     if (FirebaseAuth.instance.currentUser != null) {
       FirebaseAuth.instance.signOut();
     }
-    setBool('NOT_FIRST_INSTALL', true);
+    PrefsService.notFirstInstall = true;
   }
 }
 

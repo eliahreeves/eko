@@ -88,7 +88,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           builder: (context, setDialogState) {
             final l10n = AppLocalizations.of(context)!;
             return AlertDialog(
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: Theme.of(context).colorScheme.outlineVariant,
               title: Text(l10n.resetPassword),
               content: SingleChildScrollView(
                 child: Column(

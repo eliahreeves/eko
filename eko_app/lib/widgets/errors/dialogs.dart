@@ -26,6 +26,7 @@ Future<void> showMyDialog(
     barrierDismissible: dismissable, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.outlineVariant,
         title: (title != '') ? Text(title) : null,
         content: (message != '')
             ? SingleChildScrollView(child: Text(message))
