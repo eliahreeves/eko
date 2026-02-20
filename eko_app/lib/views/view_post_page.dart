@@ -29,6 +29,7 @@ class ViewPostPage extends ConsumerStatefulWidget {
 }
 
 class _ViewPostPageState extends ConsumerState<ViewPostPage> {
+  bool isUploading = false;
   bool isAtSymbolTyped = false;
   FocusNode commentFieldFocus = FocusNode();
   final TextEditingController commentField = TextEditingController();
@@ -169,73 +170,87 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
   }
 
   Future<void> postCommentPressed() async {
-    CommentModel? comment;
+    if (isUploading) return;
+    try {
+      isUploading = true;
+      CommentModel? comment;
 
-    if (gif == null) {
-      commentField.text = commentField.text.trim();
-      if (commentField.text.length > c.maxCommentChars) {
-        showSnackBar(
-          text: AppLocalizations.of(context)!.tooManyChar,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-        return;
-      } else if (commentField.text == '') {
-        commentFieldFocus.requestFocus();
-        showSnackBar(
-          text: AppLocalizations.of(context)!.emptyFieldError,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-        return;
+      if (gif == null) {
+        commentField.text = commentField.text.trim();
+        if (commentField.text.length > c.maxCommentChars) {
+          showSnackBar(
+            text: AppLocalizations.of(context)!.tooManyChar,
+            context: context,
+            variant: SnackBarVariant.destructive,
+          );
+          return;
+        } else if (commentField.text == '') {
+          commentFieldFocus.requestFocus();
+          showSnackBar(
+            text: AppLocalizations.of(context)!.emptyFieldError,
+            context: context,
+            variant: SnackBarVariant.destructive,
+          );
+          return;
+        } else {
+          String body = commentField.text;
+          commentField.text = '';
+          FocusManager.instance.primaryFocus?.unfocus();
+          comment = CommentModel(
+            uid: ref.read(currentUserProvider).user.uid,
+            id: '',
+            postId: widget.id,
+            createdAt: DateTime.now().toUtc().toIso8601String(),
+            body: parseTextToTags(body),
+          );
+        }
       } else {
-        String body = commentField.text;
-        commentField.text = '';
-        FocusManager.instance.primaryFocus?.unfocus();
         comment = CommentModel(
-          uid: ref.watch(currentUserProvider).user.uid,
+          uid: ref.read(currentUserProvider).user.uid,
           id: '',
           postId: widget.id,
           createdAt: DateTime.now().toUtc().toIso8601String(),
-          body: parseTextToTags(body),
+          gifUrl: gif,
+        );
+        gif = null;
+      }
+
+      final id = await uploadComment(comment, ref);
+      final completeComment = comment.copyWith(id: id);
+
+      // Add comment to the comment list
+      ref.read(commentPoolProvider).putAll([completeComment]);
+      ref
+          .read(commentListProvider(widget.id).notifier)
+          .addToBack(completeComment);
+
+      // Increment comment count
+      final post = ref.read(postProvider(widget.id)).value;
+      if (post != null) {
+        final updatedPost = post.copyWith(commentCount: post.commentCount + 1);
+        ref.read(postPoolProvider).putAll([updatedPost]);
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (commentsScrollController.hasClients) {
+          commentsScrollController.animateTo(
+            commentsScrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(
+          text: AppLocalizations.of(context)!.defaultErrorTittle,
+          context: context,
+          variant: SnackBarVariant.destructive,
         );
       }
-    } else {
-      comment = CommentModel(
-        uid: ref.watch(currentUserProvider).user.uid,
-        id: '',
-        postId: widget.id,
-        createdAt: DateTime.now().toUtc().toIso8601String(),
-        gifUrl: gif,
-      );
-      gif = null;
+    } finally {
+      isUploading = false;
     }
-
-    final id = await uploadComment(comment, ref);
-    final completeComment = comment.copyWith(id: id);
-
-    // Add comment to the comment list
-    ref.read(commentPoolProvider).putAll([completeComment]);
-    ref
-        .read(commentListProvider(widget.id).notifier)
-        .addToBack(completeComment);
-
-    // Increment comment count
-    final post = ref.read(postProvider(widget.id)).value;
-    if (post != null) {
-      final updatedPost = post.copyWith(commentCount: post.commentCount + 1);
-      ref.read(postPoolProvider).putAll([updatedPost]);
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (commentsScrollController.hasClients) {
-        commentsScrollController.animateTo(
-          commentsScrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
   }
 
   void replyPressed(String username) {
