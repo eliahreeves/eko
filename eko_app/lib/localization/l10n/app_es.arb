@@ -259,6 +259,9 @@
     "blockedAccounts":"Cuentas bloqueadas",
     "newActivityNotifications":"Notificaciones de nueva actividad",
 	"shareOnlineStatus":"Compartir estado en línea",
+    "showPostPreview":"Mostrar vista previa",
+    "postPreviewInfoTitle":"Vista previa desactivada",
+    "postPreviewInfoBody":"Las publicaciones se publicarán inmediatamente después de presionar el botón de publicar.",
 
 
     "blockedByUserMessage":"Actualmente no tienes permiso para ver este contenido.",

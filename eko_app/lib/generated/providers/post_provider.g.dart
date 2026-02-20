@@ -32,7 +32,9 @@ class _SystemHash {
 abstract class _$Post extends BuildlessAutoDisposeAsyncNotifier<PostModel> {
   late final String id;
 
-  FutureOr<PostModel> build(String id);
+  FutureOr<PostModel> build(
+    String id,
+  );
 }
 
 /// See also [Post].
@@ -45,13 +47,21 @@ class PostFamily extends Family<AsyncValue<PostModel>> {
   const PostFamily();
 
   /// See also [Post].
-  PostProvider call(String id) {
-    return PostProvider(id);
+  PostProvider call(
+    String id,
+  ) {
+    return PostProvider(
+      id,
+    );
   }
 
   @override
-  PostProvider getProviderOverride(covariant PostProvider provider) {
-    return call(provider.id);
+  PostProvider getProviderOverride(
+    covariant PostProvider provider,
+  ) {
+    return call(
+      provider.id,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -73,8 +83,9 @@ class PostFamily extends Family<AsyncValue<PostModel>> {
 class PostProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Post, PostModel> {
   /// See also [Post].
-  PostProvider(String id)
-      : this._internal(
+  PostProvider(
+    String id,
+  ) : this._internal(
           () => Post()..id = id,
           from: postProvider,
           name: r'postProvider',
@@ -98,8 +109,12 @@ class PostProvider
   final String id;
 
   @override
-  FutureOr<PostModel> runNotifierBuild(covariant Post notifier) {
-    return notifier.build(id);
+  FutureOr<PostModel> runNotifierBuild(
+    covariant Post notifier,
+  ) {
+    return notifier.build(
+      id,
+    );
   }
 
   @override
@@ -152,6 +167,5 @@ class _PostProviderElement
   @override
   String get id => (origin as PostProvider).id;
 }
-
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

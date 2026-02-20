@@ -32,7 +32,9 @@ class _SystemHash {
 abstract class _$Online extends BuildlessAutoDisposeNotifier<OnlineStatus> {
   late final String id;
 
-  OnlineStatus build(String id);
+  OnlineStatus build(
+    String id,
+  );
 }
 
 /// See also [Online].
@@ -45,13 +47,21 @@ class OnlineFamily extends Family<OnlineStatus> {
   const OnlineFamily();
 
   /// See also [Online].
-  OnlineProvider call(String id) {
-    return OnlineProvider(id);
+  OnlineProvider call(
+    String id,
+  ) {
+    return OnlineProvider(
+      id,
+    );
   }
 
   @override
-  OnlineProvider getProviderOverride(covariant OnlineProvider provider) {
-    return call(provider.id);
+  OnlineProvider getProviderOverride(
+    covariant OnlineProvider provider,
+  ) {
+    return call(
+      provider.id,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -73,8 +83,9 @@ class OnlineFamily extends Family<OnlineStatus> {
 class OnlineProvider
     extends AutoDisposeNotifierProviderImpl<Online, OnlineStatus> {
   /// See also [Online].
-  OnlineProvider(String id)
-      : this._internal(
+  OnlineProvider(
+    String id,
+  ) : this._internal(
           () => Online()..id = id,
           from: onlineProvider,
           name: r'onlineProvider',
@@ -100,8 +111,12 @@ class OnlineProvider
   final String id;
 
   @override
-  OnlineStatus runNotifierBuild(covariant Online notifier) {
-    return notifier.build(id);
+  OnlineStatus runNotifierBuild(
+    covariant Online notifier,
+  ) {
+    return notifier.build(
+      id,
+    );
   }
 
   @override
@@ -154,6 +169,5 @@ class _OnlineProviderElement
   @override
   String get id => (origin as OnlineProvider).id;
 }
-
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

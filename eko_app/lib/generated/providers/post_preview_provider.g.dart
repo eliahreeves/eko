@@ -1,24 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../providers/nav_bar_provider.dart';
+part of '../../providers/post_preview_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$navBarHash() => r'a25d84dda5b03559146c374a6a19f825e291e643';
+String _$postPreviewHash() => r'ac0b10f398df616cae3708d3d5ab28d6a34b89f6';
 
-/// See also [NavBar].
-@ProviderFor(NavBar)
-final navBarProvider = NotifierProvider<NavBar, bool>.internal(
-  NavBar.new,
-  name: r'navBarProvider',
+/// See also [PostPreview].
+@ProviderFor(PostPreview)
+final postPreviewProvider = NotifierProvider<PostPreview, bool>.internal(
+  PostPreview.new,
+  name: r'postPreviewProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$navBarHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$postPreviewHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$NavBar = Notifier<bool>;
+typedef _$PostPreview = Notifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
