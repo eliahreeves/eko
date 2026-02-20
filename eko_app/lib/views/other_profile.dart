@@ -223,7 +223,9 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                   return await otherProfilePageGetter(data, ref, uid);
                 }
               },
-              widget: otherProfilePostCardBuilder,
+              widget: isCurrentUser
+                  ? profilePostCardBuilder
+                  : otherProfilePostCardBuilder,
               onRefresh: onRefresh,
               initialLoadingWidget: PostLoader(length: 3),
               header: _Header(user: profileUser, isCurrentUser: isCurrentUser),
