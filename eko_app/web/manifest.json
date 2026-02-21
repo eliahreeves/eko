@@ -1,11 +1,11 @@
 {
-    "name": "Eko",
-    "short_name": "Eko",
+    "name": "eko",
+    "short_name": "eko",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Social Media for Everyone",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
