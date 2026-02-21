@@ -1,58 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Keep a tight circle">
+  <meta name="description" content="Social Media for Everyone">
   <meta name="google-signin-client_id" content="146952619766-notckfgbvm5cppimn4p5mnveqp0nb038.apps.googleusercontent.com">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Eko">
+  <meta name="apple-mobile-web-app-title" content="eko">
   <link rel="apple-touch-icon" href="icons/1024.png">
 
-  <!-- Favicon -->
-<link rel="icon" href="/eko_logo_black.svg" media="(prefers-color-scheme: light)">
-<link rel="icon" href="/eko_logo_white.svg" media="(prefers-color-scheme: dark)">
-
-  <title>Eko</title>
+  <title>eko</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Favicon -->
+  <link rel="icon" href="eko_logo_black.svg" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="eko_logo_white.svg" media="(prefers-color-scheme: dark)">
+
+  <style>
+    body {
+      margin: 0;
+      background-color: #000000;
+    }
+
+    #loading-splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #000000;
+      z-index: 999999;
+    }
+
+    #splash-logo {
+      width: 200px;
+      height: auto;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+  </style>
 </head>
 <body>
+  <div id="loading-splash">
+    <img id="splash-logo" src="eko_logo_white.svg">
+  </div>
+
+  <script>
+    const observer = new MutationObserver((mutations) => {
+      if (document.querySelector('flt-glass-pane') || document.querySelector('canvas')) {
+        document.getElementById('loading-splash')?.remove();
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
-
-<div style="
-  width: 40px;
-  height: 40px;
-  border: 4px solid #ccc;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-">
-</div>
-
-<style>
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>
 </body>
 </html>
