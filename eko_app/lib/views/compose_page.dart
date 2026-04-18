@@ -1,4 +1,3 @@
-import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -168,23 +167,15 @@ class _ComposePageState extends ConsumerState<ComposePage> {
 
   Future<void> _addImagePressed() async {
     ref.read(navBarProvider.notifier).disable();
-    final pickedImage = await context.pushNamed<XFile?>('camera');
+    final result = await context.pushNamed<AsciiImage?>('camera');
 
-    if (pickedImage == null || !mounted) {
-      ref.read(navBarProvider.notifier).enable();
-      return;
+    if (result != null && mounted) {
+      setState(() {
+        image = result;
+        gif = null;
+        repostId = null;
+      });
     }
-
-    final asciiImage = await context.pushNamed<AsciiImage?>(
-      'edit_picture',
-      extra: pickedImage,
-    );
-
-    setState(() {
-      image = asciiImage;
-      gif = null;
-      repostId = null;
-    });
 
     ref.read(navBarProvider.notifier).enable();
   }

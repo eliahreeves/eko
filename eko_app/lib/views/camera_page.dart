@@ -38,36 +38,53 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
     final ImagePicker picker = ImagePicker();
     final XFile? picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
-    if (mounted) context.pop(picked);
+    if (mounted) {
+      final asciiImage =
+          await context.pushNamed<AsciiImage?>('edit_picture', extra: picked);
+      if (mounted && asciiImage != null) {
+        context.pop(asciiImage);
+      }
+    }
   }
 
   void captureFrame() async {
     final currentOrientaion = orientation;
     final picture = await _ctrl.takePicture();
     if (picture != null) {
+      XFile? finalPicture;
       if (currentOrientaion != DeviceOrientation.portraitUp) {
         final original = img.decodeImage(await picture.readAsBytes());
         if (original == null) {
-          if (mounted) context.pop(picture);
-          return;
-        }
-        num angle = 0;
-        if (currentOrientaion == DeviceOrientation.landscapeRight) {
-          angle = 90;
-        } else if (currentOrientaion == DeviceOrientation.landscapeLeft) {
-          angle = 270;
+          finalPicture = picture;
         } else {
-          angle = 180;
+          num angle = 0;
+          if (currentOrientaion == DeviceOrientation.landscapeRight) {
+            angle = 90;
+          } else if (currentOrientaion == DeviceOrientation.landscapeLeft) {
+            angle = 270;
+          } else {
+            angle = 180;
+          }
+          final rotated = img.copyRotate(original, angle: angle);
+          final tempDir = await getTemporaryDirectory();
+          final path =
+              '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+          await img.encodeJpgFile(path, rotated);
+          finalPicture = XFile(path);
         }
-        final rotated = img.copyRotate(original, angle: angle);
-        final tempDir = await getTemporaryDirectory();
-        final path =
-            '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-        await img.encodeJpgFile(path, rotated);
-        if (mounted) context.pop(XFile(path));
-        return;
+      } else {
+        finalPicture = picture;
       }
-      if (mounted) context.pop(picture);
+
+      if (mounted) {
+        final asciiImage = await context.pushNamed<AsciiImage?>(
+          'edit_picture',
+          extra: finalPicture,
+        );
+        if (mounted && asciiImage != null) {
+          context.pop(asciiImage);
+        }
+      }
     }
   }
 
