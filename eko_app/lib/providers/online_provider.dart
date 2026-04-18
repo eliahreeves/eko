@@ -34,7 +34,7 @@ class Online extends _$Online {
               DateTime.now().toUtc().difference(
                         DateTime.fromMillisecondsSinceEpoch(
                             status.lastChanged!),
-                      ) >
+                      ) <
                   Duration(minutes: 10),
         );
       }
