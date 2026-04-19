@@ -960,11 +960,10 @@ packages:
   image_to_ascii:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "776a71a145ca815f67946dda1e803ccfee9b1e20"
-      resolved-ref: "776a71a145ca815f67946dda1e803ccfee9b1e20"
-      url: "https://github.com/ericbreh/image_to_ascii.git"
-    source: git
+      name: image_to_ascii
+      sha256: "8daff34c688559cc92ef2bfcd1ef70e45f6b149ac141c68fec9103eac1312f1b"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.1"
   intl:
     dependency: "direct main"

@@ -151,6 +151,25 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
           icon: Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            onPressed: !cameraAvailable
+                ? null
+                : () async {
+                    if (_ctrl.flashIsAuto()) {
+                      await _ctrl.flashOff();
+                    } else {
+                      await _ctrl.flashAuto();
+                    }
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
+            icon: Icon(
+              _ctrl.flashIsAuto() ? Icons.flash_auto : Icons.flash_off,
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
