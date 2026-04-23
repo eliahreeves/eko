@@ -1,3 +1,6 @@
+# Legacy duplicate app tree (not used; eko_app is canonical)
+/untitled_app/
+
 /eko_app/lib/secrets
 /backend/NewPostNotification/secrets/
 

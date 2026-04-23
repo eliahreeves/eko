@@ -24,6 +24,7 @@ mixin _$UserModel {
   bool get isVerified;
   String? get verificationUrl;
   bool get shareOnlineStatus;
+  bool get isFollowing;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -51,7 +52,9 @@ mixin _$UserModel {
             (identical(other.verificationUrl, verificationUrl) ||
                 other.verificationUrl == verificationUrl) &&
             (identical(other.shareOnlineStatus, shareOnlineStatus) ||
-                other.shareOnlineStatus == shareOnlineStatus));
+                other.shareOnlineStatus == shareOnlineStatus) &&
+            (identical(other.isFollowing, isFollowing) ||
+                other.isFollowing == isFollowing));
   }
 
   @override
@@ -66,11 +69,12 @@ mixin _$UserModel {
       uid,
       isVerified,
       verificationUrl,
-      shareOnlineStatus);
+      shareOnlineStatus,
+      isFollowing);
 
   @override
   String toString() {
-    return 'UserModel(name: $name, username: $username, profilePicture: $profilePicture, bio: $bio, followers: $followers, following: $following, uid: $uid, isVerified: $isVerified, verificationUrl: $verificationUrl, shareOnlineStatus: $shareOnlineStatus)';
+    return 'UserModel(name: $name, username: $username, profilePicture: $profilePicture, bio: $bio, followers: $followers, following: $following, uid: $uid, isVerified: $isVerified, verificationUrl: $verificationUrl, shareOnlineStatus: $shareOnlineStatus, isFollowing: $isFollowing)';
   }
 }
 
@@ -89,7 +93,8 @@ abstract mixin class $UserModelCopyWith<$Res> {
       String uid,
       bool isVerified,
       String? verificationUrl,
-      bool shareOnlineStatus});
+      bool shareOnlineStatus,
+      bool isFollowing});
 }
 
 /// @nodoc
@@ -114,6 +119,7 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
     Object? isVerified = null,
     Object? verificationUrl = freezed,
     Object? shareOnlineStatus = null,
+    Object? isFollowing = null,
   }) {
     return _then(_self.copyWith(
       name: null == name
@@ -155,6 +161,10 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
       shareOnlineStatus: null == shareOnlineStatus
           ? _self.shareOnlineStatus
           : shareOnlineStatus // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isFollowing: null == isFollowing
+          ? _self.isFollowing
+          : isFollowing // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -263,7 +273,8 @@ extension UserModelPatterns on UserModel {
             String uid,
             bool isVerified,
             String? verificationUrl,
-            bool shareOnlineStatus)?
+            bool shareOnlineStatus,
+            bool isFollowing)?
         $default, {
     required TResult orElse(),
   }) {
@@ -280,7 +291,8 @@ extension UserModelPatterns on UserModel {
             _that.uid,
             _that.isVerified,
             _that.verificationUrl,
-            _that.shareOnlineStatus);
+            _that.shareOnlineStatus,
+            _that.isFollowing);
       case _:
         return orElse();
     }
@@ -311,7 +323,8 @@ extension UserModelPatterns on UserModel {
             String uid,
             bool isVerified,
             String? verificationUrl,
-            bool shareOnlineStatus)
+            bool shareOnlineStatus,
+            bool isFollowing)
         $default,
   ) {
     final _that = this;
@@ -327,7 +340,8 @@ extension UserModelPatterns on UserModel {
             _that.uid,
             _that.isVerified,
             _that.verificationUrl,
-            _that.shareOnlineStatus);
+            _that.shareOnlineStatus,
+            _that.isFollowing);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -357,7 +371,8 @@ extension UserModelPatterns on UserModel {
             String uid,
             bool isVerified,
             String? verificationUrl,
-            bool shareOnlineStatus)?
+            bool shareOnlineStatus,
+            bool isFollowing)?
         $default,
   ) {
     final _that = this;
@@ -373,7 +388,8 @@ extension UserModelPatterns on UserModel {
             _that.uid,
             _that.isVerified,
             _that.verificationUrl,
-            _that.shareOnlineStatus);
+            _that.shareOnlineStatus,
+            _that.isFollowing);
       case _:
         return null;
     }
@@ -393,7 +409,8 @@ class _UserModel implements UserModel {
       required this.uid,
       required this.isVerified,
       this.verificationUrl,
-      required this.shareOnlineStatus})
+      required this.shareOnlineStatus,
+      this.isFollowing = false})
       : _followers = followers,
         _following = following;
 
@@ -429,6 +446,9 @@ class _UserModel implements UserModel {
   final String? verificationUrl;
   @override
   final bool shareOnlineStatus;
+  @override
+  @JsonKey()
+  final bool isFollowing;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -459,7 +479,9 @@ class _UserModel implements UserModel {
             (identical(other.verificationUrl, verificationUrl) ||
                 other.verificationUrl == verificationUrl) &&
             (identical(other.shareOnlineStatus, shareOnlineStatus) ||
-                other.shareOnlineStatus == shareOnlineStatus));
+                other.shareOnlineStatus == shareOnlineStatus) &&
+            (identical(other.isFollowing, isFollowing) ||
+                other.isFollowing == isFollowing));
   }
 
   @override
@@ -474,11 +496,12 @@ class _UserModel implements UserModel {
       uid,
       isVerified,
       verificationUrl,
-      shareOnlineStatus);
+      shareOnlineStatus,
+      isFollowing);
 
   @override
   String toString() {
-    return 'UserModel(name: $name, username: $username, profilePicture: $profilePicture, bio: $bio, followers: $followers, following: $following, uid: $uid, isVerified: $isVerified, verificationUrl: $verificationUrl, shareOnlineStatus: $shareOnlineStatus)';
+    return 'UserModel(name: $name, username: $username, profilePicture: $profilePicture, bio: $bio, followers: $followers, following: $following, uid: $uid, isVerified: $isVerified, verificationUrl: $verificationUrl, shareOnlineStatus: $shareOnlineStatus, isFollowing: $isFollowing)';
   }
 }
 
@@ -500,7 +523,8 @@ abstract mixin class _$UserModelCopyWith<$Res>
       String uid,
       bool isVerified,
       String? verificationUrl,
-      bool shareOnlineStatus});
+      bool shareOnlineStatus,
+      bool isFollowing});
 }
 
 /// @nodoc
@@ -525,6 +549,7 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
     Object? isVerified = null,
     Object? verificationUrl = freezed,
     Object? shareOnlineStatus = null,
+    Object? isFollowing = null,
   }) {
     return _then(_UserModel(
       name: null == name
@@ -566,6 +591,10 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
       shareOnlineStatus: null == shareOnlineStatus
           ? _self.shareOnlineStatus
           : shareOnlineStatus // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isFollowing: null == isFollowing
+          ? _self.isFollowing
+          : isFollowing // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }

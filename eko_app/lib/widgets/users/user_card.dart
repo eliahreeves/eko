@@ -19,11 +19,8 @@ class FollowButton extends ConsumerWidget {
   const FollowButton({super.key, required this.user});
 
   Future<void> onFollowPressed(WidgetRef ref, UserModel user) async {
-    final isFollowing = ref
-        .read(currentUserProvider)
-        .user
-        .following
-        .contains(user.uid);
+    final isFollowing =
+        ref.read(currentUserProvider).user.following.contains(user.uid);
     if (isFollowing) {
       await ref.read(currentUserProvider.notifier).removeFollower(user.uid);
     } else {

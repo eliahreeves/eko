@@ -1,4 +1,4 @@
-import 'package:untitled_app/utilities/like_state.dart';
+import 'package:eko_app/utilities/like_state.dart';
 
 import '../utilities/supabase_ref.dart';
 

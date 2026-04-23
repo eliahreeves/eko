@@ -12,8 +12,7 @@ class BlockedUsersPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
-    final blockedList =
-        ref.watch(currentUserProvider).blockedUsers.toList();
+    final blockedList = ref.watch(currentUserProvider).blockedUsers.toList();
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,

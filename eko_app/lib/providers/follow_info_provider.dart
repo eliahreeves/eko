@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:untitled_app/types/follow_info.dart';
-import 'package:untitled_app/utilities/supabase_ref.dart';
+import 'package:eko_app/types/follow_info.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 // Necessary for code-generation to work
 part '../generated/providers/follow_info_provider.g.dart';
 

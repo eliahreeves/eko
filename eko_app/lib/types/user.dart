@@ -15,6 +15,7 @@ abstract class UserModel with _$UserModel {
     required bool isVerified,
     String? verificationUrl,
     required bool shareOnlineStatus,
+    @Default(false) bool isFollowing,
   }) = _UserModel;
 
   factory UserModel.userNotFound() {
@@ -29,6 +30,7 @@ abstract class UserModel with _$UserModel {
       following: [],
       uid: '',
       shareOnlineStatus: false,
+      isFollowing: false,
     );
   }
 
@@ -50,6 +52,7 @@ abstract class UserModel with _$UserModel {
       isVerified: json['isVerified'] ?? false,
       shareOnlineStatus: json['share_online_status'] ?? true,
       verificationUrl: json['verificationUrl'],
+      isFollowing: json['isFollowing'] ?? json['is_following'] ?? false,
     );
   }
 }

@@ -29,14 +29,12 @@ Map<String, dynamic> currentUserDocFromSupabaseRow(
     profileData = Map<String, dynamic>.from(profileDataRaw);
   } else {
     profileData = {
-      'profilePicture':
-          row['profile_picture'] ?? row['profilePicture'] ?? '',
+      'profilePicture': row['profile_picture'] ?? row['profilePicture'] ?? '',
       'bio': row['bio'] ?? '',
       'followers': asStrList(row['followers']),
       'following': asStrList(row['following']),
       'likedPosts': asStrList(row['liked_posts'] ?? row['likedPosts']),
-      'dislikedPosts':
-          asStrList(row['disliked_posts'] ?? row['dislikedPosts']),
+      'dislikedPosts': asStrList(row['disliked_posts'] ?? row['dislikedPosts']),
       'pollVotes': asPollVotes(row['poll_votes'] ?? row['pollVotes']),
     };
   }
