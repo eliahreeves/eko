@@ -6,7 +6,6 @@ import 'package:eko_app/widgets/posts/gif_widget.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:eko_app/widgets/posts/poll_widget.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
-import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/providers/restricted_user_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
@@ -29,7 +28,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
 Widget profilePostCardBuilder(String id) {
-  return PostCard(id: id, isOnProfile: true, showGroup: true);
+  return PostCard(id: id, isOnProfile: true);
 }
 
 Widget otherProfilePostCardBuilder(String id) {
@@ -40,80 +39,12 @@ Widget postCardBuilder(String id) {
   return PostCard(id: id);
 }
 
-class GroupBadge extends ConsumerWidget {
-  final String groupId;
-  const GroupBadge({super.key, required this.groupId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final width = c.widthGetter(context);
-    final asyncGroup = ref.watch(groupProvider(groupId));
-    return Padding(
-      padding: EdgeInsets.only(left: width * 0.115 + 20),
-      child: InkWell(
-        onTap: () {
-          final group = asyncGroup.valueOrNull;
-          if (group == null) {
-            return;
-          }
-          if (group.members.contains(ref.watch(currentUserProvider).user.uid)) {
-            context.push('/groups/sub_group/${group.id}', extra: group);
-          } else {
-            showSnackBar(
-              text: AppLocalizations.of(context)!.notInGroup,
-              context: context,
-            );
-          }
-        },
-        child: Container(
-          padding: const EdgeInsets.only(left: 6, right: 6),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.group,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-              const SizedBox(width: 2),
-              asyncGroup.when(
-                data: (group) => Text(
-                  group.name,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                error: (_, __) => Text(
-                  'Error',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                loading: () => Text(
-                  'loading...',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class PostCard extends ConsumerStatefulWidget {
   final String id;
   final bool isPreview;
   final bool isPostPage;
   final bool isBuiltFromId;
   final bool isOnProfile;
-  final bool showGroup;
   final bool visible;
 
   const PostCard({
@@ -123,7 +54,6 @@ class PostCard extends ConsumerStatefulWidget {
     this.isPostPage = false,
     this.isBuiltFromId = false,
     this.isOnProfile = false,
-    this.showGroup = false,
     this.visible = true,
   });
 
@@ -238,7 +168,6 @@ class _PostCardState extends ConsumerState<PostCard> {
               isPreview: widget.isPreview,
               isPostPage: widget.isPostPage,
               isLoggedIn: isLoggedIn(),
-              showGroup: widget.showGroup,
               post: post,
             );
           },
@@ -266,7 +195,6 @@ class PostCardFromPost extends ConsumerWidget {
   final bool isLoggedIn;
   final bool isPostPage;
   final bool isOnProfile;
-  final bool showGroup;
   final void Function(String)? sharePressed;
 
   const PostCardFromPost({
@@ -275,7 +203,6 @@ class PostCardFromPost extends ConsumerWidget {
     this.isPreview = false,
     this.isPostPage = false,
     this.isLoggedIn = true,
-    this.showGroup = false,
     super.key,
     required this.post,
   });
@@ -294,8 +221,6 @@ class PostCardFromPost extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (showGroup && post.tags.first != 'public')
-              GroupBadge(groupId: post.tags.first),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: c.postPaddingHoriz,
@@ -464,10 +389,6 @@ class PostCardFromPost extends ConsumerWidget {
                               queryParameters['timestamp'] = DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString();
-                              if (post.tags.isNotEmpty &&
-                                  post.tags.first != 'public') {
-                                queryParameters['id'] = post.tags.first;
-                              }
                               context.goNamed(
                                 'compose',
                                 queryParameters: queryParameters,

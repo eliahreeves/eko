@@ -160,13 +160,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Estas seguro de que quieres regresar a la página de inicio? Tu informacion será borrada.';
 
   @override
-  String get exitCreateGroupTitle => 'Quieres regresar a la página de grupo';
-
-  @override
-  String get exitCreateGroupBody =>
-      'Estas seguro de que quieres regresar? Tu informacion del grupo será borrada.';
-
-  @override
   String get exitEditProfileTitle => 'Estas seguro de que quieres salir?';
 
   @override
@@ -401,13 +394,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commentText => 'ha comentado en tu publicación';
 
   @override
-  String get crossGroupRepost =>
-      'No puedes hacer publicaciónes de eko chamber en público o en otros groupos.';
-
-  @override
-  String get groups => 'Grupos';
-
-  @override
   String get next => 'Luego';
 
   @override
@@ -421,12 +407,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get public => 'Público';
-
-  @override
-  String get selectAudience => 'Seleccionar Grupo:';
-
-  @override
-  String get myGroups => 'Mis grupos';
 
   @override
   String get reply => 'Responder';
@@ -496,17 +476,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get postNotFound => 'Publicación no encontrada';
 
   @override
-  String get groupNotFound => 'Grupo no encontrado';
-
-  @override
-  String get leaveGroupWarningTitle =>
-      'Estas seguro de que quieres dejar el grupo?';
-
-  @override
-  String get leaveGroupWarningBody =>
-      'Un miembro del group tendrá que volver a añadirte si quieres unirte de nuevo.';
-
-  @override
   String get share => 'Compartir';
 
   @override
@@ -535,9 +504,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get logInRequired =>
       'Inicie sesión para acceder a todas las funciones de eko.';
-
-  @override
-  String get notInGroup => 'Ya no eres miembro de este grupo.';
 
   @override
   String get send => 'Mandar';

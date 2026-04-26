@@ -56,10 +56,6 @@
     "exitCreateAccountTitle":"Quieres regresar a la página de inicio?",
     "exitCreateAccountBody":"Estas seguro de que quieres regresar a la página de inicio? Tu informacion será borrada.",
 
-	"exitCreateGroupTitle":"Quieres regresar a la página de grupo",
-	"exitCreateGroupBody":"Estas seguro de que quieres regresar? Tu informacion del grupo será borrada.",
-
-
     "exitEditProfileTitle":"Estas seguro de que quieres salir?",
     "exitEditProfileBody":"Todos los cambios serán borrados",
     "stay":"Permanecer en esta página",
@@ -154,17 +150,11 @@
     "someone":"Alguien",
     "commentText":"ha comentado en tu publicación",
 
-		"crossGroupRepost":"No puedes hacer publicaciónes de eko chamber en público o en otros groupos.",
-
-
-    "groups":"Grupos",
     "next":"Luego",
     "description":"Descripción(Opcional)",
     "skip":"Saltar",
     "done":"Listo",
     "public":"Público",
-    "selectAudience":"Seleccionar Grupo:",
-    "myGroups":"Mis grupos",
     "reply":"Responder",
     "userNotFound":"Usuario no encontrado",
     "usernameReqs":"Nombres de usario deben estar entre 3 y 24 caracteres. Nombres de usario solo pueden contener letras minúsculas, números y guiones bajos.",
@@ -197,13 +187,6 @@
     "updateAvailable":"Actualización disponible",
     "update":"Actualizar",
     "postNotFound":"Publicación no encontrada",
-    "groupNotFound":"Grupo no encontrado",
-
-
-    "leaveGroupWarningTitle":"Estas seguro de que quieres dejar el grupo?",
-    "leaveGroupWarningBody":"Un miembro del group tendrá que volver a añadirte si quieres unirte de nuevo.",
-
-
     "share":"Compartir",
     "copyLink":"Copiar vínculo",
     "copied":"Copiado",
@@ -216,9 +199,6 @@
     "logIntoApp":"Login requerido",
     "logInRequired":"Inicie sesión para acceder a todas las funciones de eko.",
    
-    "notInGroup":"Ya no eres miembro de este grupo.",
-
-
     "send":"Mandar",
     "reportDetails":"Por favor produzcas información sobre por qué está denunciando esta publicación.",
     "commentRequired":"Comentario requerido",

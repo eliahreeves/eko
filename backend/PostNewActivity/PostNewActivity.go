@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/firestore"
 )
 
 type Post struct {
@@ -133,58 +132,9 @@ func PostNewActivity(ctx context.Context, e FirestoreEvent) error {
 				log.Fatalf("Failed to add activity: %v", err)
 			}
 		}
-	} else { // if not public send to people in the groups it is tagged with
-		// For each tag
-		for _, value := range post.Tags.ArrayValue.Values {
-			groupID := value.StringValue
-
-			// Get the group's document
-			groupDoc, err := client.Collection("groups").Doc(groupID).Get(ctx)
-			if err != nil {
-				log.Printf("Failed to get group document: %v", err)
-				continue
-			}
-
-			// Get the group's members
-			members, ok := groupDoc.Data()["members"].([]interface{})
-			if !ok {
-				log.Fatalf("Failed to convert members to array")
-			}
-
-			// For each member, add the new activity
-			for _, member := range members {
-				memberID, ok := member.(string)
-				if !ok {
-					log.Printf("Failed to convert member ID to string")
-					continue
-				}
-
-				// Exclude the author of the post
-				if memberID == post.Author.StringValue {
-					continue
-				}
-
-				_, _, err = client.Collection("users").Doc(memberID).Collection("newActivity").Add(ctx, map[string]interface{}{
-					"content":   content,
-					"path":      lastPart,
-					"sourceUid": uid,
-					"time":      post.Time.StringValue,
-					"type":      "post",
-					"tags":      post.Tags.ArrayValue.Values[0].StringValue,
-				})
-				if err != nil {
-					log.Fatalf("Failed to add activity: %v", err)
-				}
-
-				// Set unreadGroup to true
-				_, err = client.Collection("users").Doc(memberID).Update(ctx, []firestore.Update{
-					{Path: "unreadGroup", Value: true},
-				})
-				if err != nil {
-					log.Printf("Failed to set unreadGroup: %v", err)
-				}
-			}
-		}
+	} else {
+		// Group-targeted fanout has been removed along with the groups feature.
+		log.Printf("Skipping non-public post activity fanout for post %s", lastPart)
 	}
 
 	return nil

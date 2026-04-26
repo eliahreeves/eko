@@ -153,10 +153,6 @@ class CurrentUser extends _$CurrentUser {
     state = state.copyWith(pollVotes: votes);
   }
 
-  Future<void> setUnreadGroup(bool toggle) async {
-    state = state.copyWith(unreadGroup: toggle);
-  }
-
   Future<List<String>> _getPeopleWhoBlockedMe() async {
     try {
       final uid = ref.read(authProvider).uid!;

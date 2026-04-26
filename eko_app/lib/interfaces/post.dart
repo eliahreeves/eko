@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/interfaces/activity.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
-import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
@@ -96,20 +95,10 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
   final Set<String> sentActivities = {ref.read(currentUserProvider).user.uid};
   final List<Future<void>> activityFutures = [];
 
-  late final Set<String>? members;
-  if (post.tags.contains('public')) {
-    members = null;
-  } else {
-    final group = await ref.read(groupProvider(post.tags.first).future);
-    members = Set<String>.from(group.members);
-  }
-
   for (final user in taggedUsers) {
     if (user == null) continue;
     if (sentActivities.contains(user)) continue;
     sentActivities.add(user);
-
-    if (members != null && !members.contains(user)) continue;
 
     final activity = ActivityModel(
       id: '',

@@ -9,10 +9,8 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/views/blocked_users_page.dart';
 import 'package:eko_app/views/download_page.dart';
-import 'package:eko_app/views/edit_group_page.dart';
 import 'package:eko_app/views/camera_page.dart';
 import 'package:eko_app/views/edit_picture.dart';
-import 'package:eko_app/views/group_add_people.dart';
 import 'package:eko_app/views/login.dart';
 import 'package:eko_app/views/share_profile_page.dart';
 import 'package:eko_app/views/sign_up.dart';
@@ -29,10 +27,6 @@ import 'package:eko_app/views/welcome.dart';
 import 'package:eko_app/views/followers.dart';
 import 'package:eko_app/views/following.dart';
 import 'package:eko_app/views/recent_activity.dart';
-import 'package:eko_app/views/groups_page.dart';
-import 'package:eko_app/views/create_group_page.dart';
-import 'package:eko_app/widgets/common/emoji_selector.dart';
-import 'package:eko_app/views/sub_group_page.dart';
 import 'package:eko_app/views/auth_action_interface.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:eko_app/views/view_likes_page.dart';
@@ -52,9 +46,6 @@ final _shellNavigatorComposeKey = GlobalKey<NavigatorState>(
 );
 final _shellNavigatorProfileKey = GlobalKey<NavigatorState>(
   debugLabel: 'Profile',
-);
-final _shellNavigatorGroupsKey = GlobalKey<NavigatorState>(
-  debugLabel: 'Groups',
 );
 
 class GoRouterRefreshNotifier extends ChangeNotifier {
@@ -203,79 +194,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
           StatefulShellBranch(
-            navigatorKey: _shellNavigatorGroupsKey,
-            routes: [
-              GoRoute(
-                path: '/groups',
-                name: 'groups',
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(child: GroupsPage());
-                },
-                routes: [
-                  GoRoute(
-                    path: 'sub_group/:id',
-                    name: 'sub_group',
-                    builder: (context, state) {
-                      String id = state.pathParameters['id']!;
-                      return SubGroupPage(id: id);
-                    },
-                    routes: [
-                      GoRoute(
-                        path: 'edit_group',
-                        name: 'edit_group',
-                        pageBuilder: (context, state) {
-                          String id = state.pathParameters['id']!;
-                          return NoTransitionPage(child: EditGroup(id: id));
-                        },
-                        routes: [
-                          GoRoute(
-                            path: 'add_people',
-                            name: 'add_people',
-                            pageBuilder: (context, state) {
-                              String id = state.pathParameters['id']!;
-                              return NoTransitionPage(
-                                child: AddPeoplePage(id: id),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: 'create_group',
-                    name: 'create_group',
-                    builder: (context, state) => const CreateGroup(),
-                    routes: [
-                      GoRoute(
-                        path: 'pick_emoji',
-                        name: 'pick_emoji',
-                        pageBuilder: (context, state) {
-                          return NoTransitionPage(child: EmojiSelector());
-                        },
-                        //builder: (context, state) => EmojiSelector(onPressed: state.extra! as void Function(String)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
             navigatorKey: _shellNavigatorComposeKey,
             routes: [
               GoRoute(
                 path: '/compose',
                 name: 'compose',
                 pageBuilder: (context, state) {
-                  final String? id = state.uri.queryParameters['id'];
                   final String? repostId =
                       state.uri.queryParameters['repostId'];
                   final String? timestamp =
                       state.uri.queryParameters['timestamp'];
                   return NoTransitionPage(
                     child: ComposePage(
-                      groupId: id,
                       repostId: repostId,
                       timestamp: timestamp,
                     ),

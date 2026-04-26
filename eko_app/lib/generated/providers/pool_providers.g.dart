@@ -6,22 +6,6 @@ part of '../../providers/pool_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$groupPoolHash() => r'ec686bcc1d7befd4572b3c032fd54c57ae38c604';
-
-/// See also [groupPool].
-@ProviderFor(groupPool)
-final groupPoolProvider = Provider<PoolService<GroupModel>>.internal(
-  groupPool,
-  name: r'groupPoolProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$groupPoolHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GroupPoolRef = ProviderRef<PoolService<GroupModel>>;
 String _$postPoolHash() => r'35eebdddef5e558ab5b8d023914a10dc7e66d66b';
 
 /// See also [postPool].

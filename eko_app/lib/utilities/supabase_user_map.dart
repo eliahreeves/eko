@@ -50,6 +50,5 @@ Map<String, dynamic> currentUserDocFromSupabaseRow(
     'profileData': profileData,
     'blockedUsers': asStrList(row['blocked_users'] ?? row['blockedUsers']),
     'blockedBy': blockedBy,
-    'unreadGroup': row['unread_group'] ?? row['unreadGroup'] ?? false,
   };
 }

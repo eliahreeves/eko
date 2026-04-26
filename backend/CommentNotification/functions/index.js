@@ -12,7 +12,6 @@ exports.sendActivityNotification = functions.firestore.document('users/{uid}/new
         const path = snapshot.data().path;
         const content = snapshot.data().content;
         const type = snapshot.data().type;
-        const tags = snapshot.data().tags;
         console.log("UID: ", uid);
         console.log("Path: ", path);
         console.log("content: ", content);
@@ -30,18 +29,6 @@ exports.sendActivityNotification = functions.firestore.document('users/{uid}/new
             return null;
             }
         }
-        async function readGroupName(group_path) {
-          const userRef = admin.firestore().collection("groups");
-          const userDoc = await userRef.doc(group_path).get();
-
-          if (userDoc.exists) {
-           return userDoc.data();
-          } else {
-          console.log("Error group path: ", group_path);
-          return null;
-          }
-      }
-
         // Get user data based on the author ID
         const userData = await readUserData(snapshot.data().sourceUid);
 
@@ -68,36 +55,18 @@ exports.sendActivityNotification = functions.firestore.document('users/{uid}/new
                 return admin.messaging().sendEachForMulticast(payload);
               }
               else if (type == "post") {
-                if (tags == "public") {
-                  const payload = {
-                    notification: {
-                      title: 'New post from ' + userData.username || 'New post!',
-                      body: content || 'Click to see post',
-                    },
-                    data: {
-                      path: path,
-                      type: type,
-                    },
-                    tokens: userTokens,
-                  };
-                  return admin.messaging().sendEachForMulticast(payload);
-                }
-                else {
-                  const groupData = await readGroupName(snapshot.data().tags);
-                  const payload = {
-                    notification: {
-                      title: groupData.name || 'New post to group!',
-                      body: '@' + userData.username + ': ' + content || 'Click to see post',
-                    },
-                    data: {
-                      path: path,
-                      type: type,
-                    },
-                    tokens: userTokens,
-                  };
-                  return admin.messaging().sendEachForMulticast(payload);
-                }
-              
+                const payload = {
+                  notification: {
+                    title: 'New post from ' + userData.username || 'New post!',
+                    body: content || 'Click to see post',
+                  },
+                  data: {
+                    path: path,
+                    type: type,
+                  },
+                  tokens: userTokens,
+                };
+                return admin.messaging().sendEachForMulticast(payload);
             }
             else if (type == "tag") {
               const payload = {

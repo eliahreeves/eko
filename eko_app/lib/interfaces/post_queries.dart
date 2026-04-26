@@ -69,31 +69,6 @@ Future<(List<MapEntry<String, (int, String)>>, bool)> popGetter(
   return (retList, retList.length < c.postsOnRefresh);
 }
 
-Future<(List<MapEntry<String, String>>, bool)> getGroupPosts(
-  List<MapEntry<String, String>> list,
-  WidgetRef ref,
-  String groupId,
-) async {
-  final chamberId = int.tryParse(groupId);
-  if (chamberId == null) {
-    return (<MapEntry<String, String>>[], true);
-  }
-  final params = <String, dynamic>{
-    'p_limit': c.postsOnRefresh,
-    'p_chamber_id': chamberId,
-  };
-  if (list.isNotEmpty) {
-    params['p_last_time'] = list.last.value;
-    params['p_last_id'] = int.parse(list.last.key);
-  }
-  final rows = await supabase.rpc('paginated_chamber_posts', params: params);
-  final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
-  ref.read(postPoolProvider).putAll(postList);
-  final retList =
-      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
-  return (retList, retList.length < c.postsOnRefresh);
-}
-
 Future<List<CommentModel>> getCommentsForPost(
   String postId, {
   String? lastTime,

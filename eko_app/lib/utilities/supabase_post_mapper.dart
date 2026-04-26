@@ -26,9 +26,6 @@ String _createdAtIso(dynamic v) {
 
 /// Maps a row from [full_post_info] / post RPCs to [PostModel].
 PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
-  final chamberId = row['chamber_id'];
-  final tags =
-      chamberId == null ? <String>['public'] : <String>[_asString(chamberId)];
   final ekoedId = row['ekoed_id'];
   final json = <String, dynamic>{
     'author': _asString(row['author_uid']),
@@ -37,7 +34,7 @@ PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
     'image': row['image'] as String?,
     'title': row['title'] as String?,
     'body': row['body'] as String?,
-    'tags': tags,
+    'tags': <String>['public'],
     'likes': (row['like_count'] as num?)?.toInt() ?? 0,
     'dislikes': (row['dislike_count'] as num?)?.toInt() ?? 0,
     'commentCount': (row['comment_count'] as num?)?.toInt() ?? 0,

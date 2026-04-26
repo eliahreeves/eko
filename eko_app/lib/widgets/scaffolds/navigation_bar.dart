@@ -3,20 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/common/download_button.dart';
 import 'package:eko_app/widgets/scaffolds/app_safe_area.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 const List<IconData> _passiveIconList = [
   Icons.home_outlined,
-  Icons.group_outlined,
   Icons.add,
   Icons.search,
   Icons.person_outline,
 ];
 const List<IconData> _activeIconList = [
   Icons.home,
-  Icons.group,
   Icons.add,
   Icons.search,
   Icons.person,
@@ -87,7 +84,6 @@ class ScaffoldWithNavigationBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
     return AppSafeArea(
       child: Scaffold(
         floatingActionButton: downloadButtonIfWeb(),
@@ -120,18 +116,6 @@ class ScaffoldWithNavigationBar extends ConsumerWidget {
                         icon: Stack(
                           children: [
                             Icon(_passiveIconList[i], size: c.navBarIconSize),
-                            if (i == 1 && user.unreadGroup)
-                              Positioned(
-                                right: 1.5,
-                                child: Container(
-                                  width: 9,
-                                  height: 9,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                         activeIcon: Stack(
@@ -140,18 +124,6 @@ class ScaffoldWithNavigationBar extends ConsumerWidget {
                               _activeIconList[i],
                               size: c.navBarIconSize + c.navBarIconSizeAdder,
                             ),
-                            if (i == 1 && user.unreadGroup)
-                              Positioned(
-                                right: 1.5,
-                                child: Container(
-                                  width: 9,
-                                  height: 9,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                         label: '',
@@ -179,7 +151,6 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
     return AppSafeArea(
       child: Scaffold(
         floatingActionButton: downloadButtonIfWeb(),
@@ -200,18 +171,6 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
                       icon: Stack(
                         children: [
                           Icon(_passiveIconList[i], size: c.navBarIconSize),
-                          if (i == 1 && user.unreadGroup)
-                            Positioned(
-                              right: 1.5,
-                              child: Container(
-                                width: 9,
-                                height: 9,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                            ),
                         ],
                       ),
                       selectedIcon: Stack(
@@ -220,18 +179,6 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
                             _activeIconList[i],
                             size: c.navBarIconSize + c.navBarIconSizeAdder,
                           ),
-                          if (i == 1 && user.unreadGroup)
-                            Positioned(
-                              right: 1.5,
-                              child: Container(
-                                width: 9,
-                                height: 9,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                            ),
                         ],
                       ),
                     ),
