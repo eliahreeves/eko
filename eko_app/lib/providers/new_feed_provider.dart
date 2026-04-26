@@ -1,15 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/utilities/supabase_post_mapper.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 part '../generated/providers/new_feed_provider.g.dart';
 
 @riverpod
 class NewFeed extends _$NewFeed {
-  final List<String> _timestamps = [];
+  final List<MapEntry<String, String>> _cursors = [];
   final Set<String> _set = {};
   @override
   (List<String>, bool) build() {
@@ -17,28 +16,23 @@ class NewFeed extends _$NewFeed {
   }
 
   Future<void> getter() async {
-    // final restrictedUsers = await ref.watch(restrictedUserProvider.future);
-    final baseQuery = FirebaseFirestore.instance
-        .collection('posts')
-        .where('tags', arrayContains: 'public')
-        .orderBy('time', descending: true)
-        .limit(c.postsOnRefresh);
-    final query =
-        state.$1.isEmpty ? baseQuery : baseQuery.startAfter([_timestamps.last]);
-    final postList = await getPosts(query);
+    final params = <String, dynamic>{
+      'p_limit': c.postsOnRefresh,
+    };
+    if (_cursors.isNotEmpty) {
+      final last = _cursors.last;
+      params['p_last_time'] = last.value;
+      params['p_last_id'] = int.parse(last.key);
+    }
+    final rows = await supabase.rpc('paginated_new_posts', params: params);
+    final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
     ref.read(postPoolProvider).putAll(postList);
-    // postList.addAll(intermediatePostList.where((post) {
-    //   final currentUser = ref.read(currentUserProvider).user;
-    //   return !restrictedUsers.contains(post.uid) ||
-    //       currentUser.following.contains(post.uid) ||
-    //       currentUser.uid == post.uid;
-    // }));
 
     final newList = [...state.$1];
     for (final post in postList) {
       if (_set.add(post.id)) {
         newList.add(post.id);
-        _timestamps.add(post.createdAt);
+        _cursors.add(MapEntry(post.id, post.createdAt));
       }
     }
     state = (newList, postList.length < c.postsOnRefresh);
@@ -46,7 +40,7 @@ class NewFeed extends _$NewFeed {
 
   Future<void> refresh() async {
     _set.clear();
-    _timestamps.clear();
+    _cursors.clear();
     state = ([], false);
     await getter();
   }
@@ -55,7 +49,7 @@ class NewFeed extends _$NewFeed {
     if (_set.add(post.id)) {
       final newList = [...state.$1];
       newList.insert(index, post.id);
-      _timestamps.add(post.createdAt);
+      _cursors.add(MapEntry(post.id, post.createdAt));
       state = (newList, state.$2);
     }
   }
@@ -65,6 +59,7 @@ class NewFeed extends _$NewFeed {
     final removed = newList.remove(postId);
     if (removed) {
       _set.remove(postId);
+      _cursors.removeWhere((e) => e.key == postId);
       state = (newList, state.$2);
     }
   }

@@ -232,16 +232,42 @@ class CurrentUser extends _$CurrentUser {
         'get_user_by_id',
         params: {'p_uid': uid},
       );
-      if (response is! List || response.isEmpty) return;
+      if (response is! List || response.isEmpty) {
+        await _reloadCurrentUserFromFirestore(uid);
+        return;
+      }
       final row = response.first;
-      if (row is! Map) return;
+      if (row is! Map) {
+        await _reloadCurrentUserFromFirestore(uid);
+        return;
+      }
       final rowMap = Map<String, dynamic>.from(row);
       final blockedBy = await _getPeopleWhoBlockedMe();
       state = CurrentUserModel.fromJson(
         currentUserDocFromSupabaseRow(rowMap, blockedBy),
       );
     } catch (e) {
-      debugPrint('Error reloading current user: $e');
+      debugPrint('Error reloading current user from Supabase: $e');
+      await _reloadCurrentUserFromFirestore(uid);
+    }
+  }
+
+  /// When Supabase is not configured, RPC fails, or the user row is missing,
+  /// fall back to the legacy Firestore user document so [RequireAuth] can leave
+  /// the loading state (see `user.user.uid.isEmpty` gate).
+  Future<void> _reloadCurrentUserFromFirestore(String uid) async {
+    try {
+      final userRef = FirebaseFirestore.instance.collection('users');
+      final mainDoc =
+          await userRef.doc(uid).snapshots().firstWhere((doc) => doc.exists);
+      final blockedBy = await _getPeopleWhoBlockedMe();
+      final mainData = mainDoc.data();
+      if (mainData != null) {
+        mainData['blockedBy'] = blockedBy;
+        state = CurrentUserModel.fromJson(mainData);
+      }
+    } catch (e) {
+      debugPrint('Error reloading current user from Firestore: $e');
     }
   }
 

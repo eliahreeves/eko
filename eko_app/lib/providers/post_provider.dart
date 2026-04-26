@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/interfaces/post.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
 import 'package:eko_app/types/post.dart';
+import 'package:eko_app/utilities/supabase_post_mapper.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 // Necessary for code-generation to work
 part '../generated/providers/post_provider.g.dart';
 
@@ -46,20 +47,18 @@ class Post extends _$Post {
   }
 
   Future<PostModel> _fetchPostModel(String id) async {
-    final postsRef = FirebaseFirestore.instance.collection('posts');
-    final data = await Future.wait([postsRef.doc(id).get(), countComments(id)]);
-    final postData = data[0] as DocumentSnapshot<Map<String, dynamic>>;
-    final commentCount = data[1] as int;
-
-    if (postData.data() == null) {
+    final parsed = int.tryParse(id);
+    if (parsed == null) {
       throw Exception('Failed to load');
     }
-
-    final json = postData.data()!;
-    json['id'] = id;
-    json['commentCount'] = commentCount;
-
-    return PostModel.fromJson(json);
+    final rows = await supabase.rpc('get_post_by_id', params: {'p_id': parsed});
+    final list = rows as List<dynamic>?;
+    if (list == null || list.isEmpty) {
+      throw Exception('Failed to load');
+    }
+    return postModelFromSupabaseRow(
+      Map<String, dynamic>.from(list.first as Map),
+    );
   }
 
   Future<void> _addLikeToDb(String id) async {

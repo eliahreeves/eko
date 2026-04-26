@@ -20,6 +20,15 @@ import 'package:eko_app/firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+Map<String, String> _supabaseFromCompilerDefines() {
+  const u = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
+  const k = String.fromEnvironment('SUPABASE_KEY', defaultValue: '');
+  final m = <String, String>{};
+  if (u.isNotEmpty) m['SUPABASE_URL'] = u;
+  if (k.isNotEmpty) m['SUPABASE_KEY'] = k;
+  return m;
+}
+
 Future<void> _checkFirstInstall() async {
   if (!PrefsService.notFirstInstall) {
     if (FirebaseAuth.instance.currentUser != null) {
@@ -30,9 +39,14 @@ Future<void> _checkFirstInstall() async {
 }
 
 Future<void> _initSupabase() async {
-  final url = dotenv.env['SUPABASE_URL'];
-  final key = dotenv.env['SUPABASE_KEY'];
+  final url = dotenv.env['SUPABASE_URL']?.trim();
+  final key = dotenv.env['SUPABASE_KEY']?.trim();
   if (url == null || key == null || url.isEmpty || key.isEmpty) {
+    if (kDebugMode) {
+      debugPrint(
+        'Supabase: add SUPABASE_URL and SUPABASE_KEY via --dart-define, or a bundled .env in pubspec assets.',
+      );
+    }
     return;
   }
   await Supabase.initialize(url: url, anonKey: key);
@@ -45,7 +59,11 @@ Future<void> _initSupabase() async {
 Future<void> main() async {
   usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env', isOptional: true);
+  await dotenv.load(
+    fileName: '.env',
+    isOptional: true,
+    mergeWith: _supabaseFromCompilerDefines(),
+  );
   //init
   await Future.wait([
     PrefsService.init(),
