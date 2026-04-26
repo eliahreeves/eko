@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/theme_provider.dart';
@@ -145,14 +145,8 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
                   context.pop,
                   () async {
                     context.pop();
-                    try {
-                      await FirebaseAuth.instance.currentUser?.delete();
-                      ref.read(navBarProvider.notifier).enable();
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'requires-recent-login') {
-                        if (context.mounted) context.pushNamed('re_auth');
-                      }
-                    }
+                    await ref.read(authProvider.notifier).deleteAccount();
+                    ref.read(navBarProvider.notifier).enable();
                   },
                 ],
                 context,

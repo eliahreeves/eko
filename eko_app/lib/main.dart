@@ -14,15 +14,14 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/scaffolds/check_version.dart';
 import 'utilities/router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:eko_app/firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> _checkFirstInstall() async {
   if (!PrefsService.notFirstInstall) {
-    if (FirebaseAuth.instance.currentUser != null) {
-      FirebaseAuth.instance.signOut();
+    if (Supabase.instance.client.auth.currentSession != null) {
+      await Supabase.instance.client.auth.signOut();
     }
     PrefsService.notFirstInstall = true;
   }

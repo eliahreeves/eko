@@ -88,12 +88,11 @@ Future<String> forgotPassword({
   required String? countryCode,
   required String email,
 }) async {
-  await FirebaseAuth.instance.setLanguageCode(countryCode);
   try {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    return ('success');
-  } on FirebaseAuthException catch (e) {
-    return (e.code);
+    await supabase.auth.resetPasswordForEmail(email);
+    return 'success';
+  } catch (e) {
+    return 'unknown';
   }
 }
 

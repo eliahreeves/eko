@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart' show debugPrint;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -156,7 +155,7 @@ class CurrentUser extends _$CurrentUser {
 
   Future<void> signOut() async {
     await removeFCM(state.user.uid);
-    await FirebaseAuth.instance.signOut();
+    await supabase.auth.signOut();
   }
 
   void addPollVote(String id, int optionIndex) {
@@ -232,15 +231,7 @@ class CurrentUser extends _$CurrentUser {
         'get_user_by_id',
         params: {'p_uid': uid},
       );
-      if (response is! List || response.isEmpty) {
-        await _reloadCurrentUserFromFirestore(uid);
-        return;
-      }
       final row = response.first;
-      if (row is! Map) {
-        await _reloadCurrentUserFromFirestore(uid);
-        return;
-      }
       final rowMap = Map<String, dynamic>.from(row);
       final blockedBy = await _getPeopleWhoBlockedMe();
       state = CurrentUserModel.fromJson(
@@ -248,26 +239,6 @@ class CurrentUser extends _$CurrentUser {
       );
     } catch (e) {
       debugPrint('Error reloading current user from Supabase: $e');
-      await _reloadCurrentUserFromFirestore(uid);
-    }
-  }
-
-  /// When Supabase is not configured, RPC fails, or the user row is missing,
-  /// fall back to the legacy Firestore user document so [RequireAuth] can leave
-  /// the loading state (see `user.user.uid.isEmpty` gate).
-  Future<void> _reloadCurrentUserFromFirestore(String uid) async {
-    try {
-      final userRef = FirebaseFirestore.instance.collection('users');
-      final mainDoc =
-          await userRef.doc(uid).snapshots().firstWhere((doc) => doc.exists);
-      final blockedBy = await _getPeopleWhoBlockedMe();
-      final mainData = mainDoc.data();
-      if (mainData != null) {
-        mainData['blockedBy'] = blockedBy;
-        state = CurrentUserModel.fromJson(mainData);
-      }
-    } catch (e) {
-      debugPrint('Error reloading current user from Firestore: $e');
     }
   }
 

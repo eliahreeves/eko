@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -54,7 +53,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
     try {
       await ref.read(authProvider.notifier).sendEmailVerification();
       _startTimer();
-    } on FirebaseAuthException catch (_) {
+    } catch (_) {
     } finally {
       if (mounted) setState(() => _resendLoading = false);
     }

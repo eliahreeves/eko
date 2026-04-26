@@ -1,12 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' show debugPrint;
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/interfaces/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:eko_app/types/auth.dart';
-import 'package:eko_app/utilities/constants.dart';
-// Necessary for code-generation to work
+import 'package:eko_app/utilities/supabase_ref.dart';
+
 part '../generated/providers/auth_provider.g.dart';
 
 @Riverpod(keepAlive: true)
@@ -18,20 +15,59 @@ class Auth extends _$Auth {
   }
 
   void _init() {
-    // TODO This should also handle presence
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
+    final currentSession = supabase.auth.currentSession;
+    if (currentSession != null) {
+      final user = currentSession.user;
+      state = AuthModel(
+        uid: user.id,
+        isLoading: false,
+        email: user.email,
+        emailVerified: user.emailConfirmedAt != null,
+        creationTime: DateTime.tryParse(user.createdAt),
+      );
+    }
+
+    supabase.auth.onAuthStateChange.listen((data) {
+      final session = data.session;
+      if (session == null) {
         state = AuthModel.signedOut();
       } else {
+        final user = session.user;
         state = state.copyWith(
-          uid: user.uid,
+          uid: user.id,
           isLoading: false,
           email: user.email,
-          emailVerified: user.emailVerified,
-          creationTime: user.metadata.creationTime,
+          emailVerified: user.emailConfirmedAt != null,
+          creationTime: DateTime.tryParse(user.createdAt),
         );
       }
     });
+  }
+
+  Future<String> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await supabase.auth.signInWithPassword(
+        email: email.trim(),
+        password: password,
+      );
+      return 'success';
+    } on AuthException catch (e) {
+      debugPrint(e.message);
+      final msg = e.message.toLowerCase();
+      if (msg.contains('invalid') || msg.contains('credentials')) {
+        return 'wrong-password';
+      }
+      if (msg.contains('invalid email')) {
+        return 'invalid-email';
+      }
+      return 'unknown';
+    } catch (e) {
+      debugPrint(e.toString());
+      return 'unknown';
+    }
   }
 
   Future<String> signUp({
@@ -42,155 +78,68 @@ class Auth extends _$Auth {
     required String birthday,
   }) async {
     try {
-      final UserCredential user =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await supabase.auth.signUp(
         email: email.trim(),
         password: password,
+        data: {
+          'username': username,
+          'name': name,
+          'birthday': birthday,
+          'bio': '',
+          'is_verified': false,
+        },
       );
-      if (user.user?.uid == null) return 'unknown';
-
-      final userData = _buildNewUserDoc(
-        uid: user.user!.uid,
-        email: email.trim(),
-        username: username,
-        name: name,
-        birthday: birthday,
-      );
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.user?.uid)
-          .set(userData);
-
-      await addFCM(user.user!.uid);
-
-      await user.user!.sendEmailVerification();
-
-      return ('success');
-    } on FirebaseAuthException catch (e) {
-      return (e.code);
-    }
-  }
-
-  Future<String> signIn({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final UserCredential user = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email.trim(), password: password);
-      if (user.user != null) await addFCM(user.user!.uid);
-      return ('success');
-    } on FirebaseAuthException catch (e) {
-      debugPrint(e.code);
-      return (e.code);
+      return 'success';
+    } on AuthException catch (e) {
+      debugPrint(e.message);
+      final msg = e.message.toLowerCase();
+      if (msg.contains('already registered') ||
+          msg.contains('already been registered')) {
+        return 'email-already-in-use';
+      }
+      if (msg.contains('invalid email')) {
+        return 'invalid-email';
+      }
+      if (msg.contains('password') && msg.contains('6')) {
+        return 'weak-password';
+      }
+      return 'unknown';
+    } catch (e) {
+      debugPrint(e.toString());
+      return 'unknown';
     }
   }
 
   Future<void> deleteAccount() async {
-    await FirebaseAuth.instance.currentUser?.delete();
+    try {
+      final uid = state.uid;
+      if (uid == null) return;
+      await supabase.rpc('delete_user', params: {'p_uid': uid});
+      await supabase.auth.signOut();
+    } catch (e) {
+      debugPrint('Error deleting account: $e');
+    }
   }
 
   Future<void> sendEmailVerification() async {
-    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+    final email = state.email;
+    if (email == null) return;
+    try {
+      await supabase.auth.resend(type: OtpType.signup, email: email);
+    } catch (e) {
+      debugPrint('Error sending email verification: $e');
+    }
   }
 
   Future<void> refreshEmailVerification() async {
-    await FirebaseAuth.instance.currentUser?.reload();
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      state = state.copyWith(emailVerified: user.emailVerified);
+    try {
+      final response = await supabase.auth.refreshSession();
+      final user = response.user;
+      if (user != null) {
+        state = state.copyWith(emailVerified: user.emailConfirmedAt != null);
+      }
+    } catch (e) {
+      debugPrint('Error refreshing email verification: $e');
     }
-  }
-
-  Future<void> signInWithGoogle() async {
-    // google sign in
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return;
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    // firebase sign in
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    final user = userCredential.user!;
-
-    // Check if user document exists
-    final userRef =
-        FirebaseFirestore.instance.collection('users').doc(user.uid);
-    final docSnapshot = await userRef.get();
-
-    if (!docSnapshot.exists) {
-      final email = user.email ?? '';
-      String emailPrefix = email
-          .split('@')[0]
-          .toLowerCase()
-          .replaceAll(RegExp(r'[^a-z0-9_]'), '_');
-      if (emailPrefix.length > 18) {
-        emailPrefix = emailPrefix.substring(0, 18);
-      }
-      while (emailPrefix.length < 3) {
-        emailPrefix += '_';
-      }
-      String username = emailPrefix;
-      if (!(await isUsernameAvailable(emailPrefix))) {
-        final suffix =
-            (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
-        username = '${emailPrefix}_$suffix';
-      }
-      if (!isUsernameValid(username)) {
-        username = 'user_${DateTime.now().millisecondsSinceEpoch % 1000000}';
-      }
-
-      final userData = _buildNewUserDoc(
-        uid: user.uid,
-        email: email,
-        username: username,
-        name: googleUser.displayName ?? email.split('@')[0],
-        birthday: null,
-        photoUrl: googleUser.photoUrl,
-      );
-
-      await userRef.set(userData);
-    }
-
-    await addFCM(user.uid);
-  }
-
-  Map<String, dynamic> _buildNewUserDoc({
-    required String uid,
-    required String email,
-    required String username,
-    required String name,
-    required String? birthday,
-    String? photoUrl,
-  }) {
-    return {
-      'uid': uid,
-      'email': email,
-      'username': username,
-      'name': name,
-      'fcmTokens': [],
-      'blockedUsers': [],
-      'isVerified': false,
-      'share_online_status': true,
-      'profileData': {
-        'birthday': birthday,
-        'likedPosts': [],
-        'dislikedPosts': [],
-        'pollVotes': {},
-        'bio': '',
-        'followers': [],
-        'following': [],
-        'likes': 0,
-        'dislikes': 0,
-        'profilePicture': photoUrl ?? defaultProfilePictureUrl,
-      },
-    };
   }
 }
