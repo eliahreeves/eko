@@ -17,17 +17,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:eko_app/firebase_options.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-Map<String, String> _supabaseFromCompilerDefines() {
-  const u = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
-  const k = String.fromEnvironment('SUPABASE_KEY', defaultValue: '');
-  final m = <String, String>{};
-  if (u.isNotEmpty) m['SUPABASE_URL'] = u;
-  if (k.isNotEmpty) m['SUPABASE_KEY'] = k;
-  return m;
-}
 
 Future<void> _checkFirstInstall() async {
   if (!PrefsService.notFirstInstall) {
@@ -39,40 +29,26 @@ Future<void> _checkFirstInstall() async {
 }
 
 Future<void> _initSupabase() async {
-  final url = dotenv.env['SUPABASE_URL']?.trim();
-  final key = dotenv.env['SUPABASE_KEY']?.trim();
-  if (url == null || key == null || url.isEmpty || key.isEmpty) {
-    if (kDebugMode) {
-      debugPrint(
-        'Supabase: add SUPABASE_URL and SUPABASE_KEY via --dart-define, or a bundled .env in pubspec assets.',
-      );
-    }
-    return;
+  final url = const String.fromEnvironment('SUPABASE_URL');
+  final key = const String.fromEnvironment('SUPABASE_KEY');
+  if (url.isEmpty || key.isEmpty) {
+    throw StateError('SUPABASE not defined');
   }
   await Supabase.initialize(url: url, anonKey: key);
 }
 
-// Future<void> _buildVersion() async {
-//   if (!kIsWeb) await locator<Version>().init();
-// }
-
 Future<void> main() async {
   usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(
-    fileName: '.env',
-    isOptional: true,
-    mergeWith: _supabaseFromCompilerDefines(),
-  );
   //init
   await Future.wait([
     PrefsService.init(),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    _initSupabase(),
   ]);
   // setupLocator();
   //protected/dependent services
   await Future.wait([
-    _initSupabase(),
     _checkFirstInstall(),
     LogoService.init(),
     NotificationHelper.setupNotifications(),
