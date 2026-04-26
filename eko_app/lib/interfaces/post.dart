@@ -8,6 +8,8 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/types/post.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:eko_app/utilities/supabase_ref.dart';
 
 Future<int> countComments(String postId) {
   return FirebaseFirestore.instance
@@ -49,24 +51,28 @@ List<String> parseTextToTags(String? text) {
 }
 
 Future<String> uploadPost(PostModel post, WidgetRef ref) async {
-  final firestore = FirebaseFirestore.instance;
-  // update time (the server should probably do this itself)
   final fixedPost = post.copyWith(
     createdAt: DateTime.now().toUtc().toIso8601String(),
   );
-  final json = fixedPost.toJson();
+  final uid = ref.read(currentUserProvider).user.uid;
 
-  //don't put these in firebase
-  json.remove('commentCount');
-  json.remove('id');
+  dynamic result;
+  result = await supabase.rpc('insert_post', params: {
+    'p_created_at': fixedPost.createdAt,
+    'p_author_uid': uid,
+    'p_firebase_uid': null,
+    'p_title': fixedPost.title.isNotEmpty ? fixedPost.title.join('') : null,
+    'p_body': fixedPost.body.isNotEmpty ? fixedPost.body.join('') : null,
+    'p_gif': fixedPost.gifUrl,
+    'p_poll': fixedPost.pollOptions,
+    'p_image_base64': fixedPost.imageString?.toStorableString(),
+    'p_chamber_id': null,
+  });
 
-  // upload
-  final postId = await firestore
-      .collection('posts')
-      .add(json)
-      .then((documentSnapshot) => documentSnapshot.id);
+  final row = (result as List).first as Map;
+  if (row['success'] != true) throw Exception(row['error_message']);
+  final postId = row['post_id'].toString();
 
-  // get users tagged in the post
   final List<Future<String?>> idFutures = [];
   for (int i = 1; i < post.title.length; i += 2) {
     idFutures.add(getUidFromUsername(post.title[i].substring(1)));
@@ -75,19 +81,19 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
     idFutures.add(getUidFromUsername(post.body[i].substring(1)));
   }
 
-  // activity content
   late final String content;
-  if (json['title'] != null) {
-    content = json['title'];
-  } else if (json['body'] != null) {
-    content = json['body'];
+  final titleStr = fixedPost.title.join('');
+  final bodyStr = fixedPost.body.join('');
+  if (titleStr.isNotEmpty) {
+    content = titleStr;
+  } else if (bodyStr.isNotEmpty) {
+    content = bodyStr;
   } else {
-    content = "${json['author']} tagged you in a post";
+    content = '${post.uid} tagged you in a post';
   }
 
   final taggedUsers = await Future.wait(idFutures);
-  // make sure not to notify yourself
-  final Set<String> sentActivites = {ref.watch(currentUserProvider).user.uid};
+  final Set<String> sentActivities = {ref.read(currentUserProvider).user.uid};
   final List<Future<void>> activityFutures = [];
 
   late final Set<String>? members;
@@ -99,18 +105,11 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
   }
 
   for (final user in taggedUsers) {
-    if (user == null) {
-      continue;
-    }
-    if (sentActivites.contains(user)) {
-      continue;
-    }
-    sentActivites.add(user);
+    if (user == null) continue;
+    if (sentActivities.contains(user)) continue;
+    sentActivities.add(user);
 
-    if (members != null && !members.contains(user)) {
-      // This is a group post and the tagged user is not it the group.
-      continue;
-    }
+    if (members != null && !members.contains(user)) continue;
 
     final activity = ActivityModel(
       id: '',

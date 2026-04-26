@@ -1,24 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 
 final emailVerificationCutoffProvider = FutureProvider<DateTime?>((ref) async {
   try {
-    final doc = await FirebaseFirestore.instance
-        .collection('utilities')
-        .doc('auth')
-        .get();
-    if (!doc.exists) return null;
-    final data = doc.data();
-    if (data == null) return null;
-    final value = data['emailVerificationCutoffDate'];
-    if (value is Timestamp) {
-      return value.toDate().toUtc();
-    }
-    if (value is String) {
-      return DateTime.tryParse(value)?.toUtc();
-    }
-    return null;
+    final row = await supabase
+        .from('utilities')
+        .select('minimum_version')
+        .eq('platform', 'email_verification_cutoff')
+        .maybeSingle();
+    if (row == null) return null;
+    final value = row['minimum_version'] as String?;
+    if (value == null) return null;
+    return DateTime.tryParse(value)?.toUtc();
   } catch (e, st) {
     debugPrint('Failed to load emailVerificationCutoffDate: $e\n$st');
     return null;

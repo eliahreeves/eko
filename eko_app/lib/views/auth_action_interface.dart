@@ -1,9 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/auth_provider.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/widgets/auth/create_password.dart';
 import 'package:eko_app/widgets/loading/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
@@ -46,11 +46,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
         setState(() {
           isLoading = true;
         });
-        if ((await resetPassword(
-              widget.urlData['oobCode'] ?? '',
-              passwordController.text,
-            )) ==
-            'success') {
+        if ((await resetPassword('', passwordController.text)) == 'success') {
           if (mounted) {
             showMyDialog(
               AppLocalizations.of(context)!.passwordResetTitle,
@@ -90,37 +86,45 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final mode = widget.urlData['mode'] ?? '';
-      final oobCode = widget.urlData['oobCode'] ?? '';
+      final type = widget.urlData['type'] ?? '';
 
-      if (mode == 'verifyEmail' && oobCode.isNotEmpty) {
+      if (type == 'signup' || type == 'email_change') {
         try {
-          await FirebaseAuth.instance.applyActionCode(oobCode);
+          final accessToken = widget.urlData['access_token'] ?? '';
+          final refreshToken = widget.urlData['refresh_token'] ?? '';
+          if (accessToken.isNotEmpty && refreshToken.isNotEmpty) {
+            await supabase.auth.setSession(accessToken);
+          }
           if (!mounted) return;
           await ref.read(authProvider.notifier).refreshEmailVerification();
           if (!mounted) return;
-          final user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
+          if (supabase.auth.currentUser != null) {
             context.go('/feed');
           } else {
             context.go('/login');
           }
-        } on FirebaseAuthException {
+        } catch (_) {
           if (mounted) setState(() => index = 1);
         }
         return;
       }
 
-      if (mode == 'resetPassword') {
+      if (type == 'recovery') {
         try {
-          final userEmail = await verifyPasswordReset(oobCode);
-          if (mounted) {
-            setState(() {
-              email = userEmail;
-              index = 2;
-            });
+          final accessToken = widget.urlData['access_token'] ?? '';
+          final refreshToken = widget.urlData['refresh_token'] ?? '';
+          if (accessToken.isNotEmpty && refreshToken.isNotEmpty) {
+            final session = await supabase.auth.setSession(accessToken);
+            if (mounted) {
+              setState(() {
+                email = session.user?.email ?? '';
+                index = 2;
+              });
+            }
+          } else {
+            if (mounted) setState(() => index = 1);
           }
-        } on FirebaseAuthException {
+        } catch (_) {
           if (mounted) setState(() => index = 1);
         }
       } else {

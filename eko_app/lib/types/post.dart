@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_to_ascii/image_to_ascii.dart';
@@ -57,14 +56,5 @@ abstract class PostModel with _$PostModel {
 
   DateTime getDateTime() {
     return DateTime.tryParse(createdAt) ?? DateTime.now();
-  }
-
-  static Future<PostModel> fromFireStoreDoc(
-    QueryDocumentSnapshot<Map<String, dynamic>> doc,
-  ) async {
-    final json = doc.data();
-    json['id'] = doc.id;
-    json['commentCount'] = await countComments(doc.id);
-    return PostModel.fromJson(json);
   }
 }

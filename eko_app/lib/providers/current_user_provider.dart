@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart' show debugPrint;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:eko_app/interfaces/activity.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/auth_provider.dart';
@@ -64,30 +63,15 @@ class CurrentUser extends _$CurrentUser {
         }
       }
 
-      final Map<String, dynamic> json = {};
-      if (name != null) {
-        json['name'] = name;
+      final Map<String, dynamic> updates = {};
+      if (name != null) updates['name'] = name;
+      if (bio != null) updates['bio'] = bio;
+      if (pic != null) updates['profile_picture'] = pic;
+      if (validUsername != null) updates['username'] = validUsername;
+
+      if (updates.isNotEmpty) {
+        await supabase.from('users').update(updates).eq('id', state.user.uid);
       }
-      if (verificationUrl != prev.verificationUrl) {
-        json['verificationUrl'] = verificationUrl;
-        json['isVerified'] = null;
-      } else {
-        json['verificationUrl'] = prev.verificationUrl;
-        json['isVerified'] = prev.isVerified;
-      }
-      if (bio != null) {
-        json['profileData.bio'] = bio;
-      }
-      if (pic != null) {
-        json['profileData.profilePicture'] = pic;
-      }
-      if (validUsername != null) {
-        json['username'] = username;
-      }
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(state.user.uid)
-          .update(json);
       if (validUsername != null) {
         state = state.copyWith(
           user: state.user.copyWith(username: validUsername),
@@ -102,25 +86,24 @@ class CurrentUser extends _$CurrentUser {
     state = state.copyWith(
       user: state.user.copyWith(shareOnlineStatus: selection),
     );
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(state.user.uid)
-        .update({'share_online_status': selection});
+    try {
+      await supabase
+          .from('users')
+          .update({'share_online_status': selection}).eq('id', state.user.uid);
+    } catch (e) {
+      debugPrint('toggleShareOnlineStatus error: $e');
+    }
   }
 
   Future<String?> _uploadProfilePicture(File img) async {
     final uid = state.user.uid;
     try {
-      await FirebaseStorage.instance
-          .ref()
-          .child('profile_pictures/$uid/profile.jpg')
-          .putFile(img);
-      final ref = FirebaseStorage.instance.ref().child(
-            'profile_pictures/$uid/profile.jpg',
-          );
-
-      final pic = await ref.getDownloadURL();
-      return pic;
+      final bytes = await img.readAsBytes();
+      final path = 'profile_pictures/$uid/profile.jpg';
+      await supabase.storage.from('avatars').uploadBinary(path, bytes,
+          fileOptions: const supabase_flutter.FileOptions(upsert: true));
+      final url = supabase.storage.from('avatars').getPublicUrl(path);
+      return url;
     } catch (_) {
       return null;
     }
@@ -171,23 +154,17 @@ class CurrentUser extends _$CurrentUser {
   }
 
   Future<void> setUnreadGroup(bool toggle) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(authProvider).uid!;
-    await firestore.collection('users').doc(uid).update({
-      'unreadGroup': toggle,
-    });
     state = state.copyWith(unreadGroup: toggle);
   }
 
   Future<List<String>> _getPeopleWhoBlockedMe() async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final user = ref.read(authProvider).uid!;
-      final querySnapshot = await firestore
-          .collection('users')
-          .where('blockedUsers', arrayContains: user)
-          .get();
-      return querySnapshot.docs.map((doc) => doc.id).toList();
+      final uid = ref.read(authProvider).uid!;
+      final rows = await supabase
+          .from('blocked')
+          .select('source_uid')
+          .eq('target_uid', uid);
+      return (rows as List).map((r) => r['source_uid'] as String).toList();
     } catch (e) {
       return [];
     }
@@ -196,9 +173,9 @@ class CurrentUser extends _$CurrentUser {
   Future<void> blockUser(String uid) async {
     state = state.copyWith(blockedUsers: <String>{...state.blockedUsers, uid});
     try {
-      final firestore = FirebaseFirestore.instance;
-      await firestore.collection('users').doc(state.user.uid).update({
-        'blockedUsers': FieldValue.arrayUnion([uid]),
+      await supabase.from('blocked').insert({
+        'source_uid': state.user.uid,
+        'target_uid': uid,
       });
     } catch (e) {
       final blocked = <String>{...state.blockedUsers};
@@ -213,10 +190,11 @@ class CurrentUser extends _$CurrentUser {
     blocked.remove(uid);
     state = state.copyWith(blockedUsers: blocked);
     try {
-      final firestore = FirebaseFirestore.instance;
-      await firestore.collection('users').doc(state.user.uid).update({
-        'blockedUsers': FieldValue.arrayRemove([uid]),
-      });
+      await supabase
+          .from('blocked')
+          .delete()
+          .eq('source_uid', state.user.uid)
+          .eq('target_uid', uid);
     } catch (e) {
       state = state.copyWith(
         blockedUsers: <String>{...state.blockedUsers, uid},
@@ -244,7 +222,6 @@ class CurrentUser extends _$CurrentUser {
 
   Future<void> addFollower(String otherUid) async {
     try {
-      // Update state of current user and other user
       final updatedFollowing = [...state.user.following, otherUid];
       state = state.copyWith(
         user: state.user.copyWith(following: updatedFollowing),
@@ -259,29 +236,22 @@ class CurrentUser extends _$CurrentUser {
         }
       });
 
-      // Update database
-      final firestore = FirebaseFirestore.instance;
       final uid = state.user.uid;
-      await Future.wait([
-        firestore.collection('users').doc(uid).update({
-          'profileData.following': FieldValue.arrayUnion([otherUid]),
-        }),
-        firestore.collection('users').doc(otherUid).update({
-          'profileData.followers': FieldValue.arrayUnion([uid]),
-        }),
-        uploadActivity(
-          ActivityModel(
-            createdAt: DateTime.now().toUtc().toIso8601String(),
-            id: '',
-            content: 'Someone followed you',
-            type: 'follow',
-            path: uid,
-          ),
-          uid,
+      await supabase.from('following').insert({
+        'source_uid': uid,
+        'target_uid': otherUid,
+      });
+      await uploadActivity(
+        ActivityModel(
+          createdAt: DateTime.now().toUtc().toIso8601String(),
+          id: '',
+          content: 'Someone followed you',
+          type: 'follow',
+          path: uid,
         ),
-      ]);
+        uid,
+      );
     } catch (e) {
-      // Revert state updates on error
       final revertedFollowing =
           state.user.following.where((id) => id != otherUid).toList();
       state = state.copyWith(
@@ -300,7 +270,6 @@ class CurrentUser extends _$CurrentUser {
 
   Future<void> removeFollower(String otherUid) async {
     try {
-      // Update state of current user and other user
       final updatedFollowing =
           state.user.following.where((id) => id != otherUid).toList();
       state = state.copyWith(
@@ -315,19 +284,13 @@ class CurrentUser extends _$CurrentUser {
             .updateFollowers(updatedFollowers);
       });
 
-      // Update database
-      final firestore = FirebaseFirestore.instance;
       final uid = ref.read(authProvider).uid!;
-      await Future.wait([
-        firestore.collection('users').doc(uid).update({
-          'profileData.following': FieldValue.arrayRemove([otherUid]),
-        }),
-        firestore.collection('users').doc(otherUid).update({
-          'profileData.followers': FieldValue.arrayRemove([uid]),
-        }),
-      ]);
+      await supabase
+          .from('following')
+          .delete()
+          .eq('source_uid', uid)
+          .eq('target_uid', otherUid);
     } catch (e) {
-      // Revert state updates on error
       final revertedFollowing = [...state.user.following, otherUid];
       state = state.copyWith(
         user: state.user.copyWith(following: revertedFollowing),
