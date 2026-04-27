@@ -31,6 +31,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
   int get likes;
   int get dislikes;
   int get commentCount;
+  bool get isLiked;
+  bool get isDisliked;
   @JsonKey(name: 'time')
   String get createdAt;
   List<String>? get pollOptions;
@@ -61,6 +63,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('likes', likes))
       ..add(DiagnosticsProperty('dislikes', dislikes))
       ..add(DiagnosticsProperty('commentCount', commentCount))
+      ..add(DiagnosticsProperty('isLiked', isLiked))
+      ..add(DiagnosticsProperty('isDisliked', isDisliked))
       ..add(DiagnosticsProperty('createdAt', createdAt))
       ..add(DiagnosticsProperty('pollOptions', pollOptions))
       ..add(DiagnosticsProperty('pollVoteCounts', pollVoteCounts))
@@ -85,6 +89,9 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
                 other.dislikes == dislikes) &&
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
+            (identical(other.isLiked, isLiked) || other.isLiked == isLiked) &&
+            (identical(other.isDisliked, isDisliked) ||
+                other.isDisliked == isDisliked) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             const DeepCollectionEquality()
@@ -109,6 +116,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
       likes,
       dislikes,
       commentCount,
+      isLiked,
+      isDisliked,
       createdAt,
       const DeepCollectionEquality().hash(pollOptions),
       const DeepCollectionEquality().hash(pollVoteCounts),
@@ -116,7 +125,7 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, createdAt: $createdAt, pollOptions: $pollOptions, pollVoteCounts: $pollVoteCounts, repostId: $repostId)';
+    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, isLiked: $isLiked, isDisliked: $isDisliked, createdAt: $createdAt, pollOptions: $pollOptions, pollVoteCounts: $pollVoteCounts, repostId: $repostId)';
   }
 }
 
@@ -140,6 +149,8 @@ abstract mixin class $PostModelCopyWith<$Res> {
       int likes,
       int dislikes,
       int commentCount,
+      bool isLiked,
+      bool isDisliked,
       @JsonKey(name: 'time') String createdAt,
       List<String>? pollOptions,
       Map<String, int>? pollVoteCounts,
@@ -168,6 +179,8 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
     Object? likes = null,
     Object? dislikes = null,
     Object? commentCount = null,
+    Object? isLiked = null,
+    Object? isDisliked = null,
     Object? createdAt = null,
     Object? pollOptions = freezed,
     Object? pollVoteCounts = freezed,
@@ -214,6 +227,14 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
           ? _self.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
+      isLiked: null == isLiked
+          ? _self.isLiked
+          : isLiked // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDisliked: null == isDisliked
+          ? _self.isDisliked
+          : isDisliked // ignore: cast_nullable_to_non_nullable
+              as bool,
       createdAt: null == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -344,6 +365,8 @@ extension PostModelPatterns on PostModel {
             int likes,
             int dislikes,
             int commentCount,
+            bool isLiked,
+            bool isDisliked,
             @JsonKey(name: 'time') String createdAt,
             List<String>? pollOptions,
             Map<String, int>? pollVoteCounts,
@@ -365,6 +388,8 @@ extension PostModelPatterns on PostModel {
             _that.likes,
             _that.dislikes,
             _that.commentCount,
+            _that.isLiked,
+            _that.isDisliked,
             _that.createdAt,
             _that.pollOptions,
             _that.pollVoteCounts,
@@ -406,6 +431,8 @@ extension PostModelPatterns on PostModel {
             int likes,
             int dislikes,
             int commentCount,
+            bool isLiked,
+            bool isDisliked,
             @JsonKey(name: 'time') String createdAt,
             List<String>? pollOptions,
             Map<String, int>? pollVoteCounts,
@@ -426,6 +453,8 @@ extension PostModelPatterns on PostModel {
             _that.likes,
             _that.dislikes,
             _that.commentCount,
+            _that.isLiked,
+            _that.isDisliked,
             _that.createdAt,
             _that.pollOptions,
             _that.pollVoteCounts,
@@ -466,6 +495,8 @@ extension PostModelPatterns on PostModel {
             int likes,
             int dislikes,
             int commentCount,
+            bool isLiked,
+            bool isDisliked,
             @JsonKey(name: 'time') String createdAt,
             List<String>? pollOptions,
             Map<String, int>? pollVoteCounts,
@@ -486,6 +517,8 @@ extension PostModelPatterns on PostModel {
             _that.likes,
             _that.dislikes,
             _that.commentCount,
+            _that.isLiked,
+            _that.isDisliked,
             _that.createdAt,
             _that.pollOptions,
             _that.pollVoteCounts,
@@ -516,6 +549,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       this.likes = 0,
       this.dislikes = 0,
       this.commentCount = 0,
+      this.isLiked = false,
+      this.isDisliked = false,
       @JsonKey(name: 'time') required this.createdAt,
       final List<String>? pollOptions,
       final Map<String, int>? pollVoteCounts,
@@ -579,6 +614,12 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
   @JsonKey()
   final int commentCount;
   @override
+  @JsonKey()
+  final bool isLiked;
+  @override
+  @JsonKey()
+  final bool isDisliked;
+  @override
   @JsonKey(name: 'time')
   final String createdAt;
   final List<String>? _pollOptions;
@@ -633,6 +674,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('likes', likes))
       ..add(DiagnosticsProperty('dislikes', dislikes))
       ..add(DiagnosticsProperty('commentCount', commentCount))
+      ..add(DiagnosticsProperty('isLiked', isLiked))
+      ..add(DiagnosticsProperty('isDisliked', isDisliked))
       ..add(DiagnosticsProperty('createdAt', createdAt))
       ..add(DiagnosticsProperty('pollOptions', pollOptions))
       ..add(DiagnosticsProperty('pollVoteCounts', pollVoteCounts))
@@ -657,6 +700,9 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
                 other.dislikes == dislikes) &&
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
+            (identical(other.isLiked, isLiked) || other.isLiked == isLiked) &&
+            (identical(other.isDisliked, isDisliked) ||
+                other.isDisliked == isDisliked) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             const DeepCollectionEquality()
@@ -681,6 +727,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       likes,
       dislikes,
       commentCount,
+      isLiked,
+      isDisliked,
       createdAt,
       const DeepCollectionEquality().hash(_pollOptions),
       const DeepCollectionEquality().hash(_pollVoteCounts),
@@ -688,7 +736,7 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, createdAt: $createdAt, pollOptions: $pollOptions, pollVoteCounts: $pollVoteCounts, repostId: $repostId)';
+    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, isLiked: $isLiked, isDisliked: $isDisliked, createdAt: $createdAt, pollOptions: $pollOptions, pollVoteCounts: $pollVoteCounts, repostId: $repostId)';
   }
 }
 
@@ -715,6 +763,8 @@ abstract mixin class _$PostModelCopyWith<$Res>
       int likes,
       int dislikes,
       int commentCount,
+      bool isLiked,
+      bool isDisliked,
       @JsonKey(name: 'time') String createdAt,
       List<String>? pollOptions,
       Map<String, int>? pollVoteCounts,
@@ -743,6 +793,8 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
     Object? likes = null,
     Object? dislikes = null,
     Object? commentCount = null,
+    Object? isLiked = null,
+    Object? isDisliked = null,
     Object? createdAt = null,
     Object? pollOptions = freezed,
     Object? pollVoteCounts = freezed,
@@ -789,6 +841,14 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
           ? _self.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
+      isLiked: null == isLiked
+          ? _self.isLiked
+          : isLiked // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDisliked: null == isDisliked
+          ? _self.isDisliked
+          : isDisliked // ignore: cast_nullable_to_non_nullable
+              as bool,
       createdAt: null == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable

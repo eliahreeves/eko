@@ -17,6 +17,8 @@ _CommentModel _$CommentModelFromJson(Map<String, dynamic> json) =>
           : parseTextToTags(json['body'] as String?),
       likes: (json['likes'] as num?)?.toInt() ?? 0,
       dislikes: (json['dislikes'] as num?)?.toInt() ?? 0,
+      isLiked: json['isLiked'] as bool? ?? false,
+      isDisliked: json['isDisliked'] as bool? ?? false,
       createdAt: json['time'] as String,
     );
 
@@ -29,5 +31,7 @@ Map<String, dynamic> _$CommentModelToJson(_CommentModel instance) =>
       'body': _joinList(instance.body),
       'likes': instance.likes,
       'dislikes': instance.dislikes,
+      'isLiked': instance.isLiked,
+      'isDisliked': instance.isDisliked,
       'time': instance.createdAt,
     };

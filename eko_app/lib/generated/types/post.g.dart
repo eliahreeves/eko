@@ -23,6 +23,8 @@ _PostModel _$PostModelFromJson(Map<String, dynamic> json) => _PostModel(
       likes: (json['likes'] as num?)?.toInt() ?? 0,
       dislikes: (json['dislikes'] as num?)?.toInt() ?? 0,
       commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
+      isLiked: json['isLiked'] as bool? ?? false,
+      isDisliked: json['isDisliked'] as bool? ?? false,
       createdAt: json['time'] as String,
       pollOptions: (json['pollOptions'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -45,6 +47,8 @@ Map<String, dynamic> _$PostModelToJson(_PostModel instance) =>
       'likes': instance.likes,
       'dislikes': instance.dislikes,
       'commentCount': instance.commentCount,
+      'isLiked': instance.isLiked,
+      'isDisliked': instance.isDisliked,
       'time': instance.createdAt,
       'pollOptions': instance.pollOptions,
       'pollVoteCounts': instance.pollVoteCounts,

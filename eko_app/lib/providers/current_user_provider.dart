@@ -205,11 +205,10 @@ class CurrentUser extends _$CurrentUser {
         'get_user_by_id',
         params: {'p_uid': uid},
       );
-      final row = response.first;
-      final rowMap = Map<String, dynamic>.from(row);
+      final row = Map<String, dynamic>.from(response.first);
       final blockedBy = await _getPeopleWhoBlockedMe();
       state = CurrentUserModel.fromJson(
-        currentUserDocFromSupabaseRow(rowMap, blockedBy),
+        currentUserDocFromSupabaseRow(row, blockedBy),
       );
     } catch (e) {
       debugPrint('Error reloading current user from Supabase: $e');

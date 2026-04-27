@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
@@ -61,99 +62,45 @@ class Post extends _$Post {
     );
   }
 
-  Future<void> _addLikeToDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayUnion([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'likes': FieldValue.increment(1),
-      }),
-    ]);
-  }
-
-  Future<void> _removeLikeFromDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayRemove([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'likes': FieldValue.increment(-1),
-      }),
-    ]);
-  }
-
-  Future<void> _addDislikeToDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayUnion([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'dislikes': FieldValue.increment(1),
-      }),
-    ]);
-  }
-
-  Future<void> _removeDisikeFromDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayRemove([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'dislikes': FieldValue.increment(-1),
-      }),
-    ]);
+  Future<void> _changePostLike(
+    String id, {
+    required bool isLiking,
+    required bool isDislike,
+  }) async {
+    await supabase.rpc('change_post_likes', params: {
+      'p_id': int.parse(id),
+      'p_is_liking': isLiking,
+      'p_is_dislike': isDislike,
+    });
   }
 
   Future<void> likePostToggle() async {
     final prevState = await future;
     if (_isLiking) return;
     _isLiking = true;
-    // liked -> not liked
-    if (ref.read(currentUserProvider).likedPosts.contains(prevState.id)) {
-      ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-      state = AsyncData(prevState.copyWith(likes: prevState.likes - 1));
+    if (prevState.isLiked) {
+      state = AsyncData(prevState.copyWith(isLiked: false, likes: prevState.likes - 1));
       try {
-        await _removeLikeFromDb(prevState.id);
-      } catch (_) {
-        ref.read(currentUserProvider.notifier).addIdToLiked(prevState.id);
+        await _changePostLike(prevState.id, isLiking: false, isDislike: false);
+      } catch (e) {
+        debugPrint('likePostToggle unlike error: $e');
         state = AsyncData(prevState);
       }
-      // not liked -> liked
     } else {
-      bool wasDisliked = false;
-      final List<Future<void>> ops = [_addLikeToDb(prevState.id)];
-      ref.read(currentUserProvider.notifier).addIdToLiked(prevState.id);
-      if (ref.read(currentUserProvider).dislikedPosts.contains(prevState.id)) {
-        wasDisliked = true;
-        ref
-            .read(currentUserProvider.notifier)
-            .removeIdFromDisliked(prevState.id);
-        state = AsyncData(
-          prevState.copyWith(
-            dislikes: prevState.dislikes - 1,
-            likes: prevState.likes + 1,
-          ),
-        );
-        ops.add(_removeDisikeFromDb(prevState.id));
+      if (prevState.isDisliked) {
+        state = AsyncData(prevState.copyWith(
+          isLiked: true,
+          isDisliked: false,
+          likes: prevState.likes + 1,
+          dislikes: prevState.dislikes - 1,
+        ));
       } else {
-        state = AsyncData(prevState.copyWith(likes: prevState.likes + 1));
+        state = AsyncData(prevState.copyWith(isLiked: true, likes: prevState.likes + 1));
       }
       try {
-        await Future.wait(ops);
-      } catch (_) {
-        ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-        if (wasDisliked) {
-          ref.read(currentUserProvider.notifier).addIdToDisliked(prevState.id);
-        }
+        await _changePostLike(prevState.id, isLiking: true, isDislike: false);
+      } catch (e) {
+        debugPrint('likePostToggle like error: $e');
         state = AsyncData(prevState);
       }
     }
@@ -164,41 +111,29 @@ class Post extends _$Post {
     final prevState = await future;
     if (_isLiking) return;
     _isLiking = true;
-    if (ref.read(currentUserProvider).dislikedPosts.contains(prevState.id)) {
-      ref.read(currentUserProvider.notifier).removeIdFromDisliked(prevState.id);
-      state = AsyncData(prevState.copyWith(dislikes: prevState.dislikes - 1));
+    if (prevState.isDisliked) {
+      state = AsyncData(prevState.copyWith(isDisliked: false, dislikes: prevState.dislikes - 1));
       try {
-        await _removeDisikeFromDb(prevState.id);
-      } catch (_) {
-        ref.read(currentUserProvider.notifier).addIdToDisliked(prevState.id);
+        await _changePostLike(prevState.id, isLiking: false, isDislike: true);
+      } catch (e) {
+        debugPrint('dislikePostToggle undislike error: $e');
         state = AsyncData(prevState);
       }
     } else {
-      bool wasLiked = false;
-      final List<Future<void>> ops = [_addDislikeToDb(prevState.id)];
-      ref.read(currentUserProvider.notifier).addIdToDisliked(prevState.id);
-      if (ref.read(currentUserProvider).likedPosts.contains(prevState.id)) {
-        wasLiked = true;
-        ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-        state = AsyncData(
-          prevState.copyWith(
-            likes: prevState.likes - 1,
-            dislikes: prevState.dislikes + 1,
-          ),
-        );
-        ops.add(_removeLikeFromDb(prevState.id));
+      if (prevState.isLiked) {
+        state = AsyncData(prevState.copyWith(
+          isDisliked: true,
+          isLiked: false,
+          dislikes: prevState.dislikes + 1,
+          likes: prevState.likes - 1,
+        ));
       } else {
-        state = AsyncData(prevState.copyWith(dislikes: prevState.dislikes + 1));
+        state = AsyncData(prevState.copyWith(isDisliked: true, dislikes: prevState.dislikes + 1));
       }
       try {
-        await Future.wait(ops);
-      } catch (_) {
-        ref
-            .read(currentUserProvider.notifier)
-            .removeIdFromDisliked(prevState.id);
-        if (wasLiked) {
-          ref.read(currentUserProvider.notifier).addIdToLiked(prevState.id);
-        }
+        await _changePostLike(prevState.id, isLiking: true, isDislike: true);
+      } catch (e) {
+        debugPrint('dislikePostToggle dislike error: $e');
         state = AsyncData(prevState);
       }
     }

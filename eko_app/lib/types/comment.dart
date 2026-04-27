@@ -24,6 +24,8 @@ abstract class CommentModel with _$CommentModel {
     List<String> body,
     @Default(0) int likes,
     @Default(0) int dislikes,
+    @Default(false) bool isLiked,
+    @Default(false) bool isDisliked,
     @JsonKey(name: 'time') required String createdAt,
   }) = _CommentModel;
 

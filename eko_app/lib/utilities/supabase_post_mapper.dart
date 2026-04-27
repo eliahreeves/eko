@@ -38,6 +38,8 @@ PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
     'likes': (row['like_count'] as num?)?.toInt() ?? 0,
     'dislikes': (row['dislike_count'] as num?)?.toInt() ?? 0,
     'commentCount': (row['comment_count'] as num?)?.toInt() ?? 0,
+    'isLiked': row['is_liked'] as bool? ?? false,
+    'isDisliked': row['is_disliked'] as bool? ?? false,
     'time': _createdAtIso(row['created_at']),
   };
   if (ekoedId != null) {
@@ -64,6 +66,8 @@ CommentModel commentModelFromSupabaseRow(Map<String, dynamic> row) {
     'body': row['body'] as String?,
     'likes': (row['like_count'] as num?)?.toInt() ?? 0,
     'dislikes': (row['dislike_count'] as num?)?.toInt() ?? 0,
+    'isLiked': row['is_liked'] as bool? ?? false,
+    'isDisliked': row['is_disliked'] as bool? ?? false,
     'time': _createdAtIso(row['created_at']),
   });
 }
