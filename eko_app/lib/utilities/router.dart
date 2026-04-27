@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/scaffolds/app_safe_area.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/auth_provider.dart';
+import 'package:eko_app/providers/pending_deep_link_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/views/blocked_users_page.dart';
 import 'package:eko_app/views/download_page.dart';
@@ -68,17 +69,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final auth = ref.read(authProvider);
       final loc = state.matchedLocation;
       if (auth.isLoading) return null;
+
+      const unauthenticatedRoutes = [
+        '/',
+        '/signup',
+        '/login',
+        '/auth',
+        '/download'
+      ];
+
       if (auth.uid == null) {
-        if (loc == '/' ||
-            loc == '/signup' ||
-            loc == '/login' ||
-            loc == '/auth' ||
-            loc == '/download') {
-          return null;
-        }
+        if (unauthenticatedRoutes.contains(loc)) return null;
+        ref.read(pendingDeepLinkProvider.notifier).set(state.uri.toString());
         return '/';
       }
-      if (loc == '/' || loc == '/signup' || loc == '/login') return '/feed';
+
+      if (unauthenticatedRoutes.sublist(0, 3).contains(loc)) {
+        final pending = ref.read(pendingDeepLinkProvider.notifier).consume();
+        return pending ?? '/feed';
+      }
+
       return null;
     },
     routes: [
