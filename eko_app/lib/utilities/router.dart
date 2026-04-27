@@ -70,6 +70,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final loc = state.matchedLocation;
       if (auth.isLoading) return null;
 
+      if (auth.pendingPasswordRecovery && loc != '/auth') {
+        return '/auth?type=recovery';
+      }
+
       const unauthenticatedRoutes = [
         '/',
         '/signup',

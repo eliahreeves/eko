@@ -47,6 +47,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
           isLoading = true;
         });
         if ((await resetPassword('', passwordController.text)) == 'success') {
+          ref.read(authProvider.notifier).clearPasswordRecovery();
           if (mounted) {
             showMyDialog(
               AppLocalizations.of(context)!.passwordResetTitle,
@@ -121,6 +122,13 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                 index = 2;
               });
             }
+          } else if (supabase.auth.currentSession != null) {
+            if (mounted) {
+              setState(() {
+                email = supabase.auth.currentUser?.email ?? '';
+                index = 2;
+              });
+            }
           } else {
             if (mounted) setState(() => index = 1);
           }
@@ -154,6 +162,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         if (index == 2) {
+          ref.read(authProvider.notifier).clearPasswordRecovery();
           context.go('/');
         }
       },
@@ -161,7 +170,12 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: index != 0
             ? AuthAppBar(
-                onBack: () => context.go('/'),
+                onBack: () {
+                  if (index == 2) {
+                    ref.read(authProvider.notifier).clearPasswordRecovery();
+                  }
+                  context.go('/');
+                },
               )
             : null,
         body: Center(
@@ -253,7 +267,12 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                         const SizedBox(height: c.authElementSpacing),
                         AuthButton.tertiary(
                           label: l10n.cancel,
-                          onPressed: () => context.go('/'),
+                          onPressed: () {
+                            ref
+                                .read(authProvider.notifier)
+                                .clearPasswordRecovery();
+                            context.go('/');
+                          },
                         ),
                         SizedBox(height: height * 0.03),
                       ],

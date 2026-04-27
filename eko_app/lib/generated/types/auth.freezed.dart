@@ -19,6 +19,7 @@ mixin _$AuthModel {
   bool get isLoading;
   bool? get emailVerified;
   DateTime? get creationTime;
+  bool get pendingPasswordRecovery;
 
   /// Create a copy of AuthModel
   /// with the given fields replaced by the non-null parameter values.
@@ -39,16 +40,19 @@ mixin _$AuthModel {
             (identical(other.emailVerified, emailVerified) ||
                 other.emailVerified == emailVerified) &&
             (identical(other.creationTime, creationTime) ||
-                other.creationTime == creationTime));
+                other.creationTime == creationTime) &&
+            (identical(
+                    other.pendingPasswordRecovery, pendingPasswordRecovery) ||
+                other.pendingPasswordRecovery == pendingPasswordRecovery));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, uid, email, isLoading, emailVerified, creationTime);
+  int get hashCode => Object.hash(runtimeType, uid, email, isLoading,
+      emailVerified, creationTime, pendingPasswordRecovery);
 
   @override
   String toString() {
-    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading, emailVerified: $emailVerified, creationTime: $creationTime)';
+    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading, emailVerified: $emailVerified, creationTime: $creationTime, pendingPasswordRecovery: $pendingPasswordRecovery)';
   }
 }
 
@@ -62,7 +66,8 @@ abstract mixin class $AuthModelCopyWith<$Res> {
       String? email,
       bool isLoading,
       bool? emailVerified,
-      DateTime? creationTime});
+      DateTime? creationTime,
+      bool pendingPasswordRecovery});
 }
 
 /// @nodoc
@@ -82,6 +87,7 @@ class _$AuthModelCopyWithImpl<$Res> implements $AuthModelCopyWith<$Res> {
     Object? isLoading = null,
     Object? emailVerified = freezed,
     Object? creationTime = freezed,
+    Object? pendingPasswordRecovery = null,
   }) {
     return _then(_self.copyWith(
       uid: freezed == uid
@@ -104,6 +110,10 @@ class _$AuthModelCopyWithImpl<$Res> implements $AuthModelCopyWith<$Res> {
           ? _self.creationTime
           : creationTime // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      pendingPasswordRecovery: null == pendingPasswordRecovery
+          ? _self.pendingPasswordRecovery
+          : pendingPasswordRecovery // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -201,16 +211,26 @@ extension AuthModelPatterns on AuthModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String? uid, String? email, bool isLoading,
-            bool? emailVerified, DateTime? creationTime)?
+    TResult Function(
+            String? uid,
+            String? email,
+            bool isLoading,
+            bool? emailVerified,
+            DateTime? creationTime,
+            bool pendingPasswordRecovery)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _AuthModel() when $default != null:
-        return $default(_that.uid, _that.email, _that.isLoading,
-            _that.emailVerified, _that.creationTime);
+        return $default(
+            _that.uid,
+            _that.email,
+            _that.isLoading,
+            _that.emailVerified,
+            _that.creationTime,
+            _that.pendingPasswordRecovery);
       case _:
         return orElse();
     }
@@ -231,15 +251,25 @@ extension AuthModelPatterns on AuthModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(String? uid, String? email, bool isLoading,
-            bool? emailVerified, DateTime? creationTime)
+    TResult Function(
+            String? uid,
+            String? email,
+            bool isLoading,
+            bool? emailVerified,
+            DateTime? creationTime,
+            bool pendingPasswordRecovery)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _AuthModel():
-        return $default(_that.uid, _that.email, _that.isLoading,
-            _that.emailVerified, _that.creationTime);
+        return $default(
+            _that.uid,
+            _that.email,
+            _that.isLoading,
+            _that.emailVerified,
+            _that.creationTime,
+            _that.pendingPasswordRecovery);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -259,15 +289,25 @@ extension AuthModelPatterns on AuthModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String? uid, String? email, bool isLoading,
-            bool? emailVerified, DateTime? creationTime)?
+    TResult? Function(
+            String? uid,
+            String? email,
+            bool isLoading,
+            bool? emailVerified,
+            DateTime? creationTime,
+            bool pendingPasswordRecovery)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _AuthModel() when $default != null:
-        return $default(_that.uid, _that.email, _that.isLoading,
-            _that.emailVerified, _that.creationTime);
+        return $default(
+            _that.uid,
+            _that.email,
+            _that.isLoading,
+            _that.emailVerified,
+            _that.creationTime,
+            _that.pendingPasswordRecovery);
       case _:
         return null;
     }
@@ -282,7 +322,8 @@ class _AuthModel implements AuthModel {
       this.email,
       required this.isLoading,
       this.emailVerified,
-      this.creationTime});
+      this.creationTime,
+      this.pendingPasswordRecovery = false});
 
   @override
   final String? uid;
@@ -294,6 +335,9 @@ class _AuthModel implements AuthModel {
   final bool? emailVerified;
   @override
   final DateTime? creationTime;
+  @override
+  @JsonKey()
+  final bool pendingPasswordRecovery;
 
   /// Create a copy of AuthModel
   /// with the given fields replaced by the non-null parameter values.
@@ -315,16 +359,19 @@ class _AuthModel implements AuthModel {
             (identical(other.emailVerified, emailVerified) ||
                 other.emailVerified == emailVerified) &&
             (identical(other.creationTime, creationTime) ||
-                other.creationTime == creationTime));
+                other.creationTime == creationTime) &&
+            (identical(
+                    other.pendingPasswordRecovery, pendingPasswordRecovery) ||
+                other.pendingPasswordRecovery == pendingPasswordRecovery));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, uid, email, isLoading, emailVerified, creationTime);
+  int get hashCode => Object.hash(runtimeType, uid, email, isLoading,
+      emailVerified, creationTime, pendingPasswordRecovery);
 
   @override
   String toString() {
-    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading, emailVerified: $emailVerified, creationTime: $creationTime)';
+    return 'AuthModel(uid: $uid, email: $email, isLoading: $isLoading, emailVerified: $emailVerified, creationTime: $creationTime, pendingPasswordRecovery: $pendingPasswordRecovery)';
   }
 }
 
@@ -341,7 +388,8 @@ abstract mixin class _$AuthModelCopyWith<$Res>
       String? email,
       bool isLoading,
       bool? emailVerified,
-      DateTime? creationTime});
+      DateTime? creationTime,
+      bool pendingPasswordRecovery});
 }
 
 /// @nodoc
@@ -361,6 +409,7 @@ class __$AuthModelCopyWithImpl<$Res> implements _$AuthModelCopyWith<$Res> {
     Object? isLoading = null,
     Object? emailVerified = freezed,
     Object? creationTime = freezed,
+    Object? pendingPasswordRecovery = null,
   }) {
     return _then(_AuthModel(
       uid: freezed == uid
@@ -383,6 +432,10 @@ class __$AuthModelCopyWithImpl<$Res> implements _$AuthModelCopyWith<$Res> {
           ? _self.creationTime
           : creationTime // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      pendingPasswordRecovery: null == pendingPasswordRecovery
+          ? _self.pendingPasswordRecovery
+          : pendingPasswordRecovery // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }

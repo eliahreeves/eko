@@ -9,6 +9,7 @@ abstract class AuthModel with _$AuthModel {
     required bool isLoading,
     bool? emailVerified,
     DateTime? creationTime,
+    @Default(false) bool pendingPasswordRecovery,
   }) = _AuthModel;
   factory AuthModel.loading() => const AuthModel(
         uid: null,
@@ -16,6 +17,7 @@ abstract class AuthModel with _$AuthModel {
         isLoading: true,
         emailVerified: null,
         creationTime: null,
+        pendingPasswordRecovery: false,
       );
 
   factory AuthModel.signedOut() => const AuthModel(
@@ -24,5 +26,6 @@ abstract class AuthModel with _$AuthModel {
         isLoading: false,
         emailVerified: null,
         creationTime: null,
+        pendingPasswordRecovery: false,
       );
 }

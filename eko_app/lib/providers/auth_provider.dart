@@ -31,6 +31,16 @@ class Auth extends _$Auth {
       final session = data.session;
       if (session == null) {
         state = AuthModel.signedOut();
+      } else if (data.event == AuthChangeEvent.passwordRecovery) {
+        final user = session.user;
+        state = state.copyWith(
+          uid: user.id,
+          isLoading: false,
+          email: user.email,
+          emailVerified: user.emailConfirmedAt != null,
+          creationTime: DateTime.tryParse(user.createdAt),
+          pendingPasswordRecovery: true,
+        );
       } else {
         final user = session.user;
         state = state.copyWith(
@@ -39,9 +49,14 @@ class Auth extends _$Auth {
           email: user.email,
           emailVerified: user.emailConfirmedAt != null,
           creationTime: DateTime.tryParse(user.createdAt),
+          pendingPasswordRecovery: false,
         );
       }
     });
+  }
+
+  void clearPasswordRecovery() {
+    state = state.copyWith(pendingPasswordRecovery: false);
   }
 
   Future<String> signIn({
