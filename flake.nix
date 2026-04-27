@@ -20,13 +20,24 @@
         commonPackages = with pkgs; [
           jdk
           ninja
+          rsync
           unzip
           firebase-tools
           supabase-cli
           go
           google-cloud-sdk
         ];
-        commonShellHook = ''
+        makeFlutterShellHook = flutterPkg: extraHook: ''
+          export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
+          if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
+            mkdir -p "$FLUTTER_ROOT_LOCAL"
+            rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
+          fi
+          chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache" 2>/dev/null || true
+          touch "$FLUTTER_ROOT_LOCAL/bin/cache/engine.realm"
+          export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
+          export PATH="$FLUTTER_ROOT/bin:$PATH"
+        '' + extraHook + ''
           git config core.hooksPath scripts/git-hooks
         '';
       in {
@@ -51,21 +62,11 @@
           in
             pkgs.mkShellNoCC {
               nativeBuildInputs = commonPackages ++ [flutterPkg];
-              shellHook =
-                ''
-                  export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-                  export PATH=/usr/bin:/bin:/usr/sbin:/sbin:$PATH
-                  unset CC CXX LD AR NM RANLIB STRIP SDKROOT CPATH LIBRARY_PATH CFLAGS CXXFLAGS LDFLAGS OBJCFLAGS OBJCXXFLAGS
-                  export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
-                  if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
-                    mkdir -p "$FLUTTER_ROOT_LOCAL"
-                    /usr/bin/rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
-                  fi
-                  chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache/artifacts/engine" 2>/dev/null || true
-                  export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
-                  export PATH="$FLUTTER_ROOT/bin:$PATH"
-                ''
-                + commonShellHook;
+              shellHook = makeFlutterShellHook flutterPkg ''
+                export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+                export PATH=/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+                unset CC CXX LD AR NM RANLIB STRIP SDKROOT CPATH LIBRARY_PATH CFLAGS CXXFLAGS LDFLAGS OBJCFLAGS OBJCXXFLAGS
+              '';
             }
           else let
             flutterPkg = pkgs.flutter.override {
@@ -91,11 +92,9 @@
               ANDROID_SDK_ROOT = sdkPath;
               ANDROID_HOME = sdkPath;
               nativeBuildInputs = commonPackages ++ [flutterPkg androidSdk];
-              shellHook =
-                ''
-                  export GRADLE_OPTS="-Dorg.gradle.project.android.aapt2FromMavenOverride=${sdkPath}/build-tools/35.0.0/aapt2"
-                ''
-                + commonShellHook;
+              shellHook = makeFlutterShellHook flutterPkg ''
+                export GRADLE_OPTS="-Dorg.gradle.project.android.aapt2FromMavenOverride=${sdkPath}/build-tools/35.0.0/aapt2"
+              '';
             };
       };
     };
