@@ -107,8 +107,10 @@ class Auth extends _$Auth {
   }
 
   Future<String> updatePassword(String newPassword) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 'no-current-user';
     try {
-      await FirebaseAuth.instance.currentUser?.updatePassword(newPassword);
+      await user.updatePassword(newPassword);
       return 'success';
     } on FirebaseAuthException catch (e) {
       return e.code;
@@ -116,9 +118,10 @@ class Auth extends _$Auth {
   }
 
   Future<String> updateEmailBeforeVerify(String newEmail) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 'no-current-user';
     try {
-      await FirebaseAuth.instance.currentUser
-          ?.verifyBeforeUpdateEmail(newEmail.trim());
+      await user.verifyBeforeUpdateEmail(newEmail.trim());
       return 'success';
     } on FirebaseAuthException catch (e) {
       return e.code;

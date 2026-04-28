@@ -73,7 +73,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           password: currentPasswordController.text,
         );
     if (signInResult != 'success') {
-      setState(() => isLoading = false);
+      if (mounted) setState(() => isLoading = false);
       if (!mounted) return;
       if (signInResult == 'wrong-password') {
         showSnackBar(
@@ -94,8 +94,8 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     final updateResult = await ref.read(authProvider.notifier).updatePassword(
           newPasswordController.text,
         );
-    setState(() => isLoading = false);
     if (!mounted) return;
+    setState(() => isLoading = false);
 
     if (updateResult == 'success') {
       showSnackBar(text: l10n.passwordChangedBody, context: context);

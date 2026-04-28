@@ -82,7 +82,7 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
           password: currentPasswordController.text,
         );
     if (signInResult != 'success') {
-      setState(() => isLoading = false);
+      if (mounted) setState(() => isLoading = false);
       if (!mounted) return;
       if (signInResult == 'wrong-password') {
         showSnackBar(
@@ -104,8 +104,8 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
         await ref.read(authProvider.notifier).updateEmailBeforeVerify(
               trimmedNew,
             );
-    setState(() => isLoading = false);
     if (!mounted) return;
+    setState(() => isLoading = false);
 
     if (updateResult == 'success') {
       await showMyDialog(

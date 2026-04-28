@@ -133,7 +133,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
           }
           if (!mounted) return;
           context.go('/feed');
-        } on FirebaseAuthException {
+        } catch (_) {
           if (mounted) setState(() => index = 1);
         }
         return;
