@@ -7,7 +7,6 @@ import 'package:eko_app/widgets/scaffolds/app_safe_area.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/pending_deep_link_provider.dart';
-import 'package:eko_app/types/user.dart';
 import 'package:eko_app/views/blocked_users_page.dart';
 import 'package:eko_app/views/download_page.dart';
 import 'package:eko_app/views/camera_page.dart';
@@ -332,16 +331,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'followers',
                     name: 'followers',
                     builder: (context, state) {
-                      UserModel user = state.extra as UserModel;
-                      return Followers(uid: user.uid);
+                      final username = state.pathParameters['username']!;
+                      final uid = state.uri.queryParameters['uid'];
+                      return Followers(username: username, uid: uid);
                     },
                   ),
                   GoRoute(
                     path: 'following',
                     name: 'following',
                     builder: (context, state) {
-                      UserModel user = state.extra as UserModel;
-                      return Following(uid: user.uid);
+                      final username = state.pathParameters['username']!;
+                      final uid = state.uri.queryParameters['uid'];
+                      return Following(username: username, uid: uid);
                     },
                   ),
                 ],
