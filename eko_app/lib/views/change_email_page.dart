@@ -51,10 +51,6 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
     }
 
     final trimmedNew = newEmailController.text.trim();
-    if (currentPasswordController.text.isEmpty) {
-      currentPasswordFocus.requestFocus();
-      return;
-    }
     if (trimmedNew.isEmpty) {
       newEmailFocus.requestFocus();
       return;
@@ -73,6 +69,10 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
         context: context,
         variant: SnackBarVariant.destructive,
       );
+      return;
+    }
+    if (currentPasswordController.text.isEmpty) {
+      currentPasswordFocus.requestFocus();
       return;
     }
 
@@ -216,21 +216,21 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
               ),
               CustomInputField(
                 autofillHints: const [AutofillHints.email],
-                textInputAction: TextInputAction.done,
+                textInputAction: TextInputAction.next,
                 focus: newEmailFocus,
                 label: l10n.newEmail,
                 controller: newEmailController,
                 inputType: TextInputType.emailAddress,
-                onEditingComplete: _submit,
+                onEditingComplete: () => currentPasswordFocus.requestFocus(),
               ),
               CustomInputField(
-                textInputAction: TextInputAction.next,
+                textInputAction: TextInputAction.done,
                 focus: currentPasswordFocus,
                 label: l10n.currentPassword,
                 controller: currentPasswordController,
                 inputType: TextInputType.visiblePassword,
                 password: true,
-                onEditingComplete: () => newEmailFocus.requestFocus(),
+                onEditingComplete: _submit,
               ),
               SizedBox(height: c.authSectionSpacing),
               AuthButton.primary(
