@@ -106,6 +106,8 @@ const double maxAuthWidth = 500.0;
 //profile pic
 const int imageQuality = 85;
 const double imageSize = 150;
+const int maxProfilePictureSizeKb = 50;
+const int maxProfilePictureSizeBytes = maxProfilePictureSizeKb * 1024;
 
 const double postPaddingVert = 8;
 const double postPaddingHoriz = 5;

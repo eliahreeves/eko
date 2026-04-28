@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart' show debugPrint;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
@@ -18,8 +18,20 @@ class CurrentUser extends _$CurrentUser {
   @override
   // This is nullable instead of async so that we can just bang it. Await will happen inside the require auth widget.
   CurrentUserModel build() {
-    final auth = ref.watch(authProvider);
-    // If uid is null, wait for authProvider to emit a non-null uid
+    ref.listen(authProvider, (previous, next) {
+      final prevUid = previous?.uid;
+      final nextUid = next.uid;
+      if (prevUid == nextUid) {
+        return;
+      }
+      if (nextUid == null) {
+        state = CurrentUserModel.loading();
+      } else {
+        reload();
+      }
+    });
+
+    final auth = ref.read(authProvider);
     if (auth.uid != null) {
       reload();
     }
@@ -31,16 +43,16 @@ class CurrentUser extends _$CurrentUser {
     String? bio,
     String? username,
     File? profilePicture,
-    String? verificationUrl,
   }) async {
     final prev = state.user;
+    final nextName = name ?? prev.name;
+    final nextBio = bio ?? prev.bio;
+    final nextUsername = username ?? prev.username;
     state = state.copyWith(
       user: state.user.copyWith(
-        name: name ?? prev.name,
-        bio: bio ?? prev.bio,
-        verificationUrl: verificationUrl ?? prev.verificationUrl,
-        isVerified:
-            verificationUrl == prev.verificationUrl ? prev.isVerified : false,
+        name: nextName,
+        bio: nextBio,
+        username: nextUsername,
       ),
     );
 
@@ -48,35 +60,58 @@ class CurrentUser extends _$CurrentUser {
       String? pic;
       if (profilePicture != null) {
         pic = await _uploadProfilePicture(profilePicture);
-        if (pic != null) {
-          state = state.copyWith(
-            user: state.user.copyWith(profilePicture: pic),
-          );
+        if (pic == null) {
+          throw Exception('profile_picture_upload_failed');
         }
-      }
-      String? validUsername;
-      if (username != null) {
-        if (await isUsernameAvailable(username) && isUsernameValid(username)) {
-          validUsername = username;
-        }
-      }
-
-      final Map<String, dynamic> updates = {};
-      if (name != null) updates['name'] = name;
-      if (bio != null) updates['bio'] = bio;
-      if (pic != null) updates['profile_picture'] = pic;
-      if (validUsername != null) updates['username'] = validUsername;
-
-      if (updates.isNotEmpty) {
-        await supabase.from('users').update(updates).eq('id', state.user.uid);
-      }
-      if (validUsername != null) {
         state = state.copyWith(
-          user: state.user.copyWith(username: validUsername),
+          user: state.user.copyWith(profilePicture: pic),
         );
       }
-    } catch (_) {
+
+      final response = await supabase.rpc(
+        'update_profile',
+        params: {
+          'p_name': name,
+          'p_bio': bio,
+          'p_username': username,
+          'p_profile_picture': pic,
+        },
+      );
+      if (response is! List || response.isEmpty) {
+        throw Exception('unknown');
+      }
+      final row = Map<String, dynamic>.from(response.first);
+      if (row['success'] != true) {
+        throw Exception(row['error_message'] ?? 'unknown');
+      }
+
+      state = state.copyWith(
+        user: state.user.copyWith(
+          name: (row['name'] ?? state.user.name) as String,
+          bio: (row['bio'] ?? state.user.bio) as String,
+          username: (row['username'] ?? state.user.username) as String,
+          profilePicture:
+              (row['profile_picture'] ?? state.user.profilePicture) as String,
+          isVerified: (row['is_verified'] ?? state.user.isVerified) as bool,
+        ),
+      );
+
+      final userData = <String, dynamic>{
+        'name': state.user.name,
+        'bio': state.user.bio,
+        'username': state.user.username,
+      };
+      if (state.user.profilePicture.isNotEmpty) {
+        userData['profile_picture'] = state.user.profilePicture;
+      }
+      try {
+        await supabase.auth.updateUser(UserAttributes(data: userData));
+      } catch (e) {
+        debugPrint('editProfile auth metadata update error: $e');
+      }
+    } catch (e) {
       state = state.copyWith(user: prev);
+      rethrow;
     }
   }
 
@@ -84,10 +119,26 @@ class CurrentUser extends _$CurrentUser {
     final uid = state.user.uid;
     try {
       final bytes = await img.readAsBytes();
-      final path = 'profile_pictures/$uid/profile.jpg';
-      await supabase.storage.from('avatars').uploadBinary(path, bytes,
-          fileOptions: const supabase_flutter.FileOptions(upsert: true));
-      final url = supabase.storage.from('avatars').getPublicUrl(path);
+      final storage = supabase.storage.from('profile_pictures');
+      final path =
+          '$uid/profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      await storage.uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(upsert: true),
+          );
+      try {
+        final files = await storage.list(path: uid);
+        final oldPaths = files
+            .map((file) => file.name)
+            .where((name) => '$uid/$name' != path)
+            .map((name) => '$uid/$name')
+            .toList();
+        if (oldPaths.isNotEmpty) {
+          await storage.remove(oldPaths);
+        }
+      } catch (_) {}
+      final url = storage.getPublicUrl(path);
       return url;
     } catch (_) {
       return null;
