@@ -95,11 +95,33 @@ class Auth extends _$Auth {
     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
   }
 
-  Future<void> refreshEmailVerification() async {
+  Future<void> reloadAuthUser() async {
     await FirebaseAuth.instance.currentUser?.reload();
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      state = state.copyWith(emailVerified: user.emailVerified);
+      state = state.copyWith(
+        email: user.email,
+        emailVerified: user.emailVerified,
+      );
+    }
+  }
+
+  Future<String> updatePassword(String newPassword) async {
+    try {
+      await FirebaseAuth.instance.currentUser?.updatePassword(newPassword);
+      return 'success';
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    }
+  }
+
+  Future<String> updateEmailBeforeVerify(String newEmail) async {
+    try {
+      await FirebaseAuth.instance.currentUser
+          ?.verifyBeforeUpdateEmail(newEmail.trim());
+      return 'success';
+    } on FirebaseAuthException catch (e) {
+      return e.code;
     }
   }
 

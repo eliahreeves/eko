@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/auth_provider.dart';
+import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/widgets/auth/create_password.dart';
 import 'package:eko_app/widgets/loading/loading_spinner.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
@@ -97,7 +99,7 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
         try {
           await FirebaseAuth.instance.applyActionCode(oobCode);
           if (!mounted) return;
-          await ref.read(authProvider.notifier).refreshEmailVerification();
+          await ref.read(authProvider.notifier).reloadAuthUser();
           if (!mounted) return;
           final user = FirebaseAuth.instance.currentUser;
           if (user != null) {
@@ -105,6 +107,32 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
           } else {
             context.go('/login');
           }
+        } on FirebaseAuthException {
+          if (mounted) setState(() => index = 1);
+        }
+        return;
+      }
+
+      if (mode == 'verifyAndChangeEmail' && oobCode.isNotEmpty) {
+        try {
+          await FirebaseAuth.instance.applyActionCode(oobCode);
+          if (!mounted) return;
+          await ref.read(authProvider.notifier).reloadAuthUser();
+          if (!mounted) return;
+          final user = FirebaseAuth.instance.currentUser;
+          if (user == null) {
+            context.go('/login');
+            return;
+          }
+          if (user.email != null) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .update({'email': user.email});
+            await ref.read(currentUserProvider.notifier).reload();
+          }
+          if (!mounted) return;
+          context.go('/feed');
         } on FirebaseAuthException {
           if (mounted) setState(() => index = 1);
         }

@@ -23,6 +23,10 @@ class UserSettings extends ConsumerStatefulWidget {
 class _UserSettingsState extends ConsumerState<UserSettings> {
   late bool activityNotification;
 
+  Map<String, String> _userProfilePathParams() {
+    return {'username': ref.read(currentUserProvider).user.username};
+  }
+
   void toggleActivityNotification(bool value) {
     PrefsService.activityNotifications = value;
     setState(() {
@@ -117,10 +121,31 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
           ListTile(
+            title: Text(AppLocalizations.of(context)!.changeEmail),
+            leading: const Icon(Icons.alternate_email),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => context.pushNamed(
+              'change_email',
+              pathParameters: _userProfilePathParams(),
+            ),
+          ),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.changePassword),
+            leading: const Icon(Icons.lock_outline),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => context.pushNamed(
+              'change_password',
+              pathParameters: _userProfilePathParams(),
+            ),
+          ),
+          ListTile(
             title: Text(AppLocalizations.of(context)!.blockedAccounts),
             leading: const Icon(Icons.no_accounts_outlined),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => context.pushNamed('blocked_users'),
+            onTap: () => context.pushNamed(
+              'blocked_users',
+              pathParameters: _userProfilePathParams(),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -150,7 +175,12 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
                       ref.read(navBarProvider.notifier).enable();
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'requires-recent-login') {
-                        if (context.mounted) context.pushNamed('re_auth');
+                        if (context.mounted) {
+                          context.pushNamed(
+                            're_auth',
+                            pathParameters: _userProfilePathParams(),
+                          );
+                        }
                       }
                     }
                   },

@@ -658,4 +658,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get loginFailedBody =>
       'Please check your email and password and try again.';
+
+  @override
+  String get changeEmail => 'Change Email';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get currentEmail => 'Current email';
+
+  @override
+  String get newEmail => 'New Email';
+
+  @override
+  String get passwordChangedBody => 'Your password has been updated.';
+
+  @override
+  String get changeEmailVerificationTitle => 'Verify your new email';
+
+  @override
+  String get changeEmailVerificationBody =>
+      'We sent a verification link to your new email address. Open it to finish changing your email.';
 }
