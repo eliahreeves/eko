@@ -17,13 +17,6 @@ COMMENT ON SCHEMA "public" IS 'standard public schema';
 
 
 
-CREATE EXTENSION IF NOT EXISTS "pg_graphql" WITH SCHEMA "graphql";
-
-
-
-
-
-
 CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
 
 
@@ -253,49 +246,85 @@ $$;
 ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_chamber_id" bigint) RETURNS TABLE("success" boolean, "error_message" "text", "post_id" bigint)
+CREATE OR REPLACE FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) RETURNS TABLE("success" boolean, "error_message" "text", "comment_id" bigint)
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
     AS $$
-DECLARE
-    new_post_id BIGINT;
-BEGIN
-    BEGIN
-        INSERT INTO public.posts (
-            created_at,
-            firebase_uid,
-            body,
-            title,
-            gif,
-            poll,
-            author_uid,
-            image,
-            chamber_id
-        ) VALUES (
-            p_created_at,
-            p_firebase_uid,
-            p_body,
-            p_title,
-            p_gif,
-            p_poll,
-            p_author_uid,
-            CASE 
-                WHEN p_image_base64 IS NOT NULL THEN decode(p_image_base64, 'base64')
-                ELSE NULL
-            END,
-            p_chamber_id
-        ) RETURNING id INTO new_post_id;
-        
-        RETURN QUERY SELECT TRUE, NULL::TEXT, new_post_id;
-        
-    EXCEPTION WHEN OTHERS THEN
-        RETURN QUERY SELECT FALSE, SQLERRM, NULL::BIGINT;
-    END;
-END;
-$$;
+  declare
+    new_comment_id bigint;
+  begin
+    begin
+      insert into public.comments (
+        created_at,
+        firebase_uid,
+        body,
+        gif,
+        author_uid,
+        parent_post_id
+      ) values (
+        p_created_at,
+        p_firebase_uid,
+        p_body,
+        p_gif,
+        p_author_uid,
+        p_parent_post_id
+      )
+      returning id into new_comment_id;
+      return query select true, null::text, new_comment_id;
+    exception when others then
+      return query select false, sqlerrm, null::bigint;
+    end;
+  end;
+  $$;
 
 
-ALTER FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_chamber_id" bigint) OWNER TO "postgres";
+ALTER FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, "p_chamber_id" bigint) RETURNS TABLE("success" boolean, "error_message" "text", "post_id" bigint)
+    LANGUAGE "plpgsql"
+    SET "search_path" TO ''
+    AS $$
+  declare
+    new_post_id bigint;
+  begin
+    begin
+      insert into public.posts (
+        created_at,
+        firebase_uid,
+        body,
+        title,
+        gif,
+        poll,
+        author_uid,
+        image,
+        ekoed_id,
+        chamber_id
+      ) values (
+        p_created_at,
+        p_firebase_uid,
+        p_body,
+        p_title,
+        p_gif,
+        p_poll,
+        p_author_uid,
+        case
+          when p_image_base64 is not null then decode(p_image_base64, 'base64')
+          else null
+        end,
+        p_ekoed_id,
+        p_chamber_id
+      )
+      returning id into new_post_id;
+      return query select true, null::text, new_post_id;
+    exception when others then
+      return query select false, sqlerrm, null::bigint;
+    end;
+  end;
+  $$;
+
+
+ALTER FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, "p_chamber_id" bigint) OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."is_username_available"("p_username" "text") RETURNS boolean
@@ -519,26 +548,25 @@ CREATE OR REPLACE FUNCTION "public"."paginated_user_followers"("p_limit" integer
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
     AS $$
-BEGIN
+  BEGIN
     RETURN QUERY
     SELECT u.id, u.username, u.name, u.profile_picture, u.bio, u.is_verified
-    FROM public.followiing f
-    JOIN public.users u on u.id = f.source_uid
+    FROM public.following f
+    JOIN public.users u ON u.id = f.source_uid
     WHERE
-    f.target_uid = p_uid AND
-    --paging
-    (p_last_uid is NULL or (p_last_uid < u.id))
-    -- blocking
-    AND NOT EXISTS (
-            SELECT 1 FROM public.blocked b
-            WHERE 
-                (b.source_uid = (SELECT auth.uid()) AND b.target_uid = u.id) OR
-                (b.source_uid = u.id AND b.target_uid = (SELECT auth.uid()))
-    )
+      f.target_uid = p_uid
+      AND (p_last_uid IS NULL OR p_last_uid < u.id)
+      AND NOT EXISTS (
+        SELECT 1
+        FROM public.blocked b
+        WHERE
+          (b.source_uid = auth.uid() AND b.target_uid = u.id)
+          OR (b.source_uid = u.id AND b.target_uid = auth.uid())
+      )
     ORDER BY u.id DESC
     LIMIT p_limit;
-END;
-$$;
+  END;
+  $$;
 
 
 ALTER FUNCTION "public"."paginated_user_followers"("p_limit" integer, "p_uid" "uuid", "p_last_uid" "uuid") OWNER TO "postgres";
@@ -548,26 +576,25 @@ CREATE OR REPLACE FUNCTION "public"."paginated_user_following"("p_limit" integer
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
     AS $$
-BEGIN
+  BEGIN
     RETURN QUERY
     SELECT u.id, u.username, u.name, u.profile_picture, u.bio, u.is_verified
-    FROM public.followiing f
-    JOIN public.users u on u.id = f.target
+    FROM public.following f
+    JOIN public.users u ON u.id = f.target_uid
     WHERE
-    f.source_uid = p_uid AND
-    --paging
-    (p_last_uid is NULL or (p_last_uid < u.id))
-    -- blocking
-    AND NOT EXISTS (
-            SELECT 1 FROM public.blocked b
-            WHERE 
-                (b.source_uid = (SELECT auth.uid()) AND b.target_uid = u.id) OR
-                (b.source_uid = u.id AND b.target_uid = (SELECT auth.uid()))
-    )
+      f.source_uid = p_uid
+      AND (p_last_uid IS NULL OR p_last_uid < u.id)
+      AND NOT EXISTS (
+        SELECT 1
+        FROM public.blocked b
+        WHERE
+          (b.source_uid = auth.uid() AND b.target_uid = u.id)
+          OR (b.source_uid = u.id AND b.target_uid = auth.uid())
+      )
     ORDER BY u.id DESC
     LIMIT p_limit;
-END;
-$$;
+  END;
+  $$;
 
 
 ALTER FUNCTION "public"."paginated_user_following"("p_limit" integer, "p_uid" "uuid", "p_last_uid" "uuid") OWNER TO "postgres";
@@ -1203,6 +1230,10 @@ CREATE POLICY "Enable insert for users based on user_id" ON "public"."post_likes
 
 
 
+CREATE POLICY "Enable insert for users based on user_id" ON "public"."posts" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "author_uid"));
+
+
+
 CREATE POLICY "Enable insert for users based on user_id" ON "public"."users" FOR UPDATE TO "authenticated" USING (true) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
@@ -1303,6 +1334,9 @@ CREATE POLICY "only view groups you are in" ON "public"."chambers" FOR SELECT TO
 ALTER TABLE "public"."post_likes" ENABLE ROW LEVEL SECURITY;
 
 
+ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
+
+
 CREATE POLICY "read comment likes if you can read comment" ON "public"."comment_likes" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
    FROM "public"."comments" "c"
   WHERE ("c"."id" = "comment_likes"."comment_id"))));
@@ -1352,9 +1386,6 @@ GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
-
-
-
 
 
 
@@ -1658,9 +1689,15 @@ GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_chamber_id" bigint) TO "anon";
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_chamber_id" bigint) TO "authenticated";
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_chamber_id" bigint) TO "service_role";
+GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "anon";
+GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, "p_chamber_id" bigint) TO "anon";
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, "p_chamber_id" bigint) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, "p_chamber_id" bigint) TO "service_role";
 
 
 

@@ -116,21 +116,24 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
 }
 
 Future<String> uploadComment(CommentModel comment, WidgetRef ref) async {
-  final firestore = FirebaseFirestore.instance;
   final json = comment.toJson();
   final post = await ref.read(postProvider(comment.postId).future);
+  final uid = ref.read(currentUserProvider).user.uid;
 
-  //don't put these in firebase
   json.remove('id');
   json.remove('postId');
 
-  // upload
-  final commentId = await firestore
-      .collection('posts')
-      .doc(comment.postId)
-      .collection('comments')
-      .add(json)
-      .then((documentSnapshot) => documentSnapshot.id);
+  final result = await supabase.rpc('insert_comment', params: {
+    'p_created_at': comment.createdAt,
+    'p_author_uid': uid,
+    'p_firebase_uid': null,
+    'p_body': json['body'],
+    'p_gif': json['gifUrl'],
+    'p_parent_post_id': int.tryParse(comment.postId),
+  });
+  final row = (result as List).first as Map;
+  if (row['success'] != true) throw Exception(row['error_message']);
+  final commentId = row['comment_id'].toString();
 
   if (ref.watch(currentUserProvider).user.uid != post.uid) {
     final activity = ActivityModel(
