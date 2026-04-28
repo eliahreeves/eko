@@ -48,4 +48,8 @@ class CommentList extends _$CommentList {
     final currentLength = state.$1.length;
     insertAtIndex(currentLength, comment);
   }
+
+  void removeById(String id) {
+    state = (state.$1.where((commentId) => commentId != id).toList(), state.$2);
+  }
 }

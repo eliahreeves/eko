@@ -135,4 +135,14 @@ class Comment extends _$Comment {
     }
     _isLiking = false;
   }
+
+  Future<void> deleteComment() async {
+    final currentComment = await future;
+    final commentId = int.tryParse(currentComment.id);
+    if (commentId == null) {
+      throw Exception('Failed to delete comment');
+    }
+    await supabase.from('comments').delete().eq('id', commentId);
+    ref.invalidateSelf();
+  }
 }

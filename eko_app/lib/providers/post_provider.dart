@@ -7,6 +7,7 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/providers/profile_post_list_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/supabase_post_mapper.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
@@ -234,18 +235,14 @@ class Post extends _$Post {
     final postId = currentPost.id;
 
     try {
-      final firestore = FirebaseFirestore.instance;
-      final postRef = firestore.collection('posts').doc(postId);
-      final comments = await postRef.collection('comments').get();
-      final batch = firestore.batch();
-      for (var doc in comments.docs) {
-        batch.delete(doc.reference);
+      final parsedPostId = int.tryParse(postId);
+      if (parsedPostId == null) {
+        throw Exception('Failed to delete post');
       }
-      batch.delete(postRef);
-      await batch.commit();
+      await supabase.from('posts').delete().eq('id', parsedPostId);
       ref.read(followingFeedProvider.notifier).removePost(postId);
       ref.read(newFeedProvider.notifier).removePost(postId);
-      ref.invalidateSelf();
+      ref.read(profilePostListProvider.notifier).removePost(postId);
     } catch (e) {
       rethrow;
     }

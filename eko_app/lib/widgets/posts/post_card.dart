@@ -172,6 +172,9 @@ class _PostCardState extends ConsumerState<PostCard> {
             );
           },
           error: (object, stack) {
+            if (widget.isOnProfile) {
+              return const SizedBox.shrink();
+            }
             return _Error();
           },
           loading: () {
@@ -180,6 +183,9 @@ class _PostCardState extends ConsumerState<PostCard> {
         );
       },
       error: (object, stack) {
+        if (widget.isOnProfile) {
+          return const SizedBox.shrink();
+        }
         return _Error();
       },
       loading: () {

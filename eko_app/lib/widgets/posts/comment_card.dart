@@ -8,7 +8,10 @@ import 'package:eko_app/widgets/common/time_stamp.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/providers/comment_provider.dart';
+import 'package:eko_app/providers/comment_list_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
+import 'package:eko_app/providers/pool_providers.dart';
+import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/comment.dart';
 import 'package:eko_app/widgets/posts/comment_like_buttons.dart';
@@ -89,14 +92,25 @@ class _CommentCardState extends ConsumerState<CommentCard> {
     Navigator.of(context, rootNavigator: true).pop();
   }
 
-  // TODO: delete comment
-  void _deletePostFromDialog() async {
+  void _deletePostFromDialog(CommentModel comment) async {
     _popDialog();
-    // await locator<PostsHandling>()
-    //     .deleteData('posts/${post.rootPostId}/comments/${post.postId}');
-
-    // prov.Provider.of<PostPageController>(context, listen: false)
-    //     .removeComment(post.postId);
+    try {
+      await ref.read(commentProvider(comment.id).notifier).deleteComment();
+      ref.read(commentListProvider(comment.postId).notifier).removeById(comment.id);
+      final post = ref.read(postProvider(comment.postId)).value;
+      if (post != null) {
+        final nextCount = post.commentCount > 0 ? post.commentCount - 1 : 0;
+        ref.read(postPoolProvider).put(post.copyWith(commentCount: nextCount));
+      } else {
+        ref.invalidate(postProvider(comment.postId));
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showSnackBar(
+        text: AppLocalizations.of(context)!.defaultErrorTittle,
+        context: context,
+      );
+    }
   }
 
   void deletePressed(CommentModel comment) {
@@ -114,7 +128,7 @@ class _CommentCardState extends ConsumerState<CommentCard> {
           AppLocalizations.of(context)!.cancel,
           AppLocalizations.of(context)!.delete,
         ],
-        [_popDialog, _deletePostFromDialog],
+        [_popDialog, () => _deletePostFromDialog(comment)],
         context,
       );
     } else {
