@@ -65,6 +65,7 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
     'p_gif': fixedPost.gifUrl,
     'p_poll': fixedPost.pollOptions,
     'p_image_base64': fixedPost.imageString?.toStorableString(),
+    'p_ekoed_id': fixedPost.repostId != null ? int.tryParse(fixedPost.repostId!) : null,
     'p_chamber_id': null,
   });
 
