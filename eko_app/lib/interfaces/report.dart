@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 
-Future<void> addReport(WidgetRef ref, String id, String message) async {
+Future<void> addReport(WidgetRef ref, int id, String message) async {
   final firestore = FirebaseFirestore.instance;
   final uid = ref.read(currentUserProvider).user.uid;
   final post = await ref.read(postProvider(id).future);
 
   final report = {
     'sender': uid,
-    'postId': id,
+    'postId': id.toString(),
     'postAuthor': post.uid,
     'message': message,
     'time': DateTime.now().toUtc().toIso8601String(),

@@ -16,8 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$CommentModel {
   @JsonKey(name: 'author')
   String get uid;
-  String get id;
-  String get postId;
+  int get id;
+  int get postId;
   String? get gifUrl;
   @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
   List<String> get body;
@@ -88,8 +88,8 @@ abstract mixin class $CommentModelCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'author') String uid,
-      String id,
-      String postId,
+      int id,
+      int postId,
       String? gifUrl,
       @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
       int likes,
@@ -130,11 +130,11 @@ class _$CommentModelCopyWithImpl<$Res> implements $CommentModelCopyWith<$Res> {
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       postId: null == postId
           ? _self.postId
           : postId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       gifUrl: freezed == gifUrl
           ? _self.gifUrl
           : gifUrl // ignore: cast_nullable_to_non_nullable
@@ -262,8 +262,8 @@ extension CommentModelPatterns on CommentModel {
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
             @JsonKey(name: 'author') String uid,
-            String id,
-            String postId,
+            int id,
+            int postId,
             String? gifUrl,
             @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
             List<String> body,
@@ -311,8 +311,8 @@ extension CommentModelPatterns on CommentModel {
   TResult when<TResult extends Object?>(
     TResult Function(
             @JsonKey(name: 'author') String uid,
-            String id,
-            String postId,
+            int id,
+            int postId,
             String? gifUrl,
             @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
             List<String> body,
@@ -358,8 +358,8 @@ extension CommentModelPatterns on CommentModel {
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
             @JsonKey(name: 'author') String uid,
-            String id,
-            String postId,
+            int id,
+            int postId,
             String? gifUrl,
             @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
             List<String> body,
@@ -414,9 +414,9 @@ class _CommentModel extends CommentModel {
   @JsonKey(name: 'author')
   final String uid;
   @override
-  final String id;
+  final int id;
   @override
-  final String postId;
+  final int postId;
   @override
   final String? gifUrl;
   final List<String> _body;
@@ -510,8 +510,8 @@ abstract mixin class _$CommentModelCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(name: 'author') String uid,
-      String id,
-      String postId,
+      int id,
+      int postId,
       String? gifUrl,
       @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
       int likes,
@@ -553,11 +553,11 @@ class __$CommentModelCopyWithImpl<$Res>
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       postId: null == postId
           ? _self.postId
           : postId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       gifUrl: freezed == gifUrl
           ? _self.gifUrl
           : gifUrl // ignore: cast_nullable_to_non_nullable

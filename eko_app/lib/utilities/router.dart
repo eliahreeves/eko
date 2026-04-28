@@ -181,14 +181,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'post/:id',
                     name: 'post',
-                    builder: (context, state) =>
-                        ViewPostPage(id: state.pathParameters['id']!),
+                    builder: (context, state) {
+                      final id = int.tryParse(state.pathParameters['id'] ?? '');
+                      if (id == null) {
+                        return const FeedPage();
+                      }
+                      return ViewPostPage(id: id);
+                    },
                     routes: [
                       GoRoute(
                         path: 'likes',
                         name: 'likes',
                         builder: (context, state) {
-                          String postId = state.extra as String;
+                          int postId = state.extra as int;
                           return ViewLikesPage(postId: postId);
                         },
                       ),
@@ -196,7 +201,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         path: 'dislikes',
                         name: 'dislikes',
                         builder: (context, state) {
-                          String postId = state.extra as String;
+                          int postId = state.extra as int;
                           return ViewLikesPage(postId: postId, dislikes: true);
                         },
                       ),
@@ -213,8 +218,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/compose',
                 name: 'compose',
                 pageBuilder: (context, state) {
-                  final String? repostId =
-                      state.uri.queryParameters['repostId'];
+                  final int? repostId = int.tryParse(
+                    state.uri.queryParameters['repostId'] ?? '',
+                  );
                   final String? timestamp =
                       state.uri.queryParameters['timestamp'];
                   return NoTransitionPage(

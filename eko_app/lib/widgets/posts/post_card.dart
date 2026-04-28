@@ -27,20 +27,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
-Widget profilePostCardBuilder(String id) {
+Widget profilePostCardBuilder(int id) {
   return PostCard(id: id, isOnProfile: true);
 }
 
-Widget otherProfilePostCardBuilder(String id) {
+Widget otherProfilePostCardBuilder(int id) {
   return PostCard(id: id, isOnProfile: true);
 }
 
-Widget postCardBuilder(String id) {
+Widget postCardBuilder(int id) {
   return PostCard(id: id);
 }
 
 class PostCard extends ConsumerStatefulWidget {
-  final String id;
+  final int id;
   final bool isPreview;
   final bool isPostPage;
   final bool isBuiltFromId;
@@ -109,7 +109,7 @@ class _PostCardState extends ConsumerState<PostCard> {
     context.go('/');
   }
 
-  void sharePressed(String id) async {
+  void sharePressed(int id) async {
     if (kIsWeb) {
       Clipboard.setData(
         ClipboardData(
@@ -201,7 +201,7 @@ class PostCardFromPost extends ConsumerWidget {
   final bool isLoggedIn;
   final bool isPostPage;
   final bool isOnProfile;
-  final void Function(String)? sharePressed;
+  final void Function(int)? sharePressed;
 
   const PostCardFromPost({
     this.isOnProfile = false,
@@ -390,7 +390,7 @@ class PostCardFromPost extends ConsumerWidget {
                           onTap: () {
                             if (isLoggedIn && !isPreview) {
                               final Map<String, dynamic> queryParameters = {
-                                'repostId': post.id,
+                                'repostId': post.id.toString(),
                               };
                               queryParameters['timestamp'] = DateTime.now()
                                   .millisecondsSinceEpoch

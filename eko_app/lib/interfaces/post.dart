@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/types/comment.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,16 +7,6 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
-
-Future<int> countComments(String postId) {
-  return FirebaseFirestore.instance
-      .collection('posts')
-      .doc(postId)
-      .collection('comments')
-      .count()
-      .get()
-      .then((value) => value.count ?? 0, onError: (e) => 0);
-}
 
 // Converts a String to the List<String> eko tag format.
 List<String> parseTextToTags(String? text) {
@@ -48,7 +37,7 @@ List<String> parseTextToTags(String? text) {
   return chunks;
 }
 
-Future<String> uploadPost(PostModel post, WidgetRef ref) async {
+Future<int> uploadPost(PostModel post, WidgetRef ref) async {
   final fixedPost = post.copyWith(
     createdAt: DateTime.now().toUtc().toIso8601String(),
   );
@@ -64,14 +53,13 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
     'p_gif': fixedPost.gifUrl,
     'p_poll': fixedPost.pollOptions,
     'p_image_base64': fixedPost.imageString?.toStorableString(),
-    'p_ekoed_id':
-        fixedPost.repostId != null ? int.tryParse(fixedPost.repostId!) : null,
+    'p_ekoed_id': fixedPost.repostId,
     'p_chamber_id': null,
   });
 
   final row = (result as List).first as Map;
   if (row['success'] != true) throw Exception(row['error_message']);
-  final postId = row['post_id'].toString();
+  final postId = (row['post_id'] as num).toInt();
 
   final List<Future<String?>> idFutures = [];
   for (int i = 1; i < post.title.length; i += 2) {
@@ -106,7 +94,7 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
       createdAt: post.createdAt,
       type: 'tag',
       content: content,
-      path: postId,
+      path: postId.toString(),
       sourceUid: post.uid,
     );
     activityFutures.add(uploadActivity(activity, user));
@@ -115,7 +103,7 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
   return postId;
 }
 
-Future<String> uploadComment(CommentModel comment, WidgetRef ref) async {
+Future<int> uploadComment(CommentModel comment, WidgetRef ref) async {
   final json = comment.toJson();
   final post = await ref.read(postProvider(comment.postId).future);
   final uid = ref.read(currentUserProvider).user.uid;
@@ -129,11 +117,11 @@ Future<String> uploadComment(CommentModel comment, WidgetRef ref) async {
     'p_firebase_uid': null,
     'p_body': json['body'],
     'p_gif': json['gifUrl'],
-    'p_parent_post_id': int.tryParse(comment.postId),
+    'p_parent_post_id': comment.postId,
   });
   final row = (result as List).first as Map;
   if (row['success'] != true) throw Exception(row['error_message']);
-  final commentId = row['comment_id'].toString();
+  final commentId = (row['comment_id'] as num).toInt();
 
   if (ref.watch(currentUserProvider).user.uid != post.uid) {
     final activity = ActivityModel(
@@ -141,7 +129,7 @@ Future<String> uploadComment(CommentModel comment, WidgetRef ref) async {
       createdAt: comment.createdAt,
       type: 'comment',
       content: json['body'] ?? 'Click to see gif',
-      path: comment.postId,
+      path: comment.postId.toString(),
       sourceUid: comment.uid,
     );
 
@@ -177,7 +165,7 @@ Future<String> uploadComment(CommentModel comment, WidgetRef ref) async {
       createdAt: comment.createdAt,
       type: 'tag',
       content: content,
-      path: comment.postId,
+      path: comment.postId.toString(),
       sourceUid: comment.uid,
     );
     activityFutures.add(uploadActivity(activity, user));

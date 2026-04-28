@@ -6,8 +6,8 @@ import 'package:eko_app/utilities/supabase_post_mapper.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<(List<MapEntry<String, String>>, bool)> profilePageGetter(
-  List<MapEntry<String, String>> list,
+Future<(List<MapEntry<int, String>>, bool)> profilePageGetter(
+  List<MapEntry<int, String>> list,
   WidgetRef ref,
 ) async {
   final uid = ref.read(currentUserProvider).user.uid;
@@ -17,7 +17,7 @@ Future<(List<MapEntry<String, String>>, bool)> profilePageGetter(
   };
   if (list.isNotEmpty) {
     params['p_last_time'] = list.last.value;
-    params['p_last_id'] = int.parse(list.last.key);
+    params['p_last_id'] = list.last.key;
   }
   final rows = await supabase.rpc('paginated_user_posts', params: params);
   final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
@@ -27,8 +27,8 @@ Future<(List<MapEntry<String, String>>, bool)> profilePageGetter(
   return (retList, retList.length < c.postsOnRefresh);
 }
 
-Future<(List<MapEntry<String, String>>, bool)> otherProfilePageGetter(
-  List<MapEntry<String, String>> list,
+Future<(List<MapEntry<int, String>>, bool)> otherProfilePageGetter(
+  List<MapEntry<int, String>> list,
   WidgetRef ref,
   String uid,
 ) async {
@@ -38,7 +38,7 @@ Future<(List<MapEntry<String, String>>, bool)> otherProfilePageGetter(
   };
   if (list.isNotEmpty) {
     params['p_last_time'] = list.last.value;
-    params['p_last_id'] = int.parse(list.last.key);
+    params['p_last_id'] = list.last.key;
   }
   final rows = await supabase.rpc('paginated_user_posts', params: params);
   final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?)
@@ -50,8 +50,8 @@ Future<(List<MapEntry<String, String>>, bool)> otherProfilePageGetter(
   return (retList, retList.length < c.postsOnRefresh);
 }
 
-Future<(List<MapEntry<String, (int, String)>>, bool)> popGetter(
-  List<MapEntry<String, (int, String)>> list,
+Future<(List<MapEntry<int, (int, int)>>, bool)> popGetter(
+  List<MapEntry<int, (int, int)>> list,
   WidgetRef ref,
 ) async {
   final params = <String, dynamic>{
@@ -59,7 +59,7 @@ Future<(List<MapEntry<String, (int, String)>>, bool)> popGetter(
   };
   if (list.isNotEmpty) {
     params['p_last_likes'] = list.last.value.$1;
-    params['p_last_id'] = int.parse(list.last.key);
+    params['p_last_id'] = list.last.key;
   }
   final rows = await supabase.rpc('paginated_popular_posts', params: params);
   final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
@@ -70,17 +70,13 @@ Future<(List<MapEntry<String, (int, String)>>, bool)> popGetter(
 }
 
 Future<List<CommentModel>> getCommentsForPost(
-  String postId, {
+  int postId, {
   String? lastTime,
   int? lastId,
 }) async {
-  final parentId = int.tryParse(postId);
-  if (parentId == null) {
-    return [];
-  }
   final params = <String, dynamic>{
     'p_limit': c.postsOnRefresh,
-    'p_parent_post_id': parentId,
+    'p_parent_post_id': postId,
   };
   if (lastTime != null && lastId != null) {
     params['p_last_time'] = lastTime;

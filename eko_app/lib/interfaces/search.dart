@@ -23,12 +23,15 @@ class SearchInterface {
       },
     );
     if (rows is! List) return [];
-    return rows.map<MapEntry<String, double>>((item) {
-      final row = Map<String, dynamic>.from(item as Map);
-      final uid = (row['id'] ?? '').toString();
-      final similarity = (row['similarity'] as num?)?.toDouble() ?? 0;
-      return MapEntry(uid, similarity);
-    }).where((item) => item.key.isNotEmpty).toList();
+    return rows
+        .map<MapEntry<String, double>>((item) {
+          final row = Map<String, dynamic>.from(item as Map);
+          final uid = (row['id'] ?? '').toString();
+          final similarity = (row['similarity'] as num?)?.toDouble() ?? 0;
+          return MapEntry(uid, similarity);
+        })
+        .where((item) => item.key.isNotEmpty)
+        .toList();
   }
 
   static Future<(List<MapEntry<String, double>>, bool)> getter(

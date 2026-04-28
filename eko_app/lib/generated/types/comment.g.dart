@@ -9,8 +9,8 @@ part of '../../types/comment.dart';
 _CommentModel _$CommentModelFromJson(Map<String, dynamic> json) =>
     _CommentModel(
       uid: json['author'] as String,
-      id: json['id'] as String,
-      postId: json['postId'] as String,
+      id: (json['id'] as num).toInt(),
+      postId: (json['postId'] as num).toInt(),
       gifUrl: json['gifUrl'] as String?,
       body: json['body'] == null
           ? const <String>[]

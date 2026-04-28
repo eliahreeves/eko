@@ -70,8 +70,10 @@ class PollWidget extends ConsumerWidget {
                               0.7 *
                               percentage,
                           decoration: BoxDecoration(
-                            color: currentUser.pollVotes.containsKey(post.id)
-                                ? (currentUser.pollVotes[post.id] == index)
+                            color: currentUser.pollVotes
+                                    .containsKey(post.id.toString())
+                                ? (currentUser.pollVotes[post.id.toString()] ==
+                                        index)
                                     ? Theme.of(
                                         context,
                                       ).colorScheme.primaryContainer
@@ -99,7 +101,8 @@ class PollWidget extends ConsumerWidget {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              if (currentUser.pollVotes.containsKey(post.id))
+                              if (currentUser.pollVotes
+                                  .containsKey(post.id.toString()))
                                 Text(
                                   '${(percentage * 100).toStringAsFixed(0)}%',
                                   style: TextStyle(
@@ -118,7 +121,8 @@ class PollWidget extends ConsumerWidget {
               ),
             );
           }),
-          if (currentUser.pollVotes.containsKey(post.id) && !isPreview)
+          if (currentUser.pollVotes.containsKey(post.id.toString()) &&
+              !isPreview)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Row(

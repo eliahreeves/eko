@@ -27,7 +27,7 @@ abstract class PostModel with _$PostModel {
   const PostModel._();
   const factory PostModel({
     @JsonKey(name: 'author') required String uid,
-    required String id,
+    required int id,
     String? gifUrl,
     @JsonKey(
       name: 'image',
@@ -50,7 +50,7 @@ abstract class PostModel with _$PostModel {
     @JsonKey(name: 'time') required String createdAt,
     List<String>? pollOptions,
     Map<String, int>? pollVoteCounts,
-    String? repostId,
+    int? repostId,
   }) = _PostModel;
 
   factory PostModel.fromJson(Map<String, dynamic> json) =>

@@ -24,7 +24,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter/cupertino.dart';
 
 class CommentCard extends ConsumerStatefulWidget {
-  final String id;
+  final int id;
   final Function(String username) onReply;
 
   const CommentCard({super.key, required this.id, required this.onReply});
@@ -96,7 +96,9 @@ class _CommentCardState extends ConsumerState<CommentCard> {
     _popDialog();
     try {
       await ref.read(commentProvider(comment.id).notifier).deleteComment();
-      ref.read(commentListProvider(comment.postId).notifier).removeById(comment.id);
+      ref
+          .read(commentListProvider(comment.postId).notifier)
+          .removeById(comment.id);
       final post = ref.read(postProvider(comment.postId)).value;
       if (post != null) {
         final nextCount = post.commentCount > 0 ? post.commentCount - 1 : 0;

@@ -21,7 +21,7 @@ import 'package:eko_app/widgets/posts/comment_card.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 
 class ViewPostPage extends ConsumerStatefulWidget {
-  final String id;
+  final int id;
   const ViewPostPage({super.key, required this.id});
 
   @override
@@ -198,7 +198,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
           FocusManager.instance.primaryFocus?.unfocus();
           comment = CommentModel(
             uid: ref.read(currentUserProvider).user.uid,
-            id: '',
+            id: 0,
             postId: widget.id,
             createdAt: DateTime.now().toUtc().toIso8601String(),
             body: parseTextToTags(body),
@@ -207,7 +207,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
       } else {
         comment = CommentModel(
           uid: ref.read(currentUserProvider).user.uid,
-          id: '',
+          id: 0,
           postId: widget.id,
           createdAt: DateTime.now().toUtc().toIso8601String(),
           gifUrl: gif,
@@ -258,7 +258,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
     commentField.text = '@$username ';
   }
 
-  Widget commentCardBuilder(String id) {
+  Widget commentCardBuilder(int id) {
     return CommentCard(id: id, onReply: (username) => replyPressed(username));
   }
 
@@ -351,7 +351,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                 Expanded(
                   child: Stack(
                     children: [
-                      InfiniteScrollyShell<String>(
+                      InfiniteScrollyShell<int>(
                         isEnd: provider.$2,
                         list: provider.$1,
                         header: PostCard(id: widget.id, isPostPage: true),

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$PostModel implements DiagnosticableTreeMixin {
   @JsonKey(name: 'author')
   String get uid;
-  String get id;
+  int get id;
   String? get gifUrl;
   @JsonKey(
       name: 'image',
@@ -37,7 +37,7 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
   String get createdAt;
   List<String>? get pollOptions;
   Map<String, int>? get pollVoteCounts;
-  String? get repostId;
+  int? get repostId;
 
   /// Create a copy of PostModel
   /// with the given fields replaced by the non-null parameter values.
@@ -136,7 +136,7 @@ abstract mixin class $PostModelCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'author') String uid,
-      String id,
+      int id,
       String? gifUrl,
       @JsonKey(
           name: 'image',
@@ -154,7 +154,7 @@ abstract mixin class $PostModelCopyWith<$Res> {
       @JsonKey(name: 'time') String createdAt,
       List<String>? pollOptions,
       Map<String, int>? pollVoteCounts,
-      String? repostId});
+      int? repostId});
 }
 
 /// @nodoc
@@ -194,7 +194,7 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       gifUrl: freezed == gifUrl
           ? _self.gifUrl
           : gifUrl // ignore: cast_nullable_to_non_nullable
@@ -250,7 +250,7 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
       repostId: freezed == repostId
           ? _self.repostId
           : repostId // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }
@@ -350,7 +350,7 @@ extension PostModelPatterns on PostModel {
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
             @JsonKey(name: 'author') String uid,
-            String id,
+            int id,
             String? gifUrl,
             @JsonKey(
                 name: 'image',
@@ -370,7 +370,7 @@ extension PostModelPatterns on PostModel {
             @JsonKey(name: 'time') String createdAt,
             List<String>? pollOptions,
             Map<String, int>? pollVoteCounts,
-            String? repostId)?
+            int? repostId)?
         $default, {
     required TResult orElse(),
   }) {
@@ -416,7 +416,7 @@ extension PostModelPatterns on PostModel {
   TResult when<TResult extends Object?>(
     TResult Function(
             @JsonKey(name: 'author') String uid,
-            String id,
+            int id,
             String? gifUrl,
             @JsonKey(
                 name: 'image',
@@ -436,7 +436,7 @@ extension PostModelPatterns on PostModel {
             @JsonKey(name: 'time') String createdAt,
             List<String>? pollOptions,
             Map<String, int>? pollVoteCounts,
-            String? repostId)
+            int? repostId)
         $default,
   ) {
     final _that = this;
@@ -480,7 +480,7 @@ extension PostModelPatterns on PostModel {
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
             @JsonKey(name: 'author') String uid,
-            String id,
+            int id,
             String? gifUrl,
             @JsonKey(
                 name: 'image',
@@ -500,7 +500,7 @@ extension PostModelPatterns on PostModel {
             @JsonKey(name: 'time') String createdAt,
             List<String>? pollOptions,
             Map<String, int>? pollVoteCounts,
-            String? repostId)?
+            int? repostId)?
         $default,
   ) {
     final _that = this;
@@ -568,7 +568,7 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
   @JsonKey(name: 'author')
   final String uid;
   @override
-  final String id;
+  final int id;
   @override
   final String? gifUrl;
   @override
@@ -643,7 +643,7 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
   }
 
   @override
-  final String? repostId;
+  final int? repostId;
 
   /// Create a copy of PostModel
   /// with the given fields replaced by the non-null parameter values.
@@ -750,7 +750,7 @@ abstract mixin class _$PostModelCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(name: 'author') String uid,
-      String id,
+      int id,
       String? gifUrl,
       @JsonKey(
           name: 'image',
@@ -768,7 +768,7 @@ abstract mixin class _$PostModelCopyWith<$Res>
       @JsonKey(name: 'time') String createdAt,
       List<String>? pollOptions,
       Map<String, int>? pollVoteCounts,
-      String? repostId});
+      int? repostId});
 }
 
 /// @nodoc
@@ -808,7 +808,7 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       gifUrl: freezed == gifUrl
           ? _self.gifUrl
           : gifUrl // ignore: cast_nullable_to_non_nullable
@@ -864,7 +864,7 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
       repostId: freezed == repostId
           ? _self.repostId
           : repostId // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }

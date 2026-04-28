@@ -1,7 +1,7 @@
-class PoolService<T> {
-  final Map<String, _CacheEntry<T>> _map = {};
-  final String Function(T) keySelector;
-  final void Function(String) onInsert;
+class PoolService<T, K> {
+  final Map<K, _CacheEntry<T>> _map = {};
+  final K Function(T) keySelector;
+  final void Function(K) onInsert;
   final Duration? validTime;
   PoolService({
     required this.keySelector,
@@ -23,7 +23,7 @@ class PoolService<T> {
     }
   }
 
-  T? getItem(String key) {
+  T? getItem(K key) {
     final item = _map[key];
     // return null if the requested item is not present if it isn't null remove it from the map
     if (item == null) {

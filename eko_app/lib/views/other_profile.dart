@@ -182,7 +182,8 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
       if (isCurrentUser) {
         futures.add(ref.read(profilePostListProvider.notifier).refresh());
       } else {
-        futures.add(ref.read(otherProfilePostListProvider(uid).notifier).refresh());
+        futures.add(
+            ref.read(otherProfilePostListProvider(uid).notifier).refresh());
       }
       await Future.wait(futures);
     }
@@ -232,7 +233,7 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                 ),
               );
             }
-            return InfiniteScrollyShell<String>(
+            return InfiniteScrollyShell<int>(
               getter: loadMorePosts,
               list: postListState.$1,
               isEnd: postListState.$2,

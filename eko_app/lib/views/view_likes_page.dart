@@ -12,7 +12,7 @@ import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 
 class ViewLikesPage extends ConsumerWidget {
-  final String postId;
+  final int postId;
   final bool dislikes;
   const ViewLikesPage({super.key, required this.postId, this.dislikes = false});
 
@@ -20,13 +20,10 @@ class ViewLikesPage extends ConsumerWidget {
     List<MapEntry<String, Never?>> list,
     WidgetRef ref,
   ) async {
-    final parsedPostId = int.tryParse(postId);
-    if (parsedPostId == null) return (const <MapEntry<String, Never?>>[], true);
-
     final lastUid = list.isEmpty ? null : list.last.key;
     final rows = await supabase.rpc('paginated_post_likes', params: {
       'p_limit': c.usersOnSearch,
-      'p_id': parsedPostId,
+      'p_id': postId,
       'p_last_uid': lastUid,
       'p_dislikes': dislikes,
     });

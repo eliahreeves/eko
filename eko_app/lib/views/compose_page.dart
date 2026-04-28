@@ -67,7 +67,7 @@ class _CornerClose extends StatelessWidget {
 }
 
 class ComposePage extends ConsumerStatefulWidget {
-  final String? repostId;
+  final int? repostId;
   final String? timestamp;
 
   const ComposePage({super.key, this.repostId, this.timestamp});
@@ -77,7 +77,7 @@ class ComposePage extends ConsumerStatefulWidget {
 
 class _ComposePageState extends ConsumerState<ComposePage> {
   final _key = GlobalKey<ExpandableFabState>();
-  String? repostId;
+  int? repostId;
   String? gif;
   String? timestamp;
   AsciiImage? image;
@@ -284,7 +284,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
 
       final post = PostModel(
         uid: ref.read(currentUserProvider).user.uid,
-        id: '',
+        id: 0,
         tags: tags,
         likes: 0,
         dislikes: 0,
@@ -555,7 +555,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                           child: ConstrainedBox(
                             constraints: BoxConstraints(minWidth: width * 0.8),
                             child: RepostCard(
-                              postId: widget.repostId!,
+                              postId: repostId!,
                               isLoggedIn: true,
                               isPreview: true,
                             ),

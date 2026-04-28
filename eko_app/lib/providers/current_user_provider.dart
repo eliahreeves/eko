@@ -120,13 +120,12 @@ class CurrentUser extends _$CurrentUser {
     try {
       final bytes = await img.readAsBytes();
       final storage = supabase.storage.from('profile_pictures');
-      final path =
-          '$uid/profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final path = '$uid/profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
       await storage.uploadBinary(
-            path,
-            bytes,
-            fileOptions: const FileOptions(upsert: true),
-          );
+        path,
+        bytes,
+        fileOptions: const FileOptions(upsert: true),
+      );
       try {
         final files = await storage.list(path: uid);
         final oldPaths = files

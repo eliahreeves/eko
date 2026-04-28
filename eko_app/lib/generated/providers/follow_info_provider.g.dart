@@ -6,7 +6,7 @@ part of '../../providers/follow_info_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$followInfoHash() => r'a41d1261e10f3eea530b0f22ee24eba0f8c40bf4';
+String _$followInfoHash() => r'daebf50cab48f38be3b84b411a2daeae1a9c91b1';
 
 /// Copied from Dart SDK
 class _SystemHash {

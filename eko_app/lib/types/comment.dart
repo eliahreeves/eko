@@ -16,8 +16,8 @@ abstract class CommentModel with _$CommentModel {
   const CommentModel._();
   const factory CommentModel({
     @JsonKey(name: 'author') required String uid,
-    required String id,
-    required String postId,
+    required int id,
+    required int postId,
     String? gifUrl,
     @Default(<String>[])
     @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
@@ -41,7 +41,7 @@ abstract class CommentModel with _$CommentModel {
   ) async {
     final json = doc.data();
     json['id'] = doc.id;
-    json['postId'] = doc.reference.parent.parent?.id;
+    json['postId'] = int.tryParse(doc.reference.parent.parent?.id ?? '');
     return CommentModel.fromJson(json);
   }
 }

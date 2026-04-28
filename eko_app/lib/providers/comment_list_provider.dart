@@ -10,11 +10,11 @@ class CommentList extends _$CommentList {
   String? _lastTime;
   int? _lastId;
   @override
-  (List<String>, bool) build(String postId) {
+  (List<int>, bool) build(int postId) {
     return ([], false);
   }
 
-  Future<void> getter(String postId) async {
+  Future<void> getter(int postId) async {
     final commentList = await getCommentsForPost(
       postId,
       lastTime: _lastTime,
@@ -26,7 +26,7 @@ class CommentList extends _$CommentList {
     for (final comment in commentList) {
       newList.add(comment.id);
       _lastTime = comment.createdAt;
-      _lastId = int.tryParse(comment.id);
+      _lastId = comment.id;
     }
     state = (newList, commentList.length < c.postsOnRefresh);
   }
@@ -49,7 +49,7 @@ class CommentList extends _$CommentList {
     insertAtIndex(currentLength, comment);
   }
 
-  void removeById(String id) {
+  void removeById(int id) {
     state = (state.$1.where((commentId) => commentId != id).toList(), state.$2);
   }
 }

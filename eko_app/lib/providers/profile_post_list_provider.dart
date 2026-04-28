@@ -5,14 +5,14 @@ import 'package:eko_app/utilities/supabase_post_mapper.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef ProfilePostListState = (List<String>, bool);
+typedef ProfilePostListState = (List<int>, bool);
 
 class ProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
   ProfilePostListNotifier(this.ref) : super(([], false));
 
   final Ref ref;
-  final List<MapEntry<String, String>> _cursors = [];
-  final Set<String> _set = {};
+  final List<MapEntry<int, String>> _cursors = [];
+  final Set<int> _set = {};
 
   Future<void> getter() async {
     final params = <String, dynamic>{
@@ -21,7 +21,7 @@ class ProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
     };
     if (_cursors.isNotEmpty) {
       params['p_last_time'] = _cursors.last.value;
-      params['p_last_id'] = int.parse(_cursors.last.key);
+      params['p_last_id'] = _cursors.last.key;
     }
     final rows = await supabase.rpc('paginated_user_posts', params: params);
     final posts = postModelsFromSupabaseRpc(rows as List<dynamic>?);
@@ -44,7 +44,7 @@ class ProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
     await getter();
   }
 
-  void removePost(String postId) {
+  void removePost(int postId) {
     final newList = [...state.$1];
     final removed = newList.remove(postId);
     if (removed) {
@@ -60,8 +60,8 @@ class OtherProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
 
   final Ref ref;
   final String uid;
-  final List<MapEntry<String, String>> _cursors = [];
-  final Set<String> _set = {};
+  final List<MapEntry<int, String>> _cursors = [];
+  final Set<int> _set = {};
 
   Future<void> getter() async {
     final params = <String, dynamic>{
@@ -70,7 +70,7 @@ class OtherProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
     };
     if (_cursors.isNotEmpty) {
       params['p_last_time'] = _cursors.last.value;
-      params['p_last_id'] = int.parse(_cursors.last.key);
+      params['p_last_id'] = _cursors.last.key;
     }
     final rows = await supabase.rpc('paginated_user_posts', params: params);
     final posts = postModelsFromSupabaseRpc(rows as List<dynamic>?)
@@ -98,11 +98,10 @@ class OtherProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
 
 final profilePostListProvider =
     StateNotifierProvider<ProfilePostListNotifier, ProfilePostListState>(
-      (ref) => ProfilePostListNotifier(ref),
-    );
+  (ref) => ProfilePostListNotifier(ref),
+);
 
 final otherProfilePostListProvider = StateNotifierProvider.family<
-  OtherProfilePostListNotifier,
-  ProfilePostListState,
-  String
->((ref, uid) => OtherProfilePostListNotifier(ref, uid));
+    OtherProfilePostListNotifier,
+    ProfilePostListState,
+    String>((ref, uid) => OtherProfilePostListNotifier(ref, uid));

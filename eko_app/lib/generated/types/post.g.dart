@@ -8,7 +8,7 @@ part of '../../types/post.dart';
 
 _PostModel _$PostModelFromJson(Map<String, dynamic> json) => _PostModel(
       uid: json['author'] as String,
-      id: json['id'] as String,
+      id: (json['id'] as num).toInt(),
       gifUrl: json['gifUrl'] as String?,
       imageString: _asciiImageFromString(json['image'] as String?),
       title: json['title'] == null
@@ -32,7 +32,7 @@ _PostModel _$PostModelFromJson(Map<String, dynamic> json) => _PostModel(
       pollVoteCounts: (json['pollVoteCounts'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ),
-      repostId: json['repostId'] as String?,
+      repostId: (json['repostId'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$PostModelToJson(_PostModel instance) =>

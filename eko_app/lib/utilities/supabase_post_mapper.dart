@@ -11,6 +11,19 @@ String _asString(dynamic v) {
   return v.toString();
 }
 
+int _asInt(dynamic v) {
+  if (v is int) {
+    return v;
+  }
+  if (v is num) {
+    return v.toInt();
+  }
+  if (v is String) {
+    return int.tryParse(v) ?? 0;
+  }
+  return 0;
+}
+
 String _createdAtIso(dynamic v) {
   if (v == null) {
     return DateTime.now().toUtc().toIso8601String();
@@ -29,7 +42,7 @@ PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
   final ekoedId = row['ekoed_id'];
   final json = <String, dynamic>{
     'author': _asString(row['author_uid']),
-    'id': _asString(row['id']),
+    'id': _asInt(row['id']),
     'gifUrl': row['gif'] as String?,
     'image': row['image'] as String?,
     'title': row['title'] as String?,
@@ -43,7 +56,7 @@ PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
     'time': _createdAtIso(row['created_at']),
   };
   if (ekoedId != null) {
-    json['repostId'] = _asString(ekoedId);
+    json['repostId'] = _asInt(ekoedId);
   }
   return PostModel.fromJson(json);
 }
@@ -60,8 +73,8 @@ List<PostModel> postModelsFromSupabaseRpc(List<dynamic>? rows) {
 CommentModel commentModelFromSupabaseRow(Map<String, dynamic> row) {
   return CommentModel.fromJson({
     'author': _asString(row['author_uid']),
-    'id': _asString(row['id']),
-    'postId': _asString(row['parent_post_id']),
+    'id': _asInt(row['id']),
+    'postId': _asInt(row['parent_post_id']),
     'gifUrl': row['gif'] as String?,
     'body': row['body'] as String?,
     'likes': (row['like_count'] as num?)?.toInt() ?? 0,

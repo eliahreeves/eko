@@ -98,11 +98,11 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     final bio = bioController.text != user.bio ? bioController.text : null;
     try {
       await ref.read(currentUserProvider.notifier).editProfile(
-          name: name,
-          bio: bio,
-          profilePicture: newProfileImage,
-          username: username,
-        );
+            name: name,
+            bio: bio,
+            profilePicture: newProfileImage,
+            username: username,
+          );
       if (mounted) {
         final updatedUsername = ref.read(currentUserProvider).user.username;
         context.go('/users/$updatedUsername');
@@ -199,10 +199,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     final nameChanged = nameController.text != user.name;
     final profilePicChanged = newProfileImage != null;
     final usernameChanged = usernameController.text.trim() != user.username;
-    return bioChanged ||
-        nameChanged ||
-        profilePicChanged ||
-        usernameChanged;
+    return bioChanged || nameChanged || profilePicChanged || usernameChanged;
   }
 
   Future<bool> _confirmExitWithUnsavedChanges() async {
@@ -257,146 +254,146 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface,
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              onPressed: () => _onBackPressed(user),
             ),
-            onPressed: () => _onBackPressed(user),
-          ),
-          automaticallyImplyLeading: false,
-          title: Text(
-            AppLocalizations.of(context)!.editProfile,
-            //AppLocalizations.of(context)!.save,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).colorScheme.onSurface,
+            automaticallyImplyLeading: false,
+            title: Text(
+              AppLocalizations.of(context)!.editProfile,
+              //AppLocalizations.of(context)!.save,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            scrolledUnderElevation: 0.0,
+            actions: [
+              AnimatedBuilder(
+                animation: Listenable.merge([
+                  bioController,
+                  nameController,
+                  usernameController,
+                ]),
+                builder: (context, _) {
+                  if (_shouldShowSave(user)) {
+                    return TextButton(
+                      onPressed: isLoading ? null : () => _savePressed(user),
+                      child: Text(
+                        AppLocalizations.of(context)!.save,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.normal,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    );
+                  }
+                  return SizedBox.shrink();
+                },
+              ),
+            ],
           ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          scrolledUnderElevation: 0.0,
-          actions: [
-            AnimatedBuilder(
-              animation: Listenable.merge([
-                bioController,
-                nameController,
-                usernameController,
-              ]),
-              builder: (context, _) {
-                if (_shouldShowSave(user)) {
-                  return TextButton(
-                    onPressed: isLoading ? null : () => _savePressed(user),
-                    child: Text(
-                      AppLocalizations.of(context)!.save,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).colorScheme.onSurface,
+          body: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              newProfileImage == null
+                                  ? ProfilePicture(
+                                      uid: user.uid,
+                                      size: width * 0.4,
+                                      onlineIndicatorEnabled: false,
+                                    )
+                                  : ProfilePictureFromFile(
+                                      size: width * 0.4,
+                                      file: newProfileImage!,
+                                    ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(8),
+                                ),
+                                onPressed: () {
+                                  if (newProfileImage == null) {
+                                    _setProfilePicturePressed();
+                                  } else {
+                                    setState(() {
+                                      newProfileImage = null;
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  newProfileImage == null
+                                      ? Icons.mode
+                                      : Icons.close,
+                                  size: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                }
-                return SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
-        body: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            newProfileImage == null
-                                ? ProfilePicture(
-                                    uid: user.uid,
-                                    size: width * 0.4,
-                                    onlineIndicatorEnabled: false,
-                                  )
-                                : ProfilePictureFromFile(
-                                    size: width * 0.4,
-                                    file: newProfileImage!,
-                                  ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.primaryContainer,
-                                shape: const CircleBorder(),
-                                padding: const EdgeInsets.all(8),
-                              ),
-                              onPressed: () {
-                                if (newProfileImage == null) {
-                                  _setProfilePicturePressed();
-                                } else {
-                                  setState(() {
-                                    newProfileImage = null;
-                                  });
-                                }
-                              },
-                              child: Icon(
-                                newProfileImage == null
-                                    ? Icons.mode
-                                    : Icons.close,
-                                size: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    ProfileInputField(
+                      controller: nameController,
+                      label: AppLocalizations.of(context)!.name,
+                      maxLength: c.maxNameChars,
                     ),
-                  ),
-                  ProfileInputField(
-                    controller: nameController,
-                    label: AppLocalizations.of(context)!.name,
-                    maxLength: c.maxNameChars,
-                  ),
-                  SizedBox(height: height * 0.01),
-                  ProfileInputField(
-                    controller: bioController,
-                    label: AppLocalizations.of(context)!.bioTitle,
-                    maxLength: c.maxBioChars,
-                    inputType: TextInputType.multiline,
-                  ),
-                  SizedBox(height: height * 0.01),
-                  ProfileInputField(
-                    focus: usernameFocus,
-                    label: AppLocalizations.of(context)!.userName,
-                    controller: usernameController,
-                    inputType: TextInputType.text,
-                  ),
-                  UsernameCheckDisplay(
-                    controller: usernameController,
-                    focus: usernameFocus,
-                    skipVal: user.username,
-                  ),
-                ],
-              ),
-            ),
-            if (isLoading)
-              Positioned.fill(
-                child: ColoredBox(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surface.withOpacity(0.55),
-                  child: const Center(child: CircularProgressIndicator()),
+                    SizedBox(height: height * 0.01),
+                    ProfileInputField(
+                      controller: bioController,
+                      label: AppLocalizations.of(context)!.bioTitle,
+                      maxLength: c.maxBioChars,
+                      inputType: TextInputType.multiline,
+                    ),
+                    SizedBox(height: height * 0.01),
+                    ProfileInputField(
+                      focus: usernameFocus,
+                      label: AppLocalizations.of(context)!.userName,
+                      controller: usernameController,
+                      inputType: TextInputType.text,
+                    ),
+                    UsernameCheckDisplay(
+                      controller: usernameController,
+                      focus: usernameFocus,
+                      skipVal: user.username,
+                    ),
+                  ],
                 ),
               ),
-          ],
-        ),
+              if (isLoading)
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surface.withOpacity(0.55),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

@@ -8,10 +8,10 @@ part '../generated/providers/following_feed_provider.g.dart';
 
 @riverpod
 class FollowingFeed extends _$FollowingFeed {
-  final List<MapEntry<String, String>> _cursors = [];
-  final Set<String> _set = {};
+  final List<MapEntry<int, String>> _cursors = [];
+  final Set<int> _set = {};
   @override
-  (List<String>, bool) build() {
+  (List<int>, bool) build() {
     return ([], false);
   }
 
@@ -22,7 +22,7 @@ class FollowingFeed extends _$FollowingFeed {
     if (_cursors.isNotEmpty) {
       final last = _cursors.last;
       params['p_last_time'] = last.value;
-      params['p_last_id'] = int.parse(last.key);
+      params['p_last_id'] = last.key;
     }
     final rows =
         await supabase.rpc('paginated_following_posts', params: params);
@@ -48,7 +48,7 @@ class FollowingFeed extends _$FollowingFeed {
     }
   }
 
-  void removePost(String postId) {
+  void removePost(int postId) {
     final newList = [...state.$1];
     final removed = newList.remove(postId);
     if (removed) {
