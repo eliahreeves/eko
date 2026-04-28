@@ -8,6 +8,8 @@ import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/views/blocked_users_page.dart';
+import 'package:eko_app/views/change_email_page.dart';
+import 'package:eko_app/views/change_password_page.dart';
 import 'package:eko_app/views/download_page.dart';
 import 'package:eko_app/views/edit_group_page.dart';
 import 'package:eko_app/views/camera_page.dart';
@@ -381,6 +383,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         path: 'blocked_users',
                         name: 'blocked_users',
                         builder: (context, state) => const BlockedUsersPage(),
+                      ),
+                      GoRoute(
+                        path: 'change_email',
+                        name: 'change_email',
+                        builder: (context, state) => const ChangeEmailPage(),
+                      ),
+                      GoRoute(
+                        path: 'change_password',
+                        name: 'change_password',
+                        builder: (context, state) => const ChangePasswordPage(),
                       ),
                     ],
                   ),

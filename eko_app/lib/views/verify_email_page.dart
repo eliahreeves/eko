@@ -65,7 +65,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
     if (_checkLoading) return;
     setState(() => _checkLoading = true);
     try {
-      await ref.read(authProvider.notifier).refreshEmailVerification();
+      await ref.read(authProvider.notifier).reloadAuthUser();
     } finally {
       if (mounted) setState(() => _checkLoading = false);
     }

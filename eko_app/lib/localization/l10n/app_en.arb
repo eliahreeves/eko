@@ -295,5 +295,14 @@
     "continueWithGoogle":"Continue with Google",
     
     "loginFailedTitle":"Login Failed",
-    "loginFailedBody":"Please check your email and password and try again."
+    "loginFailedBody":"Please check your email and password and try again.",
+
+    "changeEmail":"Change Email",
+    "changePassword":"Change Password",
+    "currentPassword":"Current Password",
+    "currentEmail":"Current email",
+    "newEmail":"New Email",
+    "passwordChangedBody":"Your password has been updated.",
+    "changeEmailVerificationTitle":"Verify your new email",
+    "changeEmailVerificationBody":"We sent a verification link to your new email address. Open it to finish changing your email."
 }

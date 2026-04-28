@@ -1333,6 +1333,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please check your email and password and try again.'**
   String get loginFailedBody;
+
+  /// No description provided for @changeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Email'**
+  String get changeEmail;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPassword;
+
+  /// No description provided for @currentEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Current email'**
+  String get currentEmail;
+
+  /// No description provided for @newEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'New Email'**
+  String get newEmail;
+
+  /// No description provided for @passwordChangedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been updated.'**
+  String get passwordChangedBody;
+
+  /// No description provided for @changeEmailVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your new email'**
+  String get changeEmailVerificationTitle;
+
+  /// No description provided for @changeEmailVerificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a verification link to your new email address. Open it to finish changing your email.'**
+  String get changeEmailVerificationBody;
 }
 
 class _AppLocalizationsDelegate
