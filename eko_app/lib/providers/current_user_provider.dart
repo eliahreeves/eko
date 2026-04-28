@@ -3,12 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart' show debugPrint;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
-import 'package:eko_app/interfaces/activity.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/current_user.dart';
-import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/utilities/supabase_user_map.dart';
 
@@ -178,7 +176,7 @@ class CurrentUser extends _$CurrentUser {
       blocked.remove(uid);
       state = state.copyWith(blockedUsers: blocked);
     }
-    removeFollower(uid);
+    await _unfollowUser(uid);
   }
 
   Future<void> unBlockUser(String uid) async {
@@ -215,55 +213,7 @@ class CurrentUser extends _$CurrentUser {
     }
   }
 
-  Future<void> addFollower(String otherUid) async {
-    try {
-      final updatedFollowing = [...state.user.following, otherUid];
-      state = state.copyWith(
-        user: state.user.copyWith(following: updatedFollowing),
-      );
-      final userState = ref.read(userProvider(otherUid));
-      userState.whenData((otherUser) {
-        if (!otherUser.followers.contains(state.user.uid)) {
-          final updatedFollowers = [...otherUser.followers, state.user.uid];
-          ref
-              .read(userProvider(otherUid).notifier)
-              .updateFollowers(updatedFollowers);
-        }
-      });
-
-      final uid = state.user.uid;
-      await supabase.from('following').insert({
-        'source_uid': uid,
-        'target_uid': otherUid,
-      });
-      await uploadActivity(
-        ActivityModel(
-          createdAt: DateTime.now().toUtc().toIso8601String(),
-          id: '',
-          content: 'Someone followed you',
-          type: 'follow',
-          path: uid,
-        ),
-        uid,
-      );
-    } catch (e) {
-      final revertedFollowing =
-          state.user.following.where((id) => id != otherUid).toList();
-      state = state.copyWith(
-        user: state.user.copyWith(following: revertedFollowing),
-      );
-      final userState = ref.read(userProvider(otherUid));
-      userState.whenData((otherUser) {
-        final revertedFollowers =
-            otherUser.followers.where((id) => id != state.user.uid).toList();
-        ref
-            .read(userProvider(otherUid).notifier)
-            .updateFollowers(revertedFollowers);
-      });
-    }
-  }
-
-  Future<void> removeFollower(String otherUid) async {
+  Future<void> _unfollowUser(String otherUid) async {
     try {
       final updatedFollowing =
           state.user.following.where((id) => id != otherUid).toList();
@@ -279,12 +229,10 @@ class CurrentUser extends _$CurrentUser {
             .updateFollowers(updatedFollowers);
       });
 
-      final uid = ref.read(authProvider).uid!;
-      await supabase
-          .from('following')
-          .delete()
-          .eq('source_uid', uid)
-          .eq('target_uid', otherUid);
+      await supabase.rpc(
+        'change_follow_state',
+        params: {'p_uid': otherUid, 'p_is_follow': false},
+      );
     } catch (e) {
       final revertedFollowing = [...state.user.following, otherUid];
       state = state.copyWith(

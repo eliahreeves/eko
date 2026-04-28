@@ -44,6 +44,7 @@ Map<String, dynamic> currentUserDocFromSupabaseRow(
     'username': row['username'] ?? '',
     'uid': '${row['id'] ?? row['uid'] ?? ''}',
     'isVerified': row['is_verified'] ?? row['isVerified'] ?? false,
+    'isFollowing': row['is_following'] ?? row['isFollowing'] ?? false,
     'verificationUrl': row['verification_url'] ?? row['verificationUrl'],
     'share_online_status':
         row['share_online_status'] ?? row['shareOnlineStatus'] ?? true,

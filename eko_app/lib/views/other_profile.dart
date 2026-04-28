@@ -336,21 +336,14 @@ class _Header extends ConsumerWidget {
   const _Header({required this.user, required this.isCurrentUser});
 
   Future<void> _onFollowPressed(WidgetRef ref) async {
-    final isFollowing =
-        ref.watch(currentUserProvider).user.following.contains(user.uid);
-
-    if (isFollowing) {
-      await ref.read(currentUserProvider.notifier).removeFollower(user.uid);
-    } else {
-      await ref.read(currentUserProvider.notifier).addFollower(user.uid);
-    }
+    await ref.read(userProvider(user.uid).notifier).toggleFollow();
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
-    final currentUser = ref.watch(currentUserProvider);
-    final isFollowing = currentUser.user.following.contains(user.uid);
+    final userState = ref.watch(userProvider(user.uid));
+    final isFollowing = userState.valueOrNull?.isFollowing ?? user.isFollowing;
 
     return Column(
       children: [
