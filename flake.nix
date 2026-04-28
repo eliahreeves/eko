@@ -27,19 +27,22 @@
           go
           google-cloud-sdk
         ];
-        makeFlutterShellHook = flutterPkg: extraHook: ''
-          export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
-          if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
-            mkdir -p "$FLUTTER_ROOT_LOCAL"
-            rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
-          fi
-          chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache" 2>/dev/null || true
-          touch "$FLUTTER_ROOT_LOCAL/bin/cache/engine.realm"
-          export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
-          export PATH="$FLUTTER_ROOT/bin:$PATH"
-        '' + extraHook + ''
-          git config core.hooksPath scripts/git-hooks
-        '';
+        makeFlutterShellHook = flutterPkg: extraHook:
+          ''
+            export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
+            if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
+              mkdir -p "$FLUTTER_ROOT_LOCAL"
+              rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
+            fi
+            chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache" 2>/dev/null || true
+            touch "$FLUTTER_ROOT_LOCAL/bin/cache/engine.realm"
+            export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
+            export PATH="$FLUTTER_ROOT/bin:$PATH"
+          ''
+          + extraHook
+          + ''
+            git config core.hooksPath scripts/git-hooks
+          '';
       in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
@@ -81,7 +84,7 @@
               buildToolsVersions = ["35.0.0"];
               platformVersions = [36 35 34 33 31];
               includeNDK = true;
-              ndkVersions = ["27.0.12077973"];
+              ndkVersions = ["28.2.13676358"];
               includeCmake = true;
               cmakeVersions = ["3.22.1"];
             };
