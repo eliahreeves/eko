@@ -82,16 +82,6 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
           SwitchListTile(
-            title: Text(AppLocalizations.of(context)!.shareOnlineStatus),
-            value: ref.watch(currentUserProvider).user.shareOnlineStatus,
-            onChanged: (value) {
-              ref
-                  .read(currentUserProvider.notifier)
-                  .toggleShareOnlineStatus(value);
-            },
-            activeThumbColor: Theme.of(context).colorScheme.primary,
-          ),
-          SwitchListTile(
             title: Text(AppLocalizations.of(context)!.showPostPreview),
             value: ref.watch(postPreviewProvider),
             onChanged: (value) {

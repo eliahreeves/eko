@@ -80,19 +80,6 @@ class CurrentUser extends _$CurrentUser {
     }
   }
 
-  Future<void> toggleShareOnlineStatus(bool selection) async {
-    state = state.copyWith(
-      user: state.user.copyWith(shareOnlineStatus: selection),
-    );
-    try {
-      await supabase
-          .from('users')
-          .update({'share_online_status': selection}).eq('id', state.user.uid);
-    } catch (e) {
-      debugPrint('toggleShareOnlineStatus error: $e');
-    }
-  }
-
   Future<String?> _uploadProfilePicture(File img) async {
     final uid = state.user.uid;
     try {

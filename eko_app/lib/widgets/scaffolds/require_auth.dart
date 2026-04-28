@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/email_verification_cutoff_provider.dart';
-import 'package:eko_app/providers/presence_provider.dart';
-import 'package:eko_app/views/invalid_session_page.dart';
 import 'package:eko_app/views/verify_email_page.dart';
 import 'package:eko_app/widgets/loading/loading_spinner.dart';
 
@@ -18,7 +16,6 @@ class RequireAuth extends ConsumerWidget {
     final auth = ref.watch(authProvider);
     final user = ref.watch(currentUserProvider);
     final cutoffAsync = ref.watch(emailVerificationCutoffProvider);
-    final online = ref.watch(presenceProvider);
 
     if (auth.isLoading) {
       return const Center(child: LoadingSpinner());
@@ -44,9 +41,6 @@ class RequireAuth extends ConsumerWidget {
       if (mustVerify) {
         return const VerifyEmailPage();
       }
-    }
-    if (!online.valid) {
-      return InvalidSessionPage();
     }
     return child;
   }

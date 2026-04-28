@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/loading/profile_picture_loading.dart';
 import 'package:eko_app/providers/user_provider.dart';
-import 'package:eko_app/widgets/users/online_indicator.dart';
 
 class ProfilePicture extends ConsumerWidget {
   final String uid;
@@ -52,7 +51,6 @@ class ProfilePicture extends ConsumerWidget {
                   loading: () => LoadingProfileImage(),
                 ),
               ),
-              if (onlineIndicatorEnabled) OnlineIndicator(uid: uid),
             ],
           ),
         ),
