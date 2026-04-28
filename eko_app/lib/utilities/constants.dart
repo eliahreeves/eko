@@ -84,7 +84,7 @@ const List<Color> darkModeGradient = [
 ];
 
 //Button Style
-ButtonStyle buttonStyle(context) {
+ButtonStyle buttonStyle(BuildContext context) {
   return ButtonStyle(
     splashFactory: NoSplash.splashFactory,
     overlayColor: WidgetStateProperty.all(Colors.transparent),

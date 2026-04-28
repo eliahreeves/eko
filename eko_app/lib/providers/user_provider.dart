@@ -51,8 +51,9 @@ class User extends _$User {
     try {
       final response =
           await supabase.rpc('get_user_by_id', params: {'p_uid': uid});
-      if (response is! List || response.isEmpty)
+      if (response is! List || response.isEmpty) {
         return UserModel.userNotFound();
+      }
       final row = response.first;
       if (row is! Map) return UserModel.userNotFound();
       final doc = currentUserDocFromSupabaseRow(

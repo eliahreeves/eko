@@ -7,7 +7,6 @@ import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/types/post.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:eko_app/utilities/supabase_ref.dart';
 
 Future<int> countComments(String postId) {
@@ -65,7 +64,8 @@ Future<String> uploadPost(PostModel post, WidgetRef ref) async {
     'p_gif': fixedPost.gifUrl,
     'p_poll': fixedPost.pollOptions,
     'p_image_base64': fixedPost.imageString?.toStorableString(),
-    'p_ekoed_id': fixedPost.repostId != null ? int.tryParse(fixedPost.repostId!) : null,
+    'p_ekoed_id':
+        fixedPost.repostId != null ? int.tryParse(fixedPost.repostId!) : null,
     'p_chamber_id': null,
   });
 

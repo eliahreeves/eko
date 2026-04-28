@@ -84,7 +84,7 @@ class ProfileInputField extends StatelessWidget {
             fontWeight: FontWeight.normal,
             color: Theme.of(context).colorScheme.onSurface,
           ),
-          fillColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+          fillColor: Theme.of(context).colorScheme.onSurface.withAlpha(51),
           filled: true,
           enabledBorder: OutlineInputBorder(
             // borderSide:
