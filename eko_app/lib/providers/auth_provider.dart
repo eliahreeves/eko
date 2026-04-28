@@ -199,6 +199,36 @@ class Auth extends _$Auth {
     }
   }
 
+  Future<String> updatePassword(String newPassword) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return 'no-current-user';
+    try {
+      await supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      return 'success';
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'unknown';
+    }
+  }
+
+  Future<String> updateEmailBeforeVerify(String newEmail) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return 'no-current-user';
+    try {
+      await supabase.auth.updateUser(
+        UserAttributes(email: newEmail.trim()),
+      );
+      return 'success';
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'unknown';
+    }
+  }
+
   String? _oauthAvatarUrl() {
     final meta = supabase.auth.currentUser?.userMetadata;
     if (meta == null) return null;

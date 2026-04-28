@@ -12,8 +12,6 @@ import 'package:eko_app/providers/post_preview_provider.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:go_router/go_router.dart';
 
-//import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserSettings extends ConsumerStatefulWidget {
   const UserSettings({super.key});
 
@@ -36,6 +34,10 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
       await removeDeviceNotificationToken(
           ref.read(currentUserProvider).user.uid);
     }
+  }
+
+  Map<String, String> _userProfilePathParams() {
+    return {'username': ref.read(currentUserProvider).user.username};
   }
 
   @override
@@ -110,6 +112,24 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
           ListTile(
+            title: Text(AppLocalizations.of(context)!.changeEmail),
+            leading: const Icon(Icons.alternate_email),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => context.pushNamed(
+              'change_email',
+              pathParameters: _userProfilePathParams(),
+            ),
+          ),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.changePassword),
+            leading: const Icon(Icons.lock_outline),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => context.pushNamed(
+              'change_password',
+              pathParameters: _userProfilePathParams(),
+            ),
+          ),
+          ListTile(
             title: Text(AppLocalizations.of(context)!.blockedAccounts),
             leading: const Icon(Icons.no_accounts_outlined),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
@@ -144,8 +164,19 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
                   context.pop,
                   () async {
                     context.pop();
-                    await ref.read(authProvider.notifier).deleteAccount();
-                    ref.read(navBarProvider.notifier).enable();
+                    try {
+                      await ref.read(authProvider.notifier).deleteAccount();
+                      ref.read(navBarProvider.notifier).enable();
+                    } on Exception catch (e) {
+                      if (e.toString().contains('requires-recent-login')) {
+                        if (context.mounted) {
+                          context.pushNamed(
+                            're_auth',
+                            pathParameters: _userProfilePathParams(),
+                          );
+                        }
+                      }
+                    }
                   },
                 ],
                 context,

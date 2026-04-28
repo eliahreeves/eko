@@ -255,5 +255,14 @@
     "continueWithGoogle":"Continuar con Google",
     
     "loginFailedTitle":"Inicio de Sesión Fallido",
-    "loginFailedBody":"Por favor, revisa tu correo y contraseña e intenta de nuevo."
+    "loginFailedBody":"Por favor, revisa tu correo y contraseña e intenta de nuevo.",
+
+    "changeEmail":"Cambiar correo",
+    "changePassword":"Cambiar contraseña",
+    "currentPassword":"Contraseña actual",
+    "currentEmail":"Correo actual",
+    "newEmail":"Correo nuevo",
+    "passwordChangedBody":"Tu contraseña se ha actualizado.",
+    "changeEmailVerificationTitle":"Verifica tu nuevo correo",
+    "changeEmailVerificationBody":"Enviamos un enlace de verificación a tu nuevo correo. Ábrelo para terminar el cambio."
 }
