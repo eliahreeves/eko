@@ -50,7 +50,6 @@ dependencies:
   share_plus: ^11.0.0
   image_picker: ^1.1.2
   image_cropper: ^11.0.0
-  firebase_storage: ^12.4.5
   cached_network_image: ^3.2.3
   path_provider: ^2.1.2
   go_router: ^15.1.2
