@@ -59,7 +59,10 @@ String? searchText(TextEditingController controller) {
 }
 
 Future<List<String>> _userSearch(String s) async {
-  final hits = await SearchInterface.hitsQuery(s, page: 0);
+  final hits = await SearchInterface.hitsQuery(
+    s,
+    excludeCurrent: false,
+  );
   return hits.map((item) => item.key).toList();
 }
 

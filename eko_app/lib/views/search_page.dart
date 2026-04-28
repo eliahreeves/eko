@@ -42,7 +42,7 @@ class SearchPage extends ConsumerStatefulWidget {
 
 class _SearchPageState extends ConsumerState<SearchPage> {
   final controller = TextEditingController();
-  List<MapEntry<String, int>> data = [];
+  List<MapEntry<String, double>> data = [];
   bool isEnd = false;
   Timer? debounce;
   String lastVal = '';
