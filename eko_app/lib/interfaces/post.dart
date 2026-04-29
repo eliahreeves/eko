@@ -54,7 +54,6 @@ Future<int> uploadPost(PostModel post, WidgetRef ref) async {
     'p_poll': fixedPost.pollOptions,
     'p_image_base64': fixedPost.imageString?.toStorableString(),
     'p_ekoed_id': fixedPost.repostId,
-    'p_chamber_id': null,
   });
 
   final row = (result as List).first as Map;

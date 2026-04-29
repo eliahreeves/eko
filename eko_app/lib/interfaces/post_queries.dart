@@ -64,8 +64,9 @@ Future<(List<MapEntry<int, (int, int)>>, bool)> popGetter(
   final rows = await supabase.rpc('paginated_popular_posts', params: params);
   final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
   ref.read(postPoolProvider).putAll(postList);
-  final retList =
-      postList.map((item) => MapEntry(item.id, (item.likes, item.id))).toList();
+  final retList = postList
+      .map((item) => MapEntry(item.id, (item.likes + item.dislikes, item.id)))
+      .toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
