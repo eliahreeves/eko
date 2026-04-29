@@ -37,9 +37,34 @@ String _createdAtIso(dynamic v) {
   return v.toString();
 }
 
+List<PollOptionModel>? _pollFromRow(dynamic pollRaw) {
+  if (pollRaw is! List) {
+    return null;
+  }
+  final parsed = pollRaw
+      .whereType<Map>()
+      .map((item) => Map<String, dynamic>.from(item))
+      .map(
+        (item) => PollOptionModel(
+          value: _asString(item['value']),
+          optionId: _asInt(item['option_id']),
+          voteCount: _asInt(item['vote_count']),
+        ),
+      )
+      .toList();
+  return parsed.isEmpty ? null : parsed;
+}
+
 /// Maps a row from [full_post_info] / post RPCs to [PostModel].
 PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
   final ekoedId = row['ekoed_id'];
+  final poll = _pollFromRow(row['poll']);
+  final pollVoteCounts = poll == null
+      ? null
+      : {
+          for (final option in poll) option.optionId.toString(): option.voteCount,
+        };
+  final pollOptions = poll?.map((option) => option.value).toList();
   final json = <String, dynamic>{
     'author': _asString(row['author_uid']),
     'id': _asInt(row['id']),
@@ -54,6 +79,10 @@ PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
     'isLiked': row['is_liked'] as bool? ?? false,
     'isDisliked': row['is_disliked'] as bool? ?? false,
     'time': _createdAtIso(row['created_at']),
+    'poll': poll?.map((item) => item.toJson()).toList(),
+    'vote': row['vote'] == null ? null : _asInt(row['vote']),
+    'pollOptions': pollOptions,
+    'pollVoteCounts': pollVoteCounts,
   };
   if (ekoedId != null) {
     json['repostId'] = _asInt(ekoedId);

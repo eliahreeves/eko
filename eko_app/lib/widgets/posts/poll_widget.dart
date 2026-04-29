@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
@@ -15,24 +14,22 @@ class PollWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
-    final currentUser = ref.watch(currentUserProvider);
-    int totalVotes = 0;
-    if (post.pollVoteCounts != null) {
-      totalVotes = post.pollVoteCounts!.values.fold(
-        0,
-        (sum, count) => sum + count,
-      );
+    final poll = post.poll;
+    if (poll == null) {
+      return const SizedBox.shrink();
     }
+    final selectedVote = post.vote;
+    final totalVotes = poll.fold(0, (sum, item) => sum + item.voteCount);
 
     return SizedBox(
       width: width * 0.7,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...post.pollOptions!.asMap().entries.map((entry) {
-            final index = entry.key;
+          ...poll.map((entry) {
+            final optionId = entry.optionId;
             final option = entry.value;
-            final voteCount = post.pollVoteCounts?[index.toString()] ?? 0;
+            final voteCount = entry.voteCount;
             double percentage = totalVotes > 0 ? voteCount / totalVotes : 0;
 
             return Padding(
@@ -42,7 +39,7 @@ class PollWidget extends ConsumerWidget {
                     ? null
                     : () => ref
                         .read(postProvider(post.id).notifier)
-                        .addPollVote(optionIndex: index),
+                        .addPollVote(optionId: optionId),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -70,10 +67,8 @@ class PollWidget extends ConsumerWidget {
                               0.7 *
                               percentage,
                           decoration: BoxDecoration(
-                            color: currentUser.pollVotes
-                                    .containsKey(post.id.toString())
-                                ? (currentUser.pollVotes[post.id.toString()] ==
-                                        index)
+                            color: selectedVote != null
+                                ? (selectedVote == optionId)
                                     ? Theme.of(
                                         context,
                                       ).colorScheme.primaryContainer
@@ -101,8 +96,7 @@ class PollWidget extends ConsumerWidget {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              if (currentUser.pollVotes
-                                  .containsKey(post.id.toString()))
+                              if (selectedVote != null)
                                 Text(
                                   '${(percentage * 100).toStringAsFixed(0)}%',
                                   style: TextStyle(
@@ -121,8 +115,7 @@ class PollWidget extends ConsumerWidget {
               ),
             );
           }),
-          if (currentUser.pollVotes.containsKey(post.id.toString()) &&
-              !isPreview)
+          if (selectedVote != null && !isPreview)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Row(

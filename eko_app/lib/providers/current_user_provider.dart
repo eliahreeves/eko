@@ -176,18 +176,6 @@ class CurrentUser extends _$CurrentUser {
     await supabase.auth.signOut();
   }
 
-  void addPollVote(String id, int optionIndex) {
-    final votes = Map<String, int>.from(state.pollVotes);
-    votes[id] = optionIndex;
-    state = state.copyWith(pollVotes: votes);
-  }
-
-  void removePollVote(String id) {
-    final votes = Map<String, int>.from(state.pollVotes);
-    votes.remove(id);
-    state = state.copyWith(pollVotes: votes);
-  }
-
   Future<List<String>> _getPeopleWhoBlockedMe() async {
     try {
       final uid = ref.read(authProvider).uid!;

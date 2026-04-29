@@ -48,8 +48,8 @@ abstract class PostModel with _$PostModel {
     @Default(false) bool isLiked,
     @Default(false) bool isDisliked,
     @JsonKey(name: 'time') required String createdAt,
-    List<String>? pollOptions,
-    Map<String, int>? pollVoteCounts,
+    List<PollOptionModel>? poll,
+    int? vote,
     int? repostId,
   }) = _PostModel;
 
@@ -59,4 +59,16 @@ abstract class PostModel with _$PostModel {
   DateTime getDateTime() {
     return DateTime.tryParse(createdAt) ?? DateTime.now();
   }
+}
+
+@freezed
+abstract class PollOptionModel with _$PollOptionModel {
+  const factory PollOptionModel({
+    required String value,
+    @JsonKey(name: 'option_id') required int optionId,
+    @JsonKey(name: 'vote_count') required int voteCount,
+  }) = _PollOptionModel;
+
+  factory PollOptionModel.fromJson(Map<String, dynamic> json) =>
+      _$PollOptionModelFromJson(json);
 }

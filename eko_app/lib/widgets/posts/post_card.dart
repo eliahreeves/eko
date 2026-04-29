@@ -327,7 +327,7 @@ class PostCardFromPost extends ConsumerWidget {
                             ),
                             child: ImageWidget(ascii: post.imageString!),
                           ),
-                        if (post.pollOptions != null)
+                        if (post.poll != null)
                           Padding(
                             padding: EdgeInsets.only(bottom: 6),
                             child: PollWidget(post: post, isPreview: isPreview),

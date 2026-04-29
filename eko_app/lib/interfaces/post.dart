@@ -37,28 +37,34 @@ List<String> parseTextToTags(String? text) {
   return chunks;
 }
 
-Future<int> uploadPost(PostModel post, WidgetRef ref) async {
+Future<(int, List<PollOptionModel>?)> uploadPost(
+    PostModel post, List<String>? pollOptions, WidgetRef ref) async {
   final fixedPost = post.copyWith(
     createdAt: DateTime.now().toUtc().toIso8601String(),
   );
   final uid = ref.read(currentUserProvider).user.uid;
 
-  dynamic result;
-  result = await supabase.rpc('insert_post', params: {
+  final result = await supabase.rpc('insert_post', params: {
     'p_created_at': fixedPost.createdAt,
     'p_author_uid': uid,
     'p_firebase_uid': null,
     'p_title': fixedPost.title.isNotEmpty ? fixedPost.title.join('') : null,
     'p_body': fixedPost.body.isNotEmpty ? fixedPost.body.join('') : null,
     'p_gif': fixedPost.gifUrl,
-    'p_poll': fixedPost.pollOptions,
+    'p_poll': pollOptions,
     'p_image_base64': fixedPost.imageString?.toStorableString(),
     'p_ekoed_id': fixedPost.repostId,
   });
 
-  final row = (result as List).first as Map;
-  if (row['success'] != true) throw Exception(row['error_message']);
-  final postId = (row['post_id'] as num).toInt();
+  final row = result as Map;
+  final postId = (row['o_post_id'] as num).toInt();
+  final rawPoll = row['o_poll_data'] as List?;
+  final List<PollOptionModel>? poll;
+  if (rawPoll != null) {
+    poll = rawPoll.map((v) => PollOptionModel.fromJson(v)).toList();
+  } else {
+    poll = null;
+  }
 
   final List<Future<String?>> idFutures = [];
   for (int i = 1; i < post.title.length; i += 2) {
@@ -99,7 +105,7 @@ Future<int> uploadPost(PostModel post, WidgetRef ref) async {
     activityFutures.add(uploadActivity(activity, user));
   }
 
-  return postId;
+  return (postId, poll);
 }
 
 Future<int> uploadComment(CommentModel comment, WidgetRef ref) async {

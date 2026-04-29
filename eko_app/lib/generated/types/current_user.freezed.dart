@@ -19,7 +19,6 @@ mixin _$CurrentUserModel {
   Set<String> get dislikedPosts;
   Set<String> get blockedUsers;
   Set<String> get blockedBy;
-  Map<String, int> get pollVotes;
 
   /// Create a copy of CurrentUserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -41,8 +40,7 @@ mixin _$CurrentUserModel {
                 .equals(other.dislikedPosts, dislikedPosts) &&
             const DeepCollectionEquality()
                 .equals(other.blockedUsers, blockedUsers) &&
-            const DeepCollectionEquality().equals(other.blockedBy, blockedBy) &&
-            const DeepCollectionEquality().equals(other.pollVotes, pollVotes));
+            const DeepCollectionEquality().equals(other.blockedBy, blockedBy));
   }
 
   @override
@@ -52,12 +50,11 @@ mixin _$CurrentUserModel {
       const DeepCollectionEquality().hash(likedPosts),
       const DeepCollectionEquality().hash(dislikedPosts),
       const DeepCollectionEquality().hash(blockedUsers),
-      const DeepCollectionEquality().hash(blockedBy),
-      const DeepCollectionEquality().hash(pollVotes));
+      const DeepCollectionEquality().hash(blockedBy));
 
   @override
   String toString() {
-    return 'CurrentUserModel(user: $user, likedPosts: $likedPosts, dislikedPosts: $dislikedPosts, blockedUsers: $blockedUsers, blockedBy: $blockedBy, pollVotes: $pollVotes)';
+    return 'CurrentUserModel(user: $user, likedPosts: $likedPosts, dislikedPosts: $dislikedPosts, blockedUsers: $blockedUsers, blockedBy: $blockedBy)';
   }
 }
 
@@ -72,8 +69,7 @@ abstract mixin class $CurrentUserModelCopyWith<$Res> {
       Set<String> likedPosts,
       Set<String> dislikedPosts,
       Set<String> blockedUsers,
-      Set<String> blockedBy,
-      Map<String, int> pollVotes});
+      Set<String> blockedBy});
 
   $UserModelCopyWith<$Res> get user;
 }
@@ -96,7 +92,6 @@ class _$CurrentUserModelCopyWithImpl<$Res>
     Object? dislikedPosts = null,
     Object? blockedUsers = null,
     Object? blockedBy = null,
-    Object? pollVotes = null,
   }) {
     return _then(_self.copyWith(
       user: null == user
@@ -119,10 +114,6 @@ class _$CurrentUserModelCopyWithImpl<$Res>
           ? _self.blockedBy
           : blockedBy // ignore: cast_nullable_to_non_nullable
               as Set<String>,
-      pollVotes: null == pollVotes
-          ? _self.pollVotes
-          : pollVotes // ignore: cast_nullable_to_non_nullable
-              as Map<String, int>,
     ));
   }
 
@@ -235,8 +226,7 @@ extension CurrentUserModelPatterns on CurrentUserModel {
             Set<String> likedPosts,
             Set<String> dislikedPosts,
             Set<String> blockedUsers,
-            Set<String> blockedBy,
-            Map<String, int> pollVotes)?
+            Set<String> blockedBy)?
         $default, {
     required TResult orElse(),
   }) {
@@ -244,7 +234,7 @@ extension CurrentUserModelPatterns on CurrentUserModel {
     switch (_that) {
       case _CurrentUserModel() when $default != null:
         return $default(_that.user, _that.likedPosts, _that.dislikedPosts,
-            _that.blockedUsers, _that.blockedBy, _that.pollVotes);
+            _that.blockedUsers, _that.blockedBy);
       case _:
         return orElse();
     }
@@ -270,15 +260,14 @@ extension CurrentUserModelPatterns on CurrentUserModel {
             Set<String> likedPosts,
             Set<String> dislikedPosts,
             Set<String> blockedUsers,
-            Set<String> blockedBy,
-            Map<String, int> pollVotes)
+            Set<String> blockedBy)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _CurrentUserModel():
         return $default(_that.user, _that.likedPosts, _that.dislikedPosts,
-            _that.blockedUsers, _that.blockedBy, _that.pollVotes);
+            _that.blockedUsers, _that.blockedBy);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -303,15 +292,14 @@ extension CurrentUserModelPatterns on CurrentUserModel {
             Set<String> likedPosts,
             Set<String> dislikedPosts,
             Set<String> blockedUsers,
-            Set<String> blockedBy,
-            Map<String, int> pollVotes)?
+            Set<String> blockedBy)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _CurrentUserModel() when $default != null:
         return $default(_that.user, _that.likedPosts, _that.dislikedPosts,
-            _that.blockedUsers, _that.blockedBy, _that.pollVotes);
+            _that.blockedUsers, _that.blockedBy);
       case _:
         return null;
     }
@@ -326,13 +314,11 @@ class _CurrentUserModel implements CurrentUserModel {
       required final Set<String> likedPosts,
       required final Set<String> dislikedPosts,
       required final Set<String> blockedUsers,
-      required final Set<String> blockedBy,
-      required final Map<String, int> pollVotes})
+      required final Set<String> blockedBy})
       : _likedPosts = likedPosts,
         _dislikedPosts = dislikedPosts,
         _blockedUsers = blockedUsers,
-        _blockedBy = blockedBy,
-        _pollVotes = pollVotes;
+        _blockedBy = blockedBy;
 
   @override
   final UserModel user;
@@ -368,14 +354,6 @@ class _CurrentUserModel implements CurrentUserModel {
     return EqualUnmodifiableSetView(_blockedBy);
   }
 
-  final Map<String, int> _pollVotes;
-  @override
-  Map<String, int> get pollVotes {
-    if (_pollVotes is EqualUnmodifiableMapView) return _pollVotes;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_pollVotes);
-  }
-
   /// Create a copy of CurrentUserModel
   /// with the given fields replaced by the non-null parameter values.
   @override
@@ -397,9 +375,7 @@ class _CurrentUserModel implements CurrentUserModel {
             const DeepCollectionEquality()
                 .equals(other._blockedUsers, _blockedUsers) &&
             const DeepCollectionEquality()
-                .equals(other._blockedBy, _blockedBy) &&
-            const DeepCollectionEquality()
-                .equals(other._pollVotes, _pollVotes));
+                .equals(other._blockedBy, _blockedBy));
   }
 
   @override
@@ -409,12 +385,11 @@ class _CurrentUserModel implements CurrentUserModel {
       const DeepCollectionEquality().hash(_likedPosts),
       const DeepCollectionEquality().hash(_dislikedPosts),
       const DeepCollectionEquality().hash(_blockedUsers),
-      const DeepCollectionEquality().hash(_blockedBy),
-      const DeepCollectionEquality().hash(_pollVotes));
+      const DeepCollectionEquality().hash(_blockedBy));
 
   @override
   String toString() {
-    return 'CurrentUserModel(user: $user, likedPosts: $likedPosts, dislikedPosts: $dislikedPosts, blockedUsers: $blockedUsers, blockedBy: $blockedBy, pollVotes: $pollVotes)';
+    return 'CurrentUserModel(user: $user, likedPosts: $likedPosts, dislikedPosts: $dislikedPosts, blockedUsers: $blockedUsers, blockedBy: $blockedBy)';
   }
 }
 
@@ -431,8 +406,7 @@ abstract mixin class _$CurrentUserModelCopyWith<$Res>
       Set<String> likedPosts,
       Set<String> dislikedPosts,
       Set<String> blockedUsers,
-      Set<String> blockedBy,
-      Map<String, int> pollVotes});
+      Set<String> blockedBy});
 
   @override
   $UserModelCopyWith<$Res> get user;
@@ -456,7 +430,6 @@ class __$CurrentUserModelCopyWithImpl<$Res>
     Object? dislikedPosts = null,
     Object? blockedUsers = null,
     Object? blockedBy = null,
-    Object? pollVotes = null,
   }) {
     return _then(_CurrentUserModel(
       user: null == user
@@ -479,10 +452,6 @@ class __$CurrentUserModelCopyWithImpl<$Res>
           ? _self._blockedBy
           : blockedBy // ignore: cast_nullable_to_non_nullable
               as Set<String>,
-      pollVotes: null == pollVotes
-          ? _self._pollVotes
-          : pollVotes // ignore: cast_nullable_to_non_nullable
-              as Map<String, int>,
     ));
   }
 

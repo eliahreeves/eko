@@ -186,17 +186,18 @@ class _ComposePageState extends ConsumerState<ComposePage> {
     });
   }
 
-  Future<void> _uploadAndNavigate(PostModel post) async {
+  Future<void> _uploadAndNavigate(
+      PostModel post, List<String>? pollOptions) async {
     if (isUploading) return;
     try {
       isUploading = true;
       final postToUpload = post.copyWith(
         createdAt: DateTime.now().toUtc().toIso8601String(),
       );
-      final id = await uploadPost(postToUpload, ref);
+      final (id, poll) = await uploadPost(postToUpload, pollOptions, ref);
       _clear();
       if (mounted) {
-        final completePost = postToUpload.copyWith(id: id);
+        final completePost = postToUpload.copyWith(id: id, poll: poll);
         ref.read(newFeedProvider.notifier).insertAtIndex(0, completePost);
         ref.read(followingFeedProvider.notifier).insertAtIndex(0, completePost);
         ref.read(postPoolProvider).putAll([completePost]);
@@ -282,21 +283,25 @@ class _ComposePageState extends ConsumerState<ComposePage> {
         return;
       }
 
+      final postPollOptions = !isPoll ? null : pollOptions;
+      print(postPollOptions);
       final post = PostModel(
-        uid: ref.read(currentUserProvider).user.uid,
-        id: 0,
-        tags: tags,
-        likes: 0,
-        dislikes: 0,
-        commentCount: 0,
-        createdAt: DateTime.now().toUtc().toIso8601String(),
-        pollOptions: isPoll ? pollOptions : null,
-        imageString: image,
-        gifUrl: gif,
-        repostId: repostId,
-        title: parseTextToTags(title),
-        body: parseTextToTags(body),
-      );
+          uid: ref.read(currentUserProvider).user.uid,
+          id: 0,
+          tags: tags,
+          likes: 0,
+          dislikes: 0,
+          commentCount: 0,
+          createdAt: DateTime.now().toUtc().toIso8601String(),
+          imageString: image,
+          gifUrl: gif,
+          repostId: repostId,
+          title: parseTextToTags(title),
+          body: parseTextToTags(body),
+          poll: postPollOptions
+              ?.map<PollOptionModel>(
+                  (v) => PollOptionModel(value: v, optionId: 0, voteCount: 0))
+              .toList());
 
       if (mounted) {
         if (ref.read(postPreviewProvider)) {
@@ -324,7 +329,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                     onPressed: () async {
                       if (isUploading) return;
                       if (context.mounted) context.pop();
-                      await _uploadAndNavigate(post);
+                      await _uploadAndNavigate(post, postPollOptions);
                     },
                   ),
                 ],
@@ -332,7 +337,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
             },
           ).then((_) => FocusManager.instance.primaryFocus?.unfocus());
         } else {
-          await _uploadAndNavigate(post);
+          await _uploadAndNavigate(post, postPollOptions);
           FocusManager.instance.primaryFocus?.unfocus();
         }
       }

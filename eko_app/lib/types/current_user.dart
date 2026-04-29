@@ -11,7 +11,6 @@ abstract class CurrentUserModel with _$CurrentUserModel {
     required Set<String> dislikedPosts,
     required Set<String> blockedUsers,
     required Set<String> blockedBy,
-    required Map<String, int> pollVotes,
   }) = _CurrentUserModel;
   factory CurrentUserModel.fromJson(Map<String, dynamic> json) {
     return CurrentUserModel(
@@ -20,7 +19,6 @@ abstract class CurrentUserModel with _$CurrentUserModel {
       dislikedPosts: Set<String>.from(
         json['profileData']['dislikedPosts'] ?? [],
       ),
-      pollVotes: Map<String, int>.from(json['profileData']['pollVotes'] ?? {}),
       blockedBy: Set<String>.from(json['blockedBy'] ?? []),
       blockedUsers: Set<String>.from(json['blockedUsers'] ?? []),
     );
@@ -34,7 +32,6 @@ abstract class CurrentUserModel with _$CurrentUserModel {
       likedPosts: {},
       blockedUsers: {},
       blockedBy: {},
-      pollVotes: {},
     );
   }
 }

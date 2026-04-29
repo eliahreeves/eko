@@ -26,12 +26,10 @@ _PostModel _$PostModelFromJson(Map<String, dynamic> json) => _PostModel(
       isLiked: json['isLiked'] as bool? ?? false,
       isDisliked: json['isDisliked'] as bool? ?? false,
       createdAt: json['time'] as String,
-      pollOptions: (json['pollOptions'] as List<dynamic>?)
-          ?.map((e) => e as String)
+      poll: (json['poll'] as List<dynamic>?)
+          ?.map((e) => PollOptionModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      pollVoteCounts: (json['pollVoteCounts'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, (e as num).toInt()),
-      ),
+      vote: (json['vote'] as num?)?.toInt(),
       repostId: (json['repostId'] as num?)?.toInt(),
     );
 
@@ -50,7 +48,21 @@ Map<String, dynamic> _$PostModelToJson(_PostModel instance) =>
       'isLiked': instance.isLiked,
       'isDisliked': instance.isDisliked,
       'time': instance.createdAt,
-      'pollOptions': instance.pollOptions,
-      'pollVoteCounts': instance.pollVoteCounts,
+      'poll': instance.poll,
+      'vote': instance.vote,
       'repostId': instance.repostId,
+    };
+
+_PollOptionModel _$PollOptionModelFromJson(Map<String, dynamic> json) =>
+    _PollOptionModel(
+      value: json['value'] as String,
+      optionId: (json['option_id'] as num).toInt(),
+      voteCount: (json['vote_count'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$PollOptionModelToJson(_PollOptionModel instance) =>
+    <String, dynamic>{
+      'value': instance.value,
+      'option_id': instance.optionId,
+      'vote_count': instance.voteCount,
     };

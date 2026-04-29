@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
@@ -141,63 +139,35 @@ class Post extends _$Post {
     _isLiking = false;
   }
 
-  Future<void> _addVoteToDb(int id, int optionIndex) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.pollVotes.$id': optionIndex,
-      }),
-      firestore.collection('posts').doc(id.toString()).update({
-        'pollVoteCounts.$optionIndex': FieldValue.increment(1),
-      }),
-    ]);
-  }
-
-  Future<void> _removeVoteFromDb(int id, int currentVote) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.pollVotes.$id': FieldValue.delete(),
-      }),
-      firestore.collection('posts').doc(id.toString()).update({
-        'pollVoteCounts.$currentVote': FieldValue.increment(-1),
-      }),
-    ]);
-  }
-
-  Future<void> addPollVote({required int optionIndex}) async {
+  Future<void> addPollVote({required int optionId}) async {
     final prevState = await future;
-    if (_isVoting ||
-        ref
-            .read(currentUserProvider)
-            .pollVotes
-            .containsKey(prevState.id.toString())) {
+    if (_isVoting || prevState.vote != null) {
       return;
     }
     _isVoting = true;
 
-    ref
-        .read(currentUserProvider.notifier)
-        .addPollVote(prevState.id.toString(), optionIndex);
-
-    final updatedPollVoteCounts = Map<String, int>.from(
-      prevState.pollVoteCounts ?? {},
+    final updatedPoll = (prevState.poll ?? [])
+        .map(
+          (item) => item.optionId == optionId
+              ? item.copyWith(voteCount: item.voteCount + 1)
+              : item,
+        )
+        .toList();
+    final optimisticState = prevState.copyWith(
+      vote: optionId,
+      poll: updatedPoll,
     );
-    updatedPollVoteCounts[optionIndex.toString()] =
-        (updatedPollVoteCounts[optionIndex.toString()] ?? 0) + 1;
-
-    state = AsyncData(
-      prevState.copyWith(pollVoteCounts: updatedPollVoteCounts),
-    );
+    state = AsyncData(optimisticState);
 
     try {
-      await _addVoteToDb(prevState.id, optionIndex);
+      await supabase.rpc(
+        'poll_vote',
+        params: {
+          'p_post_id': prevState.id,
+          'p_option_id': optionId,
+        },
+      );
     } catch (_) {
-      ref
-          .read(currentUserProvider.notifier)
-          .removePollVote(prevState.id.toString());
       state = AsyncData(prevState);
     }
 
@@ -206,37 +176,34 @@ class Post extends _$Post {
 
   Future<void> removePollVote() async {
     final prevState = await future;
-    if (_isVoting ||
-        !ref
-            .read(currentUserProvider)
-            .pollVotes
-            .containsKey(prevState.id.toString())) {
+    if (_isVoting || prevState.vote == null) {
       return;
     }
     _isVoting = true;
-    final currentVote =
-        ref.read(currentUserProvider).pollVotes[prevState.id.toString()]!;
+    final currentVote = prevState.vote!;
 
-    ref
-        .read(currentUserProvider.notifier)
-        .removePollVote(prevState.id.toString());
-
-    final updatedPollVoteCounts = Map<String, int>.from(
-      prevState.pollVoteCounts!,
+    final updatedPoll = (prevState.poll ?? [])
+        .map(
+          (item) => item.optionId == currentVote
+              ? item.copyWith(
+                  voteCount: (item.voteCount > 0 ? item.voteCount - 1 : 0))
+              : item,
+        )
+        .toList();
+    final optimisticState = prevState.copyWith(
+      vote: null,
+      poll: updatedPoll,
     );
-    updatedPollVoteCounts[currentVote.toString()] =
-        (updatedPollVoteCounts[currentVote.toString()] ?? 1) - 1;
-
-    state = AsyncData(
-      prevState.copyWith(pollVoteCounts: updatedPollVoteCounts),
-    );
+    state = AsyncData(optimisticState);
 
     try {
-      await _removeVoteFromDb(prevState.id, currentVote);
+      await supabase.rpc(
+        'remove_poll_vote',
+        params: {
+          'p_post_id': prevState.id,
+        },
+      );
     } catch (_) {
-      ref
-          .read(currentUserProvider.notifier)
-          .removePollVote(prevState.id.toString());
       state = AsyncData(prevState);
     }
 

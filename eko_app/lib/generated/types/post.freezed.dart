@@ -35,8 +35,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
   bool get isDisliked;
   @JsonKey(name: 'time')
   String get createdAt;
-  List<String>? get pollOptions;
-  Map<String, int>? get pollVoteCounts;
+  List<PollOptionModel>? get poll;
+  int? get vote;
   int? get repostId;
 
   /// Create a copy of PostModel
@@ -66,8 +66,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('isLiked', isLiked))
       ..add(DiagnosticsProperty('isDisliked', isDisliked))
       ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('pollOptions', pollOptions))
-      ..add(DiagnosticsProperty('pollVoteCounts', pollVoteCounts))
+      ..add(DiagnosticsProperty('poll', poll))
+      ..add(DiagnosticsProperty('vote', vote))
       ..add(DiagnosticsProperty('repostId', repostId));
   }
 
@@ -94,10 +94,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
                 other.isDisliked == isDisliked) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            const DeepCollectionEquality()
-                .equals(other.pollOptions, pollOptions) &&
-            const DeepCollectionEquality()
-                .equals(other.pollVoteCounts, pollVoteCounts) &&
+            const DeepCollectionEquality().equals(other.poll, poll) &&
+            (identical(other.vote, vote) || other.vote == vote) &&
             (identical(other.repostId, repostId) ||
                 other.repostId == repostId));
   }
@@ -119,13 +117,13 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
       isLiked,
       isDisliked,
       createdAt,
-      const DeepCollectionEquality().hash(pollOptions),
-      const DeepCollectionEquality().hash(pollVoteCounts),
+      const DeepCollectionEquality().hash(poll),
+      vote,
       repostId);
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, isLiked: $isLiked, isDisliked: $isDisliked, createdAt: $createdAt, pollOptions: $pollOptions, pollVoteCounts: $pollVoteCounts, repostId: $repostId)';
+    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, isLiked: $isLiked, isDisliked: $isDisliked, createdAt: $createdAt, poll: $poll, vote: $vote, repostId: $repostId)';
   }
 }
 
@@ -152,8 +150,8 @@ abstract mixin class $PostModelCopyWith<$Res> {
       bool isLiked,
       bool isDisliked,
       @JsonKey(name: 'time') String createdAt,
-      List<String>? pollOptions,
-      Map<String, int>? pollVoteCounts,
+      List<PollOptionModel>? poll,
+      int? vote,
       int? repostId});
 }
 
@@ -182,8 +180,8 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
     Object? isLiked = null,
     Object? isDisliked = null,
     Object? createdAt = null,
-    Object? pollOptions = freezed,
-    Object? pollVoteCounts = freezed,
+    Object? poll = freezed,
+    Object? vote = freezed,
     Object? repostId = freezed,
   }) {
     return _then(_self.copyWith(
@@ -239,14 +237,14 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
-      pollOptions: freezed == pollOptions
-          ? _self.pollOptions
-          : pollOptions // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      pollVoteCounts: freezed == pollVoteCounts
-          ? _self.pollVoteCounts
-          : pollVoteCounts // ignore: cast_nullable_to_non_nullable
-              as Map<String, int>?,
+      poll: freezed == poll
+          ? _self.poll
+          : poll // ignore: cast_nullable_to_non_nullable
+              as List<PollOptionModel>?,
+      vote: freezed == vote
+          ? _self.vote
+          : vote // ignore: cast_nullable_to_non_nullable
+              as int?,
       repostId: freezed == repostId
           ? _self.repostId
           : repostId // ignore: cast_nullable_to_non_nullable
@@ -368,8 +366,8 @@ extension PostModelPatterns on PostModel {
             bool isLiked,
             bool isDisliked,
             @JsonKey(name: 'time') String createdAt,
-            List<String>? pollOptions,
-            Map<String, int>? pollVoteCounts,
+            List<PollOptionModel>? poll,
+            int? vote,
             int? repostId)?
         $default, {
     required TResult orElse(),
@@ -391,8 +389,8 @@ extension PostModelPatterns on PostModel {
             _that.isLiked,
             _that.isDisliked,
             _that.createdAt,
-            _that.pollOptions,
-            _that.pollVoteCounts,
+            _that.poll,
+            _that.vote,
             _that.repostId);
       case _:
         return orElse();
@@ -434,8 +432,8 @@ extension PostModelPatterns on PostModel {
             bool isLiked,
             bool isDisliked,
             @JsonKey(name: 'time') String createdAt,
-            List<String>? pollOptions,
-            Map<String, int>? pollVoteCounts,
+            List<PollOptionModel>? poll,
+            int? vote,
             int? repostId)
         $default,
   ) {
@@ -456,8 +454,8 @@ extension PostModelPatterns on PostModel {
             _that.isLiked,
             _that.isDisliked,
             _that.createdAt,
-            _that.pollOptions,
-            _that.pollVoteCounts,
+            _that.poll,
+            _that.vote,
             _that.repostId);
       case _:
         throw StateError('Unexpected subclass');
@@ -498,8 +496,8 @@ extension PostModelPatterns on PostModel {
             bool isLiked,
             bool isDisliked,
             @JsonKey(name: 'time') String createdAt,
-            List<String>? pollOptions,
-            Map<String, int>? pollVoteCounts,
+            List<PollOptionModel>? poll,
+            int? vote,
             int? repostId)?
         $default,
   ) {
@@ -520,8 +518,8 @@ extension PostModelPatterns on PostModel {
             _that.isLiked,
             _that.isDisliked,
             _that.createdAt,
-            _that.pollOptions,
-            _that.pollVoteCounts,
+            _that.poll,
+            _that.vote,
             _that.repostId);
       case _:
         return null;
@@ -552,14 +550,13 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       this.isLiked = false,
       this.isDisliked = false,
       @JsonKey(name: 'time') required this.createdAt,
-      final List<String>? pollOptions,
-      final Map<String, int>? pollVoteCounts,
+      final List<PollOptionModel>? poll,
+      this.vote,
       this.repostId})
       : _title = title,
         _body = body,
         _tags = tags,
-        _pollOptions = pollOptions,
-        _pollVoteCounts = pollVoteCounts,
+        _poll = poll,
         super._();
   factory _PostModel.fromJson(Map<String, dynamic> json) =>
       _$PostModelFromJson(json);
@@ -622,26 +619,18 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
   @override
   @JsonKey(name: 'time')
   final String createdAt;
-  final List<String>? _pollOptions;
+  final List<PollOptionModel>? _poll;
   @override
-  List<String>? get pollOptions {
-    final value = _pollOptions;
+  List<PollOptionModel>? get poll {
+    final value = _poll;
     if (value == null) return null;
-    if (_pollOptions is EqualUnmodifiableListView) return _pollOptions;
+    if (_poll is EqualUnmodifiableListView) return _poll;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
 
-  final Map<String, int>? _pollVoteCounts;
   @override
-  Map<String, int>? get pollVoteCounts {
-    final value = _pollVoteCounts;
-    if (value == null) return null;
-    if (_pollVoteCounts is EqualUnmodifiableMapView) return _pollVoteCounts;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(value);
-  }
-
+  final int? vote;
   @override
   final int? repostId;
 
@@ -677,8 +666,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('isLiked', isLiked))
       ..add(DiagnosticsProperty('isDisliked', isDisliked))
       ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('pollOptions', pollOptions))
-      ..add(DiagnosticsProperty('pollVoteCounts', pollVoteCounts))
+      ..add(DiagnosticsProperty('poll', poll))
+      ..add(DiagnosticsProperty('vote', vote))
       ..add(DiagnosticsProperty('repostId', repostId));
   }
 
@@ -705,10 +694,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
                 other.isDisliked == isDisliked) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            const DeepCollectionEquality()
-                .equals(other._pollOptions, _pollOptions) &&
-            const DeepCollectionEquality()
-                .equals(other._pollVoteCounts, _pollVoteCounts) &&
+            const DeepCollectionEquality().equals(other._poll, _poll) &&
+            (identical(other.vote, vote) || other.vote == vote) &&
             (identical(other.repostId, repostId) ||
                 other.repostId == repostId));
   }
@@ -730,13 +717,13 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       isLiked,
       isDisliked,
       createdAt,
-      const DeepCollectionEquality().hash(_pollOptions),
-      const DeepCollectionEquality().hash(_pollVoteCounts),
+      const DeepCollectionEquality().hash(_poll),
+      vote,
       repostId);
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, isLiked: $isLiked, isDisliked: $isDisliked, createdAt: $createdAt, pollOptions: $pollOptions, pollVoteCounts: $pollVoteCounts, repostId: $repostId)';
+    return 'PostModel(uid: $uid, id: $id, gifUrl: $gifUrl, imageString: $imageString, title: $title, body: $body, tags: $tags, likes: $likes, dislikes: $dislikes, commentCount: $commentCount, isLiked: $isLiked, isDisliked: $isDisliked, createdAt: $createdAt, poll: $poll, vote: $vote, repostId: $repostId)';
   }
 }
 
@@ -766,8 +753,8 @@ abstract mixin class _$PostModelCopyWith<$Res>
       bool isLiked,
       bool isDisliked,
       @JsonKey(name: 'time') String createdAt,
-      List<String>? pollOptions,
-      Map<String, int>? pollVoteCounts,
+      List<PollOptionModel>? poll,
+      int? vote,
       int? repostId});
 }
 
@@ -796,8 +783,8 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
     Object? isLiked = null,
     Object? isDisliked = null,
     Object? createdAt = null,
-    Object? pollOptions = freezed,
-    Object? pollVoteCounts = freezed,
+    Object? poll = freezed,
+    Object? vote = freezed,
     Object? repostId = freezed,
   }) {
     return _then(_PostModel(
@@ -853,18 +840,390 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
-      pollOptions: freezed == pollOptions
-          ? _self._pollOptions
-          : pollOptions // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      pollVoteCounts: freezed == pollVoteCounts
-          ? _self._pollVoteCounts
-          : pollVoteCounts // ignore: cast_nullable_to_non_nullable
-              as Map<String, int>?,
+      poll: freezed == poll
+          ? _self._poll
+          : poll // ignore: cast_nullable_to_non_nullable
+              as List<PollOptionModel>?,
+      vote: freezed == vote
+          ? _self.vote
+          : vote // ignore: cast_nullable_to_non_nullable
+              as int?,
       repostId: freezed == repostId
           ? _self.repostId
           : repostId // ignore: cast_nullable_to_non_nullable
               as int?,
+    ));
+  }
+}
+
+/// @nodoc
+mixin _$PollOptionModel implements DiagnosticableTreeMixin {
+  String get value;
+  @JsonKey(name: 'option_id')
+  int get optionId;
+  @JsonKey(name: 'vote_count')
+  int get voteCount;
+
+  /// Create a copy of PollOptionModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $PollOptionModelCopyWith<PollOptionModel> get copyWith =>
+      _$PollOptionModelCopyWithImpl<PollOptionModel>(
+          this as PollOptionModel, _$identity);
+
+  /// Serializes this PollOptionModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty('type', 'PollOptionModel'))
+      ..add(DiagnosticsProperty('value', value))
+      ..add(DiagnosticsProperty('optionId', optionId))
+      ..add(DiagnosticsProperty('voteCount', voteCount));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is PollOptionModel &&
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.optionId, optionId) ||
+                other.optionId == optionId) &&
+            (identical(other.voteCount, voteCount) ||
+                other.voteCount == voteCount));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, value, optionId, voteCount);
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'PollOptionModel(value: $value, optionId: $optionId, voteCount: $voteCount)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $PollOptionModelCopyWith<$Res> {
+  factory $PollOptionModelCopyWith(
+          PollOptionModel value, $Res Function(PollOptionModel) _then) =
+      _$PollOptionModelCopyWithImpl;
+  @useResult
+  $Res call(
+      {String value,
+      @JsonKey(name: 'option_id') int optionId,
+      @JsonKey(name: 'vote_count') int voteCount});
+}
+
+/// @nodoc
+class _$PollOptionModelCopyWithImpl<$Res>
+    implements $PollOptionModelCopyWith<$Res> {
+  _$PollOptionModelCopyWithImpl(this._self, this._then);
+
+  final PollOptionModel _self;
+  final $Res Function(PollOptionModel) _then;
+
+  /// Create a copy of PollOptionModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? value = null,
+    Object? optionId = null,
+    Object? voteCount = null,
+  }) {
+    return _then(_self.copyWith(
+      value: null == value
+          ? _self.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as String,
+      optionId: null == optionId
+          ? _self.optionId
+          : optionId // ignore: cast_nullable_to_non_nullable
+              as int,
+      voteCount: null == voteCount
+          ? _self.voteCount
+          : voteCount // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// Adds pattern-matching-related methods to [PollOptionModel].
+extension PollOptionModelPatterns on PollOptionModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_PollOptionModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _PollOptionModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_PollOptionModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PollOptionModel():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_PollOptionModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PollOptionModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String value, @JsonKey(name: 'option_id') int optionId,
+            @JsonKey(name: 'vote_count') int voteCount)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _PollOptionModel() when $default != null:
+        return $default(_that.value, _that.optionId, _that.voteCount);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String value, @JsonKey(name: 'option_id') int optionId,
+            @JsonKey(name: 'vote_count') int voteCount)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PollOptionModel():
+        return $default(_that.value, _that.optionId, _that.voteCount);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String value, @JsonKey(name: 'option_id') int optionId,
+            @JsonKey(name: 'vote_count') int voteCount)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _PollOptionModel() when $default != null:
+        return $default(_that.value, _that.optionId, _that.voteCount);
+      case _:
+        return null;
+    }
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _PollOptionModel with DiagnosticableTreeMixin implements PollOptionModel {
+  const _PollOptionModel(
+      {required this.value,
+      @JsonKey(name: 'option_id') required this.optionId,
+      @JsonKey(name: 'vote_count') required this.voteCount});
+  factory _PollOptionModel.fromJson(Map<String, dynamic> json) =>
+      _$PollOptionModelFromJson(json);
+
+  @override
+  final String value;
+  @override
+  @JsonKey(name: 'option_id')
+  final int optionId;
+  @override
+  @JsonKey(name: 'vote_count')
+  final int voteCount;
+
+  /// Create a copy of PollOptionModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$PollOptionModelCopyWith<_PollOptionModel> get copyWith =>
+      __$PollOptionModelCopyWithImpl<_PollOptionModel>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$PollOptionModelToJson(
+      this,
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty('type', 'PollOptionModel'))
+      ..add(DiagnosticsProperty('value', value))
+      ..add(DiagnosticsProperty('optionId', optionId))
+      ..add(DiagnosticsProperty('voteCount', voteCount));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _PollOptionModel &&
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.optionId, optionId) ||
+                other.optionId == optionId) &&
+            (identical(other.voteCount, voteCount) ||
+                other.voteCount == voteCount));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, value, optionId, voteCount);
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'PollOptionModel(value: $value, optionId: $optionId, voteCount: $voteCount)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$PollOptionModelCopyWith<$Res>
+    implements $PollOptionModelCopyWith<$Res> {
+  factory _$PollOptionModelCopyWith(
+          _PollOptionModel value, $Res Function(_PollOptionModel) _then) =
+      __$PollOptionModelCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {String value,
+      @JsonKey(name: 'option_id') int optionId,
+      @JsonKey(name: 'vote_count') int voteCount});
+}
+
+/// @nodoc
+class __$PollOptionModelCopyWithImpl<$Res>
+    implements _$PollOptionModelCopyWith<$Res> {
+  __$PollOptionModelCopyWithImpl(this._self, this._then);
+
+  final _PollOptionModel _self;
+  final $Res Function(_PollOptionModel) _then;
+
+  /// Create a copy of PollOptionModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? value = null,
+    Object? optionId = null,
+    Object? voteCount = null,
+  }) {
+    return _then(_PollOptionModel(
+      value: null == value
+          ? _self.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as String,
+      optionId: null == optionId
+          ? _self.optionId
+          : optionId // ignore: cast_nullable_to_non_nullable
+              as int,
+      voteCount: null == voteCount
+          ? _self.voteCount
+          : voteCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }

@@ -10,19 +10,6 @@ Map<String, dynamic> currentUserDocFromSupabaseRow(
     return [];
   }
 
-  Map<String, int> asPollVotes(Object? v) {
-    if (v == null) return {};
-    if (v is Map) {
-      return v.map(
-        (k, e) => MapEntry(
-          k.toString(),
-          e is int ? e : int.tryParse(e.toString()) ?? 0,
-        ),
-      );
-    }
-    return {};
-  }
-
   final profileDataRaw = row['profileData'] ?? row['profile_data'];
   final Map<String, dynamic> profileData;
   if (profileDataRaw is Map) {
@@ -35,7 +22,6 @@ Map<String, dynamic> currentUserDocFromSupabaseRow(
       'following': asStrList(row['following']),
       'likedPosts': asStrList(row['liked_posts'] ?? row['likedPosts']),
       'dislikedPosts': asStrList(row['disliked_posts'] ?? row['dislikedPosts']),
-      'pollVotes': asPollVotes(row['poll_votes'] ?? row['pollVotes']),
     };
   }
 

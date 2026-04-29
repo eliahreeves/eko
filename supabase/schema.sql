@@ -336,39 +336,42 @@ CREATE OR REPLACE FUNCTION "public"."insert_comment"("p_created_at" timestamp wi
 ALTER FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint) RETURNS TABLE("success" boolean, "error_message" "text", "post_id" bigint)
+CREATE OR REPLACE FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") RETURNS "record"
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
     AS $$
-  declare
-    new_post_id bigint;
   begin
-    begin
-      -- 1. Insert the main post
-      insert into public.posts (
-        created_at, firebase_uid, body, title, gif, author_uid, image, ekoed_id
-      ) values (
-        p_created_at, p_firebase_uid, p_body, p_title, p_gif, p_author_uid,
-        case when p_image_base64 is not null then decode(p_image_base64, 'base64') else null end,
-        p_ekoed_id
-      )
-      returning id into new_post_id;
+    -- 1. Insert the main post
+    insert into public.posts (
+      created_at, firebase_uid, body, title, gif, author_uid, image, ekoed_id
+    ) values (
+      p_created_at, p_firebase_uid, p_body, p_title, p_gif, p_author_uid,
+      case 
+        when p_image_base64 is not null 
+        then pg_catalog.decode(p_image_base64, 'base64') 
+        else null 
+      end,
+      p_ekoed_id
+    )
+    returning id into o_post_id;
 
-      -- 2. Insert poll options if the array is not empty
-      if p_poll is not null and array_length(p_poll, 1) > 0 then
-        insert into public.poll_options (post_id, value)
-        select new_post_id, unnest(p_poll);
-      end if;
+    -- 2. Insert poll options if the array is not empty
+    if p_poll is not null and pg_catalog.array_length(p_poll, 1) > 0 then
+      insert into public.poll_options (post_id, value)
+      select o_post_id, pg_catalog.unnest(p_poll);
+      
+      -- 3. Fetch the JSON representation using your existing function
+      -- Note: You must qualify get_poll_from_id with its schema (public)
+      o_poll_data := public.get_post_poll_results_json(o_post_id);
+    else
+      o_poll_data := null;
+    end if;
 
-      return query select true, null::text, new_post_id;
-    exception when others then
-      return query select false, sqlerrm, null::bigint;
-    end;
   end;
   $$;
 
 
-ALTER FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint) OWNER TO "postgres";
+ALTER FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."is_username_available"("p_username" "text") RETURNS boolean
@@ -613,6 +616,28 @@ CREATE OR REPLACE FUNCTION "public"."paginated_user_posts"("p_limit" integer, "p
 
 
 ALTER FUNCTION "public"."paginated_user_posts"("p_limit" integer, "p_user_uid" "uuid", "p_last_time" timestamp with time zone, "p_last_id" bigint) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."poll_vote"("p_post_id" bigint, "p_option_id" bigint) RETURNS "void"
+    LANGUAGE "sql"
+    SET "search_path" TO ''
+    AS $$
+insert into public.poll_votes (option_id, post_id, user_uid) VALUES
+ (p_option_id, p_post_id, (select auth.uid())) on conflict (post_id, user_uid) do update set option_id = p_option_id;
+$$;
+
+
+ALTER FUNCTION "public"."poll_vote"("p_post_id" bigint, "p_option_id" bigint) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) RETURNS "void"
+    LANGUAGE "sql"
+    SET "search_path" TO ''
+    AS $$
+delete from public.poll_votes where post_id = p_post_id AND user_uid = (select auth.uid())$$;
+
+
+ALTER FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."search_users"("p_search" "text", "p_last_similarity" real, "p_last_uid" "uuid", "p_limit" integer, "p_exclude_current_user" boolean) RETURNS TABLE("id" "uuid", "username" "text", "name" "text", "profile_picture" "text", "bio" "text", "is_verified" boolean, "is_following" boolean, "is_follower" boolean, "similarity" real)
@@ -907,7 +932,6 @@ CREATE TABLE IF NOT EXISTS "public"."posts" (
     "body" "text",
     "gif" "text",
     "image" "bytea",
-    "poll" "text"[],
     "ekoed_id" bigint,
     "firebase_uid" "text",
     "chamber_id" bigint
@@ -1931,9 +1955,9 @@ GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with ti
 
 
 
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint) TO "anon";
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint) TO "authenticated";
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint) TO "service_role";
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "anon";
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "service_role";
 
 
 
@@ -2000,6 +2024,18 @@ GRANT ALL ON FUNCTION "public"."paginated_user_following"("p_limit" integer, "p_
 GRANT ALL ON FUNCTION "public"."paginated_user_posts"("p_limit" integer, "p_user_uid" "uuid", "p_last_time" timestamp with time zone, "p_last_id" bigint) TO "anon";
 GRANT ALL ON FUNCTION "public"."paginated_user_posts"("p_limit" integer, "p_user_uid" "uuid", "p_last_time" timestamp with time zone, "p_last_id" bigint) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."paginated_user_posts"("p_limit" integer, "p_user_uid" "uuid", "p_last_time" timestamp with time zone, "p_last_id" bigint) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."poll_vote"("p_post_id" bigint, "p_option_id" bigint) TO "anon";
+GRANT ALL ON FUNCTION "public"."poll_vote"("p_post_id" bigint, "p_option_id" bigint) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."poll_vote"("p_post_id" bigint, "p_option_id" bigint) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) TO "anon";
+GRANT ALL ON FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) TO "service_role";
 
 
 
