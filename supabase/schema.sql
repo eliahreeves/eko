@@ -111,14 +111,34 @@ CREATE OR REPLACE FUNCTION "public"."change_follow_state"("p_uid" "uuid", "p_is_
 DECLARE
   v_uid UUID := auth.uid();
 BEGIN
+  -- Ensure the user is actually authenticated
+  IF v_uid IS NULL THEN
+    RAISE EXCEPTION 'Not authorized';
+  END IF;
+
   IF p_is_follow THEN
-    -- Try to update the row
-INSERT INTO public.following (source_uid, target_uid)
-    VALUES (v_uid, p_uid) ON CONFLICT DO NOTHING;
+    -- Insert into following table
+    INSERT INTO public.following (source_uid, target_uid)
+    VALUES (v_uid, p_uid) 
+    ON CONFLICT DO NOTHING;
+
+    -- Check for existing activity within the last 8 hours to prevent spamming notifications
+    IF NOT EXISTS (
+      SELECT 1 
+      FROM public.activity 
+      WHERE type = 'follow'::public."ACTIVITY_TYPE" 
+        AND source_uid = v_uid 
+        AND target_uid = p_uid 
+        AND created_at > (now() - interval '8 hours')
+    ) THEN
+      INSERT INTO public.activity (source_uid, target_uid, type) 
+      VALUES (v_uid, p_uid, 'follow'::public."ACTIVITY_TYPE");
+    END IF;
+
   ELSE
-    -- Delete the like if unliking
-    DELETE FROM public.following AS f
-    WHERE f.source_uid = v_uid AND f.target_uid = p_uid;
+    -- Unfollow logic
+    DELETE FROM public.following
+    WHERE source_uid = v_uid AND target_uid = p_uid;
   END IF;
 END;
 $$;
@@ -1550,10 +1570,6 @@ CREATE POLICY "Enable delete for users based on user_id" ON "public"."posts" FOR
 
 
 
-CREATE POLICY "Enable insert for authenticated users only" ON "public"."reports" FOR INSERT TO "authenticated" WITH CHECK (true);
-
-
-
 CREATE POLICY "Enable insert for users based on user_id" ON "public"."activity" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "source_uid"));
 
 
@@ -1574,7 +1590,11 @@ CREATE POLICY "Enable insert for users based on user_id" ON "public"."posts" FOR
 
 
 
-CREATE POLICY "Enable insert for users based on user_id" ON "public"."users" FOR UPDATE TO "authenticated" USING (true) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
+CREATE POLICY "Enable insert for users based on user_id" ON "public"."reports" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "source_uid"));
+
+
+
+CREATE POLICY "Enable insert for users based on user_id" ON "public"."users" FOR UPDATE TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
