@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eraser/eraser.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -9,11 +11,8 @@ import 'package:eko_app/providers/new_feed_provider.dart';
 
 class NotificationHelper {
   static Future<void> setupNotifications() async {
-    if (!kIsWeb) {
+    if (!kIsWeb && !Platform.isLinux) {
       FirebaseMessaging messaging = FirebaseMessaging.instance;
-      FirebaseMessaging.onBackgroundMessage(
-        _firebaseMessagingBackgroundHandler,
-      );
       await Future.wait([
         FirebaseMessaging.instance.setAutoInitEnabled(true),
         messaging.requestPermission(
@@ -87,14 +86,6 @@ class NotificationHelper {
   static Future<void> unsubscribeFromTopic(String topic) async {
     await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
   }
-
-  @pragma('vm:entry-point')
-  static Future<void> _firebaseMessagingBackgroundHandler(
-    RemoteMessage message,
-  ) async {
-    // await Firebase.initializeApp(
-    //     options: DefaultFirebaseOptions.currentPlatform);
-  }
 }
 
 class NotificationHandler extends ConsumerStatefulWidget {
@@ -109,6 +100,9 @@ class NotificationHandler extends ConsumerStatefulWidget {
 class _NotificationHandlerState extends ConsumerState<NotificationHandler> {
   @override
   void initState() {
+    if (Platform.isLinux) {
+      return;
+    }
     NotificationHelper.setupNotificationsWithContext(context, () {
       ref.read(followingFeedProvider.notifier).refresh();
       ref.read(newFeedProvider.notifier).refresh();

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cross_file/cross_file.dart' show XFile;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,13 +58,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = GoRouterRefreshNotifier();
   ref.listen(authProvider, (_, __) => refreshNotifier.refresh());
   return GoRouter(
-    observers: [
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-    ],
+    observers: Platform.isLinux
+        ? null
+        : [
+            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+          ],
     initialLocation: '/feed',
     navigatorKey: _rootNavigatorKey,
     refreshListenable: refreshNotifier,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     redirectLimit: 15,
     redirect: (context, state) {
       final auth = ref.read(authProvider);

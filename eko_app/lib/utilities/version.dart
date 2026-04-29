@@ -17,7 +17,6 @@ class Version {
     currentVersion = packageInfo.version;
   }
 
-  // Replace this function with the actual function to retrieve the version from Firebase
   Future<void> getAppVersion() async {
     bool ios = Platform.isIOS;
     bool android = Platform.isAndroid;

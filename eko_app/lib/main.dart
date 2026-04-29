@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,13 +38,23 @@ Future<void> _initSupabase() async {
   await Supabase.initialize(url: url, anonKey: key);
 }
 
+Future<void> _initFirebase() async {
+  if (Platform.isLinux) {
+    return;
+  }
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Future.wait([
+    NotificationHelper.setupNotifications(),
+    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true),
+  ]);
+}
+
 Future<void> main() async {
   usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
   //init
   await Future.wait([
     PrefsService.init(),
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
     _initSupabase(),
   ]);
   // setupLocator();
@@ -50,8 +62,7 @@ Future<void> main() async {
   await Future.wait([
     _checkFirstInstall(),
     LogoService.init(),
-    NotificationHelper.setupNotifications(),
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true),
+    _initFirebase(),
   ]);
 
   SystemChrome.setPreferredOrientations([
