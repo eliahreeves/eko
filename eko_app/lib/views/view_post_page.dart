@@ -128,6 +128,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         context.pop();
       }
     } catch (e) {
+      debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
           context: context,
@@ -241,6 +242,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         }
       });
     } catch (e) {
+      debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
           text: AppLocalizations.of(context)!.defaultErrorTittle,

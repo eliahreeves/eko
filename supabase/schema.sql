@@ -66,6 +66,19 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 
 
+CREATE TYPE "public"."ACTIVITY_TYPE" AS ENUM (
+    'comment',
+    'eko',
+    'follow',
+    'comment_tag',
+    'post_tag',
+    'post'
+);
+
+
+ALTER TYPE "public"."ACTIVITY_TYPE" OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."change_comment_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) RETURNS "void"
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
@@ -173,21 +186,22 @@ ALTER FUNCTION "public"."get_follow_info"("p_uid" "uuid") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."get_logo_of_the_day"() RETURNS "text"
-    LANGUAGE "plpgsql"
+    LANGUAGE "plpgsql" STABLE
+    SET "search_path" TO ''
     AS $$
 DECLARE
     total_logos INT;
     day_index INT;
     selected_svg TEXT;
 BEGIN
-    SELECT COUNT(*) INTO total_logos FROM logos;
+    SELECT COUNT(*) INTO total_logos FROM public.logos;
     IF total_logos = 0 THEN
         RETURN NULL;
     END IF;
     day_index := (EXTRACT(EPOCH FROM CURRENT_DATE) / 86400)::INT;
     WITH IndexedLogos AS (
         SELECT svg, ROW_NUMBER() OVER (ORDER BY id) - 1 as idx
-        FROM logos
+        FROM public.logos
     )
     SELECT svg INTO selected_svg
     FROM IndexedLogos
@@ -199,6 +213,19 @@ $$;
 
 
 ALTER FUNCTION "public"."get_logo_of_the_day"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_min_version"("p_platform" "text") RETURNS "text"
+    LANGUAGE "sql" STABLE
+    SET "search_path" TO ''
+    AS $_$
+    SELECT minimum_version
+    FROM public.utilities 
+    WHERE platform = $1; 
+  $_$;
+
+
+ALTER FUNCTION "public"."get_min_version"("p_platform" "text") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."get_post_by_id"("p_id" bigint) RETURNS TABLE("id" bigint, "author_uid" "uuid", "created_at" timestamp with time zone, "title" "text", "body" "text", "gif" "text", "image" "text", "ekoed_id" bigint, "like_count" bigint, "dislike_count" bigint, "comment_count" bigint, "is_liked" boolean, "is_disliked" boolean, "poll" "jsonb", "vote" bigint)
@@ -271,6 +298,29 @@ $$;
 ALTER FUNCTION "public"."get_user_by_id"("p_uid" "uuid") OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."get_uuids_from_mentions"("input_texts" "text"[]) RETURNS TABLE("user_uuid" "uuid")
+    LANGUAGE "plpgsql" STABLE
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+    RETURN QUERY
+    WITH extracted_usernames AS (
+        SELECT DISTINCT lower(substring(m[1] from 2)) AS clean_username
+        FROM (
+            SELECT unnest(input_texts) AS original_string
+        ) AS s,
+        LATERAL regexp_matches(s.original_string, '(@[a-z0-9_]{3,24})', 'g') AS m
+    )
+    SELECT u.id
+    FROM public.users u
+    JOIN extracted_usernames e ON u.username = e.clean_username;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_uuids_from_mentions"("input_texts" "text"[]) OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."handle_new_public_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
@@ -301,39 +351,72 @@ $$;
 ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) RETURNS TABLE("success" boolean, "error_message" "text", "comment_id" bigint)
+CREATE OR REPLACE FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) RETURNS bigint
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
     AS $$
   declare
     new_comment_id bigint;
   begin
-    begin
-      insert into public.comments (
+  insert into public.comments (
         created_at,
-        firebase_uid,
         body,
         gif,
         author_uid,
         parent_post_id
       ) values (
         p_created_at,
-        p_firebase_uid,
         p_body,
         p_gif,
         p_author_uid,
         p_parent_post_id
       )
       returning id into new_comment_id;
-      return query select true, null::text, new_comment_id;
-    exception when others then
-      return query select false, sqlerrm, null::bigint;
-    end;
+      perform public.log_comment_activity(new_comment_id, p_parent_post_id, p_author_uid, p_body);
+      return new_comment_id;
+  end;
+$$;
+
+
+ALTER FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") RETURNS "record"
+    LANGUAGE "plpgsql"
+    SET "search_path" TO ''
+    AS $$
+  begin
+    -- 1. Insert the main post
+    insert into public.posts (
+      created_at, body, title, gif, author_uid, image, ekoed_id
+    ) values (
+      p_created_at, p_body, p_title, p_gif, p_author_uid,
+      case 
+        when p_image_base64 is not null 
+        then pg_catalog.decode(p_image_base64, 'base64') 
+        else null 
+      end,
+      p_ekoed_id
+    )
+    returning id into o_post_id;
+
+    -- 2. Insert poll options if the array is not empty
+    if p_poll is not null and pg_catalog.array_length(p_poll, 1) > 0 then
+      insert into public.poll_options (post_id, value)
+      select o_post_id, pg_catalog.unnest(p_poll);
+      
+      -- 3. Fetch the JSON representation using your existing function
+      -- Note: You must qualify get_poll_from_id with its schema (public)
+      o_poll_data := public.get_post_poll_results_json(o_post_id);
+    else
+      o_poll_data := null;
+    end if;
+PERFORM public.log_post_activity(o_post_id, p_author_uid, ARRAY[p_body, p_title]);
   end;
   $$;
 
 
-ALTER FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) OWNER TO "postgres";
+ALTER FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") RETURNS "record"
@@ -390,6 +473,63 @@ $$;
 
 
 ALTER FUNCTION "public"."is_username_available"("p_username" "text") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") RETURNS "void"
+    LANGUAGE "plpgsql"
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+    v_post_author_id uuid;
+BEGIN
+    -- 1. Get the post author once to save resources
+    SELECT author_uid INTO v_post_author_id 
+    FROM public.posts 
+    WHERE id = p_post_id;
+
+    -- 2. Log the top-level comment activity
+    if p_author_id != v_post_author_id then
+    INSERT INTO public.activity (post_id, comment_id, source_uid, target_uid, type) 
+    VALUES (p_post_id, p_comment_id, p_author_id, v_post_author_id, 'comment'::public."ACTIVITY_TYPE");
+    end if;
+
+    -- 3. Log mention activities
+    INSERT INTO public.activity (post_id, comment_id, source_uid, target_uid, type)
+    SELECT 
+        p_post_id,
+        p_comment_id,
+        p_author_id,
+        m.user_uuid,
+        'comment_tag'::public."ACTIVITY_TYPE"
+    FROM public.get_uuids_from_mentions(ARRAY[p_text]) AS m
+    WHERE m.user_uuid != p_author_id             -- Don't notify the commenter if they tag themselves
+      AND m.user_uuid != v_post_author_id;      -- Don't notify the post author twice (they already got the 'comment' activity)
+END;
+$$;
+
+
+ALTER FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) RETURNS "void"
+    LANGUAGE "plpgsql"
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+
+   INSERT INTO public.activity (post_id, source_uid, target_uid, type)
+    SELECT 
+        p_post_id,
+        p_author_id,
+        m.user_uuid,
+        'post_tag'::public."ACTIVITY_TYPE"
+    FROM public.get_uuids_from_mentions(p_text) AS m
+    WHERE m.user_uuid != p_author_id;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."paginated_chamber_posts"("p_limit" integer, "p_last_time" timestamp with time zone, "p_last_id" bigint, "p_chamber_id" bigint) RETURNS TABLE("id" bigint, "author_uid" "uuid", "created_at" timestamp with time zone, "title" "text", "body" "text", "gif" "text", "image" "text", "ekoed_id" bigint, "is_eko" boolean, "like_count" bigint, "dislike_count" bigint, "comment_count" bigint, "chamber_id" bigint, "is_liked" boolean, "is_disliked" boolean)
@@ -640,6 +780,17 @@ delete from public.poll_votes where post_id = p_post_id AND user_uid = (select a
 ALTER FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."report"("p_post_id" bigint, "p_message" "text") RETURNS "void"
+    LANGUAGE "sql"
+    SET "search_path" TO ''
+    AS $$
+  INSERT INTO public.reports (post_id, message) VALUES (p_post_id, p_message);
+$$;
+
+
+ALTER FUNCTION "public"."report"("p_post_id" bigint, "p_message" "text") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."search_users"("p_search" "text", "p_last_similarity" real, "p_last_uid" "uuid", "p_limit" integer, "p_exclude_current_user" boolean) RETURNS TABLE("id" "uuid", "username" "text", "name" "text", "profile_picture" "text", "bio" "text", "is_verified" boolean, "is_following" boolean, "is_follower" boolean, "similarity" real)
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
@@ -756,11 +907,11 @@ SET default_table_access_method = "heap";
 CREATE TABLE IF NOT EXISTS "public"."activity" (
     "id" bigint NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "type" integer NOT NULL,
     "source_uid" "uuid" DEFAULT "auth"."uid"(),
-    "target_uid" "uuid",
-    "chamber_id" bigint,
-    "post_id" bigint
+    "post_id" bigint,
+    "type" "public"."ACTIVITY_TYPE" NOT NULL,
+    "target_uid" "uuid" NOT NULL,
+    "comment_id" bigint
 );
 
 
@@ -1234,7 +1385,7 @@ CREATE OR REPLACE TRIGGER "on_public_user_created" AFTER INSERT ON "public"."use
 
 
 ALTER TABLE ONLY "public"."activity"
-    ADD CONSTRAINT "activity_chamber_id_fkey" FOREIGN KEY ("chamber_id") REFERENCES "public"."chambers"("id") ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "activity_comment_id_fkey" FOREIGN KEY ("comment_id") REFERENCES "public"."comments"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 
@@ -1403,6 +1554,10 @@ CREATE POLICY "Enable insert for authenticated users only" ON "public"."reports"
 
 
 
+CREATE POLICY "Enable insert for users based on user_id" ON "public"."activity" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "source_uid"));
+
+
+
 CREATE POLICY "Enable insert for users based on user_id" ON "public"."comments" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "author_uid"));
 
 
@@ -1423,10 +1578,6 @@ CREATE POLICY "Enable insert for users based on user_id" ON "public"."users" FOR
 
 
 
-CREATE POLICY "Enable read access for all users" ON "public"."activity" FOR SELECT TO "authenticated" USING (true);
-
-
-
 CREATE POLICY "Enable read access for all users" ON "public"."logos" FOR SELECT USING (true);
 
 
@@ -1444,6 +1595,10 @@ CREATE POLICY "Enable read access for all users" ON "public"."utilities" FOR SEL
 
 
 CREATE POLICY "Enable update for users based on uid" ON "public"."post_likes" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "user_uid")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_uid"));
+
+
+
+CREATE POLICY "Enable users to view their own data only" ON "public"."activity" FOR SELECT TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "target_uid"));
 
 
 
@@ -1919,6 +2074,12 @@ GRANT ALL ON FUNCTION "public"."get_logo_of_the_day"() TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."get_min_version"("p_platform" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."get_min_version"("p_platform" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_min_version"("p_platform" "text") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."get_post_by_id"("p_id" bigint) TO "anon";
 GRANT ALL ON FUNCTION "public"."get_post_by_id"("p_id" bigint) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_post_by_id"("p_id" bigint) TO "service_role";
@@ -1937,6 +2098,12 @@ GRANT ALL ON FUNCTION "public"."get_user_by_id"("p_uid" "uuid") TO "service_role
 
 
 
+GRANT ALL ON FUNCTION "public"."get_uuids_from_mentions"("input_texts" "text"[]) TO "anon";
+GRANT ALL ON FUNCTION "public"."get_uuids_from_mentions"("input_texts" "text"[]) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_uuids_from_mentions"("input_texts" "text"[]) TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."handle_new_public_user"() TO "anon";
 GRANT ALL ON FUNCTION "public"."handle_new_public_user"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."handle_new_public_user"() TO "service_role";
@@ -1949,9 +2116,15 @@ GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "anon";
-GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "authenticated";
-GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "service_role";
+GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "anon";
+GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with time zone, "p_body" "text", "p_gif" "text", "p_author_uid" "uuid", "p_parent_post_id" bigint) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "anon";
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "service_role";
 
 
 
@@ -1964,6 +2137,18 @@ GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time 
 GRANT ALL ON FUNCTION "public"."is_username_available"("p_username" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."is_username_available"("p_username" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."is_username_available"("p_username" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) TO "anon";
+GRANT ALL ON FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) TO "service_role";
 
 
 
@@ -2036,6 +2221,12 @@ GRANT ALL ON FUNCTION "public"."poll_vote"("p_post_id" bigint, "p_option_id" big
 GRANT ALL ON FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) TO "anon";
 GRANT ALL ON FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."remove_poll_vote"("p_post_id" bigint) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."report"("p_post_id" bigint, "p_message" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."report"("p_post_id" bigint, "p_message" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."report"("p_post_id" bigint, "p_message" "text") TO "service_role";
 
 
 

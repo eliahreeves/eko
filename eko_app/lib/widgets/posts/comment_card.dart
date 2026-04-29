@@ -106,7 +106,9 @@ class _CommentCardState extends ConsumerState<CommentCard> {
       } else {
         ref.invalidate(postProvider(comment.postId));
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint(e.toString());
+      print(e.toString());
       if (!mounted) return;
       showSnackBar(
         text: AppLocalizations.of(context)!.defaultErrorTittle,
