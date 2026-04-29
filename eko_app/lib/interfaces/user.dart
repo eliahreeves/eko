@@ -58,7 +58,8 @@ Future<String> forgotPassword({
   required String email,
 }) async {
   try {
-    await supabase.auth.resetPasswordForEmail(email);
+    await supabase.auth
+        .resetPasswordForEmail(email, redirectTo: c.forgotPasswordURL);
     return 'success';
   } catch (e) {
     return 'unknown';

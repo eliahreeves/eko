@@ -33,15 +33,17 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
   String email = '';
 
   bool isLoading = false;
+  bool requirePasswordMatch = true;
 
   Future<void> setPasswordPressed() async {
     FocusManager.instance.primaryFocus?.unfocus();
     if (passwordController.text == '') {
       passwordFocus.requestFocus();
     } else {
-      if (isValidPassword(
+      if (isValidSimplePassword(
         passwordController.text,
         confirmPasswordController.text,
+        requireMatch: requirePasswordMatch,
       )) {
         setState(() {
           isLoading = true;
@@ -257,6 +259,9 @@ class _AuthActionInterfaceState extends ConsumerState<AuthActionInterface> {
                           confirmPasswordController: confirmPasswordController,
                           passwordFocus: passwordFocus,
                           confirmPasswordFocus: confirmPasswordFocus,
+                          onRequirePasswordMatchChanged: (requireMatch) {
+                            requirePasswordMatch = requireMatch;
+                          },
                         ),
                         SizedBox(height: c.authSectionSpacing),
                         AuthButton.primary(

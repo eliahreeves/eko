@@ -20,6 +20,7 @@ import 'package:eko_app/widgets/common/download_button.dart';
 import 'package:eko_app/widgets/auth/auth_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
+import 'package:eko_app/views/verify_email_page.dart';
 
 void _showWeakPassword(BuildContext context) {
   showSnackBar(
@@ -82,8 +83,6 @@ class _SignUpState extends ConsumerState<SignUp> {
   bool _handleError(String errorCode) {
     final l10n = AppLocalizations.of(context)!;
     switch (errorCode) {
-      case 'success':
-        return true;
       case 'username-taken':
         showSnackBar(
           text: l10n.usernameTakenBody,
@@ -132,23 +131,26 @@ class _SignUpState extends ConsumerState<SignUp> {
   }
 
   Future<bool> signUp() async {
-    //make sure this is true since user could be coming from settings
     ref.read(navBarProvider.notifier).enable();
     if (await isUsernameAvailable(usernameController.text.trim())) {
-      if (_handleError(
-        await ref.read(authProvider.notifier).signUp(
-              email: emailController.text.trim(),
-              password: passwordController.text,
-              username: usernameController.text.trim(),
-              name: nameController.text,
-              birthday:
-                  '${monthController.text}/${dayController.text}/${yearController.text}',
-            ),
-      )) {
-        if (!mounted) return true;
-        context.go('/feed');
+      final outcome = await ref.read(authProvider.notifier).signUp(
+            email: emailController.text.trim(),
+            password: passwordController.text,
+            username: usernameController.text.trim(),
+            name: nameController.text,
+            birthday:
+                '${monthController.text}/${dayController.text}/${yearController.text}',
+          );
+      if (!outcome.isSuccess) {
+        return _handleError(outcome.errorCode!);
+      }
+      if (!mounted) return true;
+      if (outcome.needsEmailVerification) {
+        setState(() => index = 2);
         return true;
       }
+      context.go('/feed');
+      return true;
     } else {
       _handleError('username-taken');
     }
@@ -162,10 +164,10 @@ class _SignUpState extends ConsumerState<SignUp> {
       child: Scaffold(
         appBar: AuthAppBar(
           onBack: () {
-            if (index == 1) {
-              setState(() {
-                index = 0;
-              });
+            if (index == 2) {
+              context.go('/');
+            } else if (index == 1) {
+              setState(() => index = 0);
             } else {
               context.go('/');
             }
@@ -205,6 +207,10 @@ class _SignUpState extends ConsumerState<SignUp> {
                   passwordFocus: passwordFocus,
                   confirmPasswordFocus: confirmPasswordFocus,
                   signUp: signUp,
+                ),
+                VerifyEmailView(
+                  email: emailController.text.trim(),
+                  passwordController: passwordController,
                 ),
               ],
             ),
@@ -556,6 +562,7 @@ class GetPassword extends StatefulWidget {
 
 class _GetPasswordState extends State<GetPassword> {
   bool isLoading = false;
+  bool requirePasswordMatch = true;
   @override
   Widget build(BuildContext context) {
     final width = c.widthGetter(context);
@@ -587,6 +594,9 @@ class _GetPasswordState extends State<GetPassword> {
               confirmPasswordController: widget.confirmPasswordController,
               passwordFocus: widget.passwordFocus,
               confirmPasswordFocus: widget.confirmPasswordFocus,
+              onRequirePasswordMatchChanged: (requireMatch) {
+                requirePasswordMatch = requireMatch;
+              },
             ),
             SizedBox(height: height * 0.06),
             AuthButton.primary(
@@ -595,16 +605,19 @@ class _GetPasswordState extends State<GetPassword> {
               onPressed: isLoading
                   ? null
                   : () async {
-                      if (!isValidPassword(
+                      if (!isValidSimplePassword(
                         widget.passwordController.text,
                         widget.confirmPasswordController.text,
+                        requireMatch: requirePasswordMatch,
                       )) {
                         _showWeakPassword(context);
                         return;
                       }
                       setState(() => isLoading = true);
-                      if (!(await widget.signUp())) {
-                        setState(() => isLoading = false);
+                      try {
+                        await widget.signUp();
+                      } finally {
+                        if (mounted) setState(() => isLoading = false);
                       }
                     },
             ),

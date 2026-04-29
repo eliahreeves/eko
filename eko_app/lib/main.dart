@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,7 +34,11 @@ Future<void> _initSupabase() async {
   if (url.isEmpty || key.isEmpty) {
     throw StateError('SUPABASE not defined');
   }
-  await Supabase.initialize(url: url, anonKey: key);
+  await Supabase.initialize(
+      url: url,
+      anonKey: key,
+      authOptions:
+          FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit));
 }
 
 Future<void> _initFirebase() async {
@@ -45,7 +48,6 @@ Future<void> _initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Future.wait([
     NotificationHelper.setupNotifications(),
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true),
   ]);
 }
 

@@ -172,7 +172,13 @@ class CurrentUser extends _$CurrentUser {
   // END LIKES //
 
   Future<void> signOut() async {
-    await removeFCM(state.user.uid);
+    final stateUid = state.user.uid;
+    final authUid = ref.read(authProvider).uid;
+    final fcmUid =
+        stateUid.isNotEmpty ? stateUid : (authUid ?? '');
+    if (fcmUid.isNotEmpty) {
+      await removeFCM(fcmUid);
+    }
     await supabase.auth.signOut();
   }
 
@@ -222,13 +228,23 @@ class CurrentUser extends _$CurrentUser {
   }
 
   Future<void> reload() async {
-    final uid = ref.read(authProvider).uid!;
+    final uid = ref.read(authProvider).uid;
+    if (uid == null) return;
     try {
       final response = await supabase.rpc(
         'get_user_by_id',
         params: {'p_uid': uid},
       );
-      final row = Map<String, dynamic>.from(response.first);
+      if (response is! List || response.isEmpty) {
+        await signOut();
+        return;
+      }
+      final first = response.first;
+      if (first is! Map) {
+        await signOut();
+        return;
+      }
+      final row = Map<String, dynamic>.from(first);
       final blockedBy = await _getPeopleWhoBlockedMe();
       state = CurrentUserModel.fromJson(
         currentUserDocFromSupabaseRow(row, blockedBy),

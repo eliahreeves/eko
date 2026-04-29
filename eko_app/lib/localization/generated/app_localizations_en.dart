@@ -190,6 +190,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordLen => 'Between 8 and 32 characters.';
 
   @override
+  String get passwordMinChars => '8 or more characters';
+
+  @override
   String get passwordLower => 'Contains a lowercase letter';
 
   @override
@@ -275,6 +278,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addTitle => 'Add title...';
+
+  @override
+  String get error => 'Error';
 
   @override
   String get create => 'Create';

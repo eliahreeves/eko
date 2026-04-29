@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cross_file/cross_file.dart' show XFile;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -30,13 +28,11 @@ import 'package:eko_app/views/followers.dart';
 import 'package:eko_app/views/following.dart';
 import 'package:eko_app/views/recent_activity.dart';
 import 'package:eko_app/views/auth_action_interface.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:eko_app/views/view_likes_page.dart';
 import 'package:eko_app/widgets/posts/gifs.dart';
 import 'package:eko_app/widgets/scaffolds/require_auth.dart';
 import 'package:eko_app/widgets/scaffolds/require_no_auth.dart';
 import 'package:eko_app/views/profile_redirect_page.dart';
-import 'package:eko_app/views/re_auth_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorFeedKey = GlobalKey<NavigatorState>(debugLabel: 'Feed');
@@ -58,11 +54,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = GoRouterRefreshNotifier();
   ref.listen(authProvider, (_, __) => refreshNotifier.refresh());
   return GoRouter(
-    observers: Platform.isLinux
-        ? null
-        : [
-            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-          ],
     initialLocation: '/feed',
     navigatorKey: _rootNavigatorKey,
     refreshListenable: refreshNotifier,
@@ -82,7 +73,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         '/signup',
         '/login',
         '/auth',
-        '/download'
+        '/download',
       ];
 
       if (auth.uid == null) {
@@ -325,11 +316,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     name: 'user_settings',
                     builder: (context, state) => const UserSettings(),
                     routes: [
-                      GoRoute(
-                        path: 're_auth',
-                        name: 're_auth',
-                        builder: (context, state) => const ReAuthPage(),
-                      ),
                       GoRoute(
                         path: 'blocked_users',
                         name: 'blocked_users',

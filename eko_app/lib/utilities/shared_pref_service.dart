@@ -47,7 +47,7 @@ class PrefsService {
       instance.setBool(_keyNotFirstInstall, value);
 
   static int get lastFeedPageIndex =>
-      instance.getInt(_keyLastFeedPageIndex) ?? 0;
+      instance.getInt(_keyLastFeedPageIndex) ?? 1;
   static set lastFeedPageIndex(int value) =>
       instance.setInt(_keyLastFeedPageIndex, value);
 

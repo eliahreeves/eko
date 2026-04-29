@@ -6,6 +6,7 @@ import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/interfaces/user.dart' as user;
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
+import 'package:eko_app/views/verify_email_page.dart';
 import 'package:eko_app/widgets/auth/google_sign_in_button.dart';
 import 'package:eko_app/widgets/common/icons.dart';
 import 'package:eko_app/widgets/inputs/custom_input_field.dart';
@@ -13,6 +14,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/auth/auth_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -27,6 +29,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final emailFocus = FocusNode();
   final passwordFocus = FocusNode();
   bool isLoading = false;
+  int _paneIndex = 0;
 
   @override
   void dispose() {
@@ -35,26 +38,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-  }
-
-  int handleError(String errorCode) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (errorCode) {
-      case 'success':
-        return 0;
-      case 'invalid-email':
-        showSnackBar(
-            text: l10n.invalidEmailBody,
-            context: context,
-            variant: SnackBarVariant.destructive);
-        return 1;
-      default:
-        showSnackBar(
-            text: l10n.loginFailedBody,
-            context: context,
-            variant: SnackBarVariant.destructive);
-        return 1;
-    }
   }
 
   void loginPressed() async {
@@ -66,16 +49,44 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         isLoading = true;
       });
-      if (handleError(
-            await ref.read(authProvider.notifier).signIn(
-                  email: emailController.text.trim(),
-                  password: passwordController.text,
-                ),
-          ) ==
-          0) {}
-      setState(() {
-        isLoading = false;
-      });
+      try {
+        await ref.read(authProvider.notifier).signIn(
+              email: emailController.text.trim(),
+              password: passwordController.text,
+            );
+      } on AuthApiException catch (e) {
+        debugPrint(e.toString());
+        debugPrint('code: ${e.code}');
+
+        if (mounted) {
+          if (e.code == 'email_not_confirmed') {
+            setState(() {
+              _paneIndex = 1;
+            });
+          } else {
+            showSnackBar(
+                text: e.code == 'invalid_credentials'
+                    ? AppLocalizations.of(context)!.loginFailedBody
+                    : '${AppLocalizations.of(context)!.error}: ${e.message}',
+                context: context,
+                variant: SnackBarVariant.destructive);
+          }
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+        if (mounted) {
+          showSnackBar(
+              text: AppLocalizations.of(context)!.defaultErrorTittle,
+              context: context,
+              variant: SnackBarVariant.destructive);
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -117,8 +128,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           setDialogState(() {
                             isSending = true;
                           });
-                          // Vague approach: always show success message unless it's a structural error
-                          // and don't pop until done
                           await user.forgotPassword(
                             countryCode: countryCode,
                             email: emailController.text.trim(),
@@ -155,7 +164,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AuthAppBar(),
+      appBar: AuthAppBar(
+        onBack: _paneIndex == 1
+            ? () => setState(() => _paneIndex = 0)
+            : null,
+      ),
       floatingActionButton: downloadButtonIfWeb(),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: GestureDetector(
@@ -163,76 +176,86 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         child: Center(
           child: SizedBox(
             width: c.widthGetter(context),
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              padding: EdgeInsets.symmetric(
-                horizontal: width * c.authPaddingHorizontal,
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: height * .04),
-                  SizedBox(
-                    height: height * .22,
-                    width: width * 0.7,
-                    child: Eko(useDefault: true),
+            child: IndexedStack(
+              index: _paneIndex,
+              children: [
+                SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * c.authPaddingHorizontal,
                   ),
-                  SizedBox(height: height * .04),
-                  AutofillGroup(
-                    child: Column(
-                      children: [
-                        CustomInputField(
-                          autofillHints: [AutofillHints.email],
-                          focus: emailFocus,
-                          label: l10n.email,
-                          controller: emailController,
-                          inputType: TextInputType.emailAddress,
-                        ),
-                        CustomInputField(
-                          autofillHints: [AutofillHints.password],
-                          textInputAction: TextInputAction.go,
-                          onEditingComplete: () => loginPressed(),
-                          focus: passwordFocus,
-                          label: l10n.password,
-                          controller: passwordController,
-                          inputType: TextInputType.visiblePassword,
-                          password: true,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: c.authElementSpacing),
-                  AuthButton.primary(
-                    label: l10n.logIn,
-                    isLoading: isLoading,
-                    onPressed: isLoading ? null : loginPressed,
-                  ),
-                  SizedBox(
-                    width: c.widthGetter(context) * 0.9,
-                    child: TextButton(
-                      onPressed: isLoading
-                          ? null
-                          : () => forgotPasswordPressed(l10n.localeName),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onSurface,
+                  child: Column(
+                    children: [
+                      SizedBox(height: height * .04),
+                      SizedBox(
+                        height: height * .22,
+                        width: width * 0.7,
+                        child: Eko(useDefault: true),
                       ),
-                      child: Text(
-                        l10n.forgotPassword,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                      SizedBox(height: height * .04),
+                      AutofillGroup(
+                        child: Column(
+                          children: [
+                            CustomInputField(
+                              autofillHints: [AutofillHints.email],
+                              focus: emailFocus,
+                              label: l10n.email,
+                              controller: emailController,
+                              inputType: TextInputType.emailAddress,
+                            ),
+                            CustomInputField(
+                              autofillHints: [AutofillHints.password],
+                              textInputAction: TextInputAction.go,
+                              onEditingComplete: () => loginPressed(),
+                              focus: passwordFocus,
+                              label: l10n.password,
+                              controller: passwordController,
+                              inputType: TextInputType.visiblePassword,
+                              password: true,
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      const SizedBox(height: c.authElementSpacing),
+                      AuthButton.primary(
+                        label: l10n.logIn,
+                        isLoading: isLoading,
+                        onPressed: isLoading ? null : loginPressed,
+                      ),
+                      SizedBox(
+                        width: c.widthGetter(context) * 0.9,
+                        child: TextButton(
+                          onPressed: isLoading
+                              ? null
+                              : () => forgotPasswordPressed(l10n.localeName),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.onSurface,
+                          ),
+                          child: Text(
+                            l10n.forgotPassword,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: c.authSectionSpacing),
+                      const AuthDivider(indent: 20, endIndent: 20),
+                      const SizedBox(height: c.authElementSpacing),
+                      const GoogleSignInButton(),
+                      SizedBox(height: height * 0.04),
+                    ],
                   ),
-                  const SizedBox(height: c.authSectionSpacing),
-                  const AuthDivider(indent: 20, endIndent: 20),
-                  const SizedBox(height: c.authElementSpacing),
-                  const GoogleSignInButton(),
-                  SizedBox(height: height * 0.04),
-                ],
-              ),
+                ),
+                VerifyEmailView(
+                  email: emailController.text.trim(),
+                  passwordController: passwordController,
+                ),
+              ],
             ),
           ),
         ),

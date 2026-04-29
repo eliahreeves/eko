@@ -3,8 +3,21 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:eko_app/types/auth.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 
 part '../generated/providers/auth_provider.g.dart';
+
+class SignUpOutcome {
+  const SignUpOutcome({
+    this.errorCode,
+    this.needsEmailVerification = false,
+  });
+
+  final String? errorCode;
+  final bool needsEmailVerification;
+
+  bool get isSuccess => errorCode == null;
+}
 
 @Riverpod(keepAlive: true)
 class Auth extends _$Auth {
@@ -59,33 +72,17 @@ class Auth extends _$Auth {
     state = state.copyWith(pendingPasswordRecovery: false);
   }
 
-  Future<String> signIn({
+  Future<void> signIn({
     required String email,
     required String password,
   }) async {
-    try {
-      await supabase.auth.signInWithPassword(
-        email: email.trim(),
-        password: password,
-      );
-      return 'success';
-    } on AuthException catch (e) {
-      debugPrint(e.message);
-      final msg = e.message.toLowerCase();
-      if (msg.contains('invalid') || msg.contains('credentials')) {
-        return 'wrong-password';
-      }
-      if (msg.contains('invalid email')) {
-        return 'invalid-email';
-      }
-      return 'unknown';
-    } catch (e) {
-      debugPrint(e.toString());
-      return 'unknown';
-    }
+    await supabase.auth.signInWithPassword(
+      email: email.trim(),
+      password: password,
+    );
   }
 
-  Future<String> signUp({
+  Future<SignUpOutcome> signUp({
     required String email,
     required String password,
     required String username,
@@ -93,35 +90,38 @@ class Auth extends _$Auth {
     required String birthday,
   }) async {
     try {
-      await supabase.auth.signUp(
-        email: email.trim(),
-        password: password,
-        data: {
-          'username': username,
-          'name': name,
-          'birthday': birthday,
-          'bio': '',
-          'is_verified': false,
-        },
-      );
-      return 'success';
+      final response = await supabase.auth.signUp(
+          email: email.trim(),
+          password: password,
+          data: {
+            'username': username,
+            'name': name,
+            'birthday': birthday,
+            'bio': '',
+            'is_verified': false,
+          },
+          emailRedirectTo: c.verifyEmailURL);
+      final user = response.user;
+      final needsEmailVerification =
+          response.session == null || user?.emailConfirmedAt == null;
+      return SignUpOutcome(needsEmailVerification: needsEmailVerification);
     } on AuthException catch (e) {
       debugPrint(e.message);
       final msg = e.message.toLowerCase();
       if (msg.contains('already registered') ||
           msg.contains('already been registered')) {
-        return 'email-already-in-use';
+        return const SignUpOutcome(errorCode: 'email-already-in-use');
       }
       if (msg.contains('invalid email')) {
-        return 'invalid-email';
+        return const SignUpOutcome(errorCode: 'invalid-email');
       }
       if (msg.contains('password') && msg.contains('6')) {
-        return 'weak-password';
+        return const SignUpOutcome(errorCode: 'weak-password');
       }
-      return 'unknown';
+      return const SignUpOutcome(errorCode: 'unknown');
     } catch (e) {
       debugPrint(e.toString());
-      return 'unknown';
+      return const SignUpOutcome(errorCode: 'unknown');
     }
   }
 
@@ -129,18 +129,19 @@ class Auth extends _$Auth {
     try {
       final uid = state.uid;
       if (uid == null) return;
-      await supabase.rpc('delete_user', params: {'p_uid': uid});
+      await supabase.rpc('delete_user');
       await supabase.auth.signOut();
     } catch (e) {
       debugPrint('Error deleting account: $e');
     }
   }
 
-  Future<void> sendEmailVerification() async {
-    final email = state.email;
-    if (email == null) return;
+  Future<void> sendEmailVerification(String email) async {
     try {
-      await supabase.auth.resend(type: OtpType.signup, email: email);
+      await supabase.auth.resend(
+          type: OtpType.signup,
+          email: email,
+          emailRedirectTo: c.verifyEmailURL);
     } catch (e) {
       debugPrint('Error sending email verification: $e');
     }

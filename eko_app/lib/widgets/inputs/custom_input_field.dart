@@ -14,6 +14,7 @@ class CustomInputField extends StatefulWidget {
   final double? width;
   final bool enabled;
   final bool password;
+  final bool showPasswordToggle;
   final bool padding;
   final bool showCounter;
   final TextInputAction textInputAction;
@@ -22,6 +23,7 @@ class CustomInputField extends StatefulWidget {
 
   final void Function(String)? onChanged;
   final void Function()? onEditingComplete;
+  final void Function(bool)? onPasswordHiddenChanged;
   const CustomInputField({
     this.label,
     required this.controller,
@@ -40,7 +42,9 @@ class CustomInputField extends StatefulWidget {
     this.validatorFunction,
     this.enabled = true,
     this.password = false,
+    this.showPasswordToggle = true,
     this.textInputAction = TextInputAction.next,
+    this.onPasswordHiddenChanged,
     super.key,
   });
 
@@ -55,6 +59,7 @@ class _CustomInputField extends State<CustomInputField> {
     super.initState();
     if (widget.password) {
       hidden = true;
+      widget.onPasswordHiddenChanged?.call(hidden);
     }
   }
 
@@ -121,13 +126,14 @@ class _CustomInputField extends State<CustomInputField> {
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          suffixIcon: widget.password
+          suffixIcon: widget.password && widget.showPasswordToggle
               ? IconButton(
                   icon: Icon(hidden ? Icons.visibility_off : Icons.visibility),
                   onPressed: () {
                     setState(() {
                       hidden = !hidden;
                     });
+                    widget.onPasswordHiddenChanged?.call(hidden);
                   },
                 )
               : null,

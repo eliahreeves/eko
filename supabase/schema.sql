@@ -107,8 +107,7 @@ ALTER FUNCTION "public"."change_comment_likes"("p_id" bigint, "p_is_liking" bool
 CREATE OR REPLACE FUNCTION "public"."change_follow_state"("p_uid" "uuid", "p_is_follow" boolean) RETURNS "void"
     LANGUAGE "plpgsql"
     SET "search_path" TO ''
-    AS $$
-DECLARE
+    AS $$DECLARE
   v_uid UUID := auth.uid();
 BEGIN
   -- Ensure the user is actually authenticated
@@ -122,26 +121,14 @@ BEGIN
     VALUES (v_uid, p_uid) 
     ON CONFLICT DO NOTHING;
 
-    -- Check for existing activity within the last 8 hours to prevent spamming notifications
-    IF NOT EXISTS (
-      SELECT 1 
-      FROM public.activity 
-      WHERE type = 'follow'::public."ACTIVITY_TYPE" 
-        AND source_uid = v_uid 
-        AND target_uid = p_uid 
-        AND created_at > (now() - interval '8 hours')
-    ) THEN
-      INSERT INTO public.activity (source_uid, target_uid, type) 
-      VALUES (v_uid, p_uid, 'follow'::public."ACTIVITY_TYPE");
-    END IF;
+    PERFORM public.log_activity(v_uid, p_uid, 'follow'::public."ACTIVITY_TYPE");
 
   ELSE
     -- Unfollow logic
     DELETE FROM public.following
     WHERE source_uid = v_uid AND target_uid = p_uid;
   END IF;
-END;
-$$;
+END;$$;
 
 
 ALTER FUNCTION "public"."change_follow_state"("p_uid" "uuid", "p_is_follow" boolean) OWNER TO "postgres";
@@ -170,6 +157,17 @@ $$;
 
 
 ALTER FUNCTION "public"."change_post_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."delete_user"() RETURNS "void"
+    LANGUAGE "sql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+	delete from auth.users where id = auth.uid();
+$$;
+
+
+ALTER FUNCTION "public"."delete_user"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."get_comment_by_id"("p_id" bigint) RETURNS TABLE("id" bigint, "author_uid" "uuid", "created_at" timestamp with time zone, "body" "text", "gif" "text", "like_count" bigint, "dislike_count" bigint, "parent_post_id" bigint, "is_liked" boolean, "is_disliked" boolean)
@@ -529,6 +527,29 @@ $$;
 
 
 ALTER FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."log_follow_activity"("p_source_uid" "uuid", "p_target_uid" "uuid", "p_type" "public"."ACTIVITY_TYPE") RETURNS "void"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  -- Check for existing activity within the last 8 hours to prevent spamming
+  IF NOT EXISTS (
+    SELECT 1 
+    FROM public.activity 
+    WHERE type = p_type 
+      AND source_uid = p_source_uid 
+      AND target_uid = p_target_uid 
+      AND created_at > (now() - interval '8 hours')
+  ) THEN
+    INSERT INTO public.activity (source_uid, target_uid, type) 
+    VALUES (p_source_uid, p_target_uid, p_type);
+  END IF;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."log_follow_activity"("p_source_uid" "uuid", "p_target_uid" "uuid", "p_type" "public"."ACTIVITY_TYPE") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) RETURNS "void"
@@ -2076,6 +2097,12 @@ GRANT ALL ON FUNCTION "public"."change_post_likes"("p_id" bigint, "p_is_liking" 
 
 
 
+GRANT ALL ON FUNCTION "public"."delete_user"() TO "anon";
+GRANT ALL ON FUNCTION "public"."delete_user"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."delete_user"() TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."get_comment_by_id"("p_id" bigint) TO "anon";
 GRANT ALL ON FUNCTION "public"."get_comment_by_id"("p_id" bigint) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_comment_by_id"("p_id" bigint) TO "service_role";
@@ -2163,6 +2190,12 @@ GRANT ALL ON FUNCTION "public"."is_username_available"("p_username" "text") TO "
 GRANT ALL ON FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."log_comment_activity"("p_comment_id" bigint, "p_post_id" bigint, "p_author_id" "uuid", "p_text" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."log_follow_activity"("p_source_uid" "uuid", "p_target_uid" "uuid", "p_type" "public"."ACTIVITY_TYPE") TO "anon";
+GRANT ALL ON FUNCTION "public"."log_follow_activity"("p_source_uid" "uuid", "p_target_uid" "uuid", "p_type" "public"."ACTIVITY_TYPE") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."log_follow_activity"("p_source_uid" "uuid", "p_target_uid" "uuid", "p_type" "public"."ACTIVITY_TYPE") TO "service_role";
 
 
 

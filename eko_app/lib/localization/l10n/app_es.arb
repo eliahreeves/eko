@@ -69,6 +69,7 @@
 
 
     "passwordLen":"Entre 8 y 32 caracteres.",
+    "passwordMinChars":"8 o más caracteres",
     "passwordLower":"Contiene letra mayuscula",
     "passwordUpper":"Contiene letra minúscula",
     "passwordNumber":"Contiene un número",

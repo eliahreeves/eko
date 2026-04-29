@@ -138,6 +138,11 @@ const double indealAppWidth = 500;
 
 const int sessionIdLength = 8;
 const String appURL = 'https://app.eko-app.com';
+// const String siteURL = 'https://eko-app.com';
+const String siteURL = 'http://localhost:5173';
+const String siteAuthURL = '$siteURL/auth';
+const String forgotPasswordURL = '$siteAuthURL/reset-password';
+const String verifyEmailURL = '$siteAuthURL/verify-email';
 const String playStoreURL =
     'https://play.google.com/store/apps/details?id=com.echo.android';
 const String appStoreURL =

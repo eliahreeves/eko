@@ -434,6 +434,12 @@ abstract class AppLocalizations {
   /// **'Between 8 and 32 characters.'**
   String get passwordLen;
 
+  /// No description provided for @passwordMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'8 or more characters'**
+  String get passwordMinChars;
+
   /// No description provided for @passwordLower.
   ///
   /// In en, this message translates to:
@@ -607,6 +613,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add title...'**
   String get addTitle;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
 
   /// No description provided for @create.
   ///
