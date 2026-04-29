@@ -7,7 +7,6 @@ import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:eko_app/widgets/posts/poll_widget.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
-import 'package:eko_app/providers/restricted_user_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/widgets/common/divider.dart';
@@ -139,47 +138,20 @@ class _PostCardState extends ConsumerState<PostCard> {
       return SizedBox.shrink();
     }
     final asyncPost = ref.watch(postProvider(widget.id));
-    final asyncRestrictedUsers = ref.watch(restrictedUserProvider);
-
-    return asyncRestrictedUsers.when(
-      data: (restrictedUsers) {
-        return asyncPost.when(
-          data: (post) {
-            final currentUser = ref.watch(currentUserProvider);
-            if (currentUser.blockedUsers.contains(post.uid) ||
-                currentUser.blockedBy.contains(post.uid)) {
-              return SizedBox.shrink();
-            }
-
-            // if (!(currentUser.user.following.contains(post.uid)) &&
-            //     !(currentUser.user.uid != post.uid) &&
-            //     restrictedUsers.contains(post.uid)) {
-            //   return SizedBox.shrink();
-            // }
-            final isMe = post.uid == currentUser.user.uid;
-            final isFollowing = currentUser.user.following.contains(post.uid);
-            final isRestricted = restrictedUsers.contains(post.uid);
-            if (isRestricted && !isMe && !isFollowing) {
-              return SizedBox.shrink();
-            }
-            return PostCardFromPost(
-              isOnProfile: widget.isOnProfile,
-              sharePressed: sharePressed,
-              isPreview: widget.isPreview,
-              isPostPage: widget.isPostPage,
-              isLoggedIn: isLoggedIn(),
-              post: post,
-            );
-          },
-          error: (object, stack) {
-            if (widget.isOnProfile) {
-              return const SizedBox.shrink();
-            }
-            return _Error();
-          },
-          loading: () {
-            return _Loading();
-          },
+    return asyncPost.when(
+      data: (post) {
+        final currentUser = ref.watch(currentUserProvider);
+        if (currentUser.blockedUsers.contains(post.uid) ||
+            currentUser.blockedBy.contains(post.uid)) {
+          return SizedBox.shrink();
+        }
+        return PostCardFromPost(
+          isOnProfile: widget.isOnProfile,
+          sharePressed: sharePressed,
+          isPreview: widget.isPreview,
+          isPostPage: widget.isPostPage,
+          isLoggedIn: isLoggedIn(),
+          post: post,
         );
       },
       error: (object, stack) {
