@@ -10,7 +10,6 @@ import 'package:eko_app/types/current_user.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/utilities/supabase_user_map.dart';
 
-// Necessary for code-generation to work
 part '../generated/providers/current_user_provider.g.dart';
 
 @Riverpod(keepAlive: true)
@@ -63,9 +62,7 @@ class CurrentUser extends _$CurrentUser {
         if (pic == null) {
           throw Exception('profile_picture_upload_failed');
         }
-        state = state.copyWith(
-          user: state.user.copyWith(profilePicture: pic),
-        );
+        state = state.copyWith(user: state.user.copyWith(profilePicture: pic));
       }
 
       final response = await supabase.rpc(
@@ -144,7 +141,6 @@ class CurrentUser extends _$CurrentUser {
     }
   }
 
-  // LIKES //
   void addIdToLiked(String id) {
     final likes = Set<String>.from(state.likedPosts);
     likes.add(id);
@@ -169,14 +165,12 @@ class CurrentUser extends _$CurrentUser {
     state = state.copyWith(dislikedPosts: dislikes);
   }
 
-  // END LIKES //
-
   Future<void> signOut() async {
     final stateUid = state.user.uid;
     final authUid = ref.read(authProvider).uid;
-    final fcmUid = stateUid.isNotEmpty ? stateUid : (authUid ?? '');
-    if (fcmUid.isNotEmpty) {
-      await removeFCM(fcmUid);
+    final uid = stateUid.isNotEmpty ? stateUid : (authUid ?? '');
+    if (uid.isNotEmpty) {
+      await removeDeviceNotificationToken(uid);
     }
     await supabase.auth.signOut();
   }

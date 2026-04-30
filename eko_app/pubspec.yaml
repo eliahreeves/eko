@@ -56,7 +56,6 @@ dependencies:
   collection: ^1.17.1
   shared_preferences: ^2.5.3
   eraser: ^3.0.0
-  firebase_messaging: ^15.2.5
   extended_image: ^10.0.1
   loading_indicator: ^3.1.1
   permission_handler: ^12.0.0+1

@@ -4,14 +4,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:eko_app/types/auth.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:eko_app/interfaces/notification_helper.dart';
+import 'package:eko_app/interfaces/user.dart' as user;
 
 part '../generated/providers/auth_provider.g.dart';
 
 class SignUpOutcome {
-  const SignUpOutcome({
-    this.errorCode,
-    this.needsEmailVerification = false,
-  });
+  const SignUpOutcome({this.errorCode, this.needsEmailVerification = false});
 
   final String? errorCode;
   final bool needsEmailVerification;
@@ -72,14 +72,12 @@ class Auth extends _$Auth {
     state = state.copyWith(pendingPasswordRecovery: false);
   }
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     await supabase.auth.signInWithPassword(
       email: email.trim(),
       password: password,
     );
+    await _registerNotificationsIfNeeded();
   }
 
   Future<SignUpOutcome> signUp({
@@ -91,19 +89,23 @@ class Auth extends _$Auth {
   }) async {
     try {
       final response = await supabase.auth.signUp(
-          email: email.trim(),
-          password: password,
-          data: {
-            'username': username,
-            'name': name,
-            'birthday': birthday,
-            'bio': '',
-            'is_verified': false,
-          },
-          emailRedirectTo: c.verifyEmailURL);
+        email: email.trim(),
+        password: password,
+        data: {
+          'username': username,
+          'name': name,
+          'birthday': birthday,
+          'bio': '',
+          'is_verified': false,
+        },
+        emailRedirectTo: c.verifyEmailURL,
+      );
       final user = response.user;
       final needsEmailVerification =
           response.session == null || user?.emailConfirmedAt == null;
+      if (!needsEmailVerification) {
+        await _registerNotificationsIfNeeded();
+      }
       return SignUpOutcome(needsEmailVerification: needsEmailVerification);
     } on AuthException catch (e) {
       debugPrint(e.message);
@@ -139,9 +141,10 @@ class Auth extends _$Auth {
   Future<void> sendEmailVerification(String email) async {
     try {
       await supabase.auth.resend(
-          type: OtpType.signup,
-          email: email,
-          emailRedirectTo: c.verifyEmailURL);
+        type: OtpType.signup,
+        email: email,
+        emailRedirectTo: c.verifyEmailURL,
+      );
     } catch (e) {
       debugPrint('Error sending email verification: $e');
     }
@@ -157,5 +160,13 @@ class Auth extends _$Auth {
     } catch (e) {
       debugPrint('Error refreshing email verification: $e');
     }
+  }
+
+  Future<void> _registerNotificationsIfNeeded() async {
+    final uid = state.uid;
+    if (uid == null || uid.isEmpty) return;
+    if (PrefsService.notificationsEnabled) return;
+    await NotificationHelper.setupNotifications();
+    await user.addDeviceNotificationToken(uid);
   }
 }

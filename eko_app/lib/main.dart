@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/theme_provider.dart';
 import 'package:eko_app/utilities/logo_service.dart';
 import 'package:eko_app/utilities/provider_debugger.dart';
@@ -42,9 +41,6 @@ Future<void> _initFirebase() async {
     return;
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Future.wait([
-    NotificationHelper.setupNotifications(),
-  ]);
 }
 
 Future<void> main() async {

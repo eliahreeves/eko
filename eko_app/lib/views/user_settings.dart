@@ -24,20 +24,20 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
   late bool activityNotification;
 
   void toggleActivityNotification(bool value) {
-    PrefsService.activityNotifications = value;
+    PrefsService.notificationsEnabled = value;
     setState(() {
       activityNotification = value;
     });
     if (value) {
-      addFCM(ref.read(currentUserProvider).user.uid);
+      addDeviceNotificationToken(ref.read(currentUserProvider).user.uid);
     } else {
-      removeFCM(ref.read(currentUserProvider).user.uid);
+      removeDeviceNotificationToken(ref.read(currentUserProvider).user.uid);
     }
   }
 
   @override
   void initState() {
-    activityNotification = PrefsService.activityNotifications;
+    activityNotification = PrefsService.notificationsEnabled;
     super.initState();
   }
 
@@ -96,7 +96,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
                       context.pop();
                       ref.read(postPreviewProvider.notifier).toggle();
                       ref.read(postPreviewProvider.notifier).markInfoShown();
-                    }
+                    },
                   ],
                   context,
                 );

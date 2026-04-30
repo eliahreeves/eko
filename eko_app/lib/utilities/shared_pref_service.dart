@@ -27,9 +27,9 @@ class PrefsService {
   static bool get isDarkMode => instance.getBool(_keyTheme) ?? true;
   static set isDarkMode(bool value) => instance.setBool(_keyTheme, value);
 
-  static bool get activityNotifications =>
+  static bool get notificationsEnabled =>
       instance.getBool(_keyNotifications) ?? true;
-  static set activityNotifications(bool value) =>
+  static set notificationsEnabled(bool value) =>
       instance.setBool(_keyNotifications, value);
 
   static bool get showPostPreview => instance.getBool(_keyPostPreview) ?? true;

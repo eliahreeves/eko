@@ -1,14 +1,16 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/interfaces/notification_helper.dart';
 
 Future<bool> isUsernameAvailable(String username) async {
   try {
-    return await supabase
-        .rpc('is_username_available', params: {'p_username': username});
+    return await supabase.rpc(
+      'is_username_available',
+      params: {'p_username': username},
+    );
   } catch (e) {
     debugPrint(e.toString());
     return true;
@@ -19,36 +21,37 @@ bool isUsernameValid(String username) {
   return username.trim().contains(RegExp(c.userNameReqs));
 }
 
-Future<void> addFCM(String uid) async {
+Future<void> addDeviceNotificationToken(String uid) async {
   if (!kIsWeb) {
     try {
-      final token = await FirebaseMessaging.instance.getToken();
+      final token = await NotificationHelper.getDeviceToken();
       if (token == null) return;
-      await supabase.from('fcm_tockens').upsert({
+      // TODO this will need to change
+      await supabase.from('notifications').upsert({
         'user_uid': uid,
         'token': token,
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       });
-      PrefsService.activityNotifications = true;
+      PrefsService.notificationsEnabled = true;
     } catch (e) {
-      debugPrint('addFCM error: $e');
+      debugPrint('addDeviceNotificationToken error: $e');
     }
   }
 }
 
-Future<void> removeFCM(String uid) async {
+Future<void> removeDeviceNotificationToken(String uid) async {
   if (!kIsWeb) {
     try {
-      final token = await FirebaseMessaging.instance.getToken();
+      final token = await NotificationHelper.getDeviceToken();
       if (token == null) return;
       await supabase
-          .from('fcm_tockens')
+          .from('notifications')
           .delete()
           .eq('user_uid', uid)
           .eq('token', token);
-      PrefsService.activityNotifications = false;
+      PrefsService.notificationsEnabled = false;
     } catch (e) {
-      debugPrint('removeFCM error: $e');
+      debugPrint('removeDeviceNotificationToken error: $e');
     }
   }
 }
@@ -58,8 +61,10 @@ Future<String> forgotPassword({
   required String email,
 }) async {
   try {
-    await supabase.auth
-        .resetPasswordForEmail(email, redirectTo: c.forgotPasswordURL);
+    await supabase.auth.resetPasswordForEmail(
+      email,
+      redirectTo: c.forgotPasswordURL,
+    );
     return 'success';
   } catch (e) {
     return 'unknown';

@@ -36,18 +36,11 @@ PODS:
   - Firebase/InAppMessaging (11.15.0):
     - Firebase/CoreOnly
     - FirebaseInAppMessaging (~> 11.15.0-beta)
-  - Firebase/Messaging (11.15.0):
-    - Firebase/CoreOnly
-    - FirebaseMessaging (~> 11.15.0)
   - firebase_core (3.15.2):
     - Firebase/CoreOnly (= 11.15.0)
     - Flutter
   - firebase_in_app_messaging (0.8.1-10):
     - Firebase/InAppMessaging (= 11.15.0)
-    - firebase_core
-    - Flutter
-  - firebase_messaging (15.2.10):
-    - Firebase/Messaging (= 11.15.0)
     - firebase_core
     - Flutter
   - FirebaseABTesting (11.15.0):
@@ -103,15 +96,6 @@ PODS:
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/UserDefaults (~> 8.1)
     - PromisesObjC (~> 2.4)
-  - FirebaseMessaging (11.15.0):
-    - FirebaseCore (~> 11.15.0)
-    - FirebaseInstallations (~> 11.0)
-    - GoogleDataTransport (~> 10.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 8.1)
-    - GoogleUtilities/Environment (~> 8.1)
-    - GoogleUtilities/Reachability (~> 8.1)
-    - GoogleUtilities/UserDefaults (~> 8.1)
-    - nanopb (~> 3.30910.0)
   - FirebaseMessagingInterop (11.15.0)
   - FirebaseSharedSwift (11.15.0)
   - Flutter (1.0.0)
@@ -123,35 +107,19 @@ PODS:
     - FlutterMacOS
     - GoogleSignIn (~> 8.0)
     - GTMSessionFetcher (>= 3.4.0)
-  - GoogleDataTransport (10.1.0):
-    - nanopb (~> 3.30910.0)
-    - PromisesObjC (~> 2.4)
   - GoogleSignIn (8.0.0):
     - AppAuth (< 2.0, >= 1.7.3)
     - AppCheckCore (~> 11.0)
     - GTMAppAuth (< 5.0, >= 4.1.1)
     - GTMSessionFetcher/Core (~> 3.3)
-  - GoogleUtilities/AppDelegateSwizzler (8.1.0):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Network
-    - GoogleUtilities/Privacy
   - GoogleUtilities/Environment (8.1.0):
     - GoogleUtilities/Privacy
   - GoogleUtilities/Logger (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Network (8.1.0):
-    - GoogleUtilities/Logger
-    - "GoogleUtilities/NSData+zlib"
-    - GoogleUtilities/Privacy
-    - GoogleUtilities/Reachability
   - "GoogleUtilities/NSData+zlib (8.1.0)":
     - GoogleUtilities/Privacy
   - GoogleUtilities/Privacy (8.1.0)
-  - GoogleUtilities/Reachability (8.1.0):
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Privacy
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
@@ -202,7 +170,6 @@ DEPENDENCIES:
   - eraser (from `.symlinks/plugins/eraser/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_in_app_messaging (from `.symlinks/plugins/firebase_in_app_messaging/ios`)
-  - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, tag `11.15.0`)
   - Flutter (from `Flutter`)
   - gallery_saver_plus (from `.symlinks/plugins/gallery_saver_plus/ios`)
@@ -237,10 +204,8 @@ SPEC REPOS:
     - FirebaseFunctions
     - FirebaseInAppMessaging
     - FirebaseInstallations
-    - FirebaseMessaging
     - FirebaseMessagingInterop
     - FirebaseSharedSwift
-    - GoogleDataTransport
     - GoogleSignIn
     - GoogleUtilities
     - GTMAppAuth
@@ -267,8 +232,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_in_app_messaging:
     :path: ".symlinks/plugins/firebase_in_app_messaging/ios"
-  firebase_messaging:
-    :path: ".symlinks/plugins/firebase_messaging/ios"
   FirebaseFirestore:
     :git: https://github.com/invertase/firestore-ios-sdk-frameworks.git
     :tag: 11.15.0
@@ -314,7 +277,6 @@ SPEC CHECKSUMS:
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e
   firebase_core: 995454a784ff288be5689b796deb9e9fa3601818
   firebase_in_app_messaging: 903a0e11af637c36216b4ab12fbef2af94ead656
-  firebase_messaging: f4a41dd102ac18b840eba3f39d67e77922d3f707
   FirebaseABTesting: 5e9d432834aebf27ab72100d37af44dfbe8d82f7
   FirebaseAppCheckInterop: 06fe5a3799278ae4667e6c432edd86b1030fa3df
   FirebaseAuthInterop: 7087d7a4ee4bc4de019b2d0c240974ed5d89e2fd
@@ -331,13 +293,11 @@ SPEC CHECKSUMS:
   FirebaseFunctions: 86062a3ba8c7420e6b6fe22c8a1e1150332286de
   FirebaseInAppMessaging: 684b346d8cea49531b9dcaca2c1dbbfa82516fb5
   FirebaseInstallations: 317270fec08a5d418fdbc8429282238cab3ac843
-  FirebaseMessaging: 3b26e2cee503815e01c3701236b020aa9b576f09
   FirebaseMessagingInterop: 63e504b147a7206cfe64cbe2f40c2ddd009945bd
   FirebaseSharedSwift: e17c654ef1f1a616b0b33054e663ad1035c8fd40
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   gallery_saver_plus: 61c8a831d5975e2bf57f87bcd64379dcc7d29ff2
   google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
-  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleSignIn: ce8c89bb9b37fb624b92e7514cc67335d1e277e4
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
