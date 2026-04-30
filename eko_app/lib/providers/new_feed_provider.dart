@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/utilities/supabase_post_mapper.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 part '../generated/providers/new_feed_provider.g.dart';
 
@@ -25,7 +24,10 @@ class NewFeed extends _$NewFeed {
       params['p_last_id'] = last.key;
     }
     final rows = await supabase.rpc('paginated_new_posts', params: params);
-    final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
+    final list = rows as List<dynamic>? ?? const [];
+    final postList = list
+        .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
     ref.read(postPoolProvider).putAll(postList);
 
     final newList = [...state.$1];

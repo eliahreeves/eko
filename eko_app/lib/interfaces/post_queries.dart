@@ -1,8 +1,8 @@
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/comment.dart';
+import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/utilities/supabase_post_mapper.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,7 +20,10 @@ Future<(List<MapEntry<int, String>>, bool)> profilePageGetter(
     params['p_last_id'] = list.last.key;
   }
   final rows = await supabase.rpc('paginated_user_posts', params: params);
-  final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
+  final rowList = rows as List<dynamic>? ?? const [];
+  final postList = rowList
+      .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
+      .toList();
   ref.read(postPoolProvider).putAll(postList);
   final retList =
       postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
@@ -41,7 +44,9 @@ Future<(List<MapEntry<int, String>>, bool)> otherProfilePageGetter(
     params['p_last_id'] = list.last.key;
   }
   final rows = await supabase.rpc('paginated_user_posts', params: params);
-  final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?)
+  final rowList = rows as List<dynamic>? ?? const [];
+  final postList = rowList
+      .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
       .where((p) => p.tags.contains('public'))
       .toList();
   ref.read(postPoolProvider).putAll(postList);
@@ -62,7 +67,10 @@ Future<(List<MapEntry<int, (int, int)>>, bool)> popGetter(
     params['p_last_id'] = list.last.key;
   }
   final rows = await supabase.rpc('paginated_popular_posts', params: params);
-  final postList = postModelsFromSupabaseRpc(rows as List<dynamic>?);
+  final rowList = rows as List<dynamic>? ?? const [];
+  final postList = rowList
+      .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
+      .toList();
   ref.read(postPoolProvider).putAll(postList);
   final retList = postList
       .map((item) => MapEntry(item.id, (item.likes + item.dislikes, item.id)))
@@ -84,5 +92,9 @@ Future<List<CommentModel>> getCommentsForPost(
     params['p_last_id'] = lastId;
   }
   final rows = await supabase.rpc('paginated_comments', params: params);
-  return commentModelsFromSupabaseRpc(rows as List<dynamic>?);
+  final list = rows as List<dynamic>? ?? const [];
+  return list
+      .map(
+          (row) => CommentModel.fromJson(Map<String, dynamic>.from(row as Map)))
+      .toList();
 }

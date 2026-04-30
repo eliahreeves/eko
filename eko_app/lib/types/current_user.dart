@@ -13,14 +13,34 @@ abstract class CurrentUserModel with _$CurrentUserModel {
     required Set<String> blockedBy,
   }) = _CurrentUserModel;
   factory CurrentUserModel.fromJson(Map<String, dynamic> json) {
+    Set<String> asSet(Object? value) {
+      if (value is List) {
+        return value.map((e) => '$e').toSet();
+      }
+      return <String>{};
+    }
+
+    final profileDataRaw = json['profileData'] ?? json['profile_data'];
+    final profileData = profileDataRaw is Map
+        ? Map<String, dynamic>.from(profileDataRaw)
+        : <String, dynamic>{};
+
     return CurrentUserModel(
       user: UserModel.fromJson(json),
-      likedPosts: Set<String>.from(json['profileData']['likedPosts'] ?? []),
-      dislikedPosts: Set<String>.from(
-        json['profileData']['dislikedPosts'] ?? [],
+      likedPosts: asSet(
+        profileData['likedPosts'] ??
+            profileData['liked_posts'] ??
+            json['likedPosts'] ??
+            json['liked_posts'],
       ),
-      blockedBy: Set<String>.from(json['blockedBy'] ?? []),
-      blockedUsers: Set<String>.from(json['blockedUsers'] ?? []),
+      dislikedPosts: asSet(
+        profileData['dislikedPosts'] ??
+            profileData['disliked_posts'] ??
+            json['dislikedPosts'] ??
+            json['disliked_posts'],
+      ),
+      blockedBy: asSet(json['blockedBy'] ?? json['blocked_by']),
+      blockedUsers: asSet(json['blockedUsers'] ?? json['blocked_users']),
     );
   }
 

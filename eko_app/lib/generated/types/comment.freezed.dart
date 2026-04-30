@@ -14,18 +14,24 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$CommentModel {
-  @JsonKey(name: 'author')
+  @JsonKey(name: 'author_uid')
   String get uid;
   int get id;
+  @JsonKey(name: 'parent_post_id')
   int get postId;
+  @JsonKey(name: 'gif')
   String? get gifUrl;
-  @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+  @JsonKey(fromJson: _parseTags, toJson: _joinList)
   List<String> get body;
+  @JsonKey(name: 'like_count')
   int get likes;
+  @JsonKey(name: 'dislike_count')
   int get dislikes;
+  @JsonKey(name: 'is_liked')
   bool get isLiked;
+  @JsonKey(name: 'is_disliked')
   bool get isDisliked;
-  @JsonKey(name: 'time')
+  @JsonKey(name: 'created_at')
   String get createdAt;
 
   /// Create a copy of CommentModel
@@ -87,16 +93,16 @@ abstract mixin class $CommentModelCopyWith<$Res> {
       _$CommentModelCopyWithImpl;
   @useResult
   $Res call(
-      {@JsonKey(name: 'author') String uid,
+      {@JsonKey(name: 'author_uid') String uid,
       int id,
-      int postId,
-      String? gifUrl,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
-      int likes,
-      int dislikes,
-      bool isLiked,
-      bool isDisliked,
-      @JsonKey(name: 'time') String createdAt});
+      @JsonKey(name: 'parent_post_id') int postId,
+      @JsonKey(name: 'gif') String? gifUrl,
+      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+      @JsonKey(name: 'like_count') int likes,
+      @JsonKey(name: 'dislike_count') int dislikes,
+      @JsonKey(name: 'is_liked') bool isLiked,
+      @JsonKey(name: 'is_disliked') bool isDisliked,
+      @JsonKey(name: 'created_at') String createdAt});
 }
 
 /// @nodoc
@@ -261,17 +267,16 @@ extension CommentModelPatterns on CommentModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
-            @JsonKey(name: 'author') String uid,
+            @JsonKey(name: 'author_uid') String uid,
             int id,
-            int postId,
-            String? gifUrl,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
-            List<String> body,
-            int likes,
-            int dislikes,
-            bool isLiked,
-            bool isDisliked,
-            @JsonKey(name: 'time') String createdAt)?
+            @JsonKey(name: 'parent_post_id') int postId,
+            @JsonKey(name: 'gif') String? gifUrl,
+            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            @JsonKey(name: 'like_count') int likes,
+            @JsonKey(name: 'dislike_count') int dislikes,
+            @JsonKey(name: 'is_liked') bool isLiked,
+            @JsonKey(name: 'is_disliked') bool isDisliked,
+            @JsonKey(name: 'created_at') String createdAt)?
         $default, {
     required TResult orElse(),
   }) {
@@ -310,17 +315,16 @@ extension CommentModelPatterns on CommentModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(
-            @JsonKey(name: 'author') String uid,
+            @JsonKey(name: 'author_uid') String uid,
             int id,
-            int postId,
-            String? gifUrl,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
-            List<String> body,
-            int likes,
-            int dislikes,
-            bool isLiked,
-            bool isDisliked,
-            @JsonKey(name: 'time') String createdAt)
+            @JsonKey(name: 'parent_post_id') int postId,
+            @JsonKey(name: 'gif') String? gifUrl,
+            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            @JsonKey(name: 'like_count') int likes,
+            @JsonKey(name: 'dislike_count') int dislikes,
+            @JsonKey(name: 'is_liked') bool isLiked,
+            @JsonKey(name: 'is_disliked') bool isDisliked,
+            @JsonKey(name: 'created_at') String createdAt)
         $default,
   ) {
     final _that = this;
@@ -357,17 +361,16 @@ extension CommentModelPatterns on CommentModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
-            @JsonKey(name: 'author') String uid,
+            @JsonKey(name: 'author_uid') String uid,
             int id,
-            int postId,
-            String? gifUrl,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
-            List<String> body,
-            int likes,
-            int dislikes,
-            bool isLiked,
-            bool isDisliked,
-            @JsonKey(name: 'time') String createdAt)?
+            @JsonKey(name: 'parent_post_id') int postId,
+            @JsonKey(name: 'gif') String? gifUrl,
+            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            @JsonKey(name: 'like_count') int likes,
+            @JsonKey(name: 'dislike_count') int dislikes,
+            @JsonKey(name: 'is_liked') bool isLiked,
+            @JsonKey(name: 'is_disliked') bool isDisliked,
+            @JsonKey(name: 'created_at') String createdAt)?
         $default,
   ) {
     final _that = this;
@@ -394,34 +397,36 @@ extension CommentModelPatterns on CommentModel {
 @JsonSerializable()
 class _CommentModel extends CommentModel {
   const _CommentModel(
-      {@JsonKey(name: 'author') required this.uid,
+      {@JsonKey(name: 'author_uid') required this.uid,
       required this.id,
-      required this.postId,
-      this.gifUrl,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+      @JsonKey(name: 'parent_post_id') required this.postId,
+      @JsonKey(name: 'gif') this.gifUrl,
+      @JsonKey(fromJson: _parseTags, toJson: _joinList)
       final List<String> body = const <String>[],
-      this.likes = 0,
-      this.dislikes = 0,
-      this.isLiked = false,
-      this.isDisliked = false,
-      @JsonKey(name: 'time') required this.createdAt})
+      @JsonKey(name: 'like_count') this.likes = 0,
+      @JsonKey(name: 'dislike_count') this.dislikes = 0,
+      @JsonKey(name: 'is_liked') this.isLiked = false,
+      @JsonKey(name: 'is_disliked') this.isDisliked = false,
+      @JsonKey(name: 'created_at') required this.createdAt})
       : _body = body,
         super._();
   factory _CommentModel.fromJson(Map<String, dynamic> json) =>
       _$CommentModelFromJson(json);
 
   @override
-  @JsonKey(name: 'author')
+  @JsonKey(name: 'author_uid')
   final String uid;
   @override
   final int id;
   @override
+  @JsonKey(name: 'parent_post_id')
   final int postId;
   @override
+  @JsonKey(name: 'gif')
   final String? gifUrl;
   final List<String> _body;
   @override
-  @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+  @JsonKey(fromJson: _parseTags, toJson: _joinList)
   List<String> get body {
     if (_body is EqualUnmodifiableListView) return _body;
     // ignore: implicit_dynamic_type
@@ -429,19 +434,19 @@ class _CommentModel extends CommentModel {
   }
 
   @override
-  @JsonKey()
+  @JsonKey(name: 'like_count')
   final int likes;
   @override
-  @JsonKey()
+  @JsonKey(name: 'dislike_count')
   final int dislikes;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_liked')
   final bool isLiked;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_disliked')
   final bool isDisliked;
   @override
-  @JsonKey(name: 'time')
+  @JsonKey(name: 'created_at')
   final String createdAt;
 
   /// Create a copy of CommentModel
@@ -509,16 +514,16 @@ abstract mixin class _$CommentModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'author') String uid,
+      {@JsonKey(name: 'author_uid') String uid,
       int id,
-      int postId,
-      String? gifUrl,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
-      int likes,
-      int dislikes,
-      bool isLiked,
-      bool isDisliked,
-      @JsonKey(name: 'time') String createdAt});
+      @JsonKey(name: 'parent_post_id') int postId,
+      @JsonKey(name: 'gif') String? gifUrl,
+      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+      @JsonKey(name: 'like_count') int likes,
+      @JsonKey(name: 'dislike_count') int dislikes,
+      @JsonKey(name: 'is_liked') bool isLiked,
+      @JsonKey(name: 'is_disliked') bool isDisliked,
+      @JsonKey(name: 'created_at') String createdAt});
 }
 
 /// @nodoc

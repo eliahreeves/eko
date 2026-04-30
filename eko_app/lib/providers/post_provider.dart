@@ -7,7 +7,6 @@ import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
 import 'package:eko_app/providers/profile_post_list_provider.dart';
 import 'package:eko_app/types/post.dart';
-import 'package:eko_app/utilities/supabase_post_mapper.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 // Necessary for code-generation to work
 part '../generated/providers/post_provider.g.dart';
@@ -52,9 +51,7 @@ class Post extends _$Post {
     if (list == null || list.isEmpty) {
       throw Exception('Failed to load');
     }
-    return postModelFromSupabaseRow(
-      Map<String, dynamic>.from(list.first as Map),
-    );
+    return PostModel.fromJson(Map<String, dynamic>.from(list.first as Map));
   }
 
   Future<void> _changePostLike(

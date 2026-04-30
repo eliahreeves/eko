@@ -1,7 +1,7 @@
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/utilities/supabase_post_mapper.dart';
+import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,7 +24,10 @@ class ProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
       params['p_last_id'] = _cursors.last.key;
     }
     final rows = await supabase.rpc('paginated_user_posts', params: params);
-    final posts = postModelsFromSupabaseRpc(rows as List<dynamic>?);
+    final list = rows as List<dynamic>? ?? const [];
+    final posts = list
+        .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
     ref.read(postPoolProvider).putAll(posts);
 
     final newList = [...state.$1];
@@ -73,7 +76,9 @@ class OtherProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
       params['p_last_id'] = _cursors.last.key;
     }
     final rows = await supabase.rpc('paginated_user_posts', params: params);
-    final posts = postModelsFromSupabaseRpc(rows as List<dynamic>?)
+    final list = rows as List<dynamic>? ?? const [];
+    final posts = list
+        .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
         .where((post) => post.tags.contains('public'))
         .toList();
     ref.read(postPoolProvider).putAll(posts);

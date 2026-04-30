@@ -6,7 +6,6 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
-import 'package:eko_app/utilities/supabase_user_map.dart';
 
 // Necessary for code-generation to work
 part '../generated/providers/user_provider.g.dart';
@@ -56,11 +55,7 @@ class User extends _$User {
       }
       final row = response.first;
       if (row is! Map) return UserModel.userNotFound();
-      final doc = currentUserDocFromSupabaseRow(
-        Map<String, dynamic>.from(row),
-        const [],
-      );
-      return UserModel.fromJson(doc);
+      return UserModel.fromJson(Map<String, dynamic>.from(row));
     } catch (_) {
       return UserModel.userNotFound();
     }

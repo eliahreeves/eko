@@ -8,7 +8,6 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/current_user.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
-import 'package:eko_app/utilities/supabase_user_map.dart';
 
 part '../generated/providers/current_user_provider.g.dart';
 
@@ -239,9 +238,8 @@ class CurrentUser extends _$CurrentUser {
       }
       final row = Map<String, dynamic>.from(first);
       final blockedBy = await _getPeopleWhoBlockedMe();
-      state = CurrentUserModel.fromJson(
-        currentUserDocFromSupabaseRow(row, blockedBy),
-      );
+      row['blocked_by'] = blockedBy;
+      state = CurrentUserModel.fromJson(row);
     } catch (e) {
       debugPrint('Error reloading current user from Supabase: $e');
     }

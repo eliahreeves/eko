@@ -6,7 +6,6 @@ import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/utilities/supabase_ref.dart';
-import 'package:eko_app/utilities/supabase_user_map.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
@@ -29,13 +28,9 @@ class ViewLikesPage extends ConsumerWidget {
     });
 
     final rowList = rows as List<dynamic>? ?? [];
-    final userList = rowList.map((row) {
-      final mapped = currentUserDocFromSupabaseRow(
-        Map<String, dynamic>.from(row as Map),
-        const [],
-      );
-      return UserModel.fromJson(mapped);
-    }).toList();
+    final userList = rowList
+        .map((row) => UserModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
 
     ref.read(userPoolProvider).putAll(userList);
     return (

@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/comment.dart';
-import 'package:eko_app/utilities/supabase_post_mapper.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 part '../generated/providers/comment_provider.g.dart';
 
@@ -46,7 +45,11 @@ class Comment extends _$Comment {
     final rows = await supabase.rpc('get_comment_by_id', params: {
       'p_id': id,
     });
-    final comments = commentModelsFromSupabaseRpc(rows as List<dynamic>?);
+    final list = rows as List<dynamic>? ?? const [];
+    final comments = list
+        .map((row) =>
+            CommentModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
     if (comments.isEmpty) {
       throw Exception('Failed to load');
     }

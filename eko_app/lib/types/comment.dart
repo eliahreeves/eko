@@ -11,22 +11,29 @@ String _joinList(List<String>? list) {
   return list.join('');
 }
 
+List<String> _parseTags(Object? value) {
+  if (value == null) return [];
+  if (value is String) return parseTextToTags(value);
+  if (value is List) return value.map((item) => item.toString()).toList();
+  return parseTextToTags(value.toString());
+}
+
 @freezed
 abstract class CommentModel with _$CommentModel {
   const CommentModel._();
   const factory CommentModel({
-    @JsonKey(name: 'author') required String uid,
+    @JsonKey(name: 'author_uid') required String uid,
     required int id,
-    required int postId,
-    String? gifUrl,
+    @JsonKey(name: 'parent_post_id') required int postId,
+    @JsonKey(name: 'gif') String? gifUrl,
     @Default(<String>[])
-    @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+    @JsonKey(fromJson: _parseTags, toJson: _joinList)
     List<String> body,
-    @Default(0) int likes,
-    @Default(0) int dislikes,
-    @Default(false) bool isLiked,
-    @Default(false) bool isDisliked,
-    @JsonKey(name: 'time') required String createdAt,
+    @Default(0) @JsonKey(name: 'like_count') int likes,
+    @Default(0) @JsonKey(name: 'dislike_count') int dislikes,
+    @Default(false) @JsonKey(name: 'is_liked') bool isLiked,
+    @Default(false) @JsonKey(name: 'is_disliked') bool isDisliked,
+    @JsonKey(name: 'created_at') required String createdAt,
   }) = _CommentModel;
 
   factory CommentModel.fromJson(Map<String, dynamic> json) =>
@@ -40,8 +47,9 @@ abstract class CommentModel with _$CommentModel {
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) async {
     final json = doc.data();
-    json['id'] = doc.id;
-    json['postId'] = int.tryParse(doc.reference.parent.parent?.id ?? '');
+    json['id'] = int.tryParse(doc.id);
+    json['parent_post_id'] =
+        int.tryParse(doc.reference.parent.parent?.id ?? '');
     return CommentModel.fromJson(json);
   }
 }

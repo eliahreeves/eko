@@ -12,6 +12,13 @@ String _joinList(List<String>? list) {
   return list.join('');
 }
 
+List<String> _parseTags(Object? value) {
+  if (value == null) return [];
+  if (value is String) return parseTextToTags(value);
+  if (value is List) return value.map((item) => item.toString()).toList();
+  return parseTextToTags(value.toString());
+}
+
 String? _asciiImageToString(AsciiImage? image) {
   if (image == null) return null;
   return image.toStorableString();
@@ -26,9 +33,9 @@ AsciiImage? _asciiImageFromString(String? image) {
 abstract class PostModel with _$PostModel {
   const PostModel._();
   const factory PostModel({
-    @JsonKey(name: 'author') required String uid,
+    @JsonKey(name: 'author_uid') required String uid,
     required int id,
-    String? gifUrl,
+    @JsonKey(name: 'gif') String? gifUrl,
     @JsonKey(
       name: 'image',
       fromJson: _asciiImageFromString,
@@ -36,21 +43,21 @@ abstract class PostModel with _$PostModel {
     )
     AsciiImage? imageString,
     @Default(<String>[])
-    @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+    @JsonKey(fromJson: _parseTags, toJson: _joinList)
     List<String> title,
     @Default(<String>[])
-    @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+    @JsonKey(fromJson: _parseTags, toJson: _joinList)
     List<String> body,
     @Default(['public']) List<String> tags,
-    @Default(0) int likes,
-    @Default(0) int dislikes,
-    @Default(0) int commentCount,
-    @Default(false) bool isLiked,
-    @Default(false) bool isDisliked,
-    @JsonKey(name: 'time') required String createdAt,
+    @Default(0) @JsonKey(name: 'like_count') int likes,
+    @Default(0) @JsonKey(name: 'dislike_count') int dislikes,
+    @Default(0) @JsonKey(name: 'comment_count') int commentCount,
+    @Default(false) @JsonKey(name: 'is_liked') bool isLiked,
+    @Default(false) @JsonKey(name: 'is_disliked') bool isDisliked,
+    @JsonKey(name: 'created_at') required String createdAt,
     List<PollOptionModel>? poll,
     int? vote,
-    int? repostId,
+    @JsonKey(name: 'ekoed_id') int? repostId,
   }) = _PostModel;
 
   factory PostModel.fromJson(Map<String, dynamic> json) =>

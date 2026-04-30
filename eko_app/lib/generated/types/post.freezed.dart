@@ -14,29 +14,36 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$PostModel implements DiagnosticableTreeMixin {
-  @JsonKey(name: 'author')
+  @JsonKey(name: 'author_uid')
   String get uid;
   int get id;
+  @JsonKey(name: 'gif')
   String? get gifUrl;
   @JsonKey(
       name: 'image',
       fromJson: _asciiImageFromString,
       toJson: _asciiImageToString)
   AsciiImage? get imageString;
-  @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+  @JsonKey(fromJson: _parseTags, toJson: _joinList)
   List<String> get title;
-  @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+  @JsonKey(fromJson: _parseTags, toJson: _joinList)
   List<String> get body;
   List<String> get tags;
+  @JsonKey(name: 'like_count')
   int get likes;
+  @JsonKey(name: 'dislike_count')
   int get dislikes;
+  @JsonKey(name: 'comment_count')
   int get commentCount;
+  @JsonKey(name: 'is_liked')
   bool get isLiked;
+  @JsonKey(name: 'is_disliked')
   bool get isDisliked;
-  @JsonKey(name: 'time')
+  @JsonKey(name: 'created_at')
   String get createdAt;
   List<PollOptionModel>? get poll;
   int? get vote;
+  @JsonKey(name: 'ekoed_id')
   int? get repostId;
 
   /// Create a copy of PostModel
@@ -133,26 +140,26 @@ abstract mixin class $PostModelCopyWith<$Res> {
       _$PostModelCopyWithImpl;
   @useResult
   $Res call(
-      {@JsonKey(name: 'author') String uid,
+      {@JsonKey(name: 'author_uid') String uid,
       int id,
-      String? gifUrl,
+      @JsonKey(name: 'gif') String? gifUrl,
       @JsonKey(
           name: 'image',
           fromJson: _asciiImageFromString,
           toJson: _asciiImageToString)
       AsciiImage? imageString,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> title,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
+      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> title,
+      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
       List<String> tags,
-      int likes,
-      int dislikes,
-      int commentCount,
-      bool isLiked,
-      bool isDisliked,
-      @JsonKey(name: 'time') String createdAt,
+      @JsonKey(name: 'like_count') int likes,
+      @JsonKey(name: 'dislike_count') int dislikes,
+      @JsonKey(name: 'comment_count') int commentCount,
+      @JsonKey(name: 'is_liked') bool isLiked,
+      @JsonKey(name: 'is_disliked') bool isDisliked,
+      @JsonKey(name: 'created_at') String createdAt,
       List<PollOptionModel>? poll,
       int? vote,
-      int? repostId});
+      @JsonKey(name: 'ekoed_id') int? repostId});
 }
 
 /// @nodoc
@@ -347,28 +354,27 @@ extension PostModelPatterns on PostModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
-            @JsonKey(name: 'author') String uid,
+            @JsonKey(name: 'author_uid') String uid,
             int id,
-            String? gifUrl,
+            @JsonKey(name: 'gif') String? gifUrl,
             @JsonKey(
                 name: 'image',
                 fromJson: _asciiImageFromString,
                 toJson: _asciiImageToString)
             AsciiImage? imageString,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+            @JsonKey(fromJson: _parseTags, toJson: _joinList)
             List<String> title,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
-            List<String> body,
+            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
             List<String> tags,
-            int likes,
-            int dislikes,
-            int commentCount,
-            bool isLiked,
-            bool isDisliked,
-            @JsonKey(name: 'time') String createdAt,
+            @JsonKey(name: 'like_count') int likes,
+            @JsonKey(name: 'dislike_count') int dislikes,
+            @JsonKey(name: 'comment_count') int commentCount,
+            @JsonKey(name: 'is_liked') bool isLiked,
+            @JsonKey(name: 'is_disliked') bool isDisliked,
+            @JsonKey(name: 'created_at') String createdAt,
             List<PollOptionModel>? poll,
             int? vote,
-            int? repostId)?
+            @JsonKey(name: 'ekoed_id') int? repostId)?
         $default, {
     required TResult orElse(),
   }) {
@@ -413,28 +419,27 @@ extension PostModelPatterns on PostModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(
-            @JsonKey(name: 'author') String uid,
+            @JsonKey(name: 'author_uid') String uid,
             int id,
-            String? gifUrl,
+            @JsonKey(name: 'gif') String? gifUrl,
             @JsonKey(
                 name: 'image',
                 fromJson: _asciiImageFromString,
                 toJson: _asciiImageToString)
             AsciiImage? imageString,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+            @JsonKey(fromJson: _parseTags, toJson: _joinList)
             List<String> title,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
-            List<String> body,
+            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
             List<String> tags,
-            int likes,
-            int dislikes,
-            int commentCount,
-            bool isLiked,
-            bool isDisliked,
-            @JsonKey(name: 'time') String createdAt,
+            @JsonKey(name: 'like_count') int likes,
+            @JsonKey(name: 'dislike_count') int dislikes,
+            @JsonKey(name: 'comment_count') int commentCount,
+            @JsonKey(name: 'is_liked') bool isLiked,
+            @JsonKey(name: 'is_disliked') bool isDisliked,
+            @JsonKey(name: 'created_at') String createdAt,
             List<PollOptionModel>? poll,
             int? vote,
-            int? repostId)
+            @JsonKey(name: 'ekoed_id') int? repostId)
         $default,
   ) {
     final _that = this;
@@ -477,28 +482,27 @@ extension PostModelPatterns on PostModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
-            @JsonKey(name: 'author') String uid,
+            @JsonKey(name: 'author_uid') String uid,
             int id,
-            String? gifUrl,
+            @JsonKey(name: 'gif') String? gifUrl,
             @JsonKey(
                 name: 'image',
                 fromJson: _asciiImageFromString,
                 toJson: _asciiImageToString)
             AsciiImage? imageString,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+            @JsonKey(fromJson: _parseTags, toJson: _joinList)
             List<String> title,
-            @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
-            List<String> body,
+            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
             List<String> tags,
-            int likes,
-            int dislikes,
-            int commentCount,
-            bool isLiked,
-            bool isDisliked,
-            @JsonKey(name: 'time') String createdAt,
+            @JsonKey(name: 'like_count') int likes,
+            @JsonKey(name: 'dislike_count') int dislikes,
+            @JsonKey(name: 'comment_count') int commentCount,
+            @JsonKey(name: 'is_liked') bool isLiked,
+            @JsonKey(name: 'is_disliked') bool isDisliked,
+            @JsonKey(name: 'created_at') String createdAt,
             List<PollOptionModel>? poll,
             int? vote,
-            int? repostId)?
+            @JsonKey(name: 'ekoed_id') int? repostId)?
         $default,
   ) {
     final _that = this;
@@ -531,28 +535,28 @@ extension PostModelPatterns on PostModel {
 @JsonSerializable()
 class _PostModel extends PostModel with DiagnosticableTreeMixin {
   const _PostModel(
-      {@JsonKey(name: 'author') required this.uid,
+      {@JsonKey(name: 'author_uid') required this.uid,
       required this.id,
-      this.gifUrl,
+      @JsonKey(name: 'gif') this.gifUrl,
       @JsonKey(
           name: 'image',
           fromJson: _asciiImageFromString,
           toJson: _asciiImageToString)
       this.imageString,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+      @JsonKey(fromJson: _parseTags, toJson: _joinList)
       final List<String> title = const <String>[],
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+      @JsonKey(fromJson: _parseTags, toJson: _joinList)
       final List<String> body = const <String>[],
       final List<String> tags = const ['public'],
-      this.likes = 0,
-      this.dislikes = 0,
-      this.commentCount = 0,
-      this.isLiked = false,
-      this.isDisliked = false,
-      @JsonKey(name: 'time') required this.createdAt,
+      @JsonKey(name: 'like_count') this.likes = 0,
+      @JsonKey(name: 'dislike_count') this.dislikes = 0,
+      @JsonKey(name: 'comment_count') this.commentCount = 0,
+      @JsonKey(name: 'is_liked') this.isLiked = false,
+      @JsonKey(name: 'is_disliked') this.isDisliked = false,
+      @JsonKey(name: 'created_at') required this.createdAt,
       final List<PollOptionModel>? poll,
       this.vote,
-      this.repostId})
+      @JsonKey(name: 'ekoed_id') this.repostId})
       : _title = title,
         _body = body,
         _tags = tags,
@@ -562,11 +566,12 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       _$PostModelFromJson(json);
 
   @override
-  @JsonKey(name: 'author')
+  @JsonKey(name: 'author_uid')
   final String uid;
   @override
   final int id;
   @override
+  @JsonKey(name: 'gif')
   final String? gifUrl;
   @override
   @JsonKey(
@@ -576,7 +581,7 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
   final AsciiImage? imageString;
   final List<String> _title;
   @override
-  @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+  @JsonKey(fromJson: _parseTags, toJson: _joinList)
   List<String> get title {
     if (_title is EqualUnmodifiableListView) return _title;
     // ignore: implicit_dynamic_type
@@ -585,7 +590,7 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
 
   final List<String> _body;
   @override
-  @JsonKey(fromJson: parseTextToTags, toJson: _joinList)
+  @JsonKey(fromJson: _parseTags, toJson: _joinList)
   List<String> get body {
     if (_body is EqualUnmodifiableListView) return _body;
     // ignore: implicit_dynamic_type
@@ -602,22 +607,22 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
   }
 
   @override
-  @JsonKey()
+  @JsonKey(name: 'like_count')
   final int likes;
   @override
-  @JsonKey()
+  @JsonKey(name: 'dislike_count')
   final int dislikes;
   @override
-  @JsonKey()
+  @JsonKey(name: 'comment_count')
   final int commentCount;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_liked')
   final bool isLiked;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_disliked')
   final bool isDisliked;
   @override
-  @JsonKey(name: 'time')
+  @JsonKey(name: 'created_at')
   final String createdAt;
   final List<PollOptionModel>? _poll;
   @override
@@ -632,6 +637,7 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
   @override
   final int? vote;
   @override
+  @JsonKey(name: 'ekoed_id')
   final int? repostId;
 
   /// Create a copy of PostModel
@@ -736,26 +742,26 @@ abstract mixin class _$PostModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'author') String uid,
+      {@JsonKey(name: 'author_uid') String uid,
       int id,
-      String? gifUrl,
+      @JsonKey(name: 'gif') String? gifUrl,
       @JsonKey(
           name: 'image',
           fromJson: _asciiImageFromString,
           toJson: _asciiImageToString)
       AsciiImage? imageString,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> title,
-      @JsonKey(fromJson: parseTextToTags, toJson: _joinList) List<String> body,
+      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> title,
+      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
       List<String> tags,
-      int likes,
-      int dislikes,
-      int commentCount,
-      bool isLiked,
-      bool isDisliked,
-      @JsonKey(name: 'time') String createdAt,
+      @JsonKey(name: 'like_count') int likes,
+      @JsonKey(name: 'dislike_count') int dislikes,
+      @JsonKey(name: 'comment_count') int commentCount,
+      @JsonKey(name: 'is_liked') bool isLiked,
+      @JsonKey(name: 'is_disliked') bool isDisliked,
+      @JsonKey(name: 'created_at') String createdAt,
       List<PollOptionModel>? poll,
       int? vote,
-      int? repostId});
+      @JsonKey(name: 'ekoed_id') int? repostId});
 }
 
 /// @nodoc
