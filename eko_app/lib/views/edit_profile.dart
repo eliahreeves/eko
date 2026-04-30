@@ -388,7 +388,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                   child: ColoredBox(
                     color: Theme.of(
                       context,
-                    ).colorScheme.surface.withOpacity(0.55),
+                    ).colorScheme.surface.withValues(alpha: 0.55),
                     child: const Center(child: CircularProgressIndicator()),
                   ),
                 ),

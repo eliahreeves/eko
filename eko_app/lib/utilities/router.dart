@@ -27,7 +27,6 @@ import 'package:eko_app/views/welcome.dart';
 import 'package:eko_app/views/followers.dart';
 import 'package:eko_app/views/following.dart';
 import 'package:eko_app/views/recent_activity.dart';
-import 'package:eko_app/views/auth_action_interface.dart';
 import 'package:eko_app/views/view_likes_page.dart';
 import 'package:eko_app/widgets/posts/gifs.dart';
 import 'package:eko_app/widgets/scaffolds/require_auth.dart';
@@ -109,14 +108,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             name: 'signup',
             builder: (context, state) {
               return const RequireNoAuth(child: AppSafeArea(child: SignUp()));
-            },
-          ),
-          GoRoute(
-            path: 'auth',
-            name: 'auth',
-            builder: (context, state) {
-              final url = state.uri.queryParameters;
-              return AppSafeArea(child: AuthActionInterface(urlData: url));
             },
           ),
           GoRoute(
