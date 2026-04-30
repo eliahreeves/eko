@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,14 +30,9 @@ Future<void> _checkFirstInstall() async {
 }
 
 Future<void> _initSupabase() async {
-  final url = const String.fromEnvironment('SUPABASE_URL');
-  final key = const String.fromEnvironment('SUPABASE_KEY');
-  if (url.isEmpty || key.isEmpty) {
-    throw StateError('SUPABASE not defined');
-  }
   await Supabase.initialize(
-      url: url,
-      anonKey: key,
+      url: ac.supabaseUrl,
+      anonKey: ac.supabaseKey,
       authOptions:
           FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit));
 }
