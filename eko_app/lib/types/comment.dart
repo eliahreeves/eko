@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:eko_app/interfaces/post.dart';
 part '../generated/types/comment.freezed.dart';
@@ -41,15 +40,5 @@ abstract class CommentModel with _$CommentModel {
 
   DateTime getDateTime() {
     return DateTime.tryParse(createdAt) ?? DateTime.now();
-  }
-
-  static Future<CommentModel> fromFireStoreDoc(
-    QueryDocumentSnapshot<Map<String, dynamic>> doc,
-  ) async {
-    final json = doc.data();
-    json['id'] = int.tryParse(doc.id);
-    json['parent_post_id'] =
-        int.tryParse(doc.reference.parent.parent?.id ?? '');
-    return CommentModel.fromJson(json);
   }
 }

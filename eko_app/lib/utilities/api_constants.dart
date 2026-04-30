@@ -1,5 +1,3 @@
-import 'package:eko_app/types/gif_model.dart';
-
 const _klipyKey = [
   81,
   76,
