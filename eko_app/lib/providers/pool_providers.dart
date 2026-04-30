@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/providers/activity_provider.dart';
 import 'package:eko_app/providers/comment_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
-import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/types/comment.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/types/user.dart';
@@ -47,19 +45,6 @@ PoolService<UserModel, String> userPool(Ref ref) {
       }
     },
     keySelector: (user) => user.uid,
-    validTime: const Duration(minutes: 3),
-  );
-}
-
-@Riverpod(keepAlive: true)
-PoolService<ActivityModel, String> activityPool(Ref ref) {
-  return PoolService<ActivityModel, String>(
-    onInsert: (id) {
-      if (ref.exists(activityProvider(id))) {
-        ref.invalidate(activityProvider(id));
-      }
-    },
-    keySelector: (activity) => activity.id,
     validTime: const Duration(minutes: 3),
   );
 }

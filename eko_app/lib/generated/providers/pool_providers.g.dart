@@ -54,22 +54,5 @@ final userPoolProvider = Provider<PoolService<UserModel, String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef UserPoolRef = ProviderRef<PoolService<UserModel, String>>;
-String _$activityPoolHash() => r'0e1d2a2c0b80b5457f613fdc0013a6996f820fdb';
-
-/// See also [activityPool].
-@ProviderFor(activityPool)
-final activityPoolProvider =
-    Provider<PoolService<ActivityModel, String>>.internal(
-  activityPool,
-  name: r'activityPoolProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$activityPoolHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef ActivityPoolRef = ProviderRef<PoolService<ActivityModel, String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

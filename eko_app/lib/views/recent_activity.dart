@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
-import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
@@ -14,31 +12,28 @@ import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 class RecentActivity extends ConsumerWidget {
   const RecentActivity({super.key});
 
-  Future<(List<MapEntry<String, String>>, bool)> getter(
-    List<MapEntry<String, String>> list,
+  Future<(List<MapEntry<ActivityModel, Never?>>, bool)> getter(
+    List<MapEntry<ActivityModel, Never?>> list,
     WidgetRef ref,
   ) async {
-    final uid = ref.read(currentUserProvider).user.uid;
-    final baseQuery = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('newActivity')
-        .orderBy('time', descending: true)
-        .where(
-      'type',
-      whereIn: const ['comment', 'follow', 'tag'],
-    ) //update for new types
-        .limit(c.activitiesPerRequest);
-    final query =
-        list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
+    final params = <String, dynamic>{
+      'p_limit': c.postsOnRefresh,
+    };
+    if (list.isNotEmpty) {
+      params['p_last_time'] = list.last.key.createdAt;
+      params['p_last_id'] = list.last.key.id;
+    }
+    final rows = await supabase.rpc('paginated_activities', params: params);
 
-    final activityList = await query.get().then(
-          (data) => data.docs.map((doc) => ActivityModel.fromFirestoreDoc(doc)),
-        );
-    ref.read(activityPoolProvider).putAll(activityList);
-    final retList =
-        activityList.map((item) => MapEntry(item.id, item.createdAt)).toList();
-    return (retList, retList.length < c.postsOnRefresh);
+    final rowList = rows as List<dynamic>? ?? [];
+    final activityList = rowList.map((row) {
+      return ActivityModel.fromJson(Map<String, dynamic>.from(row as Map));
+    }).toList();
+
+    return (
+      activityList.map((item) => MapEntry(item, null)).toList(),
+      activityList.length < c.usersOnSearch,
+    );
   }
 
   @override
@@ -62,7 +57,7 @@ class RecentActivity extends ConsumerWidget {
           ),
         ),
       ),
-      body: InfiniteScrolly<String, String>(
+      body: InfiniteScrolly<ActivityModel, Never?>(
         getter: (data) => getter(data, ref),
         widget: recentActivityCardBuilder,
         initialLoadingWidget: UserLoader(length: 12),
