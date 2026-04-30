@@ -62,7 +62,8 @@ PostModel postModelFromSupabaseRow(Map<String, dynamic> row) {
   final pollVoteCounts = poll == null
       ? null
       : {
-          for (final option in poll) option.optionId.toString(): option.voteCount,
+          for (final option in poll)
+            option.optionId.toString(): option.voteCount,
         };
   final pollOptions = poll?.map((option) => option.value).toList();
   final json = <String, dynamic>{

@@ -174,8 +174,7 @@ class CurrentUser extends _$CurrentUser {
   Future<void> signOut() async {
     final stateUid = state.user.uid;
     final authUid = ref.read(authProvider).uid;
-    final fcmUid =
-        stateUid.isNotEmpty ? stateUid : (authUid ?? '');
+    final fcmUid = stateUid.isNotEmpty ? stateUid : (authUid ?? '');
     if (fcmUid.isNotEmpty) {
       await removeFCM(fcmUid);
     }

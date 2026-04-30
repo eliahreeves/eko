@@ -165,9 +165,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     return Scaffold(
       appBar: AuthAppBar(
-        onBack: _paneIndex == 1
-            ? () => setState(() => _paneIndex = 0)
-            : null,
+        onBack: _paneIndex == 1 ? () => setState(() => _paneIndex = 0) : null,
       ),
       floatingActionButton: downloadButtonIfWeb(),
       backgroundColor: Theme.of(context).colorScheme.surface,

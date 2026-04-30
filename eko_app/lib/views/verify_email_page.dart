@@ -104,8 +104,7 @@ class _VerifyEmailViewState extends ConsumerState<VerifyEmailView> {
         );
       } else {
         showSnackBar(
-          text:
-              '${AppLocalizations.of(context)!.error}: ${e.message}',
+          text: '${AppLocalizations.of(context)!.error}: ${e.message}',
           context: context,
           variant: SnackBarVariant.destructive,
         );
@@ -168,9 +167,8 @@ class _VerifyEmailViewState extends ConsumerState<VerifyEmailView> {
                     ? l10n.resendInSeconds(_resendCountdown)
                     : l10n.resendVerificationEmail,
                 isLoading: _resendLoading,
-                onPressed: (_resendLoading || _resendCountdown > 0)
-                    ? null
-                    : _resend,
+                onPressed:
+                    (_resendLoading || _resendCountdown > 0) ? null : _resend,
               ),
               const SizedBox(height: c.authElementSpacing),
               AuthButton.secondary(
