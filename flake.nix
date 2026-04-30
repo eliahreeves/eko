@@ -61,6 +61,13 @@
                   chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache/artifacts/engine" 2>/dev/null || true
                   export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
                   export PATH="$FLUTTER_ROOT/bin:$PATH"
+				  if [ -x "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart" ]; then
+					  cat > "$FLUTTER_ROOT/bin/dart" <<'EOF'
+					#!/bin/sh
+					exec "$(dirname "$0")/cache/dart-sdk/bin/dart" "$@"
+					EOF
+					  chmod +x "$FLUTTER_ROOT/bin/dart"
+				fi
                 ''
                 + commonShellHook;
             }
