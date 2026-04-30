@@ -27,6 +27,7 @@
           git config core.hooksPath scripts/git-hooks
         '';
       in {
+        packages.default = pkgs.callPackage ./nix/package.nix {};
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           config = {
