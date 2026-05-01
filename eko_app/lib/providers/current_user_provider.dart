@@ -26,12 +26,16 @@ class CurrentUser extends _$CurrentUser {
         state = CurrentUserModel.loading();
       } else {
         reload();
+        ref
+            .read(authProvider.notifier)
+            .refreshDeviceNotificationTokenIfNeeded();
       }
     });
 
     final auth = ref.read(authProvider);
     if (auth.uid != null) {
       reload();
+      ref.read(authProvider.notifier).refreshDeviceNotificationTokenIfNeeded();
     }
     return CurrentUserModel.loading();
   }

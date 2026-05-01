@@ -75,6 +75,7 @@ dependencies:
   gallery_saver_plus: ^3.2.4
   sensors_plus: ^6.1.1
   supabase_flutter: ^2.9.1
+  uuid: ^4.4.2
 
 dev_dependencies:
   # flutter_test:

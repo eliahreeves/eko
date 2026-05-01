@@ -10,6 +10,10 @@ class PrefsService {
   static const String _keyNotFirstInstall = 'NOT_FIRST_INSTALL';
   static const String _keyLastFeedPageIndex = 'LAST_FEED_PAGE_INDEX';
   static const String _keyWebUdidPresence = 'web_udid_presence';
+  static const String _keyDeviceUid = 'DEVICE_UID';
+  static const String _keyDeviceToken = 'DEVICE_PUSH_TOKEN';
+  static const String _keyDeviceTokenLastCheckedAt =
+      'DEVICE_PUSH_TOKEN_LAST_CHECKED_AT';
 
   static Future<void> init() async {
     _prefs = await SharedPreferencesWithCache.create(
@@ -57,6 +61,35 @@ class PrefsService {
       instance.remove(_keyWebUdidPresence);
     } else {
       instance.setString(_keyWebUdidPresence, value);
+    }
+  }
+
+  static String? get deviceUid => instance.getString(_keyDeviceUid);
+  static set deviceUid(String? value) {
+    if (value == null) {
+      instance.remove(_keyDeviceUid);
+    } else {
+      instance.setString(_keyDeviceUid, value);
+    }
+  }
+
+  static String? get deviceNotificationToken =>
+      instance.getString(_keyDeviceToken);
+  static set deviceNotificationToken(String? value) {
+    if (value == null) {
+      instance.remove(_keyDeviceToken);
+    } else {
+      instance.setString(_keyDeviceToken, value);
+    }
+  }
+
+  static int? get deviceNotificationTokenLastCheckedAt =>
+      instance.getInt(_keyDeviceTokenLastCheckedAt);
+  static set deviceNotificationTokenLastCheckedAt(int? value) {
+    if (value == null) {
+      instance.remove(_keyDeviceTokenLastCheckedAt);
+    } else {
+      instance.setInt(_keyDeviceTokenLastCheckedAt, value);
     }
   }
 }

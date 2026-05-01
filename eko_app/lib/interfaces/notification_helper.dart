@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/utilities/shared_pref_service.dart';
 
 class NotificationHelper {
   static NotificationPlatformAdapter get _adapter {
@@ -32,7 +33,32 @@ class NotificationHelper {
   }
 
   static Future<String?> getDeviceToken() async {
+    await _adapter.initialize();
     return _adapter.getDeviceToken();
+  }
+
+  /// TODO probably should remove this and track in the DB when apns returns 410, then when user info
+  /// is pulled, a bool will determine if its expired and needs to upload a new token.
+  /// https://developer.apple.com/forums/thread/682939
+  static Future<bool> refreshDeviceTokenIfNeeded({
+    Duration minInterval = const Duration(days: 7),
+  }) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final lastChecked = PrefsService.deviceNotificationTokenLastCheckedAt;
+    if (lastChecked != null && now - lastChecked < minInterval.inMilliseconds) {
+      return false;
+    }
+    PrefsService.deviceNotificationTokenLastCheckedAt = now;
+    final token = await getDeviceToken();
+    if (token == null || token.isEmpty) {
+      PrefsService.notificationsEnabled = false;
+      PrefsService.deviceNotificationToken = null;
+      return false;
+    }
+    final previous = PrefsService.deviceNotificationToken;
+    if (previous == token) return false;
+    PrefsService.deviceNotificationToken = token;
+    return true;
   }
 
   static Future<void> _handleNavigationPayload(

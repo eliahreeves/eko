@@ -13,10 +13,6 @@ PODS:
     - PromisesObjC (~> 2.4)
   - camera_avfoundation (0.0.1):
     - Flutter
-  - cloud_firestore (5.6.12):
-    - Firebase/Firestore (= 11.15.0)
-    - firebase_core
-    - Flutter
   - cloud_functions (5.6.2):
     - Firebase/Functions (= 11.15.0)
     - firebase_core
@@ -27,9 +23,6 @@ PODS:
     - Flutter
   - Firebase/CoreOnly (11.15.0):
     - FirebaseCore (~> 11.15.0)
-  - Firebase/Firestore (11.15.0):
-    - Firebase/CoreOnly
-    - FirebaseFirestore (~> 11.15.0)
   - Firebase/Functions (11.15.0):
     - Firebase/CoreOnly
     - FirebaseFunctions (~> 11.15.0)
@@ -164,7 +157,6 @@ PODS:
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
-  - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - emoji_picker_flutter (from `.symlinks/plugins/emoji_picker_flutter/ios`)
   - eraser (from `.symlinks/plugins/eraser/ios`)
@@ -220,8 +212,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_links/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
-  cloud_firestore:
-    :path: ".symlinks/plugins/cloud_firestore/ios"
   cloud_functions:
     :path: ".symlinks/plugins/cloud_functions/ios"
   emoji_picker_flutter:
@@ -270,7 +260,6 @@ SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   camera_avfoundation: 5675ca25298b6f81fa0a325188e7df62cc217741
-  cloud_firestore: fdcc87898326e396d6ef6df543acf9b5c2034b95
   cloud_functions: 8565a870fbdc2b5046cba8183e972484128b6d8d
   emoji_picker_flutter: ece213fc274bdddefb77d502d33080dc54e616cc
   eraser: 83a4b06985f3702aa3d8dec816f9693266012937
