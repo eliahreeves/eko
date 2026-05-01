@@ -26,10 +26,10 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   void goBranch(int index) {
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
-    );
+    if (index == navigationShell.currentIndex) {
+      return;
+    }
+    navigationShell.goBranch(index);
   }
 
   @override
