@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
 
 import 'package:eko_app/widgets/common/icons.dart';
@@ -158,14 +159,16 @@ class _AppBar extends StatelessWidget {
   }
 }
 
-class FeedPage extends StatefulWidget {
+class FeedPage extends ConsumerStatefulWidget {
   const FeedPage({super.key});
 
   @override
-  State<FeedPage> createState() => _FeedPageState();
+  ConsumerState<FeedPage> createState() => _FeedPageState();
 }
 
-class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
+class _FeedPageState extends ConsumerState<FeedPage>
+    with TickerProviderStateMixin {
+  bool _requestedNotificationPermissions = false;
   late final TabController tabController;
   final followingScrollController = ScrollController();
   final newScrollController = ScrollController();
@@ -229,6 +232,14 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
   void initState() {
     const numTabs = 3;
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _requestedNotificationPermissions) return;
+      _requestedNotificationPermissions = true;
+      final uid = ref.read(authProvider).uid;
+      if (uid != null && uid.isNotEmpty) {
+        ref.read(authProvider.notifier).registerNotificationsIfNeeded();
+      }
+    });
     followingScrollController.addListener(scrollListener);
     newScrollController.addListener(scrollListener);
     popScrollController.addListener(scrollListener);

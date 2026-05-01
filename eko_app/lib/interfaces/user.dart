@@ -26,7 +26,7 @@ bool isUsernameValid(String username) {
 Future<void> addDeviceNotificationToken(String uid) async {
   if (!kIsWeb) {
     try {
-      final token = await NotificationHelper.getDeviceToken();
+      final token = await NotificationHelper.waitForDeviceToken();
       if (token == null) {
         PrefsService.notificationsEnabled = false;
         PrefsService.deviceNotificationToken = null;

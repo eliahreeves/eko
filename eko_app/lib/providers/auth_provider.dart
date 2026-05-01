@@ -77,7 +77,6 @@ class Auth extends _$Auth {
       email: email.trim(),
       password: password,
     );
-    await _registerNotificationsIfNeeded();
   }
 
   Future<SignUpOutcome> signUp({
@@ -103,9 +102,6 @@ class Auth extends _$Auth {
       final user = response.user;
       final needsEmailVerification =
           response.session == null || user?.emailConfirmedAt == null;
-      if (!needsEmailVerification) {
-        await _registerNotificationsIfNeeded();
-      }
       return SignUpOutcome(needsEmailVerification: needsEmailVerification);
     } on AuthException catch (e) {
       debugPrint(e.message);
@@ -162,7 +158,7 @@ class Auth extends _$Auth {
     }
   }
 
-  Future<void> _registerNotificationsIfNeeded() async {
+  Future<void> registerNotificationsIfNeeded() async {
     final uid = state.uid;
     if (uid == null || uid.isEmpty) return;
     final hasToken = PrefsService.deviceNotificationToken != null;

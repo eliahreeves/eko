@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:eraser/eraser.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,20 +32,31 @@ class NotificationHelper {
   }
 
   /// For when a user clicks on a notification they received
-  static void setupNotificationsWithContext(
+  static void setupHandlersWithContext(
     BuildContext context,
     void Function() callback,
   ) {
     _adapter.setHandlers(context, callback, _handleNavigationPayload);
-    () async {
-      await _adapter.requestPermissions();
-      await _adapter.registerDevice();
-    }();
   }
 
   static Future<String?> getDeviceToken() async {
     await _adapter.initialize();
     return _adapter.getDeviceToken();
+  }
+
+  static Future<String?> waitForDeviceToken({
+    Duration timeout = const Duration(seconds: 8),
+    Duration interval = const Duration(milliseconds: 400),
+  }) async {
+    final deadline = DateTime.now().add(timeout);
+    while (DateTime.now().isBefore(deadline)) {
+      final token = await getDeviceToken();
+      if (token != null && token.isNotEmpty) {
+        return token;
+      }
+      await Future.delayed(interval);
+    }
+    return null;
   }
 
   /// TODO probably should remove this and track in the DB when apns returns 410, then when user info
@@ -129,10 +139,7 @@ class ApnsNotificationAdapter extends NotificationPlatformAdapter {
   const ApnsNotificationAdapter(this._channel);
 
   @override
-  Future<void> initialize() async {
-    await requestPermissions();
-    await registerDevice();
-  }
+  Future<void> initialize() async {}
 
   @override
   Future<void> requestPermissions() async {
@@ -399,7 +406,7 @@ class _NotificationHandlerState extends ConsumerState<NotificationHandler> {
     if (kIsWeb || Platform.isLinux) {
       return;
     }
-    NotificationHelper.setupNotificationsWithContext(context, () {
+    NotificationHelper.setupHandlersWithContext(context, () {
       ref.read(followingFeedProvider.notifier).refresh();
       ref.read(newFeedProvider.notifier).refresh();
     });
