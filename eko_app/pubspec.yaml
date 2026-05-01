@@ -76,6 +76,7 @@ dependencies:
   sensors_plus: ^6.1.1
   supabase_flutter: ^2.9.1
   uuid: ^4.4.2
+  unifiedpush: ^6.2.0
 
 dev_dependencies:
   # flutter_test:
