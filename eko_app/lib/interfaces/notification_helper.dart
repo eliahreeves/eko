@@ -202,9 +202,12 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     if (_initialized) return;
     _initialized = true;
     try {
+      debugPrint('[UnifiedPush] initialize start');
       await UnifiedPush.initialize(
         onNewEndpoint: (endpoint, instance) {
           if (instance != _instance) return;
+          debugPrint(
+              '[UnifiedPush] onNewEndpoint instance=$instance url=${endpoint.url}');
           PrefsService.deviceNotificationToken = endpoint.url;
           PrefsService.notificationsEnabled = true;
           _onEndpoint?.call(endpoint.url);
@@ -212,6 +215,8 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         },
         onRegistrationFailed: (reason, instance) {
           if (instance != _instance) return;
+          debugPrint(
+              '[UnifiedPush] onRegistrationFailed instance=$instance reason=$reason');
           PrefsService.deviceNotificationToken = null;
           PrefsService.notificationsEnabled = false;
           _onEndpoint?.call(null);
@@ -219,6 +224,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         },
         onUnregistered: (instance) {
           if (instance != _instance) return;
+          debugPrint('[UnifiedPush] onUnregistered instance=$instance');
           PrefsService.deviceNotificationToken = null;
           PrefsService.notificationsEnabled = false;
           _onEndpoint?.call(null);
@@ -226,9 +232,13 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         },
         onMessage: (message, instance) async {
           if (instance != _instance) return;
+          debugPrint(
+              '[UnifiedPush] onMessage instance=$instance contentType=${message.content.runtimeType}');
           final payload = _decodePayload(message.content);
           final context = _handlerContext;
           final handler = _onPayload;
+          debugPrint(
+              '[UnifiedPush] onMessage payloadKeys=${payload.keys.join(",")}');
           if (context != null && handler != null && payload.isNotEmpty) {
             await handler(context, payload);
           }
@@ -236,10 +246,13 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         },
         onTempUnavailable: (instance) {
           if (instance != _instance) return;
+          debugPrint('[UnifiedPush] onTempUnavailable instance=$instance');
         },
       );
+      debugPrint('[UnifiedPush] initialize complete');
     } catch (_) {
       _initialized = false;
+      debugPrint('[UnifiedPush] initialize failed');
       rethrow;
     }
   }
@@ -249,11 +262,17 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     String payload;
     if (content is Uint8List) {
       if (content.isEmpty) return {};
+      debugPrint(
+          '[UnifiedPush] decode payload from bytes length=${content.length}');
       payload = utf8.decode(content);
     } else if (content is String) {
       if (content.isEmpty) return {};
+      debugPrint(
+          '[UnifiedPush] decode payload from string length=${content.length}');
       payload = content;
     } else {
+      debugPrint(
+          '[UnifiedPush] decode payload unsupported type=${content.runtimeType}');
       return {};
     }
     try {
@@ -262,6 +281,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         return decoded.map((key, value) => MapEntry(key.toString(), value));
       }
     } catch (_) {}
+    debugPrint('[UnifiedPush] decode payload failed');
     return {};
   }
 
@@ -274,6 +294,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
 
   static Future<String?> _pickDistributor(BuildContext context) async {
     final distributors = await UnifiedPush.getDistributors();
+    debugPrint('[UnifiedPush] distributors count=${distributors.length}');
     if (distributors.isEmpty) return null;
     if (!context.mounted) return null;
     return showDialog<String>(
@@ -312,12 +333,16 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   @override
   Future<void> requestPermissions() async {
     await _ensureInitialized();
+    debugPrint('[UnifiedPush] requestPermissions start');
     final success = await UnifiedPush.tryUseCurrentOrDefaultDistributor();
+    debugPrint(
+        '[UnifiedPush] tryUseCurrentOrDefaultDistributor success=$success');
     if (success) return;
     final context = _handlerContext;
     if (context == null) return;
     final choice = await _pickDistributor(context);
     if (choice == null) return;
+    debugPrint('[UnifiedPush] saveDistributor choice=$choice');
     await UnifiedPush.saveDistributor(choice);
   }
 
@@ -327,6 +352,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     if (_tokenCompleter == null || _tokenCompleter!.isCompleted) {
       _tokenCompleter = Completer<String?>();
     }
+    debugPrint('[UnifiedPush] registerDevice instance=$_instance');
     await UnifiedPush.register(instance: _instance);
   }
 
@@ -334,17 +360,22 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   Future<String?> getDeviceToken() async {
     await _ensureInitialized();
     final existing = PrefsService.deviceNotificationToken;
+    debugPrint(
+        '[UnifiedPush] getDeviceToken existing=${existing?.isNotEmpty == true}');
     if (existing != null && existing.isNotEmpty) return existing;
     await registerDevice();
     _tokenCompleter ??= Completer<String?>();
     try {
       final token =
           await _tokenCompleter!.future.timeout(const Duration(seconds: 8));
+      debugPrint(
+          '[UnifiedPush] getDeviceToken resolved=${token?.isNotEmpty == true}');
       if (token != null && token.isNotEmpty) {
         PrefsService.deviceNotificationToken = token;
       }
       return token;
     } on TimeoutException {
+      debugPrint('[UnifiedPush] getDeviceToken timeout');
       return null;
     }
   }
@@ -359,6 +390,8 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     _onMessage = callback;
     _onPayload = handler;
     _onEndpoint = (endpoint) {
+      debugPrint(
+          '[UnifiedPush] onEndpoint handler endpoint=${endpoint?.isNotEmpty == true}');
       PrefsService.deviceNotificationToken = endpoint;
       PrefsService.notificationsEnabled =
           endpoint != null && endpoint.isNotEmpty;
