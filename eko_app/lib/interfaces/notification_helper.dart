@@ -13,6 +13,8 @@ import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
 class NotificationHelper {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   static NotificationPlatformAdapter get _adapter {
     if (Platform.isIOS) {
       const MethodChannel channel = MethodChannel('PushNotificationChannel');
@@ -338,7 +340,8 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     debugPrint(
         '[UnifiedPush] tryUseCurrentOrDefaultDistributor success=$success');
     if (success) return;
-    final context = _handlerContext;
+    final context =
+        _handlerContext ?? NotificationHelper.navigatorKey.currentContext;
     if (context == null) return;
     final choice = await _pickDistributor(context);
     if (choice == null) return;

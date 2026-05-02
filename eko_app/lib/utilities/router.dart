@@ -54,7 +54,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   ref.listen(authProvider, (_, __) => refreshNotifier.refresh());
   return GoRouter(
     initialLocation: '/feed',
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: NotificationHelper.navigatorKey,
     refreshListenable: refreshNotifier,
     debugLogDiagnostics: kDebugMode,
     redirectLimit: 15,
