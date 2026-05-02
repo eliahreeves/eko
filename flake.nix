@@ -51,24 +51,24 @@
               nativeBuildInputs = commonPackages ++ [flutterPkg];
               shellHook =
                 ''
-                  export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-                  export PATH=/usr/bin:/bin:/usr/sbin:/sbin:$PATH
-                  unset CC CXX LD AR NM RANLIB STRIP SDKROOT CPATH LIBRARY_PATH CFLAGS CXXFLAGS LDFLAGS OBJCFLAGS OBJCXXFLAGS
-                  export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
-                  if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
-                    mkdir -p "$FLUTTER_ROOT_LOCAL"
-                    /usr/bin/rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
+                                export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+                                export PATH=/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+                                unset CC CXX LD AR NM RANLIB STRIP SDKROOT CPATH LIBRARY_PATH CFLAGS CXXFLAGS LDFLAGS OBJCFLAGS OBJCXXFLAGS
+                                export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
+                                if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
+                                  mkdir -p "$FLUTTER_ROOT_LOCAL"
+                                  /usr/bin/rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
+                                fi
+                                chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache/artifacts/engine" 2>/dev/null || true
+                                export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
+                                export PATH="$FLUTTER_ROOT/bin:$PATH"
+                    if [ -x "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart" ]; then
+                  	  cat > "$FLUTTER_ROOT/bin/dart" <<'EOF'
+                  	#!/bin/sh
+                  	exec "$(dirname "$0")/cache/dart-sdk/bin/dart" "$@"
+                  	EOF
+                  	  chmod +x "$FLUTTER_ROOT/bin/dart"
                   fi
-                  chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache/artifacts/engine" 2>/dev/null || true
-                  export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
-                  export PATH="$FLUTTER_ROOT/bin:$PATH"
-				  if [ -x "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart" ]; then
-					  cat > "$FLUTTER_ROOT/bin/dart" <<'EOF'
-					#!/bin/sh
-					exec "$(dirname "$0")/cache/dart-sdk/bin/dart" "$@"
-					EOF
-					  chmod +x "$FLUTTER_ROOT/bin/dart"
-				fi
                 ''
                 + commonShellHook;
             }
@@ -85,7 +85,7 @@
               buildToolsVersions = ["35.0.0"];
               platformVersions = [36 35 34 33 31];
               includeNDK = true;
-              ndkVersions = ["28.2.13676358"];
+              ndkVersions = ["28.2.13676358" "27.0.12077973"];
               includeCmake = true;
               cmakeVersions = ["3.22.1"];
             };
