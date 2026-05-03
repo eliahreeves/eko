@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
 class NotificationHelper {
@@ -336,6 +337,9 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   Future<void> requestPermissions() async {
     await _ensureInitialized();
     debugPrint('[UnifiedPush] requestPermissions start');
+    final notification = await Permission.notification.request();
+    debugPrint(
+        '[UnifiedPush] notification permission=${notification.toString()}');
     final success = await UnifiedPush.tryUseCurrentOrDefaultDistributor();
     debugPrint(
         '[UnifiedPush] tryUseCurrentOrDefaultDistributor success=$success');
