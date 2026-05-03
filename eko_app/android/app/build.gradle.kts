@@ -60,8 +60,9 @@ flutter {
 
 configurations.all {
     exclude(group = "com.google.protobuf", module = "protobuf-java")
-dependencies {
-    implementation("org.unifiedpush.android:embedded-fcm-distributor:3.0.0")
+    dependencies {
+        implementation("org.unifiedpush.android:embedded-fcm-distributor:3.0.0")
+    }
 }
 // dependencies {
 //     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
