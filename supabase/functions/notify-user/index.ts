@@ -40,9 +40,8 @@ async function sendWebPush(
       return false;
     }
 
-    // FIXME what should be here?
     webpush.setVapidDetails(
-      "mailto:admin@example.com",
+      "mailto:support@eko-app.com",
       pubKey,
       privKey,
     );
