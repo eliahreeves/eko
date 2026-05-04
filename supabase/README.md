@@ -18,12 +18,27 @@ curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/notify-us
   --header 'Content-Type: application/json' \
   --data '{
     "type": "INSERT",
-    "table": "activity",
     "record": {
       "target_uid": "991c0692-0485-4860-8659-a79beba4209c",
       "source_uid": "a2412328-2eed-4b00-b941-1534cd6e4908",
       "type": "post_tag",
       "post_id": "15885"
+      "table": "activity",
+    }
+  }'
+```
+
+```
+curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/notify-user' \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "type": "INSERT",
+    "record": {
+	  "id": "12306",
+      "author_uid": "a2412328-2eed-4b00-b941-1534cd6e4908",
+	  "title": "testing your mom post",
+      "table": "posts"
     }
   }'
 ```
