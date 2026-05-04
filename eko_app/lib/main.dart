@@ -29,11 +29,13 @@ Future<void> _checkFirstInstall() async {
 }
 
 Future<void> _initSupabase() async {
+  final nativePkce =
+      !kIsWeb && (Platform.isLinux || Platform.isAndroid || Platform.isIOS);
+  final authFlowType = nativePkce ? AuthFlowType.pkce : AuthFlowType.implicit;
   await Supabase.initialize(
       url: ac.supabaseUrl,
       anonKey: ac.supabaseKey,
-      authOptions:
-          FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit));
+      authOptions: FlutterAuthClientOptions(authFlowType: authFlowType));
 }
 
 Future<void> _initFirebase() async {

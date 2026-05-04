@@ -28,6 +28,14 @@
 					<category android:name="android.intent.category.BROWSABLE" />
 					<data android:scheme="https" android:host="app.eko-app.com" />
 					</intent-filter>
+					<intent-filter>
+						<action android:name="android.intent.action.VIEW" />
+						<category android:name="android.intent.category.DEFAULT" />
+						<category android:name="android.intent.category.BROWSABLE" />
+						<data
+							android:scheme="com.echo.android"
+							android:host="login-callback" />
+					</intent-filter>
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues

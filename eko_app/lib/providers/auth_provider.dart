@@ -7,6 +7,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/interfaces/user.dart' as user;
+import 'package:eko_app/utilities/gauth/supabase_google_oauth.dart';
 
 part '../generated/providers/auth_provider.g.dart';
 
@@ -77,6 +78,10 @@ class Auth extends _$Auth {
       email: email.trim(),
       password: password,
     );
+  }
+
+  Future<void> signInWithGoogle() async {
+    await signInWithGoogleOAuth(supabase.auth);
   }
 
   Future<SignUpOutcome> signUp({

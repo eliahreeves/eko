@@ -29,6 +29,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final emailFocus = FocusNode();
   final passwordFocus = FocusNode();
   bool isLoading = false;
+  bool isGoogleLoading = false;
   int _paneIndex = 0;
 
   @override
@@ -38,6 +39,35 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> googleLoginPressed() async {
+    setState(() {
+      isGoogleLoading = true;
+    });
+    try {
+      await ref.read(authProvider.notifier).signInWithGoogle();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showSnackBar(
+        text: '${AppLocalizations.of(context)!.error}: ${e.message}',
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      showSnackBar(
+        text: AppLocalizations.of(context)!.defaultErrorTittle,
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isGoogleLoading = false;
+        });
+      }
+    }
   }
 
   void loginPressed() async {
@@ -244,7 +274,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       const SizedBox(height: c.authSectionSpacing),
                       const AuthDivider(indent: 20, endIndent: 20),
                       const SizedBox(height: c.authElementSpacing),
-                      const GoogleSignInButton(),
+                      GoogleSignInButton(
+                        onPressed: isLoading ? null : googleLoginPressed,
+                        isLoading: isGoogleLoading,
+                      ),
                       SizedBox(height: height * 0.04),
                     ],
                   ),

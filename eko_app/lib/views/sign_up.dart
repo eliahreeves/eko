@@ -21,6 +21,7 @@ import 'package:eko_app/widgets/auth/auth_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
 import 'package:eko_app/views/verify_email_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void _showWeakPassword(BuildContext context) {
   showSnackBar(
@@ -57,6 +58,7 @@ class _SignUpState extends ConsumerState<SignUp> {
   final FocusNode confirmPasswordFocus = FocusNode();
 
   int index = 0;
+  bool isGoogleLoading = false;
 
   @override
   void dispose() {
@@ -157,6 +159,31 @@ class _SignUpState extends ConsumerState<SignUp> {
     return false;
   }
 
+  Future<void> signInWithGoogle() async {
+    setState(() => isGoogleLoading = true);
+    try {
+      await ref.read(authProvider.notifier).signInWithGoogle();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showSnackBar(
+        text: '${AppLocalizations.of(context)!.error}: ${e.message}',
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      showSnackBar(
+        text: AppLocalizations.of(context)!.defaultErrorTittle,
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => isGoogleLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -181,6 +208,8 @@ class _SignUpState extends ConsumerState<SignUp> {
               index: index,
               children: <Widget>[
                 SignupInfo(
+                  isGoogleLoading: isGoogleLoading,
+                  onGoogleSignIn: signInWithGoogle,
                   setPage: (target) => setState(() {
                     index = target;
                   }),
@@ -199,6 +228,8 @@ class _SignUpState extends ConsumerState<SignUp> {
                   emailFocus: emailFocus,
                 ),
                 GetPassword(
+                  isGoogleLoading: isGoogleLoading,
+                  onGoogleSignIn: signInWithGoogle,
                   setPage: (target) => setState(() {
                     index = target;
                   }),
@@ -237,6 +268,8 @@ class SignupInfo extends StatefulWidget {
   final TextEditingController emailController;
   final FocusNode keyFocus;
   final void Function(int) setPage;
+  final Future<void> Function() onGoogleSignIn;
+  final bool isGoogleLoading;
 
   const SignupInfo({
     super.key,
@@ -254,6 +287,8 @@ class SignupInfo extends StatefulWidget {
     required this.dayController,
     required this.keyFocus,
     required this.yearController,
+    required this.onGoogleSignIn,
+    required this.isGoogleLoading,
   });
 
   @override
@@ -532,7 +567,10 @@ class _SignupInfoState extends State<SignupInfo> {
           const SizedBox(height: c.authSectionSpacing),
           const AuthDivider(indent: 20, endIndent: 20),
           const SizedBox(height: c.authElementSpacing),
-          const GoogleSignInButton(),
+          GoogleSignInButton(
+            onPressed: widget.onGoogleSignIn,
+            isLoading: widget.isGoogleLoading,
+          ),
         ],
       ),
     );
@@ -546,6 +584,8 @@ class GetPassword extends StatefulWidget {
   final FocusNode passwordFocus;
   final FocusNode confirmPasswordFocus;
   final Future<bool> Function() signUp;
+  final Future<void> Function() onGoogleSignIn;
+  final bool isGoogleLoading;
   const GetPassword({
     super.key,
     required this.setPage,
@@ -554,6 +594,8 @@ class GetPassword extends StatefulWidget {
     required this.passwordFocus,
     required this.signUp,
     required this.confirmPasswordFocus,
+    required this.onGoogleSignIn,
+    required this.isGoogleLoading,
   });
 
   @override
@@ -649,7 +691,10 @@ class _GetPasswordState extends State<GetPassword> {
             const SizedBox(height: c.authSectionSpacing),
             const AuthDivider(indent: 20, endIndent: 20),
             const SizedBox(height: c.authElementSpacing),
-            const GoogleSignInButton(),
+            GoogleSignInButton(
+              onPressed: widget.onGoogleSignIn,
+              isLoading: widget.isGoogleLoading,
+            ),
           ],
         ),
       ),
