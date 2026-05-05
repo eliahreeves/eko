@@ -1,5 +1,7 @@
 #include "my_application.h"
 
+#include <cstdlib>
+
 #include <flutter_linux/flutter_linux.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
@@ -49,6 +51,9 @@ static void my_application_activate(GApplication *application) {
 
   gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_show(GTK_WIDGET(window));
+  if (std::getenv("FLUTTER_HEADLESS")) {
+    gtk_widget_hide(GTK_WIDGET(window));
+  }
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(
@@ -70,6 +75,12 @@ static gboolean my_application_local_command_line(GApplication *application,
   MyApplication *self = MY_APPLICATION(application);
   // Strip out the first argument as it is the binary name.
   self->dart_entrypoint_arguments = g_strdupv(*arguments + 1);
+  for (gchar **p = self->dart_entrypoint_arguments; *p != nullptr; p++) {
+    if (g_strcmp0(*p, "--unifiedpush-bg") == 0) {
+      setenv("FLUTTER_HEADLESS", "1", 1);
+      break;
+    }
+  }
 
   g_autoptr(GError) error = nullptr;
   if (!g_application_register(application, nullptr, &error)) {

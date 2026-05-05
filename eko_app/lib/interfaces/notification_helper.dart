@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:eraser/eraser.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,11 @@ import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unifiedpush/unifiedpush.dart';
+import 'package:unifiedpush_platform_interface/unifiedpush_platform_interface.dart';
+import 'package:unifiedpush_storage_shared_preferences/storage.dart';
+
+part 'notification_helper_apn.dart';
+part 'notification_helper_up.dart';
 
 class NotificationHelper {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -23,10 +29,9 @@ class NotificationHelper {
       const MethodChannel channel = MethodChannel('PushNotificationChannel');
       return const ApnsNotificationAdapter(channel);
     }
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isLinux) {
       return const UnifiedPushNotificationAdapter();
     }
-    // TODO idk how web  or linux will work
     return const NoopNotificationAdapter();
   }
 
@@ -38,15 +43,33 @@ class NotificationHelper {
     }
   }
 
-  static Future<void> bootstrapUnifiedPushBackground() async {
-    if (!Platform.isAndroid) return;
-    debugPrint('[UnifiedPush] bootstrap background entrypoint');
-    await const UnifiedPushNotificationAdapter().initialize();
-    if (await UnifiedPush.getDistributor() != null) {
-      await UnifiedPush.register(
-        instance: UnifiedPushNotificationAdapter.instanceId,
-        vapid: ac.vapidPublicKey,
-      );
+  static Future<void> bootstrapUnifiedPushBackground(List<String> args) async {
+    if (!args.contains('--unifiedpush-bg')) return;
+    if (Platform.isAndroid) {
+      debugPrint('[UnifiedPush] bootstrap background entrypoint');
+      await const UnifiedPushNotificationAdapter().initialize();
+      if (await UnifiedPush.getDistributor() != null) {
+        await UnifiedPush.register(
+          instance: UnifiedPushNotificationAdapter.instanceId,
+          vapid: ac.vapidPublicKey,
+        );
+      }
+      return;
+    }
+    if (Platform.isLinux) {
+      UnifiedPushNotificationAdapter.markLinuxBackgroundLaunch();
+      try {
+        debugPrint('[UnifiedPush] bootstrap linux background entrypoint');
+        await const UnifiedPushNotificationAdapter().initialize();
+        if (await UnifiedPush.getDistributor() != null) {
+          await UnifiedPush.register(
+            instance: UnifiedPushNotificationAdapter.instanceId,
+            vapid: ac.vapidPublicKey,
+          );
+        }
+      } finally {
+        UnifiedPushNotificationAdapter.clearLinuxBackgroundLaunch();
+      }
     }
   }
 
@@ -58,18 +81,23 @@ class NotificationHelper {
     _adapter.setHandlers(context, callback, _handleNavigationPayload);
   }
 
-  static Future<String?> getDeviceToken() async {
+  static Future<String?> getDeviceToken({bool forBackendSync = false}) async {
     await _adapter.initialize();
-    return _adapter.getDeviceToken();
+    return _adapter.getDeviceToken(forBackendSync: forBackendSync);
   }
 
   static Future<String?> waitForDeviceToken({
     Duration timeout = const Duration(seconds: 8),
     Duration interval = const Duration(milliseconds: 400),
+    bool forBackendSync = false,
   }) async {
     final deadline = DateTime.now().add(timeout);
+    var firstAttempt = true;
     while (DateTime.now().isBefore(deadline)) {
-      final token = await getDeviceToken();
+      final token = await getDeviceToken(
+        forBackendSync: forBackendSync && firstAttempt,
+      );
+      firstAttempt = false;
       if (token != null && token.isNotEmpty) {
         return token;
       }
@@ -90,7 +118,7 @@ class NotificationHelper {
       return false;
     }
     PrefsService.deviceNotificationTokenLastCheckedAt = now;
-    final token = await getDeviceToken();
+    final token = await getDeviceToken(forBackendSync: false);
     if (token == null || token.isEmpty) {
       PrefsService.notificationsEnabled = false;
       PrefsService.deviceNotificationToken = null;
@@ -146,365 +174,12 @@ abstract class NotificationPlatformAdapter {
   Future<void> initialize();
   Future<void> requestPermissions();
   Future<void> registerDevice();
-  Future<String?> getDeviceToken();
+  Future<String?> getDeviceToken({bool forBackendSync = false});
   void setHandlers(
     BuildContext context,
     void Function() callback,
     NotificationPayloadHandler handler,
   );
-}
-
-class ApnsNotificationAdapter extends NotificationPlatformAdapter {
-  final MethodChannel _channel;
-  const ApnsNotificationAdapter(this._channel);
-
-  @override
-  Future<void> initialize() async {}
-
-  @override
-  Future<void> requestPermissions() async {
-    await _channel.invokeMethod('requestNotificationPermissions');
-  }
-
-  @override
-  Future<void> registerDevice() async {
-    await _channel.invokeMethod('registerForPushNotifications');
-  }
-
-  @override
-  Future<String?> getDeviceToken() async {
-    try {
-      return await _channel.invokeMethod<String>('retrieveDeviceToken');
-    } on PlatformException {
-      return null;
-    }
-  }
-
-  @override
-  void setHandlers(
-    BuildContext context,
-    void Function() callback,
-    NotificationPayloadHandler handler,
-  ) {
-    _channel.setMethodCallHandler((call) async {
-      if (call.method != 'onPushNotification') {
-        return;
-      }
-      final data = _normalizePayload(call.arguments);
-      if (data.isEmpty) {
-        return;
-      }
-      await handler(context, data);
-      callback();
-    });
-  }
-
-  Map<String, dynamic> _normalizePayload(dynamic arguments) {
-    if (arguments is Map) {
-      return arguments.map((key, value) => MapEntry(key.toString(), value));
-    }
-    return {};
-  }
-}
-
-class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
-  const UnifiedPushNotificationAdapter();
-
-  @override
-  bool get registersDuringSetup => false;
-
-  static const String instanceId = 'default';
-  static const String _androidChannelId = 'eko_unified_push';
-  static const String _androidChannelName = 'Notifications';
-  static final FlutterLocalNotificationsPlugin _flutterLocalNotifications =
-      FlutterLocalNotificationsPlugin();
-  static void Function(String?)? _onEndpoint;
-  static void Function()? _onMessage;
-  static BuildContext? _handlerContext;
-  static bool _initialized = false;
-  static Completer<String?>? _tokenCompleter;
-  static String? _lastSerializedEndpoint;
-
-  static bool _localNotificationsInitialized = false;
-  static int _notificationId = 0;
-
-  static Future<void> _ensureFlutterLocalNotificationsInitialized() async {
-    if (_localNotificationsInitialized) return;
-    const androidInit = AndroidInitializationSettings('@drawable/ic_stat_name');
-    await _flutterLocalNotifications.initialize(
-      settings: const InitializationSettings(android: androidInit),
-    );
-    final android =
-        _flutterLocalNotifications.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    await android?.createNotificationChannel(const AndroidNotificationChannel(
-      _androidChannelId,
-      _androidChannelName,
-      description: 'UnifiedPush',
-      importance: Importance.high,
-    ));
-    _localNotificationsInitialized = true;
-  }
-
-  static String? _serializedWebPushSubscription(PushEndpoint endpoint) {
-    final url = endpoint.url;
-    if (url.isEmpty) return null;
-    final keys = endpoint.pubKeySet;
-    final map = <String, Object?>{'endpoint': url};
-    if (keys != null) {
-      map['keys'] = {'p256dh': keys.pubKey, 'auth': keys.auth};
-    }
-    return jsonEncode(map);
-  }
-
-  static Future<void> _ensureInitialized() async {
-    if (_initialized) return;
-    _initialized = true;
-    try {
-      debugPrint('[UnifiedPush] initialize start');
-      await _ensureFlutterLocalNotificationsInitialized();
-      await UnifiedPush.initialize(
-        onNewEndpoint: (endpoint, instance) {
-          if (instance != instanceId) return;
-          final token = _serializedWebPushSubscription(endpoint);
-          if (token != null && token == _lastSerializedEndpoint) {
-            return;
-          }
-          _lastSerializedEndpoint = token;
-          debugPrint(
-              '[UnifiedPush] onNewEndpoint instance=$instance url=${endpoint.url}');
-          PrefsService.deviceNotificationToken = token;
-          PrefsService.notificationsEnabled = token != null && token.isNotEmpty;
-          _onEndpoint?.call(token);
-          _completeToken(token);
-        },
-        onRegistrationFailed: (reason, instance) {
-          if (instance != instanceId) return;
-          _lastSerializedEndpoint = null;
-          debugPrint(
-              '[UnifiedPush] onRegistrationFailed instance=$instance reason=$reason');
-          PrefsService.deviceNotificationToken = null;
-          PrefsService.notificationsEnabled = false;
-          _onEndpoint?.call(null);
-          _completeToken(null);
-        },
-        onUnregistered: (instance) {
-          if (instance != instanceId) return;
-          _lastSerializedEndpoint = null;
-          debugPrint('[UnifiedPush] onUnregistered instance=$instance');
-          PrefsService.deviceNotificationToken = null;
-          PrefsService.notificationsEnabled = false;
-          _onEndpoint?.call(null);
-          _completeToken(null);
-        },
-        onMessage: (message, instance) async {
-          if (instance != instanceId) return;
-          debugPrint(
-              '[UnifiedPush] onMessage instance=$instance contentType=${message.content.runtimeType}');
-          final decoded = _decodePayload(message.content);
-          debugPrint(
-              '[UnifiedPush] onMessage payloadKeys=${decoded.keys.join(",")}');
-
-          final title = decoded['title'] as String? ?? 'New notification';
-          final body =
-              decoded['body'] as String? ?? decoded['message'] as String? ?? '';
-
-          await _ensureFlutterLocalNotificationsInitialized();
-          _notificationId = (_notificationId + 1) & 0x7fffffff;
-          try {
-            await _flutterLocalNotifications.show(
-              id: _notificationId,
-              title: title,
-              body: body,
-              notificationDetails: const NotificationDetails(
-                android: AndroidNotificationDetails(
-                  _androidChannelId,
-                  _androidChannelName,
-                  importance: Importance.high,
-                  priority: Priority.high,
-                ),
-              ),
-            );
-          } catch (e, st) {
-            debugPrint('[UnifiedPush] local notification show failed: $e $st');
-          }
-
-          _onMessage?.call();
-        },
-        onTempUnavailable: (instance) {
-          if (instance != instanceId) return;
-          debugPrint('[UnifiedPush] onTempUnavailable instance=$instance');
-        },
-      );
-      debugPrint('[UnifiedPush] initialize complete');
-    } catch (_) {
-      _initialized = false;
-      debugPrint('[UnifiedPush] initialize failed');
-      rethrow;
-    }
-  }
-
-  static Map<String, dynamic> _decodePayload(dynamic content) {
-    if (content == null) return {};
-    String payload;
-    if (content is Uint8List) {
-      if (content.isEmpty) return {};
-      debugPrint(
-          '[UnifiedPush] decode payload from bytes length=${content.length}');
-      payload = utf8.decode(content);
-    } else if (content is String) {
-      if (content.isEmpty) return {};
-      debugPrint(
-          '[UnifiedPush] decode payload from string length=${content.length}');
-      payload = content;
-    } else {
-      debugPrint(
-          '[UnifiedPush] decode payload unsupported type=${content.runtimeType}');
-      return {};
-    }
-    try {
-      final decoded = jsonDecode(payload);
-      if (decoded is Map) {
-        return decoded.map((key, value) => MapEntry(key.toString(), value));
-      }
-    } catch (_) {}
-    if (payload.contains('=')) {
-      try {
-        final form = _decodeFormStylePayload(payload);
-        if (form.isNotEmpty) return form;
-      } catch (_) {}
-    }
-    debugPrint('[UnifiedPush] decode payload failed');
-    return {};
-  }
-
-  static Map<String, dynamic> _decodeFormStylePayload(String payload) {
-    final decoded = <String, dynamic>{};
-    for (final part in payload.split('&')) {
-      final idx = part.indexOf('=');
-      if (idx <= 0) continue;
-      final key = Uri.decodeComponent(part.substring(0, idx));
-      final value = Uri.decodeComponent(part.substring(idx + 1));
-      decoded[key] = value;
-    }
-    return decoded;
-  }
-
-  static void _completeToken(String? token) {
-    final completer = _tokenCompleter;
-    if (completer != null && !completer.isCompleted) {
-      completer.complete(token);
-    }
-  }
-
-  static Future<String?> _pickDistributor(BuildContext context) async {
-    final distributors = await UnifiedPush.getDistributors();
-    debugPrint('[UnifiedPush] distributors count=${distributors.length}');
-    if (distributors.isEmpty) return null;
-    if (!context.mounted) return null;
-    return showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: Theme.of(dialogContext).colorScheme.outlineVariant,
-          title: const Text('Select a distributor'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: distributors.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final distributor = distributors[index];
-                final name = distributor.split('.').last;
-                return ListTile(
-                  title: Text(name),
-                  subtitle: Text(distributor),
-                  onTap: () => Navigator.of(context).pop(distributor),
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Future<void> initialize() async {
-    await _ensureInitialized();
-  }
-
-  @override
-  Future<void> requestPermissions() async {
-    await _ensureInitialized();
-    debugPrint('[UnifiedPush] requestPermissions start');
-    final notification = await Permission.notification.request();
-    debugPrint(
-        '[UnifiedPush] notification permission=${notification.toString()}');
-    final success = await UnifiedPush.tryUseCurrentOrDefaultDistributor();
-    debugPrint(
-        '[UnifiedPush] tryUseCurrentOrDefaultDistributor success=$success');
-    if (success) return;
-    final context =
-        _handlerContext ?? NotificationHelper.navigatorKey.currentContext;
-    if (context == null || !context.mounted) return;
-    final choice = await _pickDistributor(context);
-    if (choice == null) return;
-    debugPrint('[UnifiedPush] saveDistributor choice=$choice');
-    await UnifiedPush.saveDistributor(choice);
-  }
-
-  @override
-  Future<void> registerDevice() async {
-    await _ensureInitialized();
-    if (_tokenCompleter == null || _tokenCompleter!.isCompleted) {
-      _tokenCompleter = Completer<String?>();
-    }
-    debugPrint('[UnifiedPush] registerDevice instance=$instanceId');
-    await UnifiedPush.register(instance: instanceId, vapid: ac.vapidPublicKey);
-  }
-
-  @override
-  Future<String?> getDeviceToken() async {
-    await _ensureInitialized();
-    final existing = PrefsService.deviceNotificationToken;
-    debugPrint(
-        '[UnifiedPush] getDeviceToken existing=${existing?.isNotEmpty == true}');
-    if (existing != null && existing.isNotEmpty) return existing;
-    await registerDevice();
-    _tokenCompleter ??= Completer<String?>();
-    try {
-      final token =
-          await _tokenCompleter!.future.timeout(const Duration(seconds: 8));
-      debugPrint(
-          '[UnifiedPush] getDeviceToken resolved=${token?.isNotEmpty == true}');
-      if (token != null && token.isNotEmpty) {
-        PrefsService.deviceNotificationToken = token;
-      }
-      return token;
-    } on TimeoutException {
-      debugPrint('[UnifiedPush] getDeviceToken timeout');
-      return null;
-    }
-  }
-
-  @override
-  void setHandlers(
-    BuildContext context,
-    void Function() callback,
-    NotificationPayloadHandler handler,
-  ) {
-    _handlerContext = context;
-    _onMessage = callback;
-    _onEndpoint = (endpoint) {
-      debugPrint(
-          '[UnifiedPush] onEndpoint handler endpoint=${endpoint?.isNotEmpty == true}');
-      PrefsService.deviceNotificationToken = endpoint;
-      PrefsService.notificationsEnabled =
-          endpoint != null && endpoint.isNotEmpty;
-    };
-  }
 }
 
 class NoopNotificationAdapter extends NotificationPlatformAdapter {
@@ -520,7 +195,7 @@ class NoopNotificationAdapter extends NotificationPlatformAdapter {
   Future<void> registerDevice() async {}
 
   @override
-  Future<String?> getDeviceToken() async {
+  Future<String?> getDeviceToken({bool forBackendSync = false}) async {
     return null;
   }
 
@@ -544,7 +219,7 @@ class NotificationHandler extends ConsumerStatefulWidget {
 class _NotificationHandlerState extends ConsumerState<NotificationHandler> {
   @override
   void initState() {
-    if (kIsWeb || Platform.isLinux) {
+    if (kIsWeb) {
       return;
     }
     NotificationHelper.setupHandlersWithContext(context, () {

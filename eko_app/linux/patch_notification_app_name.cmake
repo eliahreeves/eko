@@ -1,0 +1,13 @@
+if(NOT DEFINED ENV{DESTDIR})
+  set(_DESKTOP_EKO_DESTDIR "")
+else()
+  set(_DESKTOP_EKO_DESTDIR "$ENV{DESTDIR}")
+endif()
+set(_DESKTOP_EKO_PREFIX "${_DESKTOP_EKO_DESTDIR}${CMAKE_INSTALL_PREFIX}")
+set(_DESKTOP_EKO_VFILE "${_DESKTOP_EKO_PREFIX}/data/flutter_assets/version.json")
+if(EXISTS "${_DESKTOP_EKO_VFILE}")
+  file(READ "${_DESKTOP_EKO_VFILE}" _DESKTOP_EKO_JSON)
+  string(REPLACE "\"app_name\":\"eko_app\"" "\"app_name\":\"eko\""
+    _DESKTOP_EKO_JSON "${_DESKTOP_EKO_JSON}")
+  file(WRITE "${_DESKTOP_EKO_VFILE}" "${_DESKTOP_EKO_JSON}")
+endif()

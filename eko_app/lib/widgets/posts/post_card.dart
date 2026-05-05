@@ -112,7 +112,7 @@ class _PostCardState extends ConsumerState<PostCard> {
     if (kIsWeb) {
       Clipboard.setData(
         ClipboardData(
-          text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id',
+          text: 'Check out my post on eko: ${c.appURL}/feed/post/$id',
         ),
       );
       showSnackBar(
@@ -124,7 +124,7 @@ class _PostCardState extends ConsumerState<PostCard> {
         sharing = true;
         await SharePlus.instance.share(
           ShareParams(
-            text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id',
+            text: 'Check out my post on eko: ${c.appURL}/feed/post/$id',
           ),
         );
         sharing = false;

@@ -251,8 +251,6 @@ class Auth extends _$Auth {
   Future<void> registerNotificationsIfNeeded() async {
     final uid = state.uid;
     if (uid == null || uid.isEmpty) return;
-    final hasToken = PrefsService.deviceNotificationToken != null;
-    if (PrefsService.notificationsEnabled && hasToken) return;
     if (_registerNotificationsInFlight != null) {
       await _registerNotificationsInFlight;
       return;

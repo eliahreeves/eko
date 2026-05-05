@@ -72,7 +72,10 @@ dependencies:
   supabase_flutter: ^2.9.1
   uuid: ^4.4.2
   unifiedpush: ^6.2.0
+  unifiedpush_platform_interface: ^4.0.0
+  unifiedpush_storage_shared_preferences: ^1.0.0
   flutter_local_notifications: ^21.0.0
+  webcrypto: ^0.6.0
 
 dev_dependencies:
   # flutter_test:
