@@ -51,41 +51,48 @@ class Auth extends _$Auth {
         emailVerified: user.emailConfirmedAt != null,
         creationTime: DateTime.tryParse(user.createdAt),
       );
-      registerNotificationsIfNeeded();
     }
 
-    supabase.auth.onAuthStateChange.listen((data) {
-      final session = data.session;
-      if (session == null) {
-        state = AuthModel.signedOut();
-      } else {
-        _debugPrintSupabaseBearer(session);
-        if (data.event == AuthChangeEvent.passwordRecovery) {
-          final user = session.user;
-          state = state.copyWith(
-            uid: user.id,
-            isLoading: false,
-            email: user.email,
-            emailVerified: user.emailConfirmedAt != null,
-            creationTime: DateTime.tryParse(user.createdAt),
-            pendingPasswordRecovery: true,
-          );
+    supabase.auth.onAuthStateChange.listen(
+      (data) {
+        final session = data.session;
+        if (session == null) {
+          state = AuthModel.signedOut();
         } else {
-          final user = session.user;
-          state = state.copyWith(
-            uid: user.id,
-            isLoading: false,
-            email: user.email,
-            emailVerified: user.emailConfirmedAt != null,
-            creationTime: DateTime.tryParse(user.createdAt),
-            pendingPasswordRecovery: false,
-          );
-          if (data.event == AuthChangeEvent.signedIn) {
-            registerNotificationsIfNeeded();
+          _debugPrintSupabaseBearer(session);
+          if (data.event == AuthChangeEvent.passwordRecovery) {
+            final user = session.user;
+            state = state.copyWith(
+              uid: user.id,
+              isLoading: false,
+              email: user.email,
+              emailVerified: user.emailConfirmedAt != null,
+              creationTime: DateTime.tryParse(user.createdAt),
+              pendingPasswordRecovery: true,
+            );
+          } else {
+            final user = session.user;
+            state = state.copyWith(
+              uid: user.id,
+              isLoading: false,
+              email: user.email,
+              emailVerified: user.emailConfirmedAt != null,
+              creationTime: DateTime.tryParse(user.createdAt),
+              pendingPasswordRecovery: false,
+            );
           }
         }
-      }
-    });
+      },
+      onError: (error) {
+        debugPrint('Auth state change error: $error');
+        if (error is AuthException) {
+          supabase.auth.signOut().catchError((e) {
+            debugPrint('Error signing out after auth error: $e');
+          });
+        }
+        state = AuthModel.signedOut();
+      },
+    );
   }
 
   void clearPasswordRecovery() {
@@ -268,8 +275,12 @@ class Auth extends _$Auth {
   }
 
   Future<void> _registerNotificationsWork(String uid) async {
-    await NotificationHelper.setupNotifications();
-    await user.addDeviceNotificationToken(uid);
+    try {
+      await NotificationHelper.setupNotifications();
+      await user.addDeviceNotificationToken(uid);
+    } catch (e) {
+      debugPrint('Error registering notifications: $e');
+    }
   }
 
   Future<void> refreshDeviceNotificationTokenIfNeeded() async {

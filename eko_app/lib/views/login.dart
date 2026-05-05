@@ -54,8 +54,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         context: context,
         variant: SnackBarVariant.destructive,
       );
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('Google SignIn Error: $e\n$st');
       if (!mounted) return;
+      if (ref.read(authProvider).uid != null) return;
+      // url_launcher throws a PlatformException on iOS if the Safari View Controller is closed
+      if (e.toString().contains('PlatformException')) return;
       showSnackBar(
         text: AppLocalizations.of(context)!.defaultErrorTittle,
         context: context,

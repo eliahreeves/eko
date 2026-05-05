@@ -29,16 +29,12 @@ class CurrentUser extends _$CurrentUser {
         state = CurrentUserModel.loading();
       } else {
         reload();
-        ref
-            .read(authProvider.notifier)
-            .refreshDeviceNotificationTokenIfNeeded();
       }
     });
 
     final auth = ref.read(authProvider);
     if (auth.uid != null) {
       reload();
-      ref.read(authProvider.notifier).refreshDeviceNotificationTokenIfNeeded();
     }
     return CurrentUserModel.loading();
   }
@@ -261,6 +257,7 @@ class CurrentUser extends _$CurrentUser {
       final blockedBy = await _getPeopleWhoBlockedMe();
       row['blocked_by'] = blockedBy;
       state = CurrentUserModel.fromJson(row);
+      ref.read(authProvider.notifier).registerNotificationsIfNeeded();
     } catch (e) {
       debugPrint('Error reloading current user from Supabase: $e');
     }
