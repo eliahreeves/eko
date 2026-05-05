@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:eko_app/types/auth.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
@@ -80,6 +81,10 @@ class Auth extends _$Auth {
               creationTime: DateTime.tryParse(user.createdAt),
               pendingPasswordRecovery: false,
             );
+            if (data.event == AuthChangeEvent.signedIn) {
+              // ios typically opens an in-app web view, so it doesnt get dismissed otherwise
+              closeInAppWebView();
+            }
           }
         }
       },
