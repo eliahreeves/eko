@@ -287,6 +287,7 @@ async function getComment(commentId: string) {
   return data;
 }
 
+// TODO we might want to think about doing queries in the notify_user_on_insert() db func instead of here.
 async function getUser(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("users")
