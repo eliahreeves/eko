@@ -113,7 +113,12 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             title: Text(AppLocalizations.of(context)!.blockedAccounts),
             leading: const Icon(Icons.no_accounts_outlined),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => context.pushNamed('blocked_users'),
+            onTap: () => context.pushNamed(
+              'blocked_users',
+              pathParameters: {
+                'username': ref.read(currentUserProvider).user.username,
+              },
+            ),
           ),
           TextButton(
             onPressed: () async {

@@ -284,7 +284,6 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       }
 
       final postPollOptions = !isPoll ? null : pollOptions;
-      print(postPollOptions);
       final post = PostModel(
           uid: ref.read(currentUserProvider).user.uid,
           id: 0,
