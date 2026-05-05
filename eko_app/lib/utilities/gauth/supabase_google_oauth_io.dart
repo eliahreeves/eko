@@ -9,6 +9,7 @@ Future<void> signInWithGoogleOAuth(GoTrueClient auth) async {
     final launched = await auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: c.supabaseOAuthRedirectUrl,
+      queryParams: {'prompt': 'select_account'},
     );
     if (!launched) {
       throw AuthException('Could not open browser for Google sign-in.');
@@ -17,7 +18,10 @@ Future<void> signInWithGoogleOAuth(GoTrueClient auth) async {
   }
 
   if (!Platform.isLinux) {
-    await auth.signInWithOAuth(OAuthProvider.google);
+    await auth.signInWithOAuth(
+      OAuthProvider.google,
+      queryParams: {'prompt': 'select_account'},
+    );
     return;
   }
 
@@ -84,6 +88,7 @@ Future<void> signInWithGoogleOAuth(GoTrueClient auth) async {
     final launched = await auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: redirectTo,
+      queryParams: {'prompt': 'select_account'},
     );
     if (!launched) {
       throw AuthException('Could not open browser for Google sign-in.');
