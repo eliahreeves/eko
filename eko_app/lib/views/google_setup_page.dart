@@ -205,6 +205,7 @@ class _GoogleSetupPageState extends ConsumerState<GoogleSetupPage> {
     await ref.read(currentUserProvider.notifier).signOut();
     if (!mounted) return;
     ref.read(needsProfileSetupProvider.notifier).state = false;
+    context.go('/');
   }
 
   @override
