@@ -35,7 +35,6 @@ import 'package:eko_app/widgets/scaffolds/require_auth.dart';
 import 'package:eko_app/widgets/scaffolds/require_no_auth.dart';
 import 'package:eko_app/views/profile_redirect_page.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorFeedKey = GlobalKey<NavigatorState>(debugLabel: 'Feed');
 final _shellNavigatorSearchKey = GlobalKey<NavigatorState>(
   debugLabel: 'Search',

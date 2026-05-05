@@ -16,8 +16,6 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/scaffolds/check_version.dart';
 import 'utilities/router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:eko_app/firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> _checkFirstInstall() async {
@@ -39,13 +37,6 @@ Future<void> _initSupabase() async {
       authOptions: FlutterAuthClientOptions(authFlowType: authFlowType));
 }
 
-Future<void> _initFirebase() async {
-  if (Platform.isLinux) {
-    return;
-  }
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-}
-
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb && Platform.isAndroid && args.contains('--unifiedpush-bg')) {
@@ -62,7 +53,6 @@ Future<void> main(List<String> args) async {
   await Future.wait([
     _checkFirstInstall(),
     LogoService.init(),
-    _initFirebase(),
   ]);
 
   SystemChrome.setPreferredOrientations([
