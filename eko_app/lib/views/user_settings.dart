@@ -115,6 +115,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
           TextButton(
             onPressed: () async {
               await ref.read(currentUserProvider.notifier).signOut();
+              if (!mounted) return;
               ref.read(navBarProvider.notifier).enable();
             },
             child: Text(

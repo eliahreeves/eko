@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart' show debugPrint;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:eko_app/interfaces/user.dart';
@@ -10,6 +11,8 @@ import 'package:eko_app/types/current_user.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 
 part '../generated/providers/current_user_provider.g.dart';
+
+final needsProfileSetupProvider = StateProvider<bool>((ref) => false);
 
 @Riverpod(keepAlive: true)
 class CurrentUser extends _$CurrentUser {
@@ -232,7 +235,16 @@ class CurrentUser extends _$CurrentUser {
         params: {'p_uid': uid},
       );
       if (response is! List || response.isEmpty) {
-        await signOut();
+        final currentUser = supabase.auth.currentUser;
+        final provider = currentUser?.appMetadata['provider'] as String?;
+        final identities = currentUser?.identities ?? [];
+        final isOAuth = provider == 'google' ||
+            identities.any((i) => i.provider == 'google');
+        if (isOAuth) {
+          ref.read(needsProfileSetupProvider.notifier).state = true;
+        } else {
+          await signOut();
+        }
         return;
       }
       final first = response.first;
@@ -241,6 +253,11 @@ class CurrentUser extends _$CurrentUser {
         return;
       }
       final row = Map<String, dynamic>.from(first);
+      final username = row['username'] as String? ?? '';
+      if (username.isEmpty) {
+        ref.read(needsProfileSetupProvider.notifier).state = true;
+        return;
+      }
       final blockedBy = await _getPeopleWhoBlockedMe();
       row['blocked_by'] = blockedBy;
       state = CurrentUserModel.fromJson(row);

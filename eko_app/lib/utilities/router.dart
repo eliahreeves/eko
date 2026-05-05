@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/scaffolds/app_safe_area.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/auth_provider.dart';
+import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pending_deep_link_provider.dart';
 import 'package:eko_app/views/blocked_users_page.dart';
 import 'package:eko_app/views/download_page.dart';
@@ -24,6 +25,7 @@ import 'package:eko_app/views/other_profile.dart';
 import 'package:eko_app/views/view_post_page.dart';
 import 'package:eko_app/views/profile_picture_detail.dart';
 import 'package:eko_app/views/welcome.dart';
+import 'package:eko_app/views/google_setup_page.dart';
 import 'package:eko_app/views/followers.dart';
 import 'package:eko_app/views/following.dart';
 import 'package:eko_app/views/recent_activity.dart';
@@ -52,6 +54,9 @@ class GoRouterRefreshNotifier extends ChangeNotifier {
 final goRouterProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = GoRouterRefreshNotifier();
   ref.listen(authProvider, (_, __) => refreshNotifier.refresh());
+  // needsProfileSetup is set async in currentUserProvider.reload(); without this,
+  // GoRouter never re-runs redirect and /feed stays on RequireAuth's spinner forever.
+  ref.listen(needsProfileSetupProvider, (_, __) => refreshNotifier.refresh());
   return GoRouter(
     initialLocation: '/feed',
     navigatorKey: NotificationHelper.navigatorKey,
@@ -67,12 +72,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return '/auth?type=recovery';
       }
 
+      final needsSetup = ref.read(needsProfileSetupProvider);
+      if (auth.uid != null && needsSetup && loc != '/google_setup') {
+        return '/google_setup';
+      }
+
       const unauthenticatedRoutes = [
         '/',
         '/signup',
         '/login',
         '/auth',
         '/download',
+        '/google_setup',
       ];
 
       if (auth.uid == null) {
@@ -89,6 +100,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/google_setup',
+        name: 'google_setup',
+        builder: (context, state) =>
+            const AppSafeArea(child: GoogleSetupPage()),
+      ),
       GoRoute(
         path: '/profile_picture_detail/:id',
         name: 'profile_picture_detail',

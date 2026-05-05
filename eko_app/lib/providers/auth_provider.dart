@@ -163,6 +163,74 @@ class Auth extends _$Auth {
     }
   }
 
+  String? _oauthAvatarUrl() {
+    final meta = supabase.auth.currentUser?.userMetadata;
+    if (meta == null) return null;
+    String? str(Object? v) {
+      if (v == null) return null;
+      final s = v is String ? v : v.toString();
+      final t = s.trim();
+      return t.isEmpty ? null : t;
+    }
+
+    return str(meta['avatar_url']) ??
+        str(meta['picture']) ??
+        str(meta['avatarUrl']);
+  }
+
+  Future<SignUpOutcome> createGoogleProfile({
+    required String username,
+    required String name,
+    required String birthday,
+  }) async {
+    try {
+      // Parse birthday string MM/DD/YYYY → date expected by the RPC
+      final parts = birthday.split('/');
+      final birthdayDate = parts.length == 3
+          ? '${parts[2]}-${parts[0].padLeft(2, '0')}-${parts[1].padLeft(2, '0')}'
+          : birthday;
+
+      final avatarUrl = _oauthAvatarUrl();
+
+      final response = await supabase.rpc(
+        'create_google_profile',
+        params: {
+          'p_username': username,
+          'p_name': name,
+          'p_birthday': birthdayDate,
+          'p_profile_picture': avatarUrl,
+        },
+      );
+      if (response is! List || response.isEmpty) {
+        return const SignUpOutcome(errorCode: 'unknown');
+      }
+      final row = Map<String, dynamic>.from(response.first as Map);
+      if (row['success'] != true) {
+        final msg = (row['error_message'] ?? '').toString().toLowerCase();
+        if (msg.contains('username')) {
+          return const SignUpOutcome(errorCode: 'username-taken');
+        }
+        return const SignUpOutcome(errorCode: 'unknown');
+      }
+      if (avatarUrl != null) {
+        try {
+          await supabase.auth.updateUser(
+            UserAttributes(data: {'profile_picture': avatarUrl}),
+          );
+        } catch (e) {
+          debugPrint('createGoogleProfile auth metadata sync: $e');
+        }
+      }
+      return const SignUpOutcome();
+    } on AuthException catch (e) {
+      debugPrint('createGoogleProfile auth error: ${e.message}');
+      return const SignUpOutcome(errorCode: 'unknown');
+    } catch (e) {
+      debugPrint('createGoogleProfile error: $e');
+      return const SignUpOutcome(errorCode: 'unknown');
+    }
+  }
+
   Future<void> registerNotificationsIfNeeded() async {
     final uid = state.uid;
     if (uid == null || uid.isEmpty) return;
