@@ -17,6 +17,13 @@ COMMENT ON SCHEMA "public" IS 'standard public schema';
 
 
 
+CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "public";
+
+
+
+
+
+
 CREATE EXTENSION IF NOT EXISTS "hypopg" WITH SCHEMA "extensions";
 
 
@@ -181,6 +188,46 @@ $$;
 
 
 ALTER FUNCTION "public"."change_post_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."create_google_profile"("p_username" "text", "p_name" "text", "p_birthday" "date", "p_profile_picture" "text" DEFAULT NULL::"text") RETURNS TABLE("success" boolean, "error_message" "text")
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+  DECLARE
+    v_uid UUID := auth.uid();
+    v_pic TEXT;
+  BEGIN
+    IF v_uid IS NULL THEN
+      RETURN QUERY SELECT false, 'not_authenticated'::text;
+      RETURN;
+    END IF;
+    IF EXISTS (SELECT 1 FROM public.users WHERE id = v_uid) THEN
+      RETURN QUERY SELECT false, 'profile_already_exists'::text;
+      RETURN;
+    END IF;
+    IF EXISTS (SELECT 1 FROM public.usernames WHERE username = p_username) THEN
+      RETURN QUERY SELECT false, 'username_taken'::text;
+      RETURN;
+    END IF;
+    v_pic := NULLIF(BTRIM(p_profile_picture), '');
+    BEGIN
+      INSERT INTO public.users (id, username, name, birthday, bio, is_verified, profile_picture)
+      VALUES (v_uid, p_username, p_name, p_birthday, '', false, v_pic);
+    EXCEPTION
+      WHEN unique_violation THEN
+        RETURN QUERY SELECT false, 'username_taken'::text;
+        RETURN;
+      WHEN OTHERS THEN
+        RETURN QUERY SELECT false, SQLERRM::text;
+        RETURN;
+    END;
+    RETURN QUERY SELECT true, NULL::text;
+  END;
+  $$;
+
+
+ALTER FUNCTION "public"."create_google_profile"("p_username" "text", "p_name" "text", "p_birthday" "date", "p_profile_picture" "text") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."delete_user"() RETURNS "void"
@@ -382,12 +429,19 @@ CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
     AS $$
-begin
-  insert into public.users (id, username, created_at, profile_picture, birthday, name, firebase_uid, bio, is_verified)
-  values (new.id, new.raw_user_meta_data ->> 'username', COALESCE(NEW.raw_user_meta_data ->> 'created_at', now()::text)::timestamp, NEW.raw_user_meta_data ->> 'profile_picture', (NEW.raw_user_meta_data ->> 'birthday')::date, NEW.raw_user_meta_data ->> 'name', NEW.raw_user_meta_data ->> 'firebase_uid', NEW.raw_user_meta_data ->> 'bio', (NEW.raw_user_meta_data ->> 'is_verified')::boolean);
-  return new;
-end;
-$$;
+  begin
+    -- OAuth users (e.g. Google) have no username in metadata; skip the insert
+    -- and let the client call create_google_profile after the user chooses one.
+    IF new.raw_user_meta_data ->> 'username' IS NULL THEN
+      RETURN new;
+    END IF;
+    insert into public.users (id, username, created_at, profile_picture, birthday, name, firebase_uid, bio, is_verified)
+    values (new.id, new.raw_user_meta_data ->> 'username', COALESCE(NEW.raw_user_meta_data ->> 'created_at', now()::text)::timestamp, NEW.raw_user_meta_data ->>
+  'profile_picture', (NEW.raw_user_meta_data ->> 'birthday')::date, NEW.raw_user_meta_data ->> 'name', NEW.raw_user_meta_data ->> 'firebase_uid', NEW.raw_user_meta_data
+  ->> 'bio', (NEW.raw_user_meta_data ->> 'is_verified')::boolean);
+    return new;
+  end;
+  $$;
 
 
 ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
@@ -595,6 +649,52 @@ $$;
 
 
 ALTER FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."notify_user_on_insert"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+  payload jsonb;
+  edge_function_url text;
+  request_id bigint;
+BEGIN
+  IF TG_TABLE_NAME = 'posts' THEN
+    payload = jsonb_build_object(
+      'record', jsonb_build_object(
+        'table', 'posts',
+        'id', NEW.id,
+        'title', NEW.title,
+        'body', NEW.body,
+        'author_uid', NEW.author_uid
+      )
+    );
+  ELSIF TG_TABLE_NAME = 'activity' THEN
+    payload = jsonb_build_object(
+      'record', jsonb_build_object(
+        'table', 'activity',
+        'id', NEW.id,
+        'type', NEW.type,
+        'source_uid', NEW.source_uid,
+        'target_uid', NEW.target_uid,
+        'post_id', NEW.post_id,
+        'comment_id', NEW.comment_id
+      )
+    );
+  END IF;
+  edge_function_url = 'https://' || current_setting('supabase_functions_endpoint', true) || '/functions/v1/notify-user';
+  SELECT net.http_post(
+    url := edge_function_url,
+    body := payload,
+    headers := '{"Content-Type": "application/json"}'::jsonb
+  ) INTO request_id;
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."notify_user_on_insert"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."paginated_activities"("p_limit" integer, "p_last_time" timestamp with time zone DEFAULT NULL::timestamp with time zone, "p_last_id" bigint DEFAULT NULL::bigint) RETURNS TABLE("id" bigint, "created_at" timestamp with time zone, "source_uid" "uuid", "post_id" bigint, "comment_id" bigint, "type" "text")
@@ -1276,6 +1376,29 @@ CREATE OR REPLACE VIEW "public"."full_user_info" WITH ("security_invoker"='on') 
 ALTER VIEW "public"."full_user_info" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."functions_cache" (
+    "id" bigint NOT NULL,
+    "data" "jsonb" NOT NULL,
+    "cache_key" "text" NOT NULL,
+    "expires_at" timestamp with time zone,
+    "updated_at" timestamp with time zone DEFAULT "now"()
+);
+
+
+ALTER TABLE "public"."functions_cache" OWNER TO "postgres";
+
+
+ALTER TABLE "public"."functions_cache" ALTER COLUMN "id" ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME "public"."functions_cache_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."logos" (
     "id" smallint NOT NULL,
     "svg" "text" DEFAULT ''::"text" NOT NULL,
@@ -1438,6 +1561,16 @@ ALTER TABLE ONLY "public"."following"
 
 
 
+ALTER TABLE ONLY "public"."functions_cache"
+    ADD CONSTRAINT "functions_cache_cache_key_key" UNIQUE ("cache_key");
+
+
+
+ALTER TABLE ONLY "public"."functions_cache"
+    ADD CONSTRAINT "functions_cache_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."logos"
     ADD CONSTRAINT "logos_pkey" PRIMARY KEY ("id");
 
@@ -1507,6 +1640,14 @@ CREATE INDEX "users_name_trgm_idx" ON "public"."users" USING "gin" ("name" "exte
 
 
 CREATE INDEX "users_username_trgm_idx" ON "public"."users" USING "gin" ("username" "extensions"."gin_trgm_ops");
+
+
+
+CREATE OR REPLACE TRIGGER "on_activity_creation" AFTER INSERT ON "public"."activity" FOR EACH ROW EXECUTE FUNCTION "public"."notify_user_on_insert"();
+
+
+
+CREATE OR REPLACE TRIGGER "on_post_creation" AFTER INSERT ON "public"."posts" FOR EACH ROW EXECUTE FUNCTION "public"."notify_user_on_insert"();
 
 
 
@@ -1788,6 +1929,9 @@ CREATE POLICY "delete old comments if owned" ON "public"."comments" FOR DELETE U
 
 
 ALTER TABLE "public"."following" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."functions_cache" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "insert comment likes" ON "public"."comment_likes" FOR INSERT TO "authenticated" WITH CHECK (("user_uid" = ( SELECT "auth"."uid"() AS "uid")));
@@ -2176,6 +2320,9 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
+
+
+
 GRANT ALL ON FUNCTION "public"."change_comment_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) TO "anon";
 GRANT ALL ON FUNCTION "public"."change_comment_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."change_comment_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) TO "service_role";
@@ -2191,6 +2338,12 @@ GRANT ALL ON FUNCTION "public"."change_follow_state"("p_uid" "uuid", "p_is_follo
 GRANT ALL ON FUNCTION "public"."change_post_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) TO "anon";
 GRANT ALL ON FUNCTION "public"."change_post_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."change_post_likes"("p_id" bigint, "p_is_liking" boolean, "p_is_dislike" boolean) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."create_google_profile"("p_username" "text", "p_name" "text", "p_birthday" "date", "p_profile_picture" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."create_google_profile"("p_username" "text", "p_name" "text", "p_birthday" "date", "p_profile_picture" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."create_google_profile"("p_username" "text", "p_name" "text", "p_birthday" "date", "p_profile_picture" "text") TO "service_role";
 
 
 
@@ -2299,6 +2452,12 @@ GRANT ALL ON FUNCTION "public"."log_follow_activity"("p_source_uid" "uuid", "p_t
 GRANT ALL ON FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) TO "anon";
 GRANT ALL ON FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "uuid", "p_text" "text"[]) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."notify_user_on_insert"() TO "anon";
+GRANT ALL ON FUNCTION "public"."notify_user_on_insert"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."notify_user_on_insert"() TO "service_role";
 
 
 
@@ -2530,6 +2689,18 @@ GRANT ALL ON TABLE "public"."users" TO "service_role";
 GRANT ALL ON TABLE "public"."full_user_info" TO "anon";
 GRANT ALL ON TABLE "public"."full_user_info" TO "authenticated";
 GRANT ALL ON TABLE "public"."full_user_info" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."functions_cache" TO "anon";
+GRANT ALL ON TABLE "public"."functions_cache" TO "authenticated";
+GRANT ALL ON TABLE "public"."functions_cache" TO "service_role";
+
+
+
+GRANT ALL ON SEQUENCE "public"."functions_cache_id_seq" TO "anon";
+GRANT ALL ON SEQUENCE "public"."functions_cache_id_seq" TO "authenticated";
+GRANT ALL ON SEQUENCE "public"."functions_cache_id_seq" TO "service_role";
 
 
 
