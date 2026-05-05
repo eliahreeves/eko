@@ -82,8 +82,11 @@ class Auth extends _$Auth {
               pendingPasswordRecovery: false,
             );
             if (data.event == AuthChangeEvent.signedIn) {
-              // ios typically opens an in-app web view, so it doesnt get dismissed otherwise
-              closeInAppWebView();
+              // This throws on linux but appears to have to affect on android
+              if (!Platform.isLinux) {
+                // ios typically opens an in-app web view, so it doesnt get dismissed otherwise
+                closeInAppWebView();
+              }
             }
           }
         }
