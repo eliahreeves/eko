@@ -32,6 +32,7 @@
     "wrongPasswordTittle":"Incorrect Password",
     "wrongPasswordBody":"The password you entered is incorrect.",
 
+	"requiredResetPasswordPrompt":"If you have not logged in since May 2026, you need to reset your password.",
 
     "userDisabledTittle":"Account Disabled",
     "userDisabledBody":"Your account has been disabled. Please contact us at conetechnologiesdev@gmail.com.",
@@ -79,6 +80,7 @@
     "exitEditProfileBody":"All changes will be lost.",
     "stay":"Stay",
     "exit":"Exit",
+    "back":"Back",
     "goBack":"Go Back",
     "tryAgain":"Try Again",
     "signUp":"Sign Up",

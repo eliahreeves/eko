@@ -97,11 +97,37 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             setState(() {
               _paneIndex = 1;
             });
+          } else if (e.code == 'invalid_credentials') {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext dialogContext) {
+                final l10n = AppLocalizations.of(context)!;
+                return AlertDialog(
+                  backgroundColor: Theme.of(context).colorScheme.outlineVariant,
+                  title: Text(l10n.loginFailedBody),
+                  content: Text(l10n.requiredResetPasswordPrompt),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text(l10n.back),
+                      onPressed: () {
+                        Navigator.of(dialogContext).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: Text(l10n.resetPassword),
+                      onPressed: () {
+                        Navigator.of(dialogContext).pop();
+                        forgotPasswordPressed(l10n.localeName);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
           } else {
             showSnackBar(
-                text: e.code == 'invalid_credentials'
-                    ? AppLocalizations.of(context)!.loginFailedBody
-                    : '${AppLocalizations.of(context)!.error}: ${e.message}',
+                text: '${AppLocalizations.of(context)!.error}: ${e.message}',
                 context: context,
                 variant: SnackBarVariant.destructive);
           }

@@ -74,6 +74,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wrongPasswordBody => 'The password you entered is incorrect.';
 
   @override
+  String get requiredResetPasswordPrompt =>
+      'If you have not logged in since May 2026, you need to reset your password.';
+
+  @override
   String get userDisabledTittle => 'Account Disabled';
 
   @override
@@ -167,6 +171,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exit => 'Exit';
+
+  @override
+  String get back => 'Back';
 
   @override
   String get goBack => 'Go Back';

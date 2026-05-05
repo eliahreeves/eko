@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'The password you entered is incorrect.'**
   String get wrongPasswordBody;
 
+  /// No description provided for @requiredResetPasswordPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have not logged in since May 2026, you need to reset your password.'**
+  String get requiredResetPasswordPrompt;
+
   /// No description provided for @userDisabledTittle.
   ///
   /// In en, this message translates to:
@@ -391,6 +397,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit'**
   String get exit;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
 
   /// No description provided for @goBack.
   ///

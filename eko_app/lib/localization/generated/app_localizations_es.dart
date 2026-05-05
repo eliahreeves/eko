@@ -75,6 +75,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get wrongPasswordBody => 'La contraseña usada es incorrecta.';
 
   @override
+  String get requiredResetPasswordPrompt =>
+      'If you have not logged in since May 2026, you need to reset your password.';
+
+  @override
   String get userDisabledTittle => 'Cuenta no disponible';
 
   @override
@@ -170,6 +174,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get exit => 'Salir';
+
+  @override
+  String get back => 'Back';
 
   @override
   String get goBack => 'Volver';
