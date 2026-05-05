@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -119,7 +121,9 @@ class Auth extends _$Auth {
           'bio': '',
           'is_verified': false,
         },
-        emailRedirectTo: c.verifyEmailURL,
+        emailRedirectTo: (Platform.isAndroid || Platform.isIOS)
+            ? c.appURL
+            : c.verifyEmailURL,
       );
       final user = response.user;
       final needsEmailVerification =

@@ -37,7 +37,7 @@ class ProfilePicture extends ConsumerWidget {
                 child: asyncUser.when(
                   data: (user) {
                     return CachedNetworkImage(
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
                       imageUrl: user.profilePicture,
                       placeholder: (context, url) =>
                           const LoadingProfileImage(),
@@ -80,7 +80,7 @@ class ProfilePictureFromFile extends StatelessWidget {
         child: SizedBox(
           width: size,
           height: size,
-          child: ClipOval(child: Image.file(file, fit: BoxFit.fill)),
+          child: ClipOval(child: Image.file(file, fit: BoxFit.cover)),
         ),
       ),
     );
