@@ -47,8 +47,12 @@ Future<void> _initFirebase() async {
 }
 
 Future<void> main(List<String> args) async {
-  usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb && Platform.isAndroid && args.contains('--unifiedpush-bg')) {
+    await NotificationHelper.bootstrapUnifiedPushBackground();
+    return;
+  }
+  usePathUrlStrategy();
   await Future.wait([
     PrefsService.init(),
     _initSupabase(),

@@ -11,6 +11,7 @@ import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
 import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
@@ -32,8 +33,20 @@ class NotificationHelper {
   static Future<void> setupNotifications() async {
     await _adapter.initialize();
     await _adapter.requestPermissions();
-    if (!Platform.isAndroid) {
+    if (_adapter.registersDuringSetup) {
       await _adapter.registerDevice();
+    }
+  }
+
+  static Future<void> bootstrapUnifiedPushBackground() async {
+    if (!Platform.isAndroid) return;
+    debugPrint('[UnifiedPush] bootstrap background entrypoint');
+    await const UnifiedPushNotificationAdapter().initialize();
+    if (await UnifiedPush.getDistributor() != null) {
+      await UnifiedPush.register(
+        instance: UnifiedPushNotificationAdapter.instanceId,
+        vapid: ac.vapidPublicKey,
+      );
     }
   }
 
@@ -129,6 +142,7 @@ typedef NotificationPayloadHandler = Future<void> Function(
 
 abstract class NotificationPlatformAdapter {
   const NotificationPlatformAdapter();
+  bool get registersDuringSetup => true;
   Future<void> initialize();
   Future<void> requestPermissions();
   Future<void> registerDevice();
@@ -196,10 +210,16 @@ class ApnsNotificationAdapter extends NotificationPlatformAdapter {
 class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   const UnifiedPushNotificationAdapter();
 
-  static const String _instance = 'default';
+  @override
+  bool get registersDuringSetup => false;
+
+  static const String instanceId = 'default';
+  static const String _androidChannelId = 'eko_unified_push';
+  static const String _androidChannelName = 'Notifications';
+  static final FlutterLocalNotificationsPlugin _flutterLocalNotifications =
+      FlutterLocalNotificationsPlugin();
   static void Function(String?)? _onEndpoint;
   static void Function()? _onMessage;
-  static NotificationPayloadHandler? _onPayload;
   static BuildContext? _handlerContext;
   static bool _initialized = false;
   static Completer<String?>? _tokenCompleter;
@@ -207,6 +227,24 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
 
   static bool _localNotificationsInitialized = false;
   static int _notificationId = 0;
+
+  static Future<void> _ensureFlutterLocalNotificationsInitialized() async {
+    if (_localNotificationsInitialized) return;
+    const androidInit = AndroidInitializationSettings('@drawable/ic_stat_name');
+    await _flutterLocalNotifications.initialize(
+      settings: const InitializationSettings(android: androidInit),
+    );
+    final android =
+        _flutterLocalNotifications.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    await android?.createNotificationChannel(const AndroidNotificationChannel(
+      _androidChannelId,
+      _androidChannelName,
+      description: 'UnifiedPush',
+      importance: Importance.high,
+    ));
+    _localNotificationsInitialized = true;
+  }
 
   static String? _serializedWebPushSubscription(PushEndpoint endpoint) {
     final url = endpoint.url;
@@ -224,9 +262,10 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     _initialized = true;
     try {
       debugPrint('[UnifiedPush] initialize start');
+      await _ensureFlutterLocalNotificationsInitialized();
       await UnifiedPush.initialize(
         onNewEndpoint: (endpoint, instance) {
-          if (instance != _instance) return;
+          if (instance != instanceId) return;
           final token = _serializedWebPushSubscription(endpoint);
           if (token != null && token == _lastSerializedEndpoint) {
             return;
@@ -240,7 +279,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
           _completeToken(token);
         },
         onRegistrationFailed: (reason, instance) {
-          if (instance != _instance) return;
+          if (instance != instanceId) return;
           _lastSerializedEndpoint = null;
           debugPrint(
               '[UnifiedPush] onRegistrationFailed instance=$instance reason=$reason');
@@ -250,7 +289,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
           _completeToken(null);
         },
         onUnregistered: (instance) {
-          if (instance != _instance) return;
+          if (instance != instanceId) return;
           _lastSerializedEndpoint = null;
           debugPrint('[UnifiedPush] onUnregistered instance=$instance');
           PrefsService.deviceNotificationToken = null;
@@ -259,7 +298,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
           _completeToken(null);
         },
         onMessage: (message, instance) async {
-          if (instance != _instance) return;
+          if (instance != instanceId) return;
           debugPrint(
               '[UnifiedPush] onMessage instance=$instance contentType=${message.content.runtimeType}');
           final decoded = _decodePayload(message.content);
@@ -267,15 +306,33 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
               '[UnifiedPush] onMessage payloadKeys=${decoded.keys.join(",")}');
 
           final title = decoded['title'] as String? ?? 'New notification';
-          final body = decoded['body'] as String? ?? '';
-          final navPayload = decoded['data'] is Map
-              ? Map<String, dynamic>.from(decoded['data'] as Map)
-              : decoded;
+          final body =
+              decoded['body'] as String? ?? decoded['message'] as String? ?? '';
+
+          await _ensureFlutterLocalNotificationsInitialized();
+          _notificationId = (_notificationId + 1) & 0x7fffffff;
+          try {
+            await _flutterLocalNotifications.show(
+              id: _notificationId,
+              title: title,
+              body: body,
+              notificationDetails: const NotificationDetails(
+                android: AndroidNotificationDetails(
+                  _androidChannelId,
+                  _androidChannelName,
+                  importance: Importance.high,
+                  priority: Priority.high,
+                ),
+              ),
+            );
+          } catch (e, st) {
+            debugPrint('[UnifiedPush] local notification show failed: $e $st');
+          }
 
           _onMessage?.call();
         },
         onTempUnavailable: (instance) {
-          if (instance != _instance) return;
+          if (instance != instanceId) return;
           debugPrint('[UnifiedPush] onTempUnavailable instance=$instance');
         },
       );
@@ -311,8 +368,26 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         return decoded.map((key, value) => MapEntry(key.toString(), value));
       }
     } catch (_) {}
+    if (payload.contains('=')) {
+      try {
+        final form = _decodeFormStylePayload(payload);
+        if (form.isNotEmpty) return form;
+      } catch (_) {}
+    }
     debugPrint('[UnifiedPush] decode payload failed');
     return {};
+  }
+
+  static Map<String, dynamic> _decodeFormStylePayload(String payload) {
+    final decoded = <String, dynamic>{};
+    for (final part in payload.split('&')) {
+      final idx = part.indexOf('=');
+      if (idx <= 0) continue;
+      final key = Uri.decodeComponent(part.substring(0, idx));
+      final value = Uri.decodeComponent(part.substring(idx + 1));
+      decoded[key] = value;
+    }
+    return decoded;
   }
 
   static void _completeToken(String? token) {
@@ -386,8 +461,8 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     if (_tokenCompleter == null || _tokenCompleter!.isCompleted) {
       _tokenCompleter = Completer<String?>();
     }
-    debugPrint('[UnifiedPush] registerDevice instance=$_instance');
-    await UnifiedPush.register(instance: _instance, vapid: ac.vapidPublicKey);
+    debugPrint('[UnifiedPush] registerDevice instance=$instanceId');
+    await UnifiedPush.register(instance: instanceId, vapid: ac.vapidPublicKey);
   }
 
   @override
@@ -422,7 +497,6 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   ) {
     _handlerContext = context;
     _onMessage = callback;
-    _onPayload = handler;
     _onEndpoint = (endpoint) {
       debugPrint(
           '[UnifiedPush] onEndpoint handler endpoint=${endpoint?.isNotEmpty == true}');
