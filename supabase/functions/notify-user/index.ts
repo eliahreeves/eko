@@ -71,7 +71,9 @@ async function deactivateDevice(device: Device) {
   if (error) {
     console.error(`Failed to deactivate device ${device.device_id}:`, error);
   } else {
-    console.log(`Deactivated expired device ${device.device_id} for user ${device.user_uid}`);
+    console.log(
+      `Deactivated expired device ${device.device_id} for user ${device.user_uid}`,
+    );
   }
 }
 
@@ -113,7 +115,9 @@ async function sendWebPush(
   } catch (error: unknown) {
     const webPushError = error as { statusCode?: number };
     if (webPushError?.statusCode === 410) {
-      console.warn(`WebPush: subscription expired for device ${device.device_id}, deactivating`);
+      console.warn(
+        `WebPush: subscription expired for device ${device.device_id}, deactivating`,
+      );
       await deactivateDevice(device);
     } else {
       console.error("WebPush Error:", error);
@@ -122,37 +126,67 @@ async function sendWebPush(
   }
 }
 
-// FIXME should be stored in DB, probably won't persist across edge func invocations
-let cachedApnsToken: string | null = null;
-let tokenGeneratedAt = 0;
-
 async function getApnsToken(config: ApnsConfig) {
-  const now = Date.now();
-  // Reuse the token if it's less than 30 minutes old (1800,000 milliseconds)
-  // https://developer.apple.com/documentation/usernotifications/establishing-a-token-based-connection-to-apns#Refresh-your-token-regularly
-  if (cachedApnsToken && (now - tokenGeneratedAt < 1800000)) {
-    return cachedApnsToken;
+  const cacheKey = "apns_token";
+  const now = new Date().toISOString();
+
+  // check for valid cached token
+  const { data: cached, error: cacheError } = await supabaseAdmin
+    .from("functions_cache")
+    .select("data, expires_at")
+    .eq("cache_key", cacheKey)
+    .gt("expires_at", now)
+    .maybeSingle();
+  if (cacheError) {
+    console.error("Error fetching cached APNS token:", cacheError);
+  } else if (cached?.data?.token && typeof cached.data.token === "string") {
+    return cached.data.token as string;
   }
 
+  // generate new token if no valid cache
   const { teamId, keyId, privateKeyP8 } = config;
-  const ecPrivateKey = await importPKCS8(privateKeyP8, "ES256");
-  const jwt = await new SignJWT({})
-    .setProtectedHeader({ alg: "ES256", kid: keyId })
-    .setIssuedAt()
-    .setIssuer(teamId)
-    .sign(ecPrivateKey);
+  if (!privateKeyP8) {
+    console.error("APNS Error: Missing private key for token generation.");
+    return null;
+  }
+  try {
+    const ecPrivateKey = await importPKCS8(privateKeyP8, "ES256");
+    const jwt = await new SignJWT({})
+      .setProtectedHeader({ alg: "ES256", kid: keyId })
+      .setIssuedAt()
+      .setIssuer(teamId)
+      .sign(ecPrivateKey);
 
-  cachedApnsToken = jwt;
-  tokenGeneratedAt = now;
-  return jwt;
+    // cache the new token with 30 minute expiry
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+    const { error: upsertError } = await supabaseAdmin
+      .from("functions_cache")
+      .upsert(
+        {
+          cache_key: cacheKey,
+          data: { token: jwt },
+          expires_at: expiresAt,
+          updated_at: now,
+        },
+        { onConflict: "cache_key" },
+      );
+    if (upsertError) {
+      console.error("Failed to cache new APNS token:", upsertError);
+    }
+    return jwt;
+  } catch (error) {
+    console.error("Error generating APNS token:", error);
+    return null;
+  }
 }
 
 async function sendAPNS(
-  deviceToken: string,
+  device: Device,
   payload: unknown,
   config: ApnsConfig,
   title: string,
   body: string,
+  isRetry = false, // will retry once if 403 (cert/auth token error) is returned
 ) {
   // https://developer.apple.com/documentation/usernotifications/sending-notification-requests-to-apns
   const { privateKeyP8, bundleId } = config;
@@ -164,6 +198,10 @@ async function sendAPNS(
 
   try {
     const jwt = await getApnsToken(config);
+    if (!jwt) {
+      console.error("APNS Error: No valid APNS token available or generated.");
+      return false;
+    }
 
     const apnsPayload = {
       aps: {
@@ -180,7 +218,7 @@ async function sendAPNS(
       : "api.push.apple.com";
 
     const res = await fetch(
-      `https://${apnsHost}/3/device/${deviceToken}`,
+      `https://${apnsHost}/3/device/${device.token}`,
       {
         method: "POST",
         headers: {
@@ -192,7 +230,26 @@ async function sendAPNS(
       },
     );
 
-    if (!res.ok) {
+    if (res.status === 403) {
+      console.warn("APNS token invalid or expired, clearing cache");
+      await supabaseAdmin
+        .from("functions_cache")
+        .delete()
+        .eq("cache_key", "apns_token");
+      // retry once
+      if (!isRetry) {
+        console.log("Retrying APNS send with new token...");
+        return sendAPNS(device, payload, config, title, body, true);
+      } else {
+        console.error("APNS send failed after one retry attempt");
+        return false;
+      }
+    } else if (res.status === 410) {
+      console.warn(
+        `APNS: token expired for device ${device.device_id}, deactivating`,
+      );
+      await deactivateDevice(device);
+    } else if (!res.ok) {
       const errorText = await res.text();
       console.error(`APNS Delivery Failed (${res.status}):`, errorText);
     }
@@ -335,7 +392,7 @@ Deno.serve(async (req) => {
 
   const notifications = [
     ...apnsDevices.map((device: Device) =>
-      sendAPNS(device.token, record, apnsConfig, title, body)
+      sendAPNS(device, record, apnsConfig, title, body)
     ),
     ...webPushDevices.map((device: Device) =>
       sendWebPush(device, record, title, body)
