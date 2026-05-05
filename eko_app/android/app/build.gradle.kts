@@ -20,6 +20,7 @@ android {
     ndkVersion = "28.2.13676358"
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -64,6 +65,6 @@ configurations.all {
         implementation("org.unifiedpush.android:embedded-fcm-distributor:3.0.0")
     }
 }
-// dependencies {
-//     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
-// }
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+}

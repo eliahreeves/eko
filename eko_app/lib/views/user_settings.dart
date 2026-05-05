@@ -9,6 +9,7 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/theme_provider.dart';
 import 'package:eko_app/providers/post_preview_provider.dart';
+import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:go_router/go_router.dart';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,15 +24,17 @@ class UserSettings extends ConsumerStatefulWidget {
 class _UserSettingsState extends ConsumerState<UserSettings> {
   late bool activityNotification;
 
-  void toggleActivityNotification(bool value) {
+  Future<void> toggleActivityNotification(bool value) async {
     PrefsService.notificationsEnabled = value;
     setState(() {
       activityNotification = value;
     });
     if (value) {
-      addDeviceNotificationToken(ref.read(currentUserProvider).user.uid);
+      await NotificationHelper.setupNotifications();
+      await addDeviceNotificationToken(ref.read(currentUserProvider).user.uid);
     } else {
-      removeDeviceNotificationToken(ref.read(currentUserProvider).user.uid);
+      await removeDeviceNotificationToken(
+          ref.read(currentUserProvider).user.uid);
     }
   }
 

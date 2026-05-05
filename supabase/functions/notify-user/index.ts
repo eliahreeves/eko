@@ -12,6 +12,8 @@ interface ApnsConfig {
 }
 
 interface Device {
+  user_uid: string;
+  device_id: string;
   token: string;
   notification_type: "apns" | "web_push" | string;
   [key: string]: unknown;
@@ -25,8 +27,56 @@ const apnsConfig: ApnsConfig = {
   sandbox: Deno.env.get("APNS_USE_SANDBOX") === "true" || false,
 };
 
-async function sendWebPush(
+type WebPushSubscriptionInput = {
+  endpoint: string;
+  keys?: { p256dh?: string; auth?: string };
+};
+
+function parseWebPushSubscription(
   subscription: unknown,
+): WebPushSubscriptionInput | null {
+  if (
+    subscription &&
+    typeof subscription === "object" &&
+    "endpoint" in subscription
+  ) {
+    const o = subscription as WebPushSubscriptionInput;
+    return typeof o.endpoint === "string" && o.endpoint.length > 0 ? o : null;
+  }
+  if (typeof subscription !== "string") return null;
+  const s = subscription.trim();
+  if (!s) return null;
+  if (s.startsWith("http://") || s.startsWith("https://")) {
+    console.error(
+      "WebPush Error: token is a bare URL; store JSON with endpoint and keys (UnifiedPush pubKeySet).",
+    );
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(s) as WebPushSubscriptionInput;
+    if (!parsed?.endpoint || typeof parsed.endpoint !== "string") return null;
+    return parsed;
+  } catch {
+    console.error("WebPush Error: token is not valid subscription JSON.");
+    return null;
+  }
+}
+
+async function deactivateDevice(device: Device) {
+  const { error } = await supabaseAdmin
+    .from("notifications")
+    .update({ active: false })
+    .eq("user_uid", device.user_uid)
+    .eq("device_id", device.device_id);
+  if (error) {
+    console.error(`Failed to deactivate device ${device.device_id}:`, error);
+  } else {
+    console.log(`Deactivated expired device ${device.device_id} for user ${device.user_uid}`);
+  }
+}
+
+async function sendWebPush(
+  device: Device,
   payload: unknown,
   title: string,
   body: string,
@@ -46,16 +96,28 @@ async function sendWebPush(
       privKey,
     );
 
-    const sub = typeof subscription === "string"
-      ? JSON.parse(subscription)
-      : subscription;
+    const sub = parseWebPushSubscription(device.token);
+    if (!sub) return false;
+    const k = sub.keys;
+    if (!k?.p256dh || !k?.auth) {
+      console.error(
+        "WebPush Error: subscription missing keys; client must re-register and upload full subscription JSON.",
+      );
+      return false;
+    }
     await webpush.sendNotification(
-      sub,
+      sub as { endpoint: string; keys: { p256dh: string; auth: string } },
       JSON.stringify({ title, body, data: payload }),
     );
     return true;
-  } catch (error) {
-    console.error("WebPush Error:", error);
+  } catch (error: unknown) {
+    const webPushError = error as { statusCode?: number };
+    if (webPushError?.statusCode === 410) {
+      console.warn(`WebPush: subscription expired for device ${device.device_id}, deactivating`);
+      await deactivateDevice(device);
+    } else {
+      console.error("WebPush Error:", error);
+    }
     return false;
   }
 }
@@ -276,7 +338,7 @@ Deno.serve(async (req) => {
       sendAPNS(device.token, record, apnsConfig, title, body)
     ),
     ...webPushDevices.map((device: Device) =>
-      sendWebPush(device.token, record, title, body)
+      sendWebPush(device, record, title, body)
     ),
   ];
 

@@ -115,3 +115,5 @@ final _supabaseKey = [
 const supabaseUrl = 'https://nkwizistugahxfwdwtwg.supabase.co';
 final supabaseKey = String.fromCharCodes(_supabaseKey);
 final klipyKey = String.fromCharCodes(_klipyKey);
+const vapidPublicKey =
+    'BFo24IYjHDx-wf82zp7ngoj1Bmm_xrtnF38DzgD2HqEJOoeJhOKipVcC7bwqNwrcHXL01ERh2HWktpKsiiRtZi4';

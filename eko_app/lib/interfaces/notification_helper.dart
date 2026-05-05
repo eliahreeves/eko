@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unifiedpush/unifiedpush.dart';
@@ -31,7 +32,9 @@ class NotificationHelper {
   static Future<void> setupNotifications() async {
     await _adapter.initialize();
     await _adapter.requestPermissions();
-    await _adapter.registerDevice();
+    if (!Platform.isAndroid) {
+      await _adapter.registerDevice();
+    }
   }
 
   /// For when a user clicks on a notification they received
@@ -200,6 +203,21 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   static BuildContext? _handlerContext;
   static bool _initialized = false;
   static Completer<String?>? _tokenCompleter;
+  static String? _lastSerializedEndpoint;
+
+  static bool _localNotificationsInitialized = false;
+  static int _notificationId = 0;
+
+  static String? _serializedWebPushSubscription(PushEndpoint endpoint) {
+    final url = endpoint.url;
+    if (url.isEmpty) return null;
+    final keys = endpoint.pubKeySet;
+    final map = <String, Object?>{'endpoint': url};
+    if (keys != null) {
+      map['keys'] = {'p256dh': keys.pubKey, 'auth': keys.auth};
+    }
+    return jsonEncode(map);
+  }
 
   static Future<void> _ensureInitialized() async {
     if (_initialized) return;
@@ -209,15 +227,21 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
       await UnifiedPush.initialize(
         onNewEndpoint: (endpoint, instance) {
           if (instance != _instance) return;
+          final token = _serializedWebPushSubscription(endpoint);
+          if (token != null && token == _lastSerializedEndpoint) {
+            return;
+          }
+          _lastSerializedEndpoint = token;
           debugPrint(
               '[UnifiedPush] onNewEndpoint instance=$instance url=${endpoint.url}');
-          PrefsService.deviceNotificationToken = endpoint.url;
-          PrefsService.notificationsEnabled = true;
-          _onEndpoint?.call(endpoint.url);
-          _completeToken(endpoint.url);
+          PrefsService.deviceNotificationToken = token;
+          PrefsService.notificationsEnabled = token != null && token.isNotEmpty;
+          _onEndpoint?.call(token);
+          _completeToken(token);
         },
         onRegistrationFailed: (reason, instance) {
           if (instance != _instance) return;
+          _lastSerializedEndpoint = null;
           debugPrint(
               '[UnifiedPush] onRegistrationFailed instance=$instance reason=$reason');
           PrefsService.deviceNotificationToken = null;
@@ -227,6 +251,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         },
         onUnregistered: (instance) {
           if (instance != _instance) return;
+          _lastSerializedEndpoint = null;
           debugPrint('[UnifiedPush] onUnregistered instance=$instance');
           PrefsService.deviceNotificationToken = null;
           PrefsService.notificationsEnabled = false;
@@ -237,14 +262,16 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
           if (instance != _instance) return;
           debugPrint(
               '[UnifiedPush] onMessage instance=$instance contentType=${message.content.runtimeType}');
-          final payload = _decodePayload(message.content);
-          final context = _handlerContext;
-          final handler = _onPayload;
+          final decoded = _decodePayload(message.content);
           debugPrint(
-              '[UnifiedPush] onMessage payloadKeys=${payload.keys.join(",")}');
-          if (context != null && handler != null && payload.isNotEmpty) {
-            await handler(context, payload);
-          }
+              '[UnifiedPush] onMessage payloadKeys=${decoded.keys.join(",")}');
+
+          final title = decoded['title'] as String? ?? 'New notification';
+          final body = decoded['body'] as String? ?? '';
+          final navPayload = decoded['data'] is Map
+              ? Map<String, dynamic>.from(decoded['data'] as Map)
+              : decoded;
+
           _onMessage?.call();
         },
         onTempUnavailable: (instance) {
@@ -346,7 +373,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     if (success) return;
     final context =
         _handlerContext ?? NotificationHelper.navigatorKey.currentContext;
-    if (context == null) return;
+    if (context == null || !context.mounted) return;
     final choice = await _pickDistributor(context);
     if (choice == null) return;
     debugPrint('[UnifiedPush] saveDistributor choice=$choice');
@@ -360,7 +387,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
       _tokenCompleter = Completer<String?>();
     }
     debugPrint('[UnifiedPush] registerDevice instance=$_instance');
-    await UnifiedPush.register(instance: _instance);
+    await UnifiedPush.register(instance: _instance, vapid: ac.vapidPublicKey);
   }
 
   @override

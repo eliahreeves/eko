@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show debugPrint;
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:eko_app/types/auth.dart';
@@ -10,6 +10,15 @@ import 'package:eko_app/interfaces/user.dart' as user;
 import 'package:eko_app/utilities/gauth/supabase_google_oauth.dart';
 
 part '../generated/providers/auth_provider.g.dart';
+
+Future<void>? _registerNotificationsInFlight;
+
+void _debugPrintSupabaseBearer(Session? session) {
+  if (!kDebugMode) return;
+  final token = session?.accessToken;
+  if (token == null || token.isEmpty) return;
+  debugPrint('Supabase Bearer JWT: Bearer $token');
+}
 
 class SignUpOutcome {
   const SignUpOutcome({this.errorCode, this.needsEmailVerification = false});
@@ -31,6 +40,7 @@ class Auth extends _$Auth {
   void _init() {
     final currentSession = supabase.auth.currentSession;
     if (currentSession != null) {
+      _debugPrintSupabaseBearer(currentSession);
       final user = currentSession.user;
       state = AuthModel(
         uid: user.id,
@@ -39,32 +49,39 @@ class Auth extends _$Auth {
         emailVerified: user.emailConfirmedAt != null,
         creationTime: DateTime.tryParse(user.createdAt),
       );
+      registerNotificationsIfNeeded();
     }
 
     supabase.auth.onAuthStateChange.listen((data) {
       final session = data.session;
       if (session == null) {
         state = AuthModel.signedOut();
-      } else if (data.event == AuthChangeEvent.passwordRecovery) {
-        final user = session.user;
-        state = state.copyWith(
-          uid: user.id,
-          isLoading: false,
-          email: user.email,
-          emailVerified: user.emailConfirmedAt != null,
-          creationTime: DateTime.tryParse(user.createdAt),
-          pendingPasswordRecovery: true,
-        );
       } else {
-        final user = session.user;
-        state = state.copyWith(
-          uid: user.id,
-          isLoading: false,
-          email: user.email,
-          emailVerified: user.emailConfirmedAt != null,
-          creationTime: DateTime.tryParse(user.createdAt),
-          pendingPasswordRecovery: false,
-        );
+        _debugPrintSupabaseBearer(session);
+        if (data.event == AuthChangeEvent.passwordRecovery) {
+          final user = session.user;
+          state = state.copyWith(
+            uid: user.id,
+            isLoading: false,
+            email: user.email,
+            emailVerified: user.emailConfirmedAt != null,
+            creationTime: DateTime.tryParse(user.createdAt),
+            pendingPasswordRecovery: true,
+          );
+        } else {
+          final user = session.user;
+          state = state.copyWith(
+            uid: user.id,
+            isLoading: false,
+            email: user.email,
+            emailVerified: user.emailConfirmedAt != null,
+            creationTime: DateTime.tryParse(user.createdAt),
+            pendingPasswordRecovery: false,
+          );
+          if (data.event == AuthChangeEvent.signedIn) {
+            registerNotificationsIfNeeded();
+          }
+        }
       }
     });
   }
@@ -236,6 +253,19 @@ class Auth extends _$Auth {
     if (uid == null || uid.isEmpty) return;
     final hasToken = PrefsService.deviceNotificationToken != null;
     if (PrefsService.notificationsEnabled && hasToken) return;
+    if (_registerNotificationsInFlight != null) {
+      await _registerNotificationsInFlight;
+      return;
+    }
+    _registerNotificationsInFlight = _registerNotificationsWork(uid);
+    try {
+      await _registerNotificationsInFlight;
+    } finally {
+      _registerNotificationsInFlight = null;
+    }
+  }
+
+  Future<void> _registerNotificationsWork(String uid) async {
     await NotificationHelper.setupNotifications();
     await user.addDeviceNotificationToken(uid);
   }

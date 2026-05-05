@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,10 +46,9 @@ Future<void> _initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
-  //init
   await Future.wait([
     PrefsService.init(),
     _initSupabase(),
