@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeVote => 'Remove vote';
 
   @override
+  String get newPasswordMustBeDifferent => 'New Password Must be Different';
+
+  @override
   String get invalidUserName => 'Username does not meet requirements';
 
   @override

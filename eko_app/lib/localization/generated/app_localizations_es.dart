@@ -40,6 +40,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get removeVote => 'Quitar el voto';
 
   @override
+  String get newPasswordMustBeDifferent => 'New Password Must be Different';
+
+  @override
   String get invalidUserName => 'Nombre de usario no cumple con los requisitos';
 
   @override

@@ -158,6 +158,12 @@ abstract class AppLocalizations {
   /// **'Remove vote'**
   String get removeVote;
 
+  /// No description provided for @newPasswordMustBeDifferent.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password Must be Different'**
+  String get newPasswordMustBeDifferent;
+
   /// No description provided for @invalidUserName.
   ///
   /// In en, this message translates to:

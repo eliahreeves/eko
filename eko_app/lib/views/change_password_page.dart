@@ -9,7 +9,6 @@ import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
 import 'package:eko_app/widgets/auth/create_password.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
-import 'package:eko_app/widgets/inputs/custom_input_field.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
 class ChangePasswordPage extends ConsumerStatefulWidget {
@@ -20,20 +19,17 @@ class ChangePasswordPage extends ConsumerStatefulWidget {
 }
 
 class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
-  final currentPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  final currentPasswordFocus = FocusNode();
   final newPasswordFocus = FocusNode();
   final confirmPasswordFocus = FocusNode();
   bool isLoading = false;
+  bool requirePasswordMatch = true;
 
   @override
   void dispose() {
-    currentPasswordController.dispose();
     newPasswordController.dispose();
     confirmPasswordController.dispose();
-    currentPasswordFocus.dispose();
     newPasswordFocus.dispose();
     confirmPasswordFocus.dispose();
     super.dispose();
@@ -42,22 +38,10 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   Future<void> _submit() async {
     FocusManager.instance.primaryFocus?.unfocus();
     final l10n = AppLocalizations.of(context)!;
-    final email = ref.read(authProvider).email;
-    if (email == null || email.isEmpty) {
-      showSnackBar(
-        text: l10n.defaultErrorBody,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      return;
-    }
-    if (currentPasswordController.text.isEmpty) {
-      currentPasswordFocus.requestFocus();
-      return;
-    }
     if (!isValidSimplePassword(
       newPasswordController.text,
       confirmPasswordController.text,
+      requireMatch: requirePasswordMatch,
     )) {
       showSnackBar(
         text: l10n.weakPasswordBody,
@@ -66,45 +50,31 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
       );
       return;
     }
-
+    if (isLoading) {
+      return;
+    }
     setState(() => isLoading = true);
-    await ref
-        .read(authProvider.notifier)
-        .signIn(email: email, password: currentPasswordController.text);
-
-    final updateResult = await ref
-        .read(authProvider.notifier)
-        .updatePassword(newPasswordController.text);
-    if (!mounted) return;
+    try {
+      await ref
+          .read(authProvider.notifier)
+          .updatePassword(newPasswordController.text);
+    } catch (e) {
+      debugPrint(e.toString());
+      setState(() => isLoading = false);
+      if (!mounted) return;
+      handleAuthError(e, context);
+      return;
+    }
     setState(() => isLoading = false);
-
-    if (updateResult == 'success') {
-      showSnackBar(text: l10n.passwordChangedBody, context: context);
-      context.pop();
-      return;
-    }
-    if (updateResult == 'weak-password') {
-      showSnackBar(
-        text: l10n.weakPasswordBody,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      return;
-    }
-    if (updateResult == 'requires-recent-login') {
-      context.pushNamed(
-        're_auth',
-        pathParameters: {
-          'username': ref.read(currentUserProvider).user.username,
-        },
-      );
-      return;
-    }
-    showSnackBar(
-      text: l10n.defaultErrorBody,
-      context: context,
-      variant: SnackBarVariant.destructive,
+    if (!mounted) return;
+    final username = ref.read(currentUserProvider).user.username;
+    showSnackBar(text: l10n.passwordChangedBody, context: context);
+    ref.read(authProvider.notifier).clearPasswordRecovery();
+    context.goNamed(
+      'user_settings',
+      pathParameters: {'username': username},
     );
+    return;
   }
 
   @override
@@ -138,20 +108,14 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
               ),
               const AuthDivider(indent: 20, endIndent: 20),
               SizedBox(height: height * .02),
-              CustomInputField(
-                textInputAction: TextInputAction.next,
-                focus: currentPasswordFocus,
-                label: l10n.currentPassword,
-                controller: currentPasswordController,
-                inputType: TextInputType.visiblePassword,
-                password: true,
-                onEditingComplete: () => newPasswordFocus.requestFocus(),
-              ),
               CreatePassword(
                 passwordController: newPasswordController,
                 confirmPasswordController: confirmPasswordController,
                 passwordFocus: newPasswordFocus,
                 confirmPasswordFocus: confirmPasswordFocus,
+                onRequirePasswordMatchChanged: (requireMatch) {
+                  requirePasswordMatch = requireMatch;
+                },
               ),
               SizedBox(height: c.authSectionSpacing),
               AuthButton.primary(

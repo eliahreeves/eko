@@ -77,19 +77,19 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
     }
 
     setState(() => isLoading = true);
-    await ref.read(authProvider.notifier).signIn(
-          email: authEmail,
-          password: currentPasswordController.text,
-        );
+    try {
+      await ref
+          .read(authProvider.notifier)
+          .signIn(email: authEmail, password: currentPasswordController.text);
+    } catch (e) {
+      if (mounted) handleAuthError(e, context);
+      return;
+    }
 
-    final updateResult =
-        await ref.read(authProvider.notifier).updateEmailBeforeVerify(
-              trimmedNew,
-            );
-    if (!mounted) return;
-    setState(() => isLoading = false);
-
-    if (updateResult == 'success') {
+    try {
+      await ref.read(authProvider.notifier).updateEmailBeforeVerify(trimmedNew);
+      if (!mounted) return;
+      setState(() => isLoading = false);
       await showMyDialog(
         l10n.changeEmailVerificationTitle,
         l10n.changeEmailVerificationBody,
@@ -103,37 +103,15 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
         context,
       );
       return;
-    }
-    if (updateResult == 'email-already-in-use') {
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => isLoading = false);
       showSnackBar(
-        text: l10n.emailAlreadyInUseBody,
+        text: l10n.defaultErrorBody,
         context: context,
         variant: SnackBarVariant.destructive,
       );
-      return;
     }
-    if (updateResult == 'invalid-email') {
-      showSnackBar(
-        text: l10n.invalidEmailBody,
-        context: context,
-        variant: SnackBarVariant.destructive,
-      );
-      return;
-    }
-    if (updateResult == 'requires-recent-login') {
-      context.pushNamed(
-        're_auth',
-        pathParameters: {
-          'username': ref.read(currentUserProvider).user.username,
-        },
-      );
-      return;
-    }
-    showSnackBar(
-      text: l10n.defaultErrorBody,
-      context: context,
-      variant: SnackBarVariant.destructive,
-    );
   }
 
   @override

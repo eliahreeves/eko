@@ -98,6 +98,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               _paneIndex = 1;
             });
           } else if (e.code == 'invalid_credentials') {
+            // TODO Remove this after sufficent time for migration has passed
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -126,10 +127,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               },
             );
           } else {
-            showSnackBar(
-                text: '${AppLocalizations.of(context)!.error}: ${e.message}',
-                context: context,
-                variant: SnackBarVariant.destructive);
+            handleAuthError(e, context);
           }
         }
       } catch (e) {

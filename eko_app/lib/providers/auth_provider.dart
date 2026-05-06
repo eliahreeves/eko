@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:eko_app/localization/generated/app_localizations.dart';
+import 'package:eko_app/widgets/errors/snack_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,6 +33,43 @@ class SignUpOutcome {
   final bool needsEmailVerification;
 
   bool get isSuccess => errorCode == null;
+}
+
+void handleAuthError(Object e, BuildContext context) {
+  debugPrint(e.toString());
+  if (e is AuthApiException) {
+    if (e.code == 'email_not_confirmed') {
+      showSnackBar(
+        text: '${AppLocalizations.of(context)!.error}: ${e.message}',
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } else if (e.code == 'invalid_credentials') {
+      showSnackBar(
+        text: AppLocalizations.of(context)!.loginFailedBody,
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } else if (e.code == 'same_password') {
+      showSnackBar(
+        text: AppLocalizations.of(context)!.newPasswordMustBeDifferent,
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } else {
+      showSnackBar(
+        text: '${AppLocalizations.of(context)!.error}: ${e.message}',
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    }
+  } else {
+    showSnackBar(
+      text: AppLocalizations.of(context)!.defaultErrorTittle,
+      context: context,
+      variant: SnackBarVariant.destructive,
+    );
+  }
 }
 
 @Riverpod(keepAlive: true)
@@ -199,34 +239,16 @@ class Auth extends _$Auth {
     }
   }
 
-  Future<String> updatePassword(String newPassword) async {
-    final user = supabase.auth.currentUser;
-    if (user == null) return 'no-current-user';
-    try {
-      await supabase.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
-      return 'success';
-    } on AuthException catch (e) {
-      return e.message;
-    } catch (e) {
-      return 'unknown';
-    }
+  Future<void> updatePassword(String newPassword) async {
+    await supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
   }
 
-  Future<String> updateEmailBeforeVerify(String newEmail) async {
-    final user = supabase.auth.currentUser;
-    if (user == null) return 'no-current-user';
-    try {
-      await supabase.auth.updateUser(
-        UserAttributes(email: newEmail.trim()),
-      );
-      return 'success';
-    } on AuthException catch (e) {
-      return e.message;
-    } catch (e) {
-      return 'unknown';
-    }
+  Future<void> updateEmailBeforeVerify(String newEmail) async {
+    await supabase.auth.updateUser(
+      UserAttributes(email: newEmail.trim()),
+    );
   }
 
   String? _oauthAvatarUrl() {

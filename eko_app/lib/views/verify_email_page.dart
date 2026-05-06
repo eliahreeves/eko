@@ -7,7 +7,6 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class VerifyEmailView extends ConsumerStatefulWidget {
   const VerifyEmailView({
@@ -88,35 +87,8 @@ class _VerifyEmailViewState extends ConsumerState<VerifyEmailView> {
             password: widget.passwordController.text,
           );
       if (mounted) context.go('/feed');
-    } on AuthApiException catch (e) {
-      if (!mounted) return;
-      if (e.code == 'email_not_confirmed') {
-        showSnackBar(
-          text: '${AppLocalizations.of(context)!.error}: ${e.message}',
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      } else if (e.code == 'invalid_credentials') {
-        showSnackBar(
-          text: AppLocalizations.of(context)!.loginFailedBody,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      } else {
-        showSnackBar(
-          text: '${AppLocalizations.of(context)!.error}: ${e.message}',
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      }
     } catch (e) {
-      if (mounted) {
-        showSnackBar(
-          text: AppLocalizations.of(context)!.defaultErrorTittle,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      }
+      if (mounted) handleAuthError(e, context);
     } finally {
       if (mounted) setState(() => _checkLoading = false);
     }
