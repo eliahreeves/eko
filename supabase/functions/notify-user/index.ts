@@ -22,7 +22,7 @@ interface Device {
 const apnsConfig: ApnsConfig = {
   teamId: Deno.env.get("APNS_TEAM_ID") || "",
   keyId: Deno.env.get("APNS_KEY_ID") || "",
-  privateKeyP8: Deno.env.get("APNS_PRIVATE_KEY") || "",
+  privateKeyP8: (Deno.env.get("APNS_PRIVATE_KEY") || "").replace(/\\n/g, "\n"),
   bundleId: Deno.env.get("APNS_BUNDLE_ID") || "",
   sandbox: Deno.env.get("APNS_USE_SANDBOX") === "true" || false,
 };
