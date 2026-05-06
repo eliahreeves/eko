@@ -28,11 +28,11 @@ Future<void> _checkFirstInstall() async {
 }
 
 Future<void> _initSupabase() async {
-  final authFlowType = AuthFlowType.implicit;
   await Supabase.initialize(
       url: ac.supabaseUrl,
       anonKey: ac.supabaseKey,
-      authOptions: FlutterAuthClientOptions(authFlowType: authFlowType));
+      authOptions:
+          const FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit));
 }
 
 Future<void> main(List<String> args) async {
