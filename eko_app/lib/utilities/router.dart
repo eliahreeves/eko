@@ -18,6 +18,7 @@ import 'package:eko_app/views/sign_up.dart';
 import 'package:eko_app/views/user_settings.dart';
 import 'package:eko_app/views/compose_page.dart';
 import 'package:eko_app/views/feed_page.dart';
+import 'package:eko_app/views/messages_page.dart';
 import 'package:eko_app/views/search_page.dart';
 import 'package:eko_app/views/edit_profile.dart';
 import 'package:eko_app/widgets/scaffolds/navigation_bar.dart';
@@ -36,11 +37,14 @@ import 'package:eko_app/widgets/scaffolds/require_no_auth.dart';
 import 'package:eko_app/views/profile_redirect_page.dart';
 
 final _shellNavigatorFeedKey = GlobalKey<NavigatorState>(debugLabel: 'Feed');
-final _shellNavigatorSearchKey = GlobalKey<NavigatorState>(
-  debugLabel: 'Search',
+final _shellNavigatorMessagesKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Messages',
 );
 final _shellNavigatorComposeKey = GlobalKey<NavigatorState>(
   debugLabel: 'Compose',
+);
+final _shellNavigatorSearchKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Search',
 );
 final _shellNavigatorProfileKey = GlobalKey<NavigatorState>(
   debugLabel: 'Profile',
@@ -210,6 +214,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     ],
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _shellNavigatorMessagesKey,
+            routes: [
+              GoRoute(
+                path: '/messages',
+                name: 'messages',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: MessagesPage()),
               ),
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,12 +9,14 @@ import 'package:eko_app/utilities/constants.dart' as c;
 
 const List<IconData> _passiveIconList = [
   Icons.home_outlined,
+  CupertinoIcons.paperplane,
   Icons.add,
   Icons.search,
   Icons.person_outline,
 ];
 const List<IconData> _activeIconList = [
   Icons.home,
+  CupertinoIcons.paperplane_fill,
   Icons.add,
   Icons.search,
   Icons.person,
