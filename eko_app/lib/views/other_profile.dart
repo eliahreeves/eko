@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
-import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
+import 'package:eko_app/providers/profile_post_list_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
@@ -142,6 +142,9 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
       error: (_, __) => false,
     );
     final bool isCurrentUser = currentUser.user.uid == uid;
+    final postListState = isCurrentUser
+        ? ref.watch(profilePostListProvider)
+        : ref.watch(otherProfilePostListProvider(uid));
 
     void popDialog() {
       Navigator.of(context, rootNavigator: true).pop();
@@ -172,10 +175,25 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
     }
 
     Future<void> onRefresh() async {
-      await Future.wait([
+      final futures = <Future<void>>[
         ref.refresh(userProvider(uid).future),
         ref.read(currentUserProvider.notifier).reload(),
-      ]);
+      ];
+      if (isCurrentUser) {
+        futures.add(ref.read(profilePostListProvider.notifier).refresh());
+      } else {
+        futures.add(
+            ref.read(otherProfilePostListProvider(uid).notifier).refresh());
+      }
+      await Future.wait(futures);
+    }
+
+    Future<void> loadMorePosts() async {
+      if (isCurrentUser) {
+        await ref.read(profilePostListProvider.notifier).getter();
+      } else {
+        await ref.read(otherProfilePostListProvider(uid).notifier).getter();
+      }
     }
 
     return PopScope(
@@ -215,14 +233,10 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                 ),
               );
             }
-            return InfiniteScrolly<String, String>(
-              getter: (data) async {
-                if (isCurrentUser) {
-                  return await profilePageGetter(data, ref);
-                } else {
-                  return await otherProfilePageGetter(data, ref, uid);
-                }
-              },
+            return InfiniteScrollyShell<int>(
+              getter: loadMorePosts,
+              list: postListState.$1,
+              isEnd: postListState.$2,
               widget: isCurrentUser
                   ? profilePostCardBuilder
                   : otherProfilePostCardBuilder,
@@ -336,21 +350,14 @@ class _Header extends ConsumerWidget {
   const _Header({required this.user, required this.isCurrentUser});
 
   Future<void> _onFollowPressed(WidgetRef ref) async {
-    final isFollowing =
-        ref.watch(currentUserProvider).user.following.contains(user.uid);
-
-    if (isFollowing) {
-      await ref.read(currentUserProvider.notifier).removeFollower(user.uid);
-    } else {
-      await ref.read(currentUserProvider.notifier).addFollower(user.uid);
-    }
+    await ref.read(userProvider(user.uid).notifier).toggleFollow();
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
-    final currentUser = ref.watch(currentUserProvider);
-    final isFollowing = currentUser.user.following.contains(user.uid);
+    final userState = ref.watch(userProvider(user.uid));
+    final isFollowing = userState.valueOrNull?.isFollowing ?? user.isFollowing;
 
     return Column(
       children: [

@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
+import 'package:eko_app/providers/follow_info_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
-class ProfileHeader extends StatelessWidget {
+class ProfileHeader extends ConsumerWidget {
   final UserModel user;
   final bool loggedIn;
 
   const ProfileHeader({super.key, required this.user, this.loggedIn = true});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final followInfo = ref.watch(followInfoProvider(user.uid));
+    final followersCount = followInfo.valueOrNull?.followers ?? 0;
+    final followingCount = followInfo.valueOrNull?.following ?? 0;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
@@ -45,25 +50,23 @@ class ProfileHeader extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           _ProfilePageTopNumberDisplay(
-                            number: user.followers.length,
+                            number: followersCount,
                             label: AppLocalizations.of(context)!.followers,
                             onPressed: () {
                               if (loggedIn) {
                                 context.push(
-                                  '/users/${user.username}/followers',
-                                  extra: user,
+                                  '/users/${user.username}/followers?uid=${user.uid}',
                                 );
                               }
                             },
                           ),
                           _ProfilePageTopNumberDisplay(
-                            number: user.following.length,
+                            number: followingCount,
                             label: AppLocalizations.of(context)!.following,
                             onPressed: () {
                               if (loggedIn) {
                                 context.push(
-                                  '/users/${user.username}/following',
-                                  extra: user,
+                                  '/users/${user.username}/following?uid=${user.uid}',
                                 );
                               }
                             },

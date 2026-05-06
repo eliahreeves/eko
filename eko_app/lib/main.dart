@@ -1,10 +1,12 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'dart:io';
+
+import 'package:eko_app/interfaces/notification_helper.dart';
+import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/theme_provider.dart';
 import 'package:eko_app/utilities/logo_service.dart';
 import 'package:eko_app/utilities/provider_debugger.dart';
@@ -14,38 +16,44 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/scaffolds/check_version.dart';
 import 'utilities/router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:eko_app/firebase_options.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> _checkFirstInstall() async {
   if (!PrefsService.notFirstInstall) {
-    if (FirebaseAuth.instance.currentUser != null) {
-      FirebaseAuth.instance.signOut();
+    if (!kDebugMode && Supabase.instance.client.auth.currentSession != null) {
+      await Supabase.instance.client.auth.signOut();
     }
     PrefsService.notFirstInstall = true;
   }
 }
 
-// Future<void> _buildVersion() async {
-//   if (!kIsWeb) await locator<Version>().init();
-// }
+Future<void> _initSupabase() async {
+  await Supabase.initialize(
+      url: ac.supabaseUrl,
+      anonKey: ac.supabaseKey,
+      authOptions:
+          const FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit));
+}
 
-Future<void> main() async {
-  usePathUrlStrategy();
+Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  //init
+  if (!kIsWeb &&
+      (Platform.isAndroid || Platform.isLinux) &&
+      args.contains('--unifiedpush-bg')) {
+    await PrefsService.init();
+    await NotificationHelper.bootstrapUnifiedPushBackground(args);
+    return;
+  }
+  usePathUrlStrategy();
   await Future.wait([
     PrefsService.init(),
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    _initSupabase(),
   ]);
   // setupLocator();
   //protected/dependent services
   await Future.wait([
     _checkFirstInstall(),
     LogoService.init(),
-    NotificationHelper.setupNotifications(),
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true),
   ]);
 
   SystemChrome.setPreferredOrientations([

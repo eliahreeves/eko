@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:like_button/like_button.dart';
 import 'package:eko_app/providers/comment_provider.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/comment.dart';
 import 'package:eko_app/widgets/common/icons.dart' as icons;
 import 'package:eko_app/widgets/common/count.dart';
@@ -15,14 +14,13 @@ class CommentLikeButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
     final fillColor = Color(0xFFFF3040);
     return Column(
       children: [
         Row(
           children: [
             LikeButton(
-              isLiked: user.likedPosts.contains(comment.id),
+              isLiked: comment.isLiked,
               likeBuilder: (isLiked) {
                 return icons.Like(
                   size: c.postIconSize,
@@ -64,7 +62,7 @@ class CommentLikeButtons extends ConsumerWidget {
         Row(
           children: [
             LikeButton(
-              isLiked: user.dislikedPosts.contains(comment.id), //dislike
+              isLiked: comment.isDisliked, //dislike
               likeBuilder: (isDisliked) {
                 return icons.Dislike(
                   size: c.postIconSize,

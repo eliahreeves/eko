@@ -6,7 +6,7 @@ part of '../../providers/comment_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$commentHash() => r'fd0d87b04f69566904e24d672a99d1e24ee4181c';
+String _$commentHash() => r'a3a8c9977cde5910e25dd643ec510dbfae616163';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,10 +31,10 @@ class _SystemHash {
 
 abstract class _$Comment
     extends BuildlessAutoDisposeAsyncNotifier<CommentModel> {
-  late final String id;
+  late final int id;
 
   FutureOr<CommentModel> build(
-    String id,
+    int id,
   );
 }
 
@@ -49,7 +49,7 @@ class CommentFamily extends Family<AsyncValue<CommentModel>> {
 
   /// See also [Comment].
   CommentProvider call(
-    String id,
+    int id,
   ) {
     return CommentProvider(
       id,
@@ -85,7 +85,7 @@ class CommentProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Comment, CommentModel> {
   /// See also [Comment].
   CommentProvider(
-    String id,
+    int id,
   ) : this._internal(
           () => Comment()..id = id,
           from: commentProvider,
@@ -109,7 +109,7 @@ class CommentProvider
     required this.id,
   }) : super.internal();
 
-  final String id;
+  final int id;
 
   @override
   FutureOr<CommentModel> runNotifierBuild(
@@ -160,7 +160,7 @@ class CommentProvider
 // ignore: unused_element
 mixin CommentRef on AutoDisposeAsyncNotifierProviderRef<CommentModel> {
   /// The parameter `id` of this provider.
-  String get id;
+  int get id;
 }
 
 class _CommentProviderElement
@@ -169,7 +169,7 @@ class _CommentProviderElement
   _CommentProviderElement(super.provider);
 
   @override
-  String get id => (origin as CommentProvider).id;
+  int get id => (origin as CommentProvider).id;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'The password you entered is incorrect.'**
   String get wrongPasswordBody;
 
+  /// No description provided for @requiredResetPasswordPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have not logged in since May 2026, you need to reset your password.'**
+  String get requiredResetPasswordPrompt;
+
   /// No description provided for @userDisabledTittle.
   ///
   /// In en, this message translates to:
@@ -368,18 +374,6 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to go back? Your information will be deleted.'**
   String get exitCreateAccountBody;
 
-  /// No description provided for @exitCreateGroupTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Return to group page?'**
-  String get exitCreateGroupTitle;
-
-  /// No description provided for @exitCreateGroupBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to go back? Your group information will be deleted.'**
-  String get exitCreateGroupBody;
-
   /// No description provided for @exitEditProfileTitle.
   ///
   /// In en, this message translates to:
@@ -403,6 +397,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit'**
   String get exit;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
 
   /// No description provided for @goBack.
   ///
@@ -445,6 +445,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Between 8 and 32 characters.'**
   String get passwordLen;
+
+  /// No description provided for @passwordMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'8 or more characters'**
+  String get passwordMinChars;
 
   /// No description provided for @passwordLower.
   ///
@@ -619,6 +625,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add title...'**
   String get addTitle;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
 
   /// No description provided for @create.
   ///
@@ -842,18 +854,6 @@ abstract class AppLocalizations {
   /// **'commented on your post'**
   String get commentText;
 
-  /// No description provided for @crossGroupRepost.
-  ///
-  /// In en, this message translates to:
-  /// **'You may not eko chamber posts in public or in another group.'**
-  String get crossGroupRepost;
-
-  /// No description provided for @groups.
-  ///
-  /// In en, this message translates to:
-  /// **'Groups'**
-  String get groups;
-
   /// No description provided for @next.
   ///
   /// In en, this message translates to:
@@ -883,18 +883,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Public'**
   String get public;
-
-  /// No description provided for @selectAudience.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Audience:'**
-  String get selectAudience;
-
-  /// No description provided for @myGroups.
-  ///
-  /// In en, this message translates to:
-  /// **'My groups'**
-  String get myGroups;
 
   /// No description provided for @reply.
   ///
@@ -1022,24 +1010,6 @@ abstract class AppLocalizations {
   /// **'Post Not Found'**
   String get postNotFound;
 
-  /// No description provided for @groupNotFound.
-  ///
-  /// In en, this message translates to:
-  /// **'Group Not Found'**
-  String get groupNotFound;
-
-  /// No description provided for @leaveGroupWarningTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to leave the group?'**
-  String get leaveGroupWarningTitle;
-
-  /// No description provided for @leaveGroupWarningBody.
-  ///
-  /// In en, this message translates to:
-  /// **'A group member will need to re-add you should you want to join again.'**
-  String get leaveGroupWarningBody;
-
   /// No description provided for @share.
   ///
   /// In en, this message translates to:
@@ -1093,12 +1063,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please log in to access all features of Eko.'**
   String get logInRequired;
-
-  /// No description provided for @notInGroup.
-  ///
-  /// In en, this message translates to:
-  /// **'You are no longer a member of this group.'**
-  String get notInGroup;
 
   /// No description provided for @send.
   ///

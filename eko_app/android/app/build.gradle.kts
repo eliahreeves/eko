@@ -2,9 +2,6 @@ import java.util.Properties
 import java.io.FileInputStream
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
@@ -17,16 +14,16 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.echo.android"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-				// isCoreLibraryDesugaringEnabled = true
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "17"
     }
 
     defaultConfig {
@@ -58,6 +55,13 @@ android {
 flutter {
     source = "../.."
 }
-// dependencies {
-//     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
-// }
+
+configurations.all {
+    exclude(group = "com.google.protobuf", module = "protobuf-java")
+    dependencies {
+        implementation("org.unifiedpush.android:embedded-fcm-distributor:3.0.0")
+    }
+}
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+}

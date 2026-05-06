@@ -3,33 +3,53 @@ import 'package:eko_app/widgets/inputs/custom_input_field.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
-List<bool> _getPassedList(String pass1, String pass2) {
-  final List<bool> passed = List.generate(6, (index) => false, growable: false);
-  passed[0] = (pass1).length >= 7 && (pass1).length <= 32;
-  passed[1] = pass1.contains(RegExp(r'[a-z]'));
-  passed[2] = pass1.contains(RegExp(r'[A-Z]'));
-  passed[3] = pass1.contains(RegExp(r'[0-9]'));
-  passed[4] = !pass1.contains(RegExp(r'^[A-Za-z0-9]*$'));
-  passed[5] = pass1 == pass2 && pass1 != '';
+List<bool> _getSimplePassedList(String pass1, String pass2) {
+  final List<bool> passed = List.generate(2, (index) => false, growable: false);
+  passed[0] = pass1.length >= 8;
+  passed[1] = pass1 == pass2 && pass1 != '';
   return passed;
 }
 
-bool isValidPassword(String pass1, String pass2) {
-  return _getPassedList(pass1, pass2).where((item) => item).length == 6;
+bool isValidSimplePassword(
+  String pass1,
+  String pass2, {
+  bool requireMatch = true,
+}) {
+  if (!requireMatch) {
+    return pass1.length >= 8;
+  }
+  return _getSimplePassedList(pass1, pass2).where((item) => item).length == 2;
 }
 
-class CreatePassword extends StatelessWidget {
+class CreatePassword extends StatefulWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final FocusNode passwordFocus;
   final FocusNode confirmPasswordFocus;
+  final void Function(bool)? onRequirePasswordMatchChanged;
   const CreatePassword({
     super.key,
     required this.passwordController,
     required this.confirmPasswordController,
     required this.passwordFocus,
     required this.confirmPasswordFocus,
+    this.onRequirePasswordMatchChanged,
   });
+
+  @override
+  State<CreatePassword> createState() => _CreatePasswordState();
+}
+
+class _CreatePasswordState extends State<CreatePassword> {
+  bool isMainPasswordHidden = true;
+
+  void _onMainPasswordHiddenChanged(bool hidden) {
+    if (isMainPasswordHidden == hidden) return;
+    setState(() {
+      isMainPasswordHidden = hidden;
+    });
+    widget.onRequirePasswordMatchChanged?.call(hidden);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,61 +58,66 @@ class CreatePassword extends StatelessWidget {
       children: [
         CustomInputField(
           autofillHints: [AutofillHints.password],
-          onEditingComplete: () => confirmPasswordFocus.requestFocus(),
+          onEditingComplete: () {
+            if (isMainPasswordHidden) {
+              widget.confirmPasswordFocus.requestFocus();
+            }
+          },
           label: AppLocalizations.of(context)!.password,
-          focus: passwordFocus,
-          controller: passwordController,
+          focus: widget.passwordFocus,
+          controller: widget.passwordController,
           inputType: TextInputType.visiblePassword,
           password: true,
+          onPasswordHiddenChanged: _onMainPasswordHiddenChanged,
         ),
         SizedBox(height: height * c.loginPadding),
-        CustomInputField(
-          autofillHints: [AutofillHints.password],
-          // onEditingComplete: () => signUpPressed(),
-          textInputAction: TextInputAction.done,
-          label: AppLocalizations.of(context)!.confirmPassword,
-          focus: confirmPasswordFocus,
-          controller: confirmPasswordController,
-          inputType: TextInputType.visiblePassword,
-          password: true,
-        ),
+        if (isMainPasswordHidden)
+          CustomInputField(
+            autofillHints: [AutofillHints.password],
+            textInputAction: TextInputAction.done,
+            label: AppLocalizations.of(context)!.confirmPassword,
+            focus: widget.confirmPasswordFocus,
+            controller: widget.confirmPasswordController,
+            inputType: TextInputType.visiblePassword,
+            password: true,
+            showPasswordToggle: false,
+          ),
         AnimatedBuilder(
           animation: Listenable.merge([
-            passwordController,
-            confirmPasswordController,
+            widget.passwordController,
+            widget.confirmPasswordController,
           ]),
           builder: (context, _) {
-            final pass1 = passwordController.text;
-            final pass2 = confirmPasswordController.text;
-            final passed = _getPassedList(pass1, pass2);
-            final List<String> emojiPassed = List.generate(
-              6,
-              (index) => passed[index] ? '✅' : '❌',
-              growable: false,
-            );
-            final filteredListLength = passed.where((item) => item).length;
-            final passedPercent =
-                pass1.isEmpty ? 0.0 : filteredListLength / passed.length;
+            final pass1 = widget.passwordController.text;
+            final pass2 = widget.confirmPasswordController.text;
+            final passed = isMainPasswordHidden
+                ? _getSimplePassedList(pass1, pass2)
+                : [pass1.length >= 8];
+            final metColor = Colors.green;
+            final unmetColor = Theme.of(context).colorScheme.onSurface;
             return Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: LinearProgressIndicator(
-                    minHeight: 12,
-                    value: passedPercent,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    '${emojiPassed[0]}${AppLocalizations.of(context)!.passwordLen}\n'
-                    '${emojiPassed[1]}${AppLocalizations.of(context)!.passwordLower}\n'
-                    '${emojiPassed[2]}${AppLocalizations.of(context)!.passwordUpper}\n'
-                    '${emojiPassed[3]}${AppLocalizations.of(context)!.passwordNumber}\n'
-                    '${emojiPassed[4]}${AppLocalizations.of(context)!.passwordSpecial}\n'
-                    '${emojiPassed[5]}${AppLocalizations.of(context)!.passwordMatch}\n',
-                    style: const TextStyle(fontSize: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.passwordMinChars,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: passed[0] ? metColor : unmetColor,
+                        ),
+                      ),
+                      if (isMainPasswordHidden)
+                        Text(
+                          AppLocalizations.of(context)!.passwordMatch,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: passed[1] ? metColor : unmetColor,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ],

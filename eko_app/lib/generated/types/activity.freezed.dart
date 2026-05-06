@@ -13,15 +13,17 @@ part of '../../types/activity.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$ActivityModel implements DiagnosticableTreeMixin {
-  String? get sourceUid;
-  String get id;
-  @JsonKey(name: 'time')
+mixin _$ActivityModel {
+  @JsonKey(name: 'source_uid')
+  String get sourceUid;
+  int get id;
+  @JsonKey(name: 'post_id')
+  int? get postId;
+  @JsonKey(name: 'comment_id')
+  int? get commentId;
+  @JsonKey(name: 'created_at')
   String get createdAt;
-  List<String> get tags;
-  String get type;
-  String get content;
-  String get path;
+  ActivityType get type;
 
   /// Create a copy of ActivityModel
   /// with the given fields replaced by the non-null parameter values.
@@ -35,19 +37,6 @@ mixin _$ActivityModel implements DiagnosticableTreeMixin {
   Map<String, dynamic> toJson();
 
   @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    properties
-      ..add(DiagnosticsProperty('type', 'ActivityModel'))
-      ..add(DiagnosticsProperty('sourceUid', sourceUid))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('tags', tags))
-      ..add(DiagnosticsProperty('type', type))
-      ..add(DiagnosticsProperty('content', content))
-      ..add(DiagnosticsProperty('path', path));
-  }
-
-  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
@@ -55,22 +44,22 @@ mixin _$ActivityModel implements DiagnosticableTreeMixin {
             (identical(other.sourceUid, sourceUid) ||
                 other.sourceUid == sourceUid) &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.commentId, commentId) ||
+                other.commentId == commentId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            const DeepCollectionEquality().equals(other.tags, tags) &&
-            (identical(other.type, type) || other.type == type) &&
-            (identical(other.content, content) || other.content == content) &&
-            (identical(other.path, path) || other.path == path));
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, sourceUid, id, createdAt,
-      const DeepCollectionEquality().hash(tags), type, content, path);
+  int get hashCode => Object.hash(
+      runtimeType, sourceUid, id, postId, commentId, createdAt, type);
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ActivityModel(sourceUid: $sourceUid, id: $id, createdAt: $createdAt, tags: $tags, type: $type, content: $content, path: $path)';
+  String toString() {
+    return 'ActivityModel(sourceUid: $sourceUid, id: $id, postId: $postId, commentId: $commentId, createdAt: $createdAt, type: $type)';
   }
 }
 
@@ -81,13 +70,12 @@ abstract mixin class $ActivityModelCopyWith<$Res> {
       _$ActivityModelCopyWithImpl;
   @useResult
   $Res call(
-      {String? sourceUid,
-      String id,
-      @JsonKey(name: 'time') String createdAt,
-      List<String> tags,
-      String type,
-      String content,
-      String path});
+      {@JsonKey(name: 'source_uid') String sourceUid,
+      int id,
+      @JsonKey(name: 'post_id') int? postId,
+      @JsonKey(name: 'comment_id') int? commentId,
+      @JsonKey(name: 'created_at') String createdAt,
+      ActivityType type});
 }
 
 /// @nodoc
@@ -103,43 +91,38 @@ class _$ActivityModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? sourceUid = freezed,
+    Object? sourceUid = null,
     Object? id = null,
+    Object? postId = freezed,
+    Object? commentId = freezed,
     Object? createdAt = null,
-    Object? tags = null,
     Object? type = null,
-    Object? content = null,
-    Object? path = null,
   }) {
     return _then(_self.copyWith(
-      sourceUid: freezed == sourceUid
+      sourceUid: null == sourceUid
           ? _self.sourceUid
           : sourceUid // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
+      postId: freezed == postId
+          ? _self.postId
+          : postId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      commentId: freezed == commentId
+          ? _self.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
+              as int?,
       createdAt: null == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
-      tags: null == tags
-          ? _self.tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       type: null == type
           ? _self.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String,
-      content: null == content
-          ? _self.content
-          : content // ignore: cast_nullable_to_non_nullable
-              as String,
-      path: null == path
-          ? _self.path
-          : path // ignore: cast_nullable_to_non_nullable
-              as String,
+              as ActivityType,
     ));
   }
 }
@@ -238,21 +221,20 @@ extension ActivityModelPatterns on ActivityModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
-            String? sourceUid,
-            String id,
-            @JsonKey(name: 'time') String createdAt,
-            List<String> tags,
-            String type,
-            String content,
-            String path)?
+            @JsonKey(name: 'source_uid') String sourceUid,
+            int id,
+            @JsonKey(name: 'post_id') int? postId,
+            @JsonKey(name: 'comment_id') int? commentId,
+            @JsonKey(name: 'created_at') String createdAt,
+            ActivityType type)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _ActivityModel() when $default != null:
-        return $default(_that.sourceUid, _that.id, _that.createdAt, _that.tags,
-            _that.type, _that.content, _that.path);
+        return $default(_that.sourceUid, _that.id, _that.postId,
+            _that.commentId, _that.createdAt, _that.type);
       case _:
         return orElse();
     }
@@ -274,20 +256,19 @@ extension ActivityModelPatterns on ActivityModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(
-            String? sourceUid,
-            String id,
-            @JsonKey(name: 'time') String createdAt,
-            List<String> tags,
-            String type,
-            String content,
-            String path)
+            @JsonKey(name: 'source_uid') String sourceUid,
+            int id,
+            @JsonKey(name: 'post_id') int? postId,
+            @JsonKey(name: 'comment_id') int? commentId,
+            @JsonKey(name: 'created_at') String createdAt,
+            ActivityType type)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _ActivityModel():
-        return $default(_that.sourceUid, _that.id, _that.createdAt, _that.tags,
-            _that.type, _that.content, _that.path);
+        return $default(_that.sourceUid, _that.id, _that.postId,
+            _that.commentId, _that.createdAt, _that.type);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -308,20 +289,19 @@ extension ActivityModelPatterns on ActivityModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
-            String? sourceUid,
-            String id,
-            @JsonKey(name: 'time') String createdAt,
-            List<String> tags,
-            String type,
-            String content,
-            String path)?
+            @JsonKey(name: 'source_uid') String sourceUid,
+            int id,
+            @JsonKey(name: 'post_id') int? postId,
+            @JsonKey(name: 'comment_id') int? commentId,
+            @JsonKey(name: 'created_at') String createdAt,
+            ActivityType type)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _ActivityModel() when $default != null:
-        return $default(_that.sourceUid, _that.id, _that.createdAt, _that.tags,
-            _that.type, _that.content, _that.path);
+        return $default(_that.sourceUid, _that.id, _that.postId,
+            _that.commentId, _that.createdAt, _that.type);
       case _:
         return null;
     }
@@ -330,46 +310,34 @@ extension ActivityModelPatterns on ActivityModel {
 
 /// @nodoc
 @JsonSerializable()
-class _ActivityModel extends ActivityModel with DiagnosticableTreeMixin {
+class _ActivityModel extends ActivityModel {
   const _ActivityModel(
-      {this.sourceUid = null,
+      {@JsonKey(name: 'source_uid') required this.sourceUid,
       required this.id,
-      @JsonKey(name: 'time') required this.createdAt,
-      final List<String> tags = const <String>[],
-      this.type = '',
-      this.content = '',
-      this.path = ''})
-      : _tags = tags,
-        super._();
+      @JsonKey(name: 'post_id') this.postId,
+      @JsonKey(name: 'comment_id') this.commentId,
+      @JsonKey(name: 'created_at') required this.createdAt,
+      required this.type})
+      : super._();
   factory _ActivityModel.fromJson(Map<String, dynamic> json) =>
       _$ActivityModelFromJson(json);
 
   @override
-  @JsonKey()
-  final String? sourceUid;
+  @JsonKey(name: 'source_uid')
+  final String sourceUid;
   @override
-  final String id;
+  final int id;
   @override
-  @JsonKey(name: 'time')
+  @JsonKey(name: 'post_id')
+  final int? postId;
+  @override
+  @JsonKey(name: 'comment_id')
+  final int? commentId;
+  @override
+  @JsonKey(name: 'created_at')
   final String createdAt;
-  final List<String> _tags;
   @override
-  @JsonKey()
-  List<String> get tags {
-    if (_tags is EqualUnmodifiableListView) return _tags;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_tags);
-  }
-
-  @override
-  @JsonKey()
-  final String type;
-  @override
-  @JsonKey()
-  final String content;
-  @override
-  @JsonKey()
-  final String path;
+  final ActivityType type;
 
   /// Create a copy of ActivityModel
   /// with the given fields replaced by the non-null parameter values.
@@ -387,19 +355,6 @@ class _ActivityModel extends ActivityModel with DiagnosticableTreeMixin {
   }
 
   @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    properties
-      ..add(DiagnosticsProperty('type', 'ActivityModel'))
-      ..add(DiagnosticsProperty('sourceUid', sourceUid))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('tags', tags))
-      ..add(DiagnosticsProperty('type', type))
-      ..add(DiagnosticsProperty('content', content))
-      ..add(DiagnosticsProperty('path', path));
-  }
-
-  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
@@ -407,22 +362,22 @@ class _ActivityModel extends ActivityModel with DiagnosticableTreeMixin {
             (identical(other.sourceUid, sourceUid) ||
                 other.sourceUid == sourceUid) &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.commentId, commentId) ||
+                other.commentId == commentId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            const DeepCollectionEquality().equals(other._tags, _tags) &&
-            (identical(other.type, type) || other.type == type) &&
-            (identical(other.content, content) || other.content == content) &&
-            (identical(other.path, path) || other.path == path));
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, sourceUid, id, createdAt,
-      const DeepCollectionEquality().hash(_tags), type, content, path);
+  int get hashCode => Object.hash(
+      runtimeType, sourceUid, id, postId, commentId, createdAt, type);
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ActivityModel(sourceUid: $sourceUid, id: $id, createdAt: $createdAt, tags: $tags, type: $type, content: $content, path: $path)';
+  String toString() {
+    return 'ActivityModel(sourceUid: $sourceUid, id: $id, postId: $postId, commentId: $commentId, createdAt: $createdAt, type: $type)';
   }
 }
 
@@ -435,13 +390,12 @@ abstract mixin class _$ActivityModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? sourceUid,
-      String id,
-      @JsonKey(name: 'time') String createdAt,
-      List<String> tags,
-      String type,
-      String content,
-      String path});
+      {@JsonKey(name: 'source_uid') String sourceUid,
+      int id,
+      @JsonKey(name: 'post_id') int? postId,
+      @JsonKey(name: 'comment_id') int? commentId,
+      @JsonKey(name: 'created_at') String createdAt,
+      ActivityType type});
 }
 
 /// @nodoc
@@ -457,43 +411,38 @@ class __$ActivityModelCopyWithImpl<$Res>
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? sourceUid = freezed,
+    Object? sourceUid = null,
     Object? id = null,
+    Object? postId = freezed,
+    Object? commentId = freezed,
     Object? createdAt = null,
-    Object? tags = null,
     Object? type = null,
-    Object? content = null,
-    Object? path = null,
   }) {
     return _then(_ActivityModel(
-      sourceUid: freezed == sourceUid
+      sourceUid: null == sourceUid
           ? _self.sourceUid
           : sourceUid // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
+      postId: freezed == postId
+          ? _self.postId
+          : postId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      commentId: freezed == commentId
+          ? _self.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
+              as int?,
       createdAt: null == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
-      tags: null == tags
-          ? _self._tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       type: null == type
           ? _self.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String,
-      content: null == content
-          ? _self.content
-          : content // ignore: cast_nullable_to_non_nullable
-              as String,
-      path: null == path
-          ? _self.path
-          : path // ignore: cast_nullable_to_non_nullable
-              as String,
+              as ActivityType,
     ));
   }
 }

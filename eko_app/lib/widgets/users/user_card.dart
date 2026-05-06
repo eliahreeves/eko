@@ -18,37 +18,33 @@ class FollowButton extends ConsumerWidget {
   final UserModel user;
   const FollowButton({super.key, required this.user});
 
-  Future<void> onFollowPressed(WidgetRef ref, UserModel user) async {
-    final isFollowing =
-        ref.watch(currentUserProvider).user.following.contains(user.uid);
-    if (isFollowing) {
-      await ref.read(currentUserProvider.notifier).removeFollower(user.uid);
-    } else {
-      await ref.read(currentUserProvider.notifier).addFollower(user.uid);
-    }
+  Future<void> onFollowPressed(WidgetRef ref) async {
+    await ref.read(userProvider(user.uid).notifier).toggleFollow();
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
     final currentUser = ref.watch(currentUserProvider);
+    final userState = ref.watch(userProvider(user.uid));
+    final isFollowing = userState.valueOrNull?.isFollowing ?? user.isFollowing;
     if (user.uid == currentUser.user.uid) {
       return SizedBox();
     }
     return InkWell(
-      onTap: () => onFollowPressed(ref, user),
+      onTap: () => onFollowPressed(ref),
       child: Container(
         width: width * 0.25,
         height: width * 0.08,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(10)),
-          color: currentUser.user.following.contains(user.uid)
+          color: isFollowing
               ? Theme.of(context).colorScheme.outlineVariant
               : Theme.of(context).colorScheme.primaryContainer,
         ),
         child: Text(
-          currentUser.user.following.contains(user.uid)
+          isFollowing
               ? AppLocalizations.of(context)!.following
               : AppLocalizations.of(context)!.follow,
           maxLines: 1,

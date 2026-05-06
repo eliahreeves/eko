@@ -1,102 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/common/time_stamp.dart';
-import 'package:eko_app/providers/activity_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
+import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 
-Widget recentActivityCardBuilder(String id) {
-  return ActivityCardWidget(id: id);
+Widget recentActivityCardBuilder(ActivityModel activity) {
+  return ActivityCardWidget(activity: activity);
 }
 
 class ActivityCardWidget extends ConsumerWidget {
-  final String id;
-  const ActivityCardWidget({super.key, required this.id});
+  final ActivityModel activity;
+  const ActivityCardWidget({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
     final height = MediaQuery.sizeOf(context).height;
-    final asyncActivity = ref.watch(activityProvider(id));
+    final l10n = AppLocalizations.of(context)!;
+    final asyncUser = ref.watch(userProvider(activity.sourceUid));
 
-    return asyncActivity.when(
-      data: (activity) {
-        final bool hasUser = activity.sourceUid != null;
-        return InkWell(
-          onTap: () {
-            if (activity.type == 'comment' || activity.type == 'tag') {
-              context.push('/feed/post/${activity.path}');
-            } else if (activity.type == 'follow') {
-              context.push('/users/${activity.path}');
+    return InkWell(
+      onTap: () {
+        switch (activity.type) {
+          case ActivityType.follow:
+            context.push('/users/_?uid=${activity.sourceUid}');
+            break;
+          case ActivityType.comment:
+          case ActivityType.postTag:
+          case ActivityType.commentTag:
+            final postId = activity.postId;
+            if (postId != null) {
+              context.push('/feed/post/$postId');
             }
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: height * 0.01),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            break;
+        }
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: height * 0.01),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: width * 0.03,
+                right: width * 0.015,
+              ),
+              child: ProfilePicture(
+                uid: activity.sourceUid,
+                size: width * 0.115,
+              ),
+            ),
+            Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: width * 0.03,
-                    right: width * 0.015,
+                SizedBox(
+                  width: width * 0.8,
+                  child: Text(
+                    '${_username(asyncUser, l10n.someone)} ${_activityTypeText(activity.type, l10n)}',
+                    softWrap: true,
                   ),
-                  child: hasUser
-                      ? ProfilePicture(
-                          uid: activity.sourceUid!,
-                          size: width * 0.115,
-                        )
-                      : Container(
-                          alignment: Alignment.center,
-                          height: width * 0.14,
-                          width: width * 0.14,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                          ),
-                          child: Icon(Icons.comment, size: width * 0.08),
-                        ),
                 ),
-                Column(
-                  children: [
-                    SizedBox(
-                      width: width * 0.8,
-                      child: activity.type == 'follow'
-                          ? Text(
-                              '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.followText}',
-                              softWrap: true,
-                            )
-                          : activity.type == 'tag'
-                              ? Text(
-                                  '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.taggedText} ${activity.content}',
-                                  softWrap: true,
-                                )
-                              : Text(
-                                  '${hasUser ? _username(ref.watch(userProvider(activity.sourceUid!)), AppLocalizations.of(context)!.someone) : AppLocalizations.of(context)!.someone} ${AppLocalizations.of(context)!.commentText}${activity.content.isEmpty ? '' : ': ${activity.content}'}',
-                                  softWrap: true,
-                                ),
-                    ),
-                    Container(
-                      width: width * 0.8,
-                      alignment: Alignment.centerLeft,
-                      child: TimeStamp(
-                        time: activity.getDateTime(),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                Container(
+                  width: width * 0.8,
+                  alignment: Alignment.centerLeft,
+                  child: TimeStamp(
+                    time: activity.dateTime,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
-          ),
-        );
-      },
-      error: (_, __) => Text('error'),
-      loading: () => UserLoader(),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -107,4 +87,16 @@ String _username(AsyncValue<UserModel> asyncUser, String someone) {
     error: (_, __) => someone,
     loading: () => someone,
   );
+}
+
+String _activityTypeText(ActivityType type, AppLocalizations l10n) {
+  switch (type) {
+    case ActivityType.follow:
+      return l10n.followText;
+    case ActivityType.postTag:
+    case ActivityType.commentTag:
+      return l10n.taggedText;
+    case ActivityType.comment:
+      return l10n.commentText;
+  }
 }

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
@@ -6,12 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 
 class ViewLikesPage extends ConsumerWidget {
-  final String postId;
+  final int postId;
   final bool dislikes;
   const ViewLikesPage({super.key, required this.postId, this.dislikes = false});
 
@@ -19,22 +19,24 @@ class ViewLikesPage extends ConsumerWidget {
     List<MapEntry<String, Never?>> list,
     WidgetRef ref,
   ) async {
-    final baseQuery = FirebaseFirestore.instance
-        .collection('users')
-        .where(
-          'profileData.${dislikes ? 'dislikedPosts' : 'likedPosts'}',
-          arrayContains: postId,
-        )
-        .limit(c.usersOnSearch);
-    final query = list.isEmpty ? baseQuery : baseQuery.startAfter([list.last]);
-    final snapshot = await query.get();
+    final lastUid = list.isEmpty ? null : list.last.key;
+    final rows = await supabase.rpc('paginated_post_likes', params: {
+      'p_limit': c.usersOnSearch,
+      'p_id': postId,
+      'p_last_uid': lastUid,
+      'p_dislikes': dislikes,
+    });
 
-    final userList = snapshot.docs.map((doc) => UserModel.fromJson(doc.data()));
+    final rowList = rows as List<dynamic>? ?? [];
+    final userList = rowList
+        .map((row) => UserModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
+
     ref.read(userPoolProvider).putAll(userList);
-    return ((
+    return (
       userList.map((item) => MapEntry(item.uid, null)).toList(),
       userList.length < c.usersOnSearch,
-    ));
+    );
   }
 
   @override

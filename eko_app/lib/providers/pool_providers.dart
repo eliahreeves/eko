@@ -1,13 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/providers/activity_provider.dart';
 import 'package:eko_app/providers/comment_provider.dart';
-import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
-import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/types/comment.dart';
-import 'package:eko_app/types/group.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/cache_service.dart';
@@ -15,21 +11,8 @@ import 'package:eko_app/utilities/cache_service.dart';
 part '../generated/providers/pool_providers.g.dart';
 
 @Riverpod(keepAlive: true)
-PoolService<GroupModel> groupPool(Ref ref) {
-  return PoolService<GroupModel>(
-    onInsert: (id) {
-      if (ref.exists(groupProvider(id))) {
-        ref.invalidate(groupProvider(id));
-      }
-    },
-    keySelector: (group) => group.id,
-    validTime: const Duration(minutes: 3),
-  );
-}
-
-@Riverpod(keepAlive: true)
-PoolService<PostModel> postPool(Ref ref) {
-  return PoolService<PostModel>(
+PoolService<PostModel, int> postPool(Ref ref) {
+  return PoolService<PostModel, int>(
     onInsert: (id) {
       if (ref.exists(postProvider(id))) {
         ref.invalidate(postProvider(id));
@@ -41,8 +24,8 @@ PoolService<PostModel> postPool(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
-PoolService<CommentModel> commentPool(Ref ref) {
-  return PoolService<CommentModel>(
+PoolService<CommentModel, int> commentPool(Ref ref) {
+  return PoolService<CommentModel, int>(
     onInsert: (id) {
       if (ref.exists(commentProvider(id))) {
         ref.invalidate(commentProvider(id));
@@ -54,27 +37,14 @@ PoolService<CommentModel> commentPool(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
-PoolService<UserModel> userPool(Ref ref) {
-  return PoolService<UserModel>(
+PoolService<UserModel, String> userPool(Ref ref) {
+  return PoolService<UserModel, String>(
     onInsert: (uid) {
       if (ref.exists(userProvider(uid))) {
         ref.invalidate(userProvider(uid));
       }
     },
     keySelector: (user) => user.uid,
-    validTime: const Duration(minutes: 3),
-  );
-}
-
-@Riverpod(keepAlive: true)
-PoolService<ActivityModel> activityPool(Ref ref) {
-  return PoolService<ActivityModel>(
-    onInsert: (id) {
-      if (ref.exists(activityProvider(id))) {
-        ref.invalidate(activityProvider(id));
-      }
-    },
-    keySelector: (activity) => activity.id,
     validTime: const Duration(minutes: 3),
   );
 }

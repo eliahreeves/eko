@@ -1,13 +1,13 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Added for Clipboard
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:eko_app/widgets/inputs/profile_input_field.dart';
+import 'package:eko_app/widgets/inputs/username_check_display.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
@@ -27,23 +27,9 @@ class _EditProfileState extends ConsumerState<EditProfile> {
   late final TextEditingController nameController;
   late final TextEditingController bioController;
   late final TextEditingController usernameController;
-  late final TextEditingController verificationUrlController;
   final usernameFocus = FocusNode();
   File? newProfileImage;
   bool isLoading = false;
-  bool linkCopied = false; // New state variable
-
-  void _copyProfileLink(String url) {
-    Clipboard.setData(ClipboardData(text: url));
-    setState(() {
-      linkCopied = true;
-    });
-    Timer(const Duration(seconds: 2), () {
-      setState(() {
-        linkCopied = false;
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -51,9 +37,6 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     nameController = TextEditingController(text: user.name);
     bioController = TextEditingController(text: user.bio);
     usernameController = TextEditingController(text: user.username);
-    verificationUrlController = TextEditingController(
-      text: user.verificationUrl,
-    );
     super.initState();
   }
 
@@ -62,7 +45,6 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     nameController.dispose();
     bioController.dispose();
     usernameController.dispose();
-    verificationUrlController.dispose();
     usernameFocus.dispose();
     super.dispose();
   }
@@ -73,15 +55,20 @@ class _EditProfileState extends ConsumerState<EditProfile> {
   //   return usernameValid;
   // }
 
-  void _savePressed(UserModel user) async {
+  Future<void> _savePressed(UserModel user) async {
     if (isLoading) return;
-    isLoading = true;
+    setState(() {
+      isLoading = true;
+    });
+    await Future<void>.delayed(Duration.zero);
     final usernameTrimmed = usernameController.text.trim();
     final username = usernameTrimmed != user.username ? usernameTrimmed : null;
     if (username != null) {
       if (!isUsernameValid(username)) {
         usernameFocus.requestFocus();
-        isLoading = false;
+        setState(() {
+          isLoading = false;
+        });
         if (mounted) {
           showSnackBar(
             text: AppLocalizations.of(context)!.usernameReqs,
@@ -94,7 +81,9 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       }
       if (!await isUsernameAvailable(username)) {
         usernameFocus.requestFocus();
-        isLoading = false;
+        setState(() {
+          isLoading = false;
+        });
         if (mounted) {
           showSnackBar(
             text: AppLocalizations.of(context)!.usernameInUse,
@@ -107,15 +96,44 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     }
     final name = nameController.text != user.name ? nameController.text : null;
     final bio = bioController.text != user.bio ? bioController.text : null;
-    ref.read(currentUserProvider.notifier).editProfile(
-          name: name,
-          bio: bio,
-          profilePicture: newProfileImage,
-          username: username,
-          verificationUrl: verificationUrlController.text.trim(),
-        );
-    isLoading = false;
-    if (mounted) context.pop();
+    try {
+      await ref.read(currentUserProvider.notifier).editProfile(
+            name: name,
+            bio: bio,
+            profilePicture: newProfileImage,
+            username: username,
+          );
+      if (mounted) {
+        final updatedUsername = ref.read(currentUserProvider).user.username;
+        context.go('/users/$updatedUsername');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      if (mounted) {
+        if (e.toString().contains('username_taken')) {
+          usernameFocus.requestFocus();
+          showSnackBar(
+            text: AppLocalizations.of(context)!.usernameInUse,
+            context: context,
+            variant: SnackBarVariant.destructive,
+          );
+        } else {
+          showSnackBar(
+            text: 'Failed to update profile',
+            context: context,
+            variant: SnackBarVariant.destructive,
+          );
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        isLoading = false;
+      }
+    }
   }
 
   Future<File?> _getProfileImage() async {
@@ -141,7 +159,31 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       ],
     );
     if (croppedFile == null) return null;
-    return File(croppedFile.path);
+    return _compressImageToMaxBytes(
+      File(croppedFile.path),
+      c.maxProfilePictureSizeBytes,
+    );
+  }
+
+  Future<File> _compressImageToMaxBytes(File file, int maxBytes) async {
+    final originalBytes = await file.readAsBytes();
+    if (originalBytes.lengthInBytes <= maxBytes) {
+      return file;
+    }
+    final decoded = img.decodeImage(originalBytes);
+    if (decoded == null) {
+      return file;
+    }
+
+    int quality = 95;
+    List<int> compressedBytes = img.encodeJpg(decoded, quality: quality);
+    while (compressedBytes.length > maxBytes && quality > 5) {
+      quality -= 5;
+      compressedBytes = img.encodeJpg(decoded, quality: quality);
+    }
+
+    await file.writeAsBytes(compressedBytes, flush: true);
+    return file;
   }
 
   void _setProfilePicturePressed() async {
@@ -157,13 +199,44 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     final nameChanged = nameController.text != user.name;
     final profilePicChanged = newProfileImage != null;
     final usernameChanged = usernameController.text.trim() != user.username;
-    final instagramChanged =
-        verificationUrlController.text.trim() != user.verificationUrl;
-    return bioChanged ||
-        nameChanged ||
-        profilePicChanged ||
-        usernameChanged ||
-        instagramChanged;
+    return bioChanged || nameChanged || profilePicChanged || usernameChanged;
+  }
+
+  Future<bool> _confirmExitWithUnsavedChanges() async {
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context)!.exitEditProfileTitle),
+          content: Text(AppLocalizations.of(context)!.exitEditProfileBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(AppLocalizations.of(context)!.stay),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(AppLocalizations.of(context)!.exit),
+            ),
+          ],
+        );
+      },
+    );
+    return shouldExit ?? false;
+  }
+
+  Future<void> _onBackPressed(UserModel user) async {
+    if (isLoading) return;
+    if (!_shouldShowSave(user)) {
+      if (mounted) {
+        context.pop();
+      }
+      return;
+    }
+    final shouldExit = await _confirmExitWithUnsavedChanges();
+    if (shouldExit && mounted) {
+      context.pop();
+    }
   }
 
   @override
@@ -173,10 +246,10 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
     final height = MediaQuery.sizeOf(context).height;
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, Object? result) {
-        if (didPop) return;
-        context.pop();
+      canPop: !isLoading && !_shouldShowSave(user),
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop || !mounted) return;
+        await _onBackPressed(user);
       },
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -187,7 +260,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                 Icons.arrow_back_ios_rounded,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
-              onPressed: () => Navigator.of(context).maybePop(),
+              onPressed: () => _onBackPressed(user),
             ),
             automaticallyImplyLeading: false,
             title: Text(
@@ -207,11 +280,11 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                   bioController,
                   nameController,
                   usernameController,
-                  verificationUrlController,
                 ]),
                 builder: (context, _) {
                   if (_shouldShowSave(user)) {
                     return TextButton(
+                      onPressed: isLoading ? null : () => _savePressed(user),
                       child: Text(
                         AppLocalizations.of(context)!.save,
                         style: TextStyle(
@@ -220,7 +293,6 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
-                      onPressed: () => _savePressed(user),
                     );
                   }
                   return SizedBox.shrink();
@@ -228,106 +300,99 @@ class _EditProfileState extends ConsumerState<EditProfile> {
               ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Stack(
-                        alignment: Alignment.bottomRight,
+          body: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          newProfileImage == null
-                              ? ProfilePicture(
-                                  uid: user.uid,
-                                  size: width * 0.4,
-                                  onlineIndicatorEnabled: false,
-                                )
-                              : ProfilePictureFromFile(
-                                  size: width * 0.4,
-                                  file: newProfileImage!,
-                                ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.primaryContainer,
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(8),
-                            ),
-                            onPressed: () {
-                              if (newProfileImage == null) {
-                                _setProfilePicturePressed();
-                              } else {
-                                setState(() {
-                                  newProfileImage = null;
-                                });
-                              }
-                            },
-                            child: Icon(
+                          Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
                               newProfileImage == null
-                                  ? Icons.mode
-                                  : Icons.close,
-                              size: 20,
-                            ),
+                                  ? ProfilePicture(
+                                      uid: user.uid,
+                                      size: width * 0.4,
+                                      onlineIndicatorEnabled: false,
+                                    )
+                                  : ProfilePictureFromFile(
+                                      size: width * 0.4,
+                                      file: newProfileImage!,
+                                    ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(8),
+                                ),
+                                onPressed: () {
+                                  if (newProfileImage == null) {
+                                    _setProfilePicturePressed();
+                                  } else {
+                                    setState(() {
+                                      newProfileImage = null;
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  newProfileImage == null
+                                      ? Icons.mode
+                                      : Icons.close,
+                                  size: 20,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
+                    ProfileInputField(
+                      controller: nameController,
+                      label: AppLocalizations.of(context)!.name,
+                      maxLength: c.maxNameChars,
+                    ),
+                    SizedBox(height: height * 0.01),
+                    ProfileInputField(
+                      controller: bioController,
+                      label: AppLocalizations.of(context)!.bioTitle,
+                      maxLength: c.maxBioChars,
+                      inputType: TextInputType.multiline,
+                    ),
+                    SizedBox(height: height * 0.01),
+                    ProfileInputField(
+                      focus: usernameFocus,
+                      label: AppLocalizations.of(context)!.userName,
+                      controller: usernameController,
+                      inputType: TextInputType.text,
+                    ),
+                    UsernameCheckDisplay(
+                      controller: usernameController,
+                      focus: usernameFocus,
+                      skipVal: user.username,
+                    ),
+                  ],
+                ),
+              ),
+              if (isLoading)
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surface.withValues(alpha: 0.55),
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
                 ),
-                ProfileInputField(
-                  controller: nameController,
-                  label: AppLocalizations.of(context)!.name,
-                  maxLength: c.maxNameChars,
-                ),
-                SizedBox(height: height * 0.01),
-                ProfileInputField(
-                  controller: bioController,
-                  label: AppLocalizations.of(context)!.bioTitle,
-                  maxLength: c.maxBioChars,
-                  inputType: TextInputType.multiline,
-                ),
-                SizedBox(height: height * 0.01),
-                ProfileInputField(
-                  focus: usernameFocus,
-                  label: AppLocalizations.of(context)!.userName,
-                  controller: usernameController,
-                  inputType: TextInputType.text,
-                ),
-                SizedBox(height: height * 0.03),
-                ProfileInputField(
-                  label: AppLocalizations.of(context)!.verificationUrl,
-                  controller: verificationUrlController,
-                  inputType: TextInputType.text,
-                ),
-                SizedBox(height: height * 0.02),
-                Text(
-                  AppLocalizations.of(context)!.verificationExp,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                SizedBox(height: height * 0.01),
-                ElevatedButton(
-                  onPressed: () {
-                    final shareUrl = '${c.appURL}/users/${user.username}';
-                    _copyProfileLink(shareUrl);
-                  },
-                  child: Text(
-                    linkCopied
-                        ? AppLocalizations.of(context)!.copied
-                        : AppLocalizations.of(context)!.copyProfileLink,
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
       ),

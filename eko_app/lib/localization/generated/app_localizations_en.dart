@@ -74,6 +74,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wrongPasswordBody => 'The password you entered is incorrect.';
 
   @override
+  String get requiredResetPasswordPrompt =>
+      'If you have not logged in since May 2026, you need to reset your password.';
+
+  @override
   String get userDisabledTittle => 'Account Disabled';
 
   @override
@@ -157,13 +161,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to go back? Your information will be deleted.';
 
   @override
-  String get exitCreateGroupTitle => 'Return to group page?';
-
-  @override
-  String get exitCreateGroupBody =>
-      'Are you sure you want to go back? Your group information will be deleted.';
-
-  @override
   String get exitEditProfileTitle => 'Are you sure you want to exit?';
 
   @override
@@ -174,6 +171,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exit => 'Exit';
+
+  @override
+  String get back => 'Back';
 
   @override
   String get goBack => 'Go Back';
@@ -195,6 +195,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordLen => 'Between 8 and 32 characters.';
+
+  @override
+  String get passwordMinChars => '8 or more characters';
 
   @override
   String get passwordLower => 'Contains a lowercase letter';
@@ -282,6 +285,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addTitle => 'Add title...';
+
+  @override
+  String get error => 'Error';
 
   @override
   String get create => 'Create';
@@ -397,13 +403,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commentText => 'commented on your post';
 
   @override
-  String get crossGroupRepost =>
-      'You may not eko chamber posts in public or in another group.';
-
-  @override
-  String get groups => 'Groups';
-
-  @override
   String get next => 'Next';
 
   @override
@@ -417,12 +416,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get public => 'Public';
-
-  @override
-  String get selectAudience => 'Select Audience:';
-
-  @override
-  String get myGroups => 'My groups';
 
   @override
   String get reply => 'Reply';
@@ -491,17 +484,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get postNotFound => 'Post Not Found';
 
   @override
-  String get groupNotFound => 'Group Not Found';
-
-  @override
-  String get leaveGroupWarningTitle =>
-      'Are you sure you want to leave the group?';
-
-  @override
-  String get leaveGroupWarningBody =>
-      'A group member will need to re-add you should you want to join again.';
-
-  @override
   String get share => 'Share';
 
   @override
@@ -529,9 +511,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logInRequired => 'Please log in to access all features of Eko.';
-
-  @override
-  String get notInGroup => 'You are no longer a member of this group.';
 
   @override
   String get send => 'Send';

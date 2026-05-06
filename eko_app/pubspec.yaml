@@ -34,24 +34,17 @@ dependencies:
     sdk: flutter   
   http: ^1.4.0
   cupertino_icons: ^1.0.2
-  firebase_core: ^3.14.0
-  firebase_analytics: ^11.4.5
-  firebase_auth: ^5.5.3
-  google_sign_in: ^6.2.2
   flutter_localizations:
     sdk: flutter
   intl: any
   flutter_svg: ^2.0.17
   qr_flutter_new: ^1.0.2
-  cloud_firestore: ^5.6.7
   url_launcher: ^6.2.2
-  firebase_in_app_messaging: ^0.8.1+5
   overlay_support: ^2.1.0
   package_info_plus: ^8.3.0
   share_plus: ^11.0.0
   image_picker: ^1.1.2
   image_cropper: ^11.0.0
-  firebase_storage: ^12.4.5
   cached_network_image: ^3.2.3
   path_provider: ^2.1.2
   go_router: ^15.1.2
@@ -59,13 +52,11 @@ dependencies:
   collection: ^1.17.1
   shared_preferences: ^2.5.3
   eraser: ^3.0.0
-  firebase_messaging: ^15.2.5
   extended_image: ^10.0.1
   loading_indicator: ^3.1.1
   permission_handler: ^12.0.0+1
   cloud_functions: ^5.3.4
   emoji_picker_flutter: ^4.3.0
-  firebase_database: ^11.3.7
   like_button: ^2.1.0 
   flutter_expandable_fab: ^2.3.0
   flutter_riverpod: ^2.6.1
@@ -73,16 +64,18 @@ dependencies:
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
   image_to_ascii: ^0.0.1
-    # path: ../../image_to_ascii
-      
   image: ^4.5.4
   flutter_staggered_grid_view: ^0.7.0
-  flutter_udid: ^4.0.0
   cross_file: ^0.3.4+2
   gallery_saver_plus: ^3.2.4
   sensors_plus: ^6.1.1
-  uuid: ^4.5.1
-  firebase_database_web: ^0.2.6+13
+  supabase_flutter: ^2.9.1
+  uuid: ^4.4.2
+  unifiedpush: ^6.2.0
+  unifiedpush_platform_interface: ^4.0.0
+  unifiedpush_storage_shared_preferences: ^1.0.0
+  flutter_local_notifications: ^21.0.0
+  webcrypto: ^0.6.0
 
 dev_dependencies:
   # flutter_test:

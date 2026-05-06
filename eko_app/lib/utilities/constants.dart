@@ -84,7 +84,7 @@ const List<Color> darkModeGradient = [
 ];
 
 //Button Style
-ButtonStyle buttonStyle(context) {
+ButtonStyle buttonStyle(BuildContext context) {
   return ButtonStyle(
     splashFactory: NoSplash.splashFactory,
     overlayColor: WidgetStateProperty.all(Colors.transparent),
@@ -106,6 +106,8 @@ const double maxAuthWidth = 500.0;
 //profile pic
 const int imageQuality = 85;
 const double imageSize = 150;
+const int maxProfilePictureSizeKb = 50;
+const int maxProfilePictureSizeBytes = maxProfilePictureSizeKb * 1024;
 
 const double postPaddingVert = 8;
 const double postPaddingHoriz = 5;
@@ -120,7 +122,7 @@ const int maxBioChars = 100;
 const int maxBioLines = 3;
 const int maxNameChars = 24;
 const int maxUsernameChars = 24;
-const int searchPageDebounce = 1500;
+const int searchPageDebounce = 400;
 const int postsOnRefresh = 10;
 const int usersOnSearch = 15;
 const int activitiesPerRequest = 15;
@@ -130,19 +132,20 @@ const double navBarIconSizeAdder = 4;
 const double navBarHeight = navBarIconSize + 20;
 const double postIconSize = 23;
 const double commentIconSize = 17;
-const int maxGroupName = 50;
-const int minGroupName = 3;
-const int maxGroupDesc = 300;
 const String userNameReqs = r'^[a-z0-9_]{3,24}$';
 const double dividerWidth = 0.5;
 const double indealAppWidth = 500;
 
 const int sessionIdLength = 8;
 const String appURL = 'https://app.eko-app.com';
+const String siteURL = 'https://eko-app.com';
+// const String siteURL = 'http://localhost:5173';
+const String siteAuthURL = '$siteURL/auth';
+const String forgotPasswordURL = '$siteAuthURL/reset-password';
+const String verifyEmailURL = '$siteAuthURL/verify-email';
+const String supabaseOAuthRedirectUrl = 'com.echo.android://login-callback';
 const String playStoreURL =
     'https://play.google.com/store/apps/details?id=com.echo.android';
 const String appStoreURL =
     'https://apps.apple.com/us/app/eko/id6470772031?platform=iphone';
-const String termsUrl = 'https://conetechnologies-32cd1.web.app/eko/terms';
-const String defaultProfilePictureUrl =
-    'https://firebasestorage.googleapis.com/v0/b/untitled-2832f.appspot.com/o/profile_pictures%2Fdefault%2Fprofile.jpg?alt=media&token=2543c4eb-f991-468f-9ce8-68c576ffca7c';
+const String termsUrl = 'https://eko-app.com/privacy-policy';

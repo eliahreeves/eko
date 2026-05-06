@@ -1,13 +1,14 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/interfaces/post.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/providers/popular_feed_provider.dart';
+import 'package:eko_app/providers/profile_post_list_provider.dart';
 import 'package:eko_app/types/post.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 // Necessary for code-generation to work
 part '../generated/providers/post_provider.g.dart';
 
@@ -17,7 +18,7 @@ class Post extends _$Post {
   bool _isLiking = false;
   bool _isVoting = false;
   @override
-  FutureOr<PostModel> build(String id) {
+  FutureOr<PostModel> build(int id) {
     // *** This block is for lifecycle management *** //
     // Keep provider alive
     final link = ref.keepAlive();
@@ -45,116 +46,56 @@ class Post extends _$Post {
     return _fetchPostModel(id);
   }
 
-  Future<PostModel> _fetchPostModel(String id) async {
-    final postsRef = FirebaseFirestore.instance.collection('posts');
-    final data = await Future.wait([postsRef.doc(id).get(), countComments(id)]);
-    final postData = data[0] as DocumentSnapshot<Map<String, dynamic>>;
-    final commentCount = data[1] as int;
-
-    if (postData.data() == null) {
+  Future<PostModel> _fetchPostModel(int id) async {
+    final rows = await supabase.rpc('get_post_by_id', params: {'p_id': id});
+    final list = rows as List<dynamic>?;
+    if (list == null || list.isEmpty) {
       throw Exception('Failed to load');
     }
-
-    final json = postData.data()!;
-    json['id'] = id;
-    json['commentCount'] = commentCount;
-
-    return PostModel.fromJson(json);
+    return PostModel.fromJson(Map<String, dynamic>.from(list.first as Map));
   }
 
-  Future<void> _addLikeToDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayUnion([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'likes': FieldValue.increment(1),
-      }),
-    ]);
-  }
-
-  Future<void> _removeLikeFromDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.likedPosts': FieldValue.arrayRemove([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'likes': FieldValue.increment(-1),
-      }),
-    ]);
-  }
-
-  Future<void> _addDislikeToDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayUnion([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'dislikes': FieldValue.increment(1),
-      }),
-    ]);
-  }
-
-  Future<void> _removeDisikeFromDb(String id) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.dislikedPosts': FieldValue.arrayRemove([id]),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'dislikes': FieldValue.increment(-1),
-      }),
-    ]);
+  Future<void> _changePostLike(
+    int id, {
+    required bool isLiking,
+    required bool isDislike,
+  }) async {
+    await supabase.rpc('change_post_likes', params: {
+      'p_id': id,
+      'p_is_liking': isLiking,
+      'p_is_dislike': isDislike,
+    });
   }
 
   Future<void> likePostToggle() async {
     final prevState = await future;
     if (_isLiking) return;
     _isLiking = true;
-    // liked -> not liked
-    if (ref.read(currentUserProvider).likedPosts.contains(prevState.id)) {
-      ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-      state = AsyncData(prevState.copyWith(likes: prevState.likes - 1));
+    if (prevState.isLiked) {
+      state = AsyncData(
+          prevState.copyWith(isLiked: false, likes: prevState.likes - 1));
       try {
-        await _removeLikeFromDb(prevState.id);
-      } catch (_) {
-        ref.read(currentUserProvider.notifier).addIdToLiked(prevState.id);
+        await _changePostLike(prevState.id, isLiking: false, isDislike: false);
+      } catch (e) {
+        debugPrint('likePostToggle unlike error: $e');
         state = AsyncData(prevState);
       }
-      // not liked -> liked
     } else {
-      bool wasDisliked = false;
-      final List<Future<void>> ops = [_addLikeToDb(prevState.id)];
-      ref.read(currentUserProvider.notifier).addIdToLiked(prevState.id);
-      if (ref.read(currentUserProvider).dislikedPosts.contains(prevState.id)) {
-        wasDisliked = true;
-        ref
-            .read(currentUserProvider.notifier)
-            .removeIdFromDisliked(prevState.id);
-        state = AsyncData(
-          prevState.copyWith(
-            dislikes: prevState.dislikes - 1,
-            likes: prevState.likes + 1,
-          ),
-        );
-        ops.add(_removeDisikeFromDb(prevState.id));
+      if (prevState.isDisliked) {
+        state = AsyncData(prevState.copyWith(
+          isLiked: true,
+          isDisliked: false,
+          likes: prevState.likes + 1,
+          dislikes: prevState.dislikes - 1,
+        ));
       } else {
-        state = AsyncData(prevState.copyWith(likes: prevState.likes + 1));
+        state = AsyncData(
+            prevState.copyWith(isLiked: true, likes: prevState.likes + 1));
       }
       try {
-        await Future.wait(ops);
-      } catch (_) {
-        ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-        if (wasDisliked) {
-          ref.read(currentUserProvider.notifier).addIdToDisliked(prevState.id);
-        }
+        await _changePostLike(prevState.id, isLiking: true, isDislike: false);
+      } catch (e) {
+        debugPrint('likePostToggle like error: $e');
         state = AsyncData(prevState);
       }
     }
@@ -165,99 +106,66 @@ class Post extends _$Post {
     final prevState = await future;
     if (_isLiking) return;
     _isLiking = true;
-    if (ref.read(currentUserProvider).dislikedPosts.contains(prevState.id)) {
-      ref.read(currentUserProvider.notifier).removeIdFromDisliked(prevState.id);
-      state = AsyncData(prevState.copyWith(dislikes: prevState.dislikes - 1));
+    if (prevState.isDisliked) {
+      state = AsyncData(prevState.copyWith(
+          isDisliked: false, dislikes: prevState.dislikes - 1));
       try {
-        await _removeDisikeFromDb(prevState.id);
-      } catch (_) {
-        ref.read(currentUserProvider.notifier).addIdToDisliked(prevState.id);
+        await _changePostLike(prevState.id, isLiking: false, isDislike: true);
+      } catch (e) {
+        debugPrint('dislikePostToggle undislike error: $e');
         state = AsyncData(prevState);
       }
     } else {
-      bool wasLiked = false;
-      final List<Future<void>> ops = [_addDislikeToDb(prevState.id)];
-      ref.read(currentUserProvider.notifier).addIdToDisliked(prevState.id);
-      if (ref.read(currentUserProvider).likedPosts.contains(prevState.id)) {
-        wasLiked = true;
-        ref.read(currentUserProvider.notifier).removeIdFromLiked(prevState.id);
-        state = AsyncData(
-          prevState.copyWith(
-            likes: prevState.likes - 1,
-            dislikes: prevState.dislikes + 1,
-          ),
-        );
-        ops.add(_removeLikeFromDb(prevState.id));
+      if (prevState.isLiked) {
+        state = AsyncData(prevState.copyWith(
+          isDisliked: true,
+          isLiked: false,
+          dislikes: prevState.dislikes + 1,
+          likes: prevState.likes - 1,
+        ));
       } else {
-        state = AsyncData(prevState.copyWith(dislikes: prevState.dislikes + 1));
+        state = AsyncData(prevState.copyWith(
+            isDisliked: true, dislikes: prevState.dislikes + 1));
       }
       try {
-        await Future.wait(ops);
-      } catch (_) {
-        ref
-            .read(currentUserProvider.notifier)
-            .removeIdFromDisliked(prevState.id);
-        if (wasLiked) {
-          ref.read(currentUserProvider.notifier).addIdToLiked(prevState.id);
-        }
+        await _changePostLike(prevState.id, isLiking: true, isDislike: true);
+      } catch (e) {
+        debugPrint('dislikePostToggle dislike error: $e');
         state = AsyncData(prevState);
       }
     }
     _isLiking = false;
   }
 
-  Future<void> _addVoteToDb(String id, int optionIndex) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.pollVotes.$id': optionIndex,
-      }),
-      firestore.collection('posts').doc(id).update({
-        'pollVoteCounts.$optionIndex': FieldValue.increment(1),
-      }),
-    ]);
-  }
-
-  Future<void> _removeVoteFromDb(String id, int currentVote) async {
-    final firestore = FirebaseFirestore.instance;
-    final uid = ref.read(currentUserProvider).user.uid;
-    await Future.wait([
-      firestore.collection('users').doc(uid).update({
-        'profileData.pollVotes.$id': FieldValue.delete(),
-      }),
-      firestore.collection('posts').doc(id).update({
-        'pollVoteCounts.$currentVote': FieldValue.increment(-1),
-      }),
-    ]);
-  }
-
-  Future<void> addPollVote({required int optionIndex}) async {
+  Future<void> addPollVote({required int optionId}) async {
     final prevState = await future;
-    if (_isVoting ||
-        ref.read(currentUserProvider).pollVotes.containsKey(prevState.id)) {
+    if (_isVoting || prevState.vote != null) {
       return;
     }
     _isVoting = true;
 
-    ref
-        .read(currentUserProvider.notifier)
-        .addPollVote(prevState.id, optionIndex);
-
-    final updatedPollVoteCounts = Map<String, int>.from(
-      prevState.pollVoteCounts ?? {},
+    final updatedPoll = (prevState.poll ?? [])
+        .map(
+          (item) => item.optionId == optionId
+              ? item.copyWith(voteCount: item.voteCount + 1)
+              : item,
+        )
+        .toList();
+    final optimisticState = prevState.copyWith(
+      vote: optionId,
+      poll: updatedPoll,
     );
-    updatedPollVoteCounts[optionIndex.toString()] =
-        (updatedPollVoteCounts[optionIndex.toString()] ?? 0) + 1;
-
-    state = AsyncData(
-      prevState.copyWith(pollVoteCounts: updatedPollVoteCounts),
-    );
+    state = AsyncData(optimisticState);
 
     try {
-      await _addVoteToDb(prevState.id, optionIndex);
+      await supabase.rpc(
+        'poll_vote',
+        params: {
+          'p_post_id': prevState.id,
+          'p_option_id': optionId,
+        },
+      );
     } catch (_) {
-      ref.read(currentUserProvider.notifier).removePollVote(prevState.id);
       state = AsyncData(prevState);
     }
 
@@ -266,29 +174,34 @@ class Post extends _$Post {
 
   Future<void> removePollVote() async {
     final prevState = await future;
-    if (_isVoting ||
-        !ref.read(currentUserProvider).pollVotes.containsKey(prevState.id)) {
+    if (_isVoting || prevState.vote == null) {
       return;
     }
     _isVoting = true;
-    final currentVote = ref.read(currentUserProvider).pollVotes[prevState.id]!;
+    final currentVote = prevState.vote!;
 
-    ref.read(currentUserProvider.notifier).removePollVote(prevState.id);
-
-    final updatedPollVoteCounts = Map<String, int>.from(
-      prevState.pollVoteCounts!,
+    final updatedPoll = (prevState.poll ?? [])
+        .map(
+          (item) => item.optionId == currentVote
+              ? item.copyWith(
+                  voteCount: (item.voteCount > 0 ? item.voteCount - 1 : 0))
+              : item,
+        )
+        .toList();
+    final optimisticState = prevState.copyWith(
+      vote: null,
+      poll: updatedPoll,
     );
-    updatedPollVoteCounts[currentVote.toString()] =
-        (updatedPollVoteCounts[currentVote.toString()] ?? 1) - 1;
-
-    state = AsyncData(
-      prevState.copyWith(pollVoteCounts: updatedPollVoteCounts),
-    );
+    state = AsyncData(optimisticState);
 
     try {
-      await _removeVoteFromDb(prevState.id, currentVote);
+      await supabase.rpc(
+        'remove_poll_vote',
+        params: {
+          'p_post_id': prevState.id,
+        },
+      );
     } catch (_) {
-      ref.read(currentUserProvider.notifier).removePollVote(prevState.id);
       state = AsyncData(prevState);
     }
 
@@ -300,18 +213,11 @@ class Post extends _$Post {
     final postId = currentPost.id;
 
     try {
-      final firestore = FirebaseFirestore.instance;
-      final postRef = firestore.collection('posts').doc(postId);
-      final comments = await postRef.collection('comments').get();
-      final batch = firestore.batch();
-      for (var doc in comments.docs) {
-        batch.delete(doc.reference);
-      }
-      batch.delete(postRef);
-      await batch.commit();
+      await supabase.from('posts').delete().eq('id', postId);
       ref.read(followingFeedProvider.notifier).removePost(postId);
       ref.read(newFeedProvider.notifier).removePost(postId);
-      ref.invalidateSelf();
+      ref.read(popularFeedProvider.notifier).removePost(postId);
+      ref.read(profilePostListProvider.notifier).removePost(postId);
     } catch (e) {
       rethrow;
     }

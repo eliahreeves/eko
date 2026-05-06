@@ -5,21 +5,16 @@ import 'package:go_router/go_router.dart';
 import 'package:image_to_ascii/image_to_ascii.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:eko_app/widgets/posts/gif_widget.dart';
-import 'package:eko_app/providers/post_provider.dart';
-import 'package:eko_app/widgets/groups/group_card.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:eko_app/interfaces/post.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
-import 'package:eko_app/providers/group_list_provider.dart';
-import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/providers/post_preview_provider.dart';
 import 'package:eko_app/types/post.dart';
-import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/posts/poll_creator.dart';
 import 'package:eko_app/widgets/posts/post_card.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
@@ -72,19 +67,17 @@ class _CornerClose extends StatelessWidget {
 }
 
 class ComposePage extends ConsumerStatefulWidget {
-  final String? groupId;
-  final String? repostId;
+  final int? repostId;
   final String? timestamp;
 
-  const ComposePage({super.key, this.groupId, this.repostId, this.timestamp});
+  const ComposePage({super.key, this.repostId, this.timestamp});
   @override
   ConsumerState<ComposePage> createState() => _ComposePageState();
 }
 
 class _ComposePageState extends ConsumerState<ComposePage> {
   final _key = GlobalKey<ExpandableFabState>();
-  String? audiance;
-  String? repostId;
+  int? repostId;
   String? gif;
   String? timestamp;
   AsciiImage? image;
@@ -104,13 +97,6 @@ class _ComposePageState extends ConsumerState<ComposePage> {
   @override
   void didUpdateWidget(covariant ComposePage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.groupId != widget.groupId ||
-        oldWidget.timestamp != widget.timestamp) {
-      setState(() {
-        audiance = widget.groupId;
-        timestamp = widget.timestamp;
-      });
-    }
     if (oldWidget.repostId != widget.repostId ||
         oldWidget.timestamp != widget.timestamp) {
       setState(() {
@@ -124,7 +110,6 @@ class _ComposePageState extends ConsumerState<ComposePage> {
   void initState() {
     bodyFocus.addListener(bodyFocusListen);
     repostId = widget.repostId;
-    audiance = widget.groupId;
     timestamp = widget.timestamp;
     super.initState();
   }
@@ -158,11 +143,13 @@ class _ComposePageState extends ConsumerState<ComposePage> {
 
   void _addGifPressed() async {
     String? url = await context.pushNamed('gif');
-    setState(() {
-      gif = url;
-      image = null;
-      repostId = null;
-    });
+    if (url != null) {
+      setState(() {
+        gif = url;
+        image = null;
+        repostId = null;
+      });
+    }
   }
 
   Future<void> _addImagePressed() async {
@@ -198,33 +185,28 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       bodyNewLines = 0;
       bodyController.clear();
       titleController.clear();
-      audiance = null;
     });
   }
 
-  Future<void> _uploadAndNavigate(PostModel post) async {
+  Future<void> _uploadAndNavigate(
+      PostModel post, List<String>? pollOptions) async {
     if (isUploading) return;
     try {
       isUploading = true;
       final postToUpload = post.copyWith(
         createdAt: DateTime.now().toUtc().toIso8601String(),
       );
-      final id = await uploadPost(postToUpload, ref);
+      final (id, poll) = await uploadPost(postToUpload, pollOptions, ref);
       _clear();
       if (mounted) {
-        if (post.tags.contains('public')) {
-          final completePost = postToUpload.copyWith(id: id);
-          ref.read(newFeedProvider.notifier).insertAtIndex(0, completePost);
-          ref
-              .read(followingFeedProvider.notifier)
-              .insertAtIndex(0, completePost);
-          ref.read(postPoolProvider).putAll([completePost]);
-          context.go('/feed');
-        } else {
-          context.go('/groups/sub_group/${post.tags.first}');
-        }
+        final completePost = postToUpload.copyWith(id: id, poll: poll);
+        ref.read(newFeedProvider.notifier).insertAtIndex(0, completePost);
+        ref.read(followingFeedProvider.notifier).insertAtIndex(0, completePost);
+        ref.read(postPoolProvider).putAll([completePost]);
+        context.go('/feed');
       }
     } catch (e) {
+      debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
           text: AppLocalizations.of(context)!.defaultErrorTittle,
@@ -243,7 +225,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       isChecking = true;
       final title = titleController.text.trim();
       final body = bodyController.text.trim();
-      final List<String> tags = [audiance ?? 'public'];
+      const List<String> tags = ['public'];
       if (title == '' &&
           body == '' &&
           gif == null &&
@@ -303,37 +285,24 @@ class _ComposePageState extends ConsumerState<ComposePage> {
         return;
       }
 
-      if (repostId != null) {
-        final post = await ref.read(postProvider(repostId!).future);
-        if (post.tags.isNotEmpty &&
-            post.tags.first != 'public' &&
-            post.tags.first != audiance) {
-          if (mounted) {
-            showSnackBar(
-              text: AppLocalizations.of(context)!.crossGroupRepost,
-              context: context,
-              variant: SnackBarVariant.destructive,
-            );
-          }
-          return;
-        }
-      }
-
+      final postPollOptions = !isPoll ? null : pollOptions;
       final post = PostModel(
-        uid: ref.read(currentUserProvider).user.uid,
-        id: '',
-        tags: tags,
-        likes: 0,
-        dislikes: 0,
-        commentCount: 0,
-        createdAt: DateTime.now().toUtc().toIso8601String(),
-        pollOptions: isPoll ? pollOptions : null,
-        imageString: image,
-        gifUrl: gif,
-        repostId: repostId,
-        title: parseTextToTags(title),
-        body: parseTextToTags(body),
-      );
+          uid: ref.read(currentUserProvider).user.uid,
+          id: 0,
+          tags: tags,
+          likes: 0,
+          dislikes: 0,
+          commentCount: 0,
+          createdAt: DateTime.now().toUtc().toIso8601String(),
+          imageString: image,
+          gifUrl: gif,
+          repostId: repostId,
+          title: parseTextToTags(title),
+          body: parseTextToTags(body),
+          poll: postPollOptions
+              ?.map<PollOptionModel>(
+                  (v) => PollOptionModel(value: v, optionId: 0, voteCount: 0))
+              .toList());
 
       if (mounted) {
         if (ref.read(postPreviewProvider)) {
@@ -344,7 +313,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
               return AlertDialog(
                 backgroundColor: Theme.of(context).colorScheme.outlineVariant,
                 title: Text(
-                  'Post to ${audiance == null ? AppLocalizations.of(context)!.public : ref.read(groupProvider(audiance!)).when(data: (group) => group.name, loading: () => '--', error: (_, __) => '--')}?',
+                  'Post to ${AppLocalizations.of(context)!.public}?',
                 ),
                 content: SingleChildScrollView(
                   child: PostCardFromPost(post: post, isPreview: true),
@@ -361,7 +330,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                     onPressed: () async {
                       if (isUploading) return;
                       if (context.mounted) context.pop();
-                      await _uploadAndNavigate(post);
+                      await _uploadAndNavigate(post, postPollOptions);
                     },
                   ),
                 ],
@@ -369,11 +338,12 @@ class _ComposePageState extends ConsumerState<ComposePage> {
             },
           ).then((_) => FocusManager.instance.primaryFocus?.unfocus());
         } else {
-          await _uploadAndNavigate(post);
+          await _uploadAndNavigate(post, postPollOptions);
           FocusManager.instance.primaryFocus?.unfocus();
         }
       }
     } catch (e) {
+      debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
           text: AppLocalizations.of(context)!.defaultErrorTittle,
@@ -529,21 +499,12 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                         style: BorderStyle.solid,
                       ),
                     ),
-                    onPressed: () => _audianceButtonPressed(
-                      context,
-                      (id) => setState(() {
-                        audiance = id;
-                      }),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _AudianceText(id: audiance),
-                        Icon(
-                          Icons.expand_more_rounded,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ],
+                    onPressed: null,
+                    child: Text(
+                      AppLocalizations.of(context)!.public,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 ],
@@ -600,7 +561,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                           child: ConstrainedBox(
                             constraints: BoxConstraints(minWidth: width * 0.8),
                             child: RepostCard(
-                              postId: widget.repostId!,
+                              postId: repostId!,
                               isLoggedIn: true,
                               isPreview: true,
                             ),
@@ -737,129 +698,4 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       ),
     );
   }
-}
-
-class _AudianceText extends ConsumerWidget {
-  final String? id;
-  const _AudianceText({required this.id});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (id == null) {
-      return Text(
-        AppLocalizations.of(context)!.public,
-        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-      );
-    }
-    final asyncGroup = ref.watch(groupProvider(id!));
-    return asyncGroup.when(
-      data: (group) => Text(
-        group.name,
-        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-      ),
-      error: (_, __) => SizedBox.shrink(),
-      loading: () => SizedBox.shrink(),
-    );
-  }
-}
-
-class _GroupListHeader extends StatelessWidget {
-  final void Function() onPopularPressed;
-  const _GroupListHeader({required this.onPopularPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    final double width = c.widthGetter(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Text(
-            AppLocalizations.of(context)!.selectAudience,
-            style: const TextStyle(fontSize: 24),
-          ),
-        ),
-        Divider(
-          color: Theme.of(context).colorScheme.outline,
-          height: c.dividerWidth,
-        ),
-        InkWell(
-          onTap: () {
-            onPopularPressed();
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Row(
-              children: [
-                SizedBox(width: width * 0.05),
-                Icon(Icons.public, size: width * 0.18),
-                SizedBox(width: width * 0.05),
-                Text(
-                  AppLocalizations.of(context)!.public,
-                  style: const TextStyle(fontSize: 19),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Divider(
-          color: Theme.of(context).colorScheme.outline,
-          height: c.dividerWidth,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(left: 7, top: 12, bottom: 12),
-          child: Text(
-            AppLocalizations.of(context)!.myGroups,
-            style: const TextStyle(fontSize: 18),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _GroupList extends ConsumerWidget {
-  final void Function(String?) onItemPressed;
-  const _GroupList({required this.onItemPressed});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final groupsData = ref.watch(groupListProvider);
-    return InfiniteScrollyShell<String>(
-      header: _GroupListHeader(
-        onPopularPressed: () {
-          onItemPressed(null);
-          context.pop();
-        },
-      ),
-      getter: ref.read(groupListProvider.notifier).getter,
-      onRefresh: ref.read(groupListProvider.notifier).refresh,
-      widget: (id) => GroupCard(
-        groupId: id,
-        onPressed: (id) {
-          onItemPressed(id);
-          context.pop();
-        },
-      ),
-      list: groupsData.$1,
-      isEnd: groupsData.$2,
-    );
-  }
-}
-
-void _audianceButtonPressed(
-  BuildContext context,
-  void Function(String?) onItemPressed,
-) {
-  showModalBottomSheet(
-    showDragHandle: true,
-    backgroundColor: Theme.of(context).colorScheme.outlineVariant,
-    isScrollControlled: true,
-    context: context,
-    builder: (BuildContext context) {
-      return _GroupList(onItemPressed: onItemPressed);
-    },
-  );
 }

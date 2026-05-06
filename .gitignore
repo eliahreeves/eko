@@ -1,3 +1,7 @@
+.cursor
+# Legacy duplicate app tree (not used; eko_app is canonical)
+/untitled_app/
+
 /eko_app/lib/secrets
 /backend/NewPostNotification/secrets/
 
@@ -49,3 +53,15 @@ app.*.map.json
 .direnv
 
 firbaseHosting/**/*.js
+node_modules
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

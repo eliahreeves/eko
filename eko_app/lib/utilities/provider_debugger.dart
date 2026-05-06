@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProviderDebuggerObserver extends ProviderObserver {
@@ -7,7 +8,7 @@ class ProviderDebuggerObserver extends ProviderObserver {
     Object? value,
     ProviderContainer container,
   ) {
-    print('Provider $provider was initialized');
+    debugPrint('Provider $provider was initialized');
   }
 
   @override
@@ -15,7 +16,7 @@ class ProviderDebuggerObserver extends ProviderObserver {
     ProviderBase<Object?> provider,
     ProviderContainer container,
   ) {
-    print('Provider $provider was disposed');
+    debugPrint('Provider $provider was disposed');
   }
 
   @override
@@ -25,7 +26,7 @@ class ProviderDebuggerObserver extends ProviderObserver {
     Object? newValue,
     ProviderContainer container,
   ) {
-    print('Provider $provider updated');
+    debugPrint('Provider $provider updated');
   }
 
   @override
@@ -35,6 +36,6 @@ class ProviderDebuggerObserver extends ProviderObserver {
     StackTrace stackTrace,
     ProviderContainer container,
   ) {
-    print('Provider $provider threw $error at $stackTrace');
+    debugPrint('Provider $provider threw $error at $stackTrace');
   }
 }

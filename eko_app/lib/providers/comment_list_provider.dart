@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/providers/pool_providers.dart';
@@ -8,35 +7,33 @@ part '../generated/providers/comment_list_provider.g.dart';
 
 @riverpod
 class CommentList extends _$CommentList {
-  final List<String> _timestamps = [];
+  String? _lastTime;
+  int? _lastId;
   @override
-  (List<String>, bool) build(String postId) {
+  (List<int>, bool) build(int postId) {
     return ([], false);
   }
 
-  Future<void> getter(String postId) async {
-    final baseQuery = FirebaseFirestore.instance
-        .collection('posts')
-        .doc(postId)
-        .collection('comments')
-        .orderBy('time', descending: false)
-        .limit(c.postsOnRefresh);
-    final query =
-        state.$1.isEmpty ? baseQuery : baseQuery.startAfter([_timestamps.last]);
-
-    final commentList = await getComments(query);
+  Future<void> getter(int postId) async {
+    final commentList = await getCommentsForPost(
+      postId,
+      lastTime: _lastTime,
+      lastId: _lastId,
+    );
     ref.read(commentPoolProvider).putAll(commentList);
 
     final newList = [...state.$1];
     for (final comment in commentList) {
       newList.add(comment.id);
-      _timestamps.add(comment.createdAt);
+      _lastTime = comment.createdAt;
+      _lastId = comment.id;
     }
     state = (newList, commentList.length < c.postsOnRefresh);
   }
 
   Future<void> refresh() async {
-    _timestamps.clear();
+    _lastTime = null;
+    _lastId = null;
     state = ([], false);
     await getter(postId);
   }
@@ -44,12 +41,15 @@ class CommentList extends _$CommentList {
   void insertAtIndex(int index, CommentModel comment) {
     final newList = [...state.$1];
     newList.insert(index, comment.id);
-    _timestamps.add(comment.createdAt);
     state = (newList, state.$2);
   }
 
   void addToBack(CommentModel comment) {
     final currentLength = state.$1.length;
     insertAtIndex(currentLength, comment);
+  }
+
+  void removeById(int id) {
+    state = (state.$1.where((commentId) => commentId != id).toList(), state.$2);
   }
 }

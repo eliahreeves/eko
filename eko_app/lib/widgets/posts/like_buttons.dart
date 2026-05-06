@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:like_button/like_button.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/widgets/common/icons.dart' as icons;
@@ -17,13 +16,12 @@ class LikeButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fillColor = Color(0xFFFF3040);
-    final user = ref.watch(currentUserProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         LikeButton(
-          isLiked: !disabled && user.likedPosts.contains(post.id),
+          isLiked: !disabled && post.isLiked,
           likeBuilder: (isLiked) {
             return icons.Like(
               size: c.postIconSize,
@@ -61,7 +59,7 @@ class LikeButtons extends ConsumerWidget {
                 },
         ),
         LikeButton(
-          isLiked: !disabled && user.dislikedPosts.contains(post.id), //dislike
+          isLiked: !disabled && post.isDisliked, //dislike
           likeBuilder: (isDisliked) {
             return icons.Dislike(
               size: c.postIconSize,

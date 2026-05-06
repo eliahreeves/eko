@@ -1,130 +1,68 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/utilities/supabase_ref.dart';
 part '../generated/providers/following_feed_provider.g.dart';
-
-class _Chunk {
-  final List<String> uids;
-  PostModel newestUnshownPost;
-  _Chunk({required this.uids, required this.newestUnshownPost});
-}
 
 @riverpod
 class FollowingFeed extends _$FollowingFeed {
-  final List<_Chunk> _feedChunks = [];
-  final Set<String> _set = {};
+  final List<MapEntry<int, String>> _cursors = [];
+  final Set<int> _set = {};
   @override
-  (List<String>, bool) build() {
+  (List<int>, bool) build() {
     return ([], false);
   }
 
   Future<void> getter() async {
-    final baseQuery = FirebaseFirestore.instance
-        .collection('posts')
-        .where('tags', arrayContains: 'public')
-        .orderBy('time', descending: true)
-        .limit(1);
-    final List<PostModel> gottenPosts = [];
-    if (_feedChunks.isEmpty) {
-      final List<String> following = [
-        ref.read(currentUserProvider).user.uid,
-        ...ref.read(currentUserProvider).user.following,
-      ];
-      final slicedFollowing = following.slices(30).toList();
-      final initResults = await Future.wait(
-        slicedFollowing.map((slice) async {
-          return (await baseQuery.where('author', whereIn: slice).get()).docs;
-        }),
-      );
-      final List<Future<_Chunk>> asyncChunks = [];
-      for (int i = 0; i < slicedFollowing.length; i++) {
-        if (initResults[i].isNotEmpty) {
-          asyncChunks.add(() async {
-            return _Chunk(
-              uids: slicedFollowing[i],
-              newestUnshownPost: await PostModel.fromFireStoreDoc(
-                initResults[i].first,
-              ),
-            );
-          }());
-        }
-      }
-      if (asyncChunks.isEmpty) {
-        state = ([], true);
-        return;
-      }
-      _feedChunks.addAll(await Future.wait(asyncChunks));
-      _feedChunks.sort(
-        (a, b) => b.newestUnshownPost.createdAt.compareTo(
-          a.newestUnshownPost.createdAt,
-        ),
-      );
-      gottenPosts.add(_feedChunks.first.newestUnshownPost);
+    final params = <String, dynamic>{
+      'p_limit': c.postsOnRefresh,
+    };
+    if (_cursors.isNotEmpty) {
+      final last = _cursors.last;
+      params['p_last_time'] = last.value;
+      params['p_last_id'] = last.key;
     }
-    while (gottenPosts.length < c.postsOnRefresh) {
-      final snapshot = await baseQuery
-          .where('author', whereIn: _feedChunks.first.uids)
-          .startAfter([_feedChunks.first.newestUnshownPost.createdAt]).get();
-      if (snapshot.docs.isNotEmpty) {
-        _feedChunks.first.newestUnshownPost = await PostModel.fromFireStoreDoc(
-          snapshot.docs.first,
-        );
-        _feedChunks.sort(
-          (a, b) => b.newestUnshownPost.createdAt.compareTo(
-            a.newestUnshownPost.createdAt,
-          ),
-        );
-        gottenPosts.add(_feedChunks.first.newestUnshownPost);
-      } else {
-        _feedChunks.removeAt(0);
-        if (_feedChunks.isEmpty) {
-          ref.read(postPoolProvider).putAll(gottenPosts);
-          final newList = [...state.$1];
-          for (final post in gottenPosts) {
-            if (_set.add(post.id)) {
-              newList.add(post.id);
-            }
-          }
-          state = (newList, true);
-        }
-      }
-    }
-    ref.read(postPoolProvider).putAll(gottenPosts);
+    final rows =
+        await supabase.rpc('paginated_following_posts', params: params);
+    final list = rows as List<dynamic>? ?? const [];
+    final postList = list
+        .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
+    ref.read(postPoolProvider).putAll(postList);
+
     final newList = [...state.$1];
-    for (final post in gottenPosts) {
+    for (final post in postList) {
       if (_set.add(post.id)) {
         newList.add(post.id);
+        _cursors.add(MapEntry(post.id, post.createdAt));
       }
     }
-    state = (newList, false);
+    state = (newList, postList.length < c.postsOnRefresh);
   }
 
   void insertAtIndex(int index, PostModel post) {
-    if (_feedChunks.isNotEmpty) {
-      if (_set.add(post.id)) {
-        final newList = [...state.$1];
-        newList.insert(index, post.id);
-        state = (newList, state.$2);
-      }
+    if (_set.add(post.id)) {
+      final newList = [...state.$1];
+      newList.insert(index, post.id);
+      _cursors.add(MapEntry(post.id, post.createdAt));
+      state = (newList, state.$2);
     }
   }
 
-  void removePost(String postId) {
+  void removePost(int postId) {
     final newList = [...state.$1];
     final removed = newList.remove(postId);
     if (removed) {
       _set.remove(postId);
+      _cursors.removeWhere((e) => e.key == postId);
       state = (newList, state.$2);
     }
   }
 
   Future<void> refresh() async {
     _set.clear();
-    _feedChunks.clear();
+    _cursors.clear();
     state = ([], false);
     await getter();
   }

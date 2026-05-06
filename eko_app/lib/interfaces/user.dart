@@ -1,20 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/interfaces/notification_helper.dart';
+import 'package:eko_app/utilities/device_uid_service.dart';
+import 'package:eko_app/utilities/notification_type_helper.dart';
 
 Future<bool> isUsernameAvailable(String username) async {
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .where('username', isEqualTo: username)
-      .get();
-
-  if (querySnapshot.docs.isEmpty) {
+  try {
+    return await supabase.rpc(
+      'is_username_available',
+      params: {'p_username': username},
+    );
+  } catch (e) {
+    debugPrint(e.toString());
     return true;
-  } else {
-    return false;
   }
 }
 
@@ -22,111 +23,120 @@ bool isUsernameValid(String username) {
   return username.trim().contains(RegExp(c.userNameReqs));
 }
 
-// I copied this. Didn't change anything
-Future<void> addFCM(String uid) async {
+Future<void> addDeviceNotificationToken(String uid) async {
   if (!kIsWeb) {
-    // TODO: eventually needs to support timestamp
-    final DocumentReference userDocRef =
-        FirebaseFirestore.instance.collection('users').doc(uid);
     try {
-      // Get the current data
-      final DocumentSnapshot userSnapshot = await userDocRef.get();
-      if (userSnapshot.exists) {
-        final String currentDeviceToken =
-            await FirebaseMessaging.instance.getToken() ?? '';
-        // Retrieve the FCM tokens array
-        final data = userSnapshot.data() as Map<String, dynamic>?;
-        if (data != null && data.containsKey('fcmTokens')) {
-          List<String> fcmTokens = List<String>.from(data['fcmTokens'] ?? []);
-
-          // check to see if contained in array
-          if (!fcmTokens.contains(currentDeviceToken)) {
-            fcmTokens.add(currentDeviceToken);
-          }
-          // Update the Firestore document with the modified FCM tokens array
-          await userDocRef.update({'fcmTokens': fcmTokens});
-        } else {
-          List<String> fcmTokens = [currentDeviceToken];
-          await userDocRef.update({'fcmTokens': fcmTokens});
-        }
-        PrefsService.activityNotifications = true;
+      final token = await NotificationHelper.waitForDeviceToken(
+        forBackendSync: true,
+      );
+      if (token == null) {
+        PrefsService.notificationsEnabled = false;
+        PrefsService.deviceNotificationToken = null;
+        return;
       }
+      PrefsService.deviceNotificationToken = token;
+      await _updateNotifications(token: token, isActive: true);
+      PrefsService.notificationsEnabled = true;
     } catch (e) {
-      // TODO: Handle the error as needed
+      debugPrint('addDeviceNotificationToken error: $e');
     }
   }
 }
 
-Future<void> removeFCM(String uid) async {
+Future<void> removeDeviceNotificationToken(String uid) async {
   if (!kIsWeb) {
-    // TODO: eventually needs to support timestamp
-    final DocumentReference userDocRef =
-        FirebaseFirestore.instance.collection('users').doc(uid);
-
     try {
-      // Get the current data
-      final DocumentSnapshot userSnapshot = await userDocRef.get();
-      if (userSnapshot.exists) {
-        // Retrieve the FCM tokens array
-        List<String> fcmTokens = List<String>.from(
-          userSnapshot['fcmTokens'] ?? [],
-        );
-        final String? currentDeviceToken =
-            await FirebaseMessaging.instance.getToken();
-        // Remove the current device's FCM token from the array
-        fcmTokens.remove(currentDeviceToken);
-
-        // Update the Firestore document with the modified FCM tokens array
-        await userDocRef.update({'fcmTokens': fcmTokens});
-        PrefsService.activityNotifications = false;
-      }
+      final token = await NotificationHelper.getDeviceToken();
+      if (token == null) return;
+      await _updateNotifications(token: token, isActive: false);
+      PrefsService.notificationsEnabled = false;
+      PrefsService.deviceNotificationToken = null;
+      PrefsService.deviceNotificationTokenLastCheckedAt = null;
     } catch (e) {
-      // TODO: Handle the error as needed
+      debugPrint('removeDeviceNotificationToken error: $e');
     }
   }
+}
+
+Future<void> refreshDeviceNotificationTokenIfNeeded(String uid) async {
+  if (!kIsWeb) {
+    try {
+      final previousToken = PrefsService.deviceNotificationToken;
+      final updated = await NotificationHelper.refreshDeviceTokenIfNeeded();
+      // catch if the user denies OS "notification enabled" prompt
+      if (!PrefsService.notificationsEnabled && previousToken != null) {
+        await _updateNotifications(token: previousToken, isActive: false);
+        return;
+      }
+      if (!updated) return;
+      final token = PrefsService.deviceNotificationToken;
+      if (token == null) return;
+      await _updateNotifications(token: token, isActive: true);
+    } catch (e) {
+      debugPrint('refreshDeviceNotificationTokenIfNeeded error: $e');
+    }
+  }
+}
+
+Future<void> _updateNotifications({
+  required String token,
+  required bool isActive,
+}) async {
+  final deviceUid = DeviceUidService.getOrCreate();
+  await supabase.rpc('update_notifications', params: {
+    'p_device_id': deviceUid,
+    'p_token': token,
+    'p_active': isActive,
+    'p_device_type': deviceTypeFromPlatform(),
+    'p_notification_type': notificationTypeFromPlatform(),
+  });
 }
 
 Future<String> forgotPassword({
   required String? countryCode,
   required String email,
 }) async {
-  await FirebaseAuth.instance.setLanguageCode(countryCode);
   try {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    return ('success');
-  } on FirebaseAuthException catch (e) {
-    return (e.code);
+    await supabase.auth.resetPasswordForEmail(
+      email,
+      redirectTo: c.forgotPasswordURL,
+    );
+    return 'success';
+  } catch (e) {
+    return 'unknown';
   }
 }
 
 Future<String?> getUidFromUsername(String username) async {
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .where('username', isEqualTo: username)
-      .get();
-  if (querySnapshot.docs.isEmpty) {
-    return null;
-  } else {
-    return querySnapshot.docs.first.id;
-  }
+  final data = await supabase
+      .from('usernames')
+      .select('user_uid')
+      .eq('username', username)
+      .maybeSingle();
+  return data?['user_uid'] as String?;
 }
 
 Future<String> verifyPasswordReset(String code) async {
   try {
-    return await FirebaseAuth.instance.verifyPasswordResetCode(code);
-  } on FirebaseAuthException {
+    final response = await supabase.auth.verifyOTP(
+      type: supabase_flutter.OtpType.recovery,
+      token: code,
+    );
+    return response.user?.email ?? '';
+  } catch (e) {
+    debugPrint('verifyPasswordReset error: $e');
     rethrow;
   }
 }
 
 Future<String> resetPassword(String code, String password) async {
   try {
-    await FirebaseAuth.instance.confirmPasswordReset(
-      code: code,
-      newPassword: password,
+    await supabase.auth.updateUser(
+      supabase_flutter.UserAttributes(password: password),
     );
     return 'success';
-  } on FirebaseAuthException catch (e) {
-    return (e.code);
+  } catch (e) {
+    debugPrint('resetPassword error: $e');
+    return 'unknown';
   }
 }

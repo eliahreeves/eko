@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/posts/count_down_timer.dart';
@@ -21,7 +23,7 @@ import 'package:eko_app/widgets/posts/comment_card.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 
 class ViewPostPage extends ConsumerStatefulWidget {
-  final String id;
+  final int id;
   const ViewPostPage({super.key, required this.id});
 
   @override
@@ -49,6 +51,23 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
 
   void _popDialog() {
     Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  KeyEventResult _handleCommentFieldKey(FocusNode _, KeyEvent event) {
+    final isMobileApp = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS);
+    final isEnter = event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter;
+    if (isMobileApp ||
+        event is! KeyDownEvent ||
+        !isEnter ||
+        HardwareKeyboard.instance.isShiftPressed) {
+      return KeyEventResult.ignored;
+    }
+
+    postCommentPressed();
+    return KeyEventResult.handled;
   }
 
   void reportPressed() {
@@ -128,6 +147,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         context.pop();
       }
     } catch (e) {
+      debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
           context: context,
@@ -165,8 +185,10 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
 
   Future<void> addGifPressed() async {
     String? url = await context.pushNamed('gif');
-    gif = url;
-    postCommentPressed();
+    if (url != null) {
+      gif = url;
+      postCommentPressed();
+    }
   }
 
   Future<void> postCommentPressed() async {
@@ -198,7 +220,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
           FocusManager.instance.primaryFocus?.unfocus();
           comment = CommentModel(
             uid: ref.read(currentUserProvider).user.uid,
-            id: '',
+            id: 0,
             postId: widget.id,
             createdAt: DateTime.now().toUtc().toIso8601String(),
             body: parseTextToTags(body),
@@ -207,7 +229,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
       } else {
         comment = CommentModel(
           uid: ref.read(currentUserProvider).user.uid,
-          id: '',
+          id: 0,
           postId: widget.id,
           createdAt: DateTime.now().toUtc().toIso8601String(),
           gifUrl: gif,
@@ -241,6 +263,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         }
       });
     } catch (e) {
+      debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
           text: AppLocalizations.of(context)!.defaultErrorTittle,
@@ -258,7 +281,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
     commentField.text = '@$username ';
   }
 
-  Widget commentCardBuilder(String id) {
+  Widget commentCardBuilder(int id) {
     return CommentCard(id: id, onReply: (username) => replyPressed(username));
   }
 
@@ -351,7 +374,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                 Expanded(
                   child: Stack(
                     children: [
-                      InfiniteScrollyShell<String>(
+                      InfiniteScrollyShell<int>(
                         isEnd: provider.$2,
                         list: provider.$1,
                         header: PostCard(id: widget.id, isPostPage: true),
@@ -390,36 +413,41 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                     children: [
                       SizedBox(
                         width: width * 0.95,
-                        child: TextField(
-                          textCapitalization: TextCapitalization.sentences,
-                          cursorColor: Theme.of(context).colorScheme.onSurface,
-                          focusNode: commentFieldFocus,
-                          maxLines: null,
-                          controller: commentField,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(height * 0.01),
-                            hintText: AppLocalizations.of(context)!.addComment,
-                            fillColor: Theme.of(
-                              context,
-                            ).colorScheme.outlineVariant,
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () => addGifPressed(),
-                                  icon: const Icon(Icons.gif_box_outlined),
-                                ),
-                                IconButton(
-                                  onPressed: () => postCommentPressed(),
-                                  icon: const Icon(Icons.send),
-                                ),
-                              ],
+                        child: Focus(
+                          onKeyEvent: _handleCommentFieldKey,
+                          child: TextField(
+                            textCapitalization: TextCapitalization.sentences,
+                            cursorColor:
+                                Theme.of(context).colorScheme.onSurface,
+                            focusNode: commentFieldFocus,
+                            maxLines: null,
+                            controller: commentField,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(height * 0.01),
+                              hintText:
+                                  AppLocalizations.of(context)!.addComment,
+                              fillColor: Theme.of(
+                                context,
+                              ).colorScheme.outlineVariant,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () => addGifPressed(),
+                                    icon: const Icon(Icons.gif_box_outlined),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => postCommentPressed(),
+                                    icon: const Icon(Icons.send),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

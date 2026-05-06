@@ -32,6 +32,7 @@
     "wrongPasswordTittle":"Incorrect Password",
     "wrongPasswordBody":"The password you entered is incorrect.",
 
+	"requiredResetPasswordPrompt":"If you have not logged in since May 2026, you need to reset your password.",
 
     "userDisabledTittle":"Account Disabled",
     "userDisabledBody":"Your account has been disabled. Please contact us at conetechnologiesdev@gmail.com.",
@@ -75,14 +76,11 @@
     "exitCreateAccountTitle":"Return to welcome page?",
     "exitCreateAccountBody":"Are you sure you want to go back? Your information will be deleted.",
 
-	"exitCreateGroupTitle":"Return to group page?",
-	"exitCreateGroupBody":"Are you sure you want to go back? Your group information will be deleted.",
-
-
     "exitEditProfileTitle":"Are you sure you want to exit?",
     "exitEditProfileBody":"All changes will be lost.",
     "stay":"Stay",
     "exit":"Exit",
+    "back":"Back",
     "goBack":"Go Back",
     "tryAgain":"Try Again",
     "signUp":"Sign Up",
@@ -92,6 +90,7 @@
 
 
     "passwordLen":"Between 8 and 32 characters.",
+    "passwordMinChars":"8 or more characters",
     "passwordLower":"Contains a lowercase letter",
     "passwordUpper":"Contains a uppercase letter",
     "passwordNumber":"Contains a number",
@@ -126,6 +125,7 @@
     "characters":"Characters",
     "addText":"Add text...",
     "addTitle":"Add title...",
+    "error":"Error",
 
 		"create":"Create",
     "createNewPost":"Create new post",
@@ -173,17 +173,11 @@
     "someone":"Someone",
     "commentText":"commented on your post",
 
-		"crossGroupRepost":"You may not eko chamber posts in public or in another group.",
-
-
-    "groups":"Groups",
     "next":"Next",
     "description":"Description(Optional)",
     "skip":"Skip",
     "done":"Done",
     "public":"Public",
-    "selectAudience":"Select Audience:",
-    "myGroups":"My groups",
     "reply":"Reply",
     "userNotFound":"User Not Found",
     "usernameReqs":"Usernames must be between 3 and 24 characters. Usernames can only contain lowercase letters, numbers, and underscores.",
@@ -216,13 +210,6 @@
     "updateAvailable":"Update Available",
     "update":"Update",
     "postNotFound":"Post Not Found",
-    "groupNotFound":"Group Not Found",
-
-
-    "leaveGroupWarningTitle":"Are you sure you want to leave the group?",
-    "leaveGroupWarningBody":"A group member will need to re-add you should you want to join again.",
-
-
     "share":"Share",
     "copyLink":"Copy Link",
     "copied":"Copied",
@@ -237,9 +224,6 @@
     "logIntoApp":"Login required",
     "logInRequired":"Please log in to access all features of Eko.",
    
-    "notInGroup":"You are no longer a member of this group.",
-
-
     "send":"Send",
     "reportDetails":"Please provide information on why you are reporting this post.",
     "commentRequired":"Comment Required",

@@ -6,9 +6,7 @@ import 'package:eko_app/widgets/posts/gif_widget.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:eko_app/widgets/posts/poll_widget.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
-import 'package:eko_app/providers/group_provider.dart';
 import 'package:eko_app/providers/post_provider.dart';
-import 'package:eko_app/providers/restricted_user_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/widgets/common/divider.dart';
@@ -28,92 +26,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
-Widget profilePostCardBuilder(String id) {
-  return PostCard(id: id, isOnProfile: true, showGroup: true);
-}
-
-Widget otherProfilePostCardBuilder(String id) {
+Widget profilePostCardBuilder(int id) {
   return PostCard(id: id, isOnProfile: true);
 }
 
-Widget postCardBuilder(String id) {
+Widget otherProfilePostCardBuilder(int id) {
+  return PostCard(id: id, isOnProfile: true);
+}
+
+Widget postCardBuilder(int id) {
   return PostCard(id: id);
 }
 
-class GroupBadge extends ConsumerWidget {
-  final String groupId;
-  const GroupBadge({super.key, required this.groupId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final width = c.widthGetter(context);
-    final asyncGroup = ref.watch(groupProvider(groupId));
-    return Padding(
-      padding: EdgeInsets.only(left: width * 0.115 + 20),
-      child: InkWell(
-        onTap: () {
-          final group = asyncGroup.valueOrNull;
-          if (group == null) {
-            return;
-          }
-          if (group.members.contains(ref.watch(currentUserProvider).user.uid)) {
-            context.push('/groups/sub_group/${group.id}', extra: group);
-          } else {
-            showSnackBar(
-              text: AppLocalizations.of(context)!.notInGroup,
-              context: context,
-            );
-          }
-        },
-        child: Container(
-          padding: const EdgeInsets.only(left: 6, right: 6),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.group,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-              const SizedBox(width: 2),
-              asyncGroup.when(
-                data: (group) => Text(
-                  group.name,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                error: (_, __) => Text(
-                  'Error',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                loading: () => Text(
-                  'loading...',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class PostCard extends ConsumerStatefulWidget {
-  final String id;
+  final int id;
   final bool isPreview;
   final bool isPostPage;
   final bool isBuiltFromId;
   final bool isOnProfile;
-  final bool showGroup;
   final bool visible;
 
   const PostCard({
@@ -123,7 +53,6 @@ class PostCard extends ConsumerStatefulWidget {
     this.isPostPage = false,
     this.isBuiltFromId = false,
     this.isOnProfile = false,
-    this.showGroup = false,
     this.visible = true,
   });
 
@@ -179,11 +108,11 @@ class _PostCardState extends ConsumerState<PostCard> {
     context.go('/');
   }
 
-  void sharePressed(String id) async {
+  void sharePressed(int id) async {
     if (kIsWeb) {
       Clipboard.setData(
         ClipboardData(
-          text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id',
+          text: 'Check out my post on eko: ${c.appURL}/feed/post/$id',
         ),
       );
       showSnackBar(
@@ -195,7 +124,7 @@ class _PostCardState extends ConsumerState<PostCard> {
         sharing = true;
         await SharePlus.instance.share(
           ShareParams(
-            text: 'Check out my post on Eko: ${c.appURL}/feed/post/$id',
+            text: 'Check out my post on eko: ${c.appURL}/feed/post/$id',
           ),
         );
         sharing = false;
@@ -209,48 +138,26 @@ class _PostCardState extends ConsumerState<PostCard> {
       return SizedBox.shrink();
     }
     final asyncPost = ref.watch(postProvider(widget.id));
-    final asyncRestrictedUsers = ref.watch(restrictedUserProvider);
-
-    return asyncRestrictedUsers.when(
-      data: (restrictedUsers) {
-        return asyncPost.when(
-          data: (post) {
-            final currentUser = ref.watch(currentUserProvider);
-            if (currentUser.blockedUsers.contains(post.uid) ||
-                currentUser.blockedBy.contains(post.uid)) {
-              return SizedBox.shrink();
-            }
-
-            // if (!(currentUser.user.following.contains(post.uid)) &&
-            //     !(currentUser.user.uid != post.uid) &&
-            //     restrictedUsers.contains(post.uid)) {
-            //   return SizedBox.shrink();
-            // }
-            final isMe = post.uid == currentUser.user.uid;
-            final isFollowing = currentUser.user.following.contains(post.uid);
-            final isRestricted = restrictedUsers.contains(post.uid);
-            if (isRestricted && !isMe && !isFollowing) {
-              return SizedBox.shrink();
-            }
-            return PostCardFromPost(
-              isOnProfile: widget.isOnProfile,
-              sharePressed: sharePressed,
-              isPreview: widget.isPreview,
-              isPostPage: widget.isPostPage,
-              isLoggedIn: isLoggedIn(),
-              showGroup: widget.showGroup,
-              post: post,
-            );
-          },
-          error: (object, stack) {
-            return _Error();
-          },
-          loading: () {
-            return _Loading();
-          },
+    return asyncPost.when(
+      data: (post) {
+        final currentUser = ref.watch(currentUserProvider);
+        if (currentUser.blockedUsers.contains(post.uid) ||
+            currentUser.blockedBy.contains(post.uid)) {
+          return SizedBox.shrink();
+        }
+        return PostCardFromPost(
+          isOnProfile: widget.isOnProfile,
+          sharePressed: sharePressed,
+          isPreview: widget.isPreview,
+          isPostPage: widget.isPostPage,
+          isLoggedIn: isLoggedIn(),
+          post: post,
         );
       },
       error: (object, stack) {
+        if (widget.isOnProfile) {
+          return const SizedBox.shrink();
+        }
         return _Error();
       },
       loading: () {
@@ -266,8 +173,7 @@ class PostCardFromPost extends ConsumerWidget {
   final bool isLoggedIn;
   final bool isPostPage;
   final bool isOnProfile;
-  final bool showGroup;
-  final void Function(String)? sharePressed;
+  final void Function(int)? sharePressed;
 
   const PostCardFromPost({
     this.isOnProfile = false,
@@ -275,7 +181,6 @@ class PostCardFromPost extends ConsumerWidget {
     this.isPreview = false,
     this.isPostPage = false,
     this.isLoggedIn = true,
-    this.showGroup = false,
     super.key,
     required this.post,
   });
@@ -294,8 +199,6 @@ class PostCardFromPost extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (showGroup && post.tags.first != 'public')
-              GroupBadge(groupId: post.tags.first),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: c.postPaddingHoriz,
@@ -396,7 +299,7 @@ class PostCardFromPost extends ConsumerWidget {
                             ),
                             child: ImageWidget(ascii: post.imageString!),
                           ),
-                        if (post.pollOptions != null)
+                        if (post.poll != null)
                           Padding(
                             padding: EdgeInsets.only(bottom: 6),
                             child: PollWidget(post: post, isPreview: isPreview),
@@ -459,15 +362,11 @@ class PostCardFromPost extends ConsumerWidget {
                           onTap: () {
                             if (isLoggedIn && !isPreview) {
                               final Map<String, dynamic> queryParameters = {
-                                'repostId': post.id,
+                                'repostId': post.id.toString(),
                               };
                               queryParameters['timestamp'] = DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString();
-                              if (post.tags.isNotEmpty &&
-                                  post.tags.first != 'public') {
-                                queryParameters['id'] = post.tags.first;
-                              }
                               context.goNamed(
                                 'compose',
                                 queryParameters: queryParameters,

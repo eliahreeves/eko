@@ -1,17 +1,19 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/user.dart';
+import 'package:eko_app/utilities/supabase_ref.dart';
+
 // Necessary for code-generation to work
 part '../generated/providers/user_provider.g.dart';
 
 @riverpod
 class User extends _$User {
   Timer? _disposeTimer;
+  bool _isFollowAction = false;
   @override
   FutureOr<UserModel> build(String uid) {
     // *** This block is for lifecycle management *** //
@@ -34,8 +36,9 @@ class User extends _$User {
     // ********************************************* //
 
     if (ref.watch(authProvider).uid == uid) {
-      return UserModel.fromCurrent(ref.watch(currentUserProvider)!);
+      return ref.watch(currentUserProvider).user;
     }
+
     final cacheValue = ref.read(userPoolProvider).getItem(uid);
     if (cacheValue != null) {
       return cacheValue;
@@ -44,14 +47,51 @@ class User extends _$User {
   }
 
   Future<UserModel> _fetchUserModel(String uid) async {
-    final userRef = FirebaseFirestore.instance.collection('users');
-    final data = await userRef.doc(uid).get();
-    return UserModel.fromJson(data.data());
+    try {
+      final response =
+          await supabase.rpc('get_user_by_id', params: {'p_uid': uid});
+      if (response is! List || response.isEmpty) {
+        return UserModel.userNotFound();
+      }
+      final row = response.first;
+      if (row is! Map) return UserModel.userNotFound();
+      return UserModel.fromJson(Map<String, dynamic>.from(row));
+    } catch (_) {
+      return UserModel.userNotFound();
+    }
   }
 
   void updateFollowers(List<String> newFollowers) {
     state.whenData((user) {
       state = AsyncData(user.copyWith(followers: newFollowers));
     });
+  }
+
+  Future<void> toggleFollow() async {
+    (await future).isFollowing ? await unfollow() : await follow();
+  }
+
+  Future<void> follow() async {
+    await _followInner(true);
+  }
+
+  Future<void> unfollow() async {
+    await _followInner(false);
+  }
+
+  Future<void> _followInner(bool isFollow) async {
+    final user = state.valueOrNull;
+    if (user == null || _isFollowAction) {
+      return;
+    }
+    _isFollowAction = true;
+    try {
+      state = AsyncData(user.copyWith(isFollowing: isFollow));
+      await supabase.rpc('change_follow_state',
+          params: {'p_uid': user.uid, 'p_is_follow': isFollow});
+    } catch (e) {
+      state = AsyncData(user);
+    }
+    _isFollowAction = false;
   }
 }

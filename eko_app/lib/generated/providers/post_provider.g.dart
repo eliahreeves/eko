@@ -6,7 +6,7 @@ part of '../../providers/post_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postHash() => r'0a28c075ef8a80233d7162264ef9456606ee7c17';
+String _$postHash() => r'42aff2c75e04a57a3369a4d1045365f53871670b';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,10 +30,10 @@ class _SystemHash {
 }
 
 abstract class _$Post extends BuildlessAutoDisposeAsyncNotifier<PostModel> {
-  late final String id;
+  late final int id;
 
   FutureOr<PostModel> build(
-    String id,
+    int id,
   );
 }
 
@@ -48,7 +48,7 @@ class PostFamily extends Family<AsyncValue<PostModel>> {
 
   /// See also [Post].
   PostProvider call(
-    String id,
+    int id,
   ) {
     return PostProvider(
       id,
@@ -84,7 +84,7 @@ class PostProvider
     extends AutoDisposeAsyncNotifierProviderImpl<Post, PostModel> {
   /// See also [Post].
   PostProvider(
-    String id,
+    int id,
   ) : this._internal(
           () => Post()..id = id,
           from: postProvider,
@@ -106,7 +106,7 @@ class PostProvider
     required this.id,
   }) : super.internal();
 
-  final String id;
+  final int id;
 
   @override
   FutureOr<PostModel> runNotifierBuild(
@@ -156,7 +156,7 @@ class PostProvider
 // ignore: unused_element
 mixin PostRef on AutoDisposeAsyncNotifierProviderRef<PostModel> {
   /// The parameter `id` of this provider.
-  String get id;
+  int get id;
 }
 
 class _PostProviderElement
@@ -165,7 +165,7 @@ class _PostProviderElement
   _PostProviderElement(super.provider);
 
   @override
-  String get id => (origin as PostProvider).id;
+  int get id => (origin as PostProvider).id;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

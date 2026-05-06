@@ -1,14 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/theme_provider.dart';
 import 'package:eko_app/providers/post_preview_provider.dart';
+import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:go_router/go_router.dart';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,21 +24,23 @@ class UserSettings extends ConsumerStatefulWidget {
 class _UserSettingsState extends ConsumerState<UserSettings> {
   late bool activityNotification;
 
-  void toggleActivityNotification(bool value) {
-    PrefsService.activityNotifications = value;
+  Future<void> toggleActivityNotification(bool value) async {
+    PrefsService.notificationsEnabled = value;
     setState(() {
       activityNotification = value;
     });
     if (value) {
-      addFCM(ref.read(currentUserProvider).user.uid);
+      await NotificationHelper.setupNotifications();
+      await addDeviceNotificationToken(ref.read(currentUserProvider).user.uid);
     } else {
-      removeFCM(ref.read(currentUserProvider).user.uid);
+      await removeDeviceNotificationToken(
+          ref.read(currentUserProvider).user.uid);
     }
   }
 
   @override
   void initState() {
-    activityNotification = PrefsService.activityNotifications;
+    activityNotification = PrefsService.notificationsEnabled;
     super.initState();
   }
 
@@ -82,16 +85,6 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
           SwitchListTile(
-            title: Text(AppLocalizations.of(context)!.shareOnlineStatus),
-            value: ref.watch(currentUserProvider).user.shareOnlineStatus,
-            onChanged: (value) {
-              ref
-                  .read(currentUserProvider.notifier)
-                  .toggleShareOnlineStatus(value);
-            },
-            activeThumbColor: Theme.of(context).colorScheme.primary,
-          ),
-          SwitchListTile(
             title: Text(AppLocalizations.of(context)!.showPostPreview),
             value: ref.watch(postPreviewProvider),
             onChanged: (value) {
@@ -106,7 +99,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
                       context.pop();
                       ref.read(postPreviewProvider.notifier).toggle();
                       ref.read(postPreviewProvider.notifier).markInfoShown();
-                    }
+                    },
                   ],
                   context,
                 );
@@ -120,11 +113,17 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             title: Text(AppLocalizations.of(context)!.blockedAccounts),
             leading: const Icon(Icons.no_accounts_outlined),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => context.pushNamed('blocked_users'),
+            onTap: () => context.pushNamed(
+              'blocked_users',
+              pathParameters: {
+                'username': ref.read(currentUserProvider).user.username,
+              },
+            ),
           ),
           TextButton(
             onPressed: () async {
               await ref.read(currentUserProvider.notifier).signOut();
+              if (!mounted) return;
               ref.read(navBarProvider.notifier).enable();
             },
             child: Text(
@@ -145,14 +144,8 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
                   context.pop,
                   () async {
                     context.pop();
-                    try {
-                      await FirebaseAuth.instance.currentUser?.delete();
-                      ref.read(navBarProvider.notifier).enable();
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'requires-recent-login') {
-                        if (context.mounted) context.pushNamed('re_auth');
-                      }
-                    }
+                    await ref.read(authProvider.notifier).deleteAccount();
+                    ref.read(navBarProvider.notifier).enable();
                   },
                 ],
                 context,

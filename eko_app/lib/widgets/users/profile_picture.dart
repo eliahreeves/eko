@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/loading/profile_picture_loading.dart';
 import 'package:eko_app/providers/user_provider.dart';
-import 'package:eko_app/widgets/users/online_indicator.dart';
 
 class ProfilePicture extends ConsumerWidget {
   final String uid;
@@ -38,7 +37,7 @@ class ProfilePicture extends ConsumerWidget {
                 child: asyncUser.when(
                   data: (user) {
                     return CachedNetworkImage(
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
                       imageUrl: user.profilePicture,
                       placeholder: (context, url) =>
                           const LoadingProfileImage(),
@@ -52,7 +51,6 @@ class ProfilePicture extends ConsumerWidget {
                   loading: () => LoadingProfileImage(),
                 ),
               ),
-              if (onlineIndicatorEnabled) OnlineIndicator(uid: uid),
             ],
           ),
         ),
@@ -82,7 +80,7 @@ class ProfilePictureFromFile extends StatelessWidget {
         child: SizedBox(
           width: size,
           height: size,
-          child: ClipOval(child: Image.file(file, fit: BoxFit.fill)),
+          child: ClipOval(child: Image.file(file, fit: BoxFit.cover)),
         ),
       ),
     );

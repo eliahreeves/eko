@@ -1,111 +1,77 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/comment.dart';
-import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/post.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/utilities/supabase_ref.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<List<PostModel>> getPosts(Query<Map<String, dynamic>> query) async {
-  final postList = await Future.wait(
-    await query.get().then(
-          (data) => data.docs.map((doc) async {
-            return await PostModel.fromFireStoreDoc(doc);
-          }),
-        ),
-  );
-  return postList;
-}
-
-Future<(List<MapEntry<String, String>>, bool)> profilePageGetter(
-  List<MapEntry<String, String>> list,
+Future<(List<MapEntry<int, String>>, bool)> profilePageGetter(
+  List<MapEntry<int, String>> list,
   WidgetRef ref,
 ) async {
   final uid = ref.read(currentUserProvider).user.uid;
-  final baseQuery = FirebaseFirestore.instance
-      .collection('posts')
-      .where('author', isEqualTo: uid)
-      .orderBy('time', descending: true)
-      .limit(c.postsOnRefresh);
-  final query =
-      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
-
-  final postList = await getPosts(query);
+  final params = <String, dynamic>{
+    'p_limit': c.postsOnRefresh,
+    'p_user_uid': uid,
+  };
+  if (list.isNotEmpty) {
+    params['p_last_time'] = list.last.value;
+    params['p_last_id'] = list.last.key;
+  }
+  final rows = await supabase.rpc('paginated_user_posts', params: params);
+  final rowList = rows as List<dynamic>? ?? const [];
+  final postList = rowList
+      .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
+      .toList();
   ref.read(postPoolProvider).putAll(postList);
   final retList =
       postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
-Future<(List<MapEntry<String, String>>, bool)> otherProfilePageGetter(
-  List<MapEntry<String, String>> list,
+Future<(List<MapEntry<int, String>>, bool)> otherProfilePageGetter(
+  List<MapEntry<int, String>> list,
   WidgetRef ref,
   String uid,
 ) async {
-  final baseQuery = FirebaseFirestore.instance
-      .collection('posts')
-      .where('tags', arrayContains: 'public')
-      .where('author', isEqualTo: uid)
-      .orderBy('time', descending: true)
-      .limit(c.postsOnRefresh);
-  final query =
-      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
-  final postList = await getPosts(query);
-  ref.read(postPoolProvider).putAll(postList);
-  final retList =
-      postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
-  return (retList, retList.length < c.postsOnRefresh);
-}
-
-Future<(List<MapEntry<String, (int, String)>>, bool)> popGetter(
-  List<MapEntry<String, (int, String)>> list,
-  WidgetRef ref,
-) async {
-  final baseQuery = FirebaseFirestore.instance
-      .collection('posts')
-      .where('tags', arrayContains: 'public')
-      .orderBy('likes', descending: true)
-      .orderBy('time')
-      .limit(c.postsOnRefresh);
-  final query = list.isEmpty
-      ? baseQuery
-      : baseQuery.startAfter([list.last.value.$1, list.last.value.$2]);
-  final postList = await getPosts(query);
-  ref.read(postPoolProvider).putAll(postList);
-  final retList = postList
-      .map((item) => MapEntry(item.id, (item.likes, item.createdAt)))
+  final params = <String, dynamic>{
+    'p_limit': c.postsOnRefresh,
+    'p_user_uid': uid,
+  };
+  if (list.isNotEmpty) {
+    params['p_last_time'] = list.last.value;
+    params['p_last_id'] = list.last.key;
+  }
+  final rows = await supabase.rpc('paginated_user_posts', params: params);
+  final rowList = rows as List<dynamic>? ?? const [];
+  final postList = rowList
+      .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
+      .where((p) => p.tags.contains('public'))
       .toList();
-  return (retList, retList.length < c.postsOnRefresh);
-}
-
-Future<(List<MapEntry<String, String>>, bool)> getGroupPosts(
-  List<MapEntry<String, String>> list,
-  WidgetRef ref,
-  String groupId,
-) async {
-  final baseQuery = FirebaseFirestore.instance
-      .collection('posts')
-      .where('tags', arrayContains: groupId)
-      .orderBy('time', descending: true)
-      .limit(c.postsOnRefresh);
-  final query =
-      list.isEmpty ? baseQuery : baseQuery.startAfter([list.last.value]);
-  final postList = await getPosts(query);
   ref.read(postPoolProvider).putAll(postList);
   final retList =
       postList.map((item) => MapEntry(item.id, item.createdAt)).toList();
   return (retList, retList.length < c.postsOnRefresh);
 }
 
-Future<List<CommentModel>> getComments(
-  Query<Map<String, dynamic>> query,
-) async {
-  final commentList = await Future.wait(
-    await query.get().then(
-          (data) => data.docs.map((doc) async {
-            return await CommentModel.fromFireStoreDoc(doc);
-          }),
-        ),
-  );
-  return commentList;
+Future<List<CommentModel>> getCommentsForPost(
+  int postId, {
+  String? lastTime,
+  int? lastId,
+}) async {
+  final params = <String, dynamic>{
+    'p_limit': c.postsOnRefresh,
+    'p_parent_post_id': postId,
+  };
+  if (lastTime != null && lastId != null) {
+    params['p_last_time'] = lastTime;
+    params['p_last_id'] = lastId;
+  }
+  final rows = await supabase.rpc('paginated_comments', params: params);
+  final list = rows as List<dynamic>? ?? const [];
+  return list
+      .map(
+          (row) => CommentModel.fromJson(Map<String, dynamic>.from(row as Map)))
+      .toList();
 }

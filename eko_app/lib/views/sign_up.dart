@@ -20,6 +20,8 @@ import 'package:eko_app/widgets/common/download_button.dart';
 import 'package:eko_app/widgets/auth/auth_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
+import 'package:eko_app/views/verify_email_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void _showWeakPassword(BuildContext context) {
   showSnackBar(
@@ -56,6 +58,7 @@ class _SignUpState extends ConsumerState<SignUp> {
   final FocusNode confirmPasswordFocus = FocusNode();
 
   int index = 0;
+  bool isGoogleLoading = false;
 
   @override
   void dispose() {
@@ -82,8 +85,6 @@ class _SignUpState extends ConsumerState<SignUp> {
   bool _handleError(String errorCode) {
     final l10n = AppLocalizations.of(context)!;
     switch (errorCode) {
-      case 'success':
-        return true;
       case 'username-taken':
         showSnackBar(
           text: l10n.usernameTakenBody,
@@ -132,27 +133,59 @@ class _SignUpState extends ConsumerState<SignUp> {
   }
 
   Future<bool> signUp() async {
-    //make sure this is true since user could be coming from settings
     ref.read(navBarProvider.notifier).enable();
     if (await isUsernameAvailable(usernameController.text.trim())) {
-      if (_handleError(
-        await ref.read(authProvider.notifier).signUp(
-              email: emailController.text.trim(),
-              password: passwordController.text,
-              username: usernameController.text.trim(),
-              name: nameController.text,
-              birthday:
-                  '${monthController.text}/${dayController.text}/${yearController.text}',
-            ),
-      )) {
-        if (!mounted) return true;
-        context.go('/feed');
+      final outcome = await ref.read(authProvider.notifier).signUp(
+            email: emailController.text.trim(),
+            password: passwordController.text,
+            username: usernameController.text.trim(),
+            name: nameController.text,
+            birthday:
+                '${monthController.text}/${dayController.text}/${yearController.text}',
+          );
+      if (!outcome.isSuccess) {
+        return _handleError(outcome.errorCode!);
+      }
+      if (!mounted) return true;
+      if (outcome.needsEmailVerification) {
+        setState(() => index = 2);
         return true;
       }
+      context.go('/feed');
+      return true;
     } else {
       _handleError('username-taken');
     }
     return false;
+  }
+
+  Future<void> signInWithGoogle() async {
+    setState(() => isGoogleLoading = true);
+    try {
+      await ref.read(authProvider.notifier).signInWithGoogle();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showSnackBar(
+        text: '${AppLocalizations.of(context)!.error}: ${e.message}',
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } catch (e, st) {
+      debugPrint('Google SignIn Error: $e\n$st');
+      if (!mounted) return;
+      if (ref.read(authProvider).uid != null) return;
+      // url_launcher throws a PlatformException on iOS if the Safari View Controller is closed
+      if (e.toString().contains('PlatformException')) return;
+      showSnackBar(
+        text: AppLocalizations.of(context)!.defaultErrorTittle,
+        context: context,
+        variant: SnackBarVariant.destructive,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => isGoogleLoading = false);
+      }
+    }
   }
 
   @override
@@ -162,10 +195,10 @@ class _SignUpState extends ConsumerState<SignUp> {
       child: Scaffold(
         appBar: AuthAppBar(
           onBack: () {
-            if (index == 1) {
-              setState(() {
-                index = 0;
-              });
+            if (index == 2) {
+              context.go('/');
+            } else if (index == 1) {
+              setState(() => index = 0);
             } else {
               context.go('/');
             }
@@ -179,6 +212,8 @@ class _SignUpState extends ConsumerState<SignUp> {
               index: index,
               children: <Widget>[
                 SignupInfo(
+                  isGoogleLoading: isGoogleLoading,
+                  onGoogleSignIn: signInWithGoogle,
                   setPage: (target) => setState(() {
                     index = target;
                   }),
@@ -197,6 +232,8 @@ class _SignUpState extends ConsumerState<SignUp> {
                   emailFocus: emailFocus,
                 ),
                 GetPassword(
+                  isGoogleLoading: isGoogleLoading,
+                  onGoogleSignIn: signInWithGoogle,
                   setPage: (target) => setState(() {
                     index = target;
                   }),
@@ -205,6 +242,10 @@ class _SignUpState extends ConsumerState<SignUp> {
                   passwordFocus: passwordFocus,
                   confirmPasswordFocus: confirmPasswordFocus,
                   signUp: signUp,
+                ),
+                VerifyEmailView(
+                  email: emailController.text.trim(),
+                  passwordController: passwordController,
                 ),
               ],
             ),
@@ -231,6 +272,8 @@ class SignupInfo extends StatefulWidget {
   final TextEditingController emailController;
   final FocusNode keyFocus;
   final void Function(int) setPage;
+  final Future<void> Function() onGoogleSignIn;
+  final bool isGoogleLoading;
 
   const SignupInfo({
     super.key,
@@ -248,6 +291,8 @@ class SignupInfo extends StatefulWidget {
     required this.dayController,
     required this.keyFocus,
     required this.yearController,
+    required this.onGoogleSignIn,
+    required this.isGoogleLoading,
   });
 
   @override
@@ -526,7 +571,10 @@ class _SignupInfoState extends State<SignupInfo> {
           const SizedBox(height: c.authSectionSpacing),
           const AuthDivider(indent: 20, endIndent: 20),
           const SizedBox(height: c.authElementSpacing),
-          const GoogleSignInButton(),
+          GoogleSignInButton(
+            onPressed: widget.onGoogleSignIn,
+            isLoading: widget.isGoogleLoading,
+          ),
         ],
       ),
     );
@@ -540,6 +588,8 @@ class GetPassword extends StatefulWidget {
   final FocusNode passwordFocus;
   final FocusNode confirmPasswordFocus;
   final Future<bool> Function() signUp;
+  final Future<void> Function() onGoogleSignIn;
+  final bool isGoogleLoading;
   const GetPassword({
     super.key,
     required this.setPage,
@@ -548,6 +598,8 @@ class GetPassword extends StatefulWidget {
     required this.passwordFocus,
     required this.signUp,
     required this.confirmPasswordFocus,
+    required this.onGoogleSignIn,
+    required this.isGoogleLoading,
   });
 
   @override
@@ -556,6 +608,7 @@ class GetPassword extends StatefulWidget {
 
 class _GetPasswordState extends State<GetPassword> {
   bool isLoading = false;
+  bool requirePasswordMatch = true;
   @override
   Widget build(BuildContext context) {
     final width = c.widthGetter(context);
@@ -587,6 +640,9 @@ class _GetPasswordState extends State<GetPassword> {
               confirmPasswordController: widget.confirmPasswordController,
               passwordFocus: widget.passwordFocus,
               confirmPasswordFocus: widget.confirmPasswordFocus,
+              onRequirePasswordMatchChanged: (requireMatch) {
+                requirePasswordMatch = requireMatch;
+              },
             ),
             SizedBox(height: height * 0.06),
             AuthButton.primary(
@@ -595,16 +651,19 @@ class _GetPasswordState extends State<GetPassword> {
               onPressed: isLoading
                   ? null
                   : () async {
-                      if (!isValidPassword(
+                      if (!isValidSimplePassword(
                         widget.passwordController.text,
                         widget.confirmPasswordController.text,
+                        requireMatch: requirePasswordMatch,
                       )) {
                         _showWeakPassword(context);
                         return;
                       }
                       setState(() => isLoading = true);
-                      if (!(await widget.signUp())) {
-                        setState(() => isLoading = false);
+                      try {
+                        await widget.signUp();
+                      } finally {
+                        if (mounted) setState(() => isLoading = false);
                       }
                     },
             ),
@@ -636,7 +695,10 @@ class _GetPasswordState extends State<GetPassword> {
             const SizedBox(height: c.authSectionSpacing),
             const AuthDivider(indent: 20, endIndent: 20),
             const SizedBox(height: c.authElementSpacing),
-            const GoogleSignInButton(),
+            GoogleSignInButton(
+              onPressed: widget.onGoogleSignIn,
+              isLoading: widget.isGoogleLoading,
+            ),
           ],
         ),
       ),

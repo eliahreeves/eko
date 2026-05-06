@@ -6,19 +6,19 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/scaffolds/app_safe_area.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/providers/auth_provider.dart';
-import 'package:eko_app/types/user.dart';
+import 'package:eko_app/providers/current_user_provider.dart';
+import 'package:eko_app/providers/pending_deep_link_provider.dart';
 import 'package:eko_app/views/blocked_users_page.dart';
 import 'package:eko_app/views/download_page.dart';
-import 'package:eko_app/views/edit_group_page.dart';
 import 'package:eko_app/views/camera_page.dart';
 import 'package:eko_app/views/edit_picture.dart';
-import 'package:eko_app/views/group_add_people.dart';
 import 'package:eko_app/views/login.dart';
 import 'package:eko_app/views/share_profile_page.dart';
 import 'package:eko_app/views/sign_up.dart';
 import 'package:eko_app/views/user_settings.dart';
 import 'package:eko_app/views/compose_page.dart';
 import 'package:eko_app/views/feed_page.dart';
+import 'package:eko_app/views/messages_page.dart';
 import 'package:eko_app/views/search_page.dart';
 import 'package:eko_app/views/edit_profile.dart';
 import 'package:eko_app/widgets/scaffolds/navigation_bar.dart';
@@ -26,35 +26,28 @@ import 'package:eko_app/views/other_profile.dart';
 import 'package:eko_app/views/view_post_page.dart';
 import 'package:eko_app/views/profile_picture_detail.dart';
 import 'package:eko_app/views/welcome.dart';
+import 'package:eko_app/views/google_setup_page.dart';
 import 'package:eko_app/views/followers.dart';
 import 'package:eko_app/views/following.dart';
 import 'package:eko_app/views/recent_activity.dart';
-import 'package:eko_app/views/groups_page.dart';
-import 'package:eko_app/views/create_group_page.dart';
-import 'package:eko_app/widgets/common/emoji_selector.dart';
-import 'package:eko_app/views/sub_group_page.dart';
-import 'package:eko_app/views/auth_action_interface.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:eko_app/views/view_likes_page.dart';
 import 'package:eko_app/widgets/posts/gifs.dart';
 import 'package:eko_app/widgets/scaffolds/require_auth.dart';
 import 'package:eko_app/widgets/scaffolds/require_no_auth.dart';
 import 'package:eko_app/views/profile_redirect_page.dart';
-import 'package:eko_app/views/re_auth_page.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorFeedKey = GlobalKey<NavigatorState>(debugLabel: 'Feed');
-final _shellNavigatorSearchKey = GlobalKey<NavigatorState>(
-  debugLabel: 'Search',
+final _shellNavigatorMessagesKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Messages',
 );
 final _shellNavigatorComposeKey = GlobalKey<NavigatorState>(
   debugLabel: 'Compose',
 );
+final _shellNavigatorSearchKey = GlobalKey<NavigatorState>(
+  debugLabel: 'Search',
+);
 final _shellNavigatorProfileKey = GlobalKey<NavigatorState>(
   debugLabel: 'Profile',
-);
-final _shellNavigatorGroupsKey = GlobalKey<NavigatorState>(
-  debugLabel: 'Groups',
 );
 
 class GoRouterRefreshNotifier extends ChangeNotifier {
@@ -64,33 +57,58 @@ class GoRouterRefreshNotifier extends ChangeNotifier {
 final goRouterProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = GoRouterRefreshNotifier();
   ref.listen(authProvider, (_, __) => refreshNotifier.refresh());
+  // needsProfileSetup is set async in currentUserProvider.reload(); without this,
+  // GoRouter never re-runs redirect and /feed stays on RequireAuth's spinner forever.
+  ref.listen(needsProfileSetupProvider, (_, __) => refreshNotifier.refresh());
   return GoRouter(
-    observers: [
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-    ],
     initialLocation: '/feed',
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: NotificationHelper.navigatorKey,
     refreshListenable: refreshNotifier,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     redirectLimit: 15,
     redirect: (context, state) {
       final auth = ref.read(authProvider);
       final loc = state.matchedLocation;
       if (auth.isLoading) return null;
+
+      if (auth.pendingPasswordRecovery && loc != '/auth') {
+        return '/auth?type=recovery';
+      }
+
+      final needsSetup = ref.read(needsProfileSetupProvider);
+      if (auth.uid != null && needsSetup && loc != '/google_setup') {
+        return '/google_setup';
+      }
+
+      const unauthenticatedRoutes = [
+        '/',
+        '/signup',
+        '/login',
+        '/auth',
+        '/download',
+        '/google_setup',
+      ];
+
       if (auth.uid == null) {
-        if (loc == '/' ||
-            loc == '/signup' ||
-            loc == '/login' ||
-            loc == '/auth' ||
-            loc == '/download') {
-          return null;
-        }
+        if (unauthenticatedRoutes.contains(loc)) return null;
+        ref.read(pendingDeepLinkProvider.notifier).set(state.uri.toString());
         return '/';
       }
-      if (loc == '/' || loc == '/signup' || loc == '/login') return '/feed';
+
+      if (unauthenticatedRoutes.sublist(0, 3).contains(loc)) {
+        final pending = ref.read(pendingDeepLinkProvider.notifier).consume();
+        return pending ?? '/feed';
+      }
+
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/google_setup',
+        name: 'google_setup',
+        builder: (context, state) =>
+            const AppSafeArea(child: GoogleSetupPage()),
+      ),
       GoRoute(
         path: '/profile_picture_detail/:id',
         name: 'profile_picture_detail',
@@ -110,14 +128,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             name: 'signup',
             builder: (context, state) {
               return const RequireNoAuth(child: AppSafeArea(child: SignUp()));
-            },
-          ),
-          GoRoute(
-            path: 'auth',
-            name: 'auth',
-            builder: (context, state) {
-              final url = state.uri.queryParameters;
-              return AppSafeArea(child: AuthActionInterface(urlData: url));
             },
           ),
           GoRoute(
@@ -177,14 +187,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'post/:id',
                     name: 'post',
-                    builder: (context, state) =>
-                        ViewPostPage(id: state.pathParameters['id']!),
+                    builder: (context, state) {
+                      final id = int.tryParse(state.pathParameters['id'] ?? '');
+                      if (id == null) {
+                        return const FeedPage();
+                      }
+                      return ViewPostPage(id: id);
+                    },
                     routes: [
                       GoRoute(
                         path: 'likes',
                         name: 'likes',
                         builder: (context, state) {
-                          String postId = state.extra as String;
+                          int postId = state.extra as int;
                           return ViewLikesPage(postId: postId);
                         },
                       ),
@@ -192,7 +207,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         path: 'dislikes',
                         name: 'dislikes',
                         builder: (context, state) {
-                          String postId = state.extra as String;
+                          int postId = state.extra as int;
                           return ViewLikesPage(postId: postId, dislikes: true);
                         },
                       ),
@@ -203,61 +218,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
           StatefulShellBranch(
-            navigatorKey: _shellNavigatorGroupsKey,
+            navigatorKey: _shellNavigatorMessagesKey,
             routes: [
               GoRoute(
-                path: '/groups',
-                name: 'groups',
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(child: GroupsPage());
-                },
-                routes: [
-                  GoRoute(
-                    path: 'sub_group/:id',
-                    name: 'sub_group',
-                    builder: (context, state) {
-                      String id = state.pathParameters['id']!;
-                      return SubGroupPage(id: id);
-                    },
-                    routes: [
-                      GoRoute(
-                        path: 'edit_group',
-                        name: 'edit_group',
-                        pageBuilder: (context, state) {
-                          String id = state.pathParameters['id']!;
-                          return NoTransitionPage(child: EditGroup(id: id));
-                        },
-                        routes: [
-                          GoRoute(
-                            path: 'add_people',
-                            name: 'add_people',
-                            pageBuilder: (context, state) {
-                              String id = state.pathParameters['id']!;
-                              return NoTransitionPage(
-                                child: AddPeoplePage(id: id),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: 'create_group',
-                    name: 'create_group',
-                    builder: (context, state) => const CreateGroup(),
-                    routes: [
-                      GoRoute(
-                        path: 'pick_emoji',
-                        name: 'pick_emoji',
-                        pageBuilder: (context, state) {
-                          return NoTransitionPage(child: EmojiSelector());
-                        },
-                        //builder: (context, state) => EmojiSelector(onPressed: state.extra! as void Function(String)),
-                      ),
-                    ],
-                  ),
-                ],
+                path: '/messages',
+                name: 'messages',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: MessagesPage()),
               ),
             ],
           ),
@@ -268,14 +235,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/compose',
                 name: 'compose',
                 pageBuilder: (context, state) {
-                  final String? id = state.uri.queryParameters['id'];
-                  final String? repostId =
-                      state.uri.queryParameters['repostId'];
+                  final int? repostId = int.tryParse(
+                    state.uri.queryParameters['repostId'] ?? '',
+                  );
                   final String? timestamp =
                       state.uri.queryParameters['timestamp'];
                   return NoTransitionPage(
                     child: ComposePage(
-                      groupId: id,
                       repostId: repostId,
                       timestamp: timestamp,
                     ),
@@ -373,11 +339,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => const UserSettings(),
                     routes: [
                       GoRoute(
-                        path: 're_auth',
-                        name: 're_auth',
-                        builder: (context, state) => const ReAuthPage(),
-                      ),
-                      GoRoute(
                         path: 'blocked_users',
                         name: 'blocked_users',
                         builder: (context, state) => const BlockedUsersPage(),
@@ -388,16 +349,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'followers',
                     name: 'followers',
                     builder: (context, state) {
-                      UserModel user = state.extra as UserModel;
-                      return Followers(uid: user.uid);
+                      final username = state.pathParameters['username']!;
+                      final uid = state.uri.queryParameters['uid'];
+                      return Followers(username: username, uid: uid);
                     },
                   ),
                   GoRoute(
                     path: 'following',
                     name: 'following',
                     builder: (context, state) {
-                      UserModel user = state.extra as UserModel;
-                      return Following(uid: user.uid);
+                      final username = state.pathParameters['username']!;
+                      final uid = state.uri.queryParameters['uid'];
+                      return Following(username: username, uid: uid);
                     },
                   ),
                 ],
