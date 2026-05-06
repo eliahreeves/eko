@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/widgets/posts/count_down_timer.dart';
@@ -49,6 +51,23 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
 
   void _popDialog() {
     Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  KeyEventResult _handleCommentFieldKey(FocusNode _, KeyEvent event) {
+    final isMobileApp = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS);
+    final isEnter = event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter;
+    if (isMobileApp ||
+        event is! KeyDownEvent ||
+        !isEnter ||
+        HardwareKeyboard.instance.isShiftPressed) {
+      return KeyEventResult.ignored;
+    }
+
+    postCommentPressed();
+    return KeyEventResult.handled;
   }
 
   void reportPressed() {
@@ -394,36 +413,41 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                     children: [
                       SizedBox(
                         width: width * 0.95,
-                        child: TextField(
-                          textCapitalization: TextCapitalization.sentences,
-                          cursorColor: Theme.of(context).colorScheme.onSurface,
-                          focusNode: commentFieldFocus,
-                          maxLines: null,
-                          controller: commentField,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(height * 0.01),
-                            hintText: AppLocalizations.of(context)!.addComment,
-                            fillColor: Theme.of(
-                              context,
-                            ).colorScheme.outlineVariant,
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () => addGifPressed(),
-                                  icon: const Icon(Icons.gif_box_outlined),
-                                ),
-                                IconButton(
-                                  onPressed: () => postCommentPressed(),
-                                  icon: const Icon(Icons.send),
-                                ),
-                              ],
+                        child: Focus(
+                          onKeyEvent: _handleCommentFieldKey,
+                          child: TextField(
+                            textCapitalization: TextCapitalization.sentences,
+                            cursorColor:
+                                Theme.of(context).colorScheme.onSurface,
+                            focusNode: commentFieldFocus,
+                            maxLines: null,
+                            controller: commentField,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(height * 0.01),
+                              hintText:
+                                  AppLocalizations.of(context)!.addComment,
+                              fillColor: Theme.of(
+                                context,
+                              ).colorScheme.outlineVariant,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () => addGifPressed(),
+                                    icon: const Icon(Icons.gif_box_outlined),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => postCommentPressed(),
+                                    icon: const Icon(Icons.send),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
