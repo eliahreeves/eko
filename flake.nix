@@ -22,9 +22,11 @@
           ninja
           unzip
           supabase-cli
+          ungoogled-chromium
         ];
         commonShellHook = ''
           git config core.hooksPath scripts/git-hooks
+          export CHROME_EXECUTABLE=$(which chromium)
         '';
       in {
         packages.default = pkgs.callPackage ./nix/package.nix {};
