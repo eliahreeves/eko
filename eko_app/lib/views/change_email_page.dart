@@ -77,28 +77,10 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
     }
 
     setState(() => isLoading = true);
-    final signInResult = await ref.read(authProvider.notifier).signIn(
+    await ref.read(authProvider.notifier).signIn(
           email: authEmail,
           password: currentPasswordController.text,
         );
-    if (signInResult != 'success') {
-      if (mounted) setState(() => isLoading = false);
-      if (!mounted) return;
-      if (signInResult == 'wrong-password') {
-        showSnackBar(
-          text: l10n.wrongPasswordBody,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      } else {
-        showSnackBar(
-          text: l10n.loginFailedBody,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      }
-      return;
-    }
 
     final updateResult =
         await ref.read(authProvider.notifier).updateEmailBeforeVerify(

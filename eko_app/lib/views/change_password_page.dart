@@ -55,7 +55,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
       currentPasswordFocus.requestFocus();
       return;
     }
-    if (!isValidPassword(
+    if (!isValidSimplePassword(
       newPasswordController.text,
       confirmPasswordController.text,
     )) {
@@ -68,32 +68,13 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     }
 
     setState(() => isLoading = true);
-    final signInResult = await ref.read(authProvider.notifier).signIn(
-          email: email,
-          password: currentPasswordController.text,
-        );
-    if (signInResult != 'success') {
-      if (mounted) setState(() => isLoading = false);
-      if (!mounted) return;
-      if (signInResult == 'wrong-password') {
-        showSnackBar(
-          text: l10n.wrongPasswordBody,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      } else {
-        showSnackBar(
-          text: l10n.loginFailedBody,
-          context: context,
-          variant: SnackBarVariant.destructive,
-        );
-      }
-      return;
-    }
+    await ref
+        .read(authProvider.notifier)
+        .signIn(email: email, password: currentPasswordController.text);
 
-    final updateResult = await ref.read(authProvider.notifier).updatePassword(
-          newPasswordController.text,
-        );
+    final updateResult = await ref
+        .read(authProvider.notifier)
+        .updatePassword(newPasswordController.text);
     if (!mounted) return;
     setState(() => isLoading = false);
 
