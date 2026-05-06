@@ -20,7 +20,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> _checkFirstInstall() async {
   if (!PrefsService.notFirstInstall) {
-    if (Supabase.instance.client.auth.currentSession != null) {
+    if (!kDebugMode && Supabase.instance.client.auth.currentSession != null) {
       await Supabase.instance.client.auth.signOut();
     }
     PrefsService.notFirstInstall = true;
