@@ -134,8 +134,10 @@ class NotificationHelper {
     BuildContext context,
     Map<String, dynamic> data,
   ) async {
-    final type = data['type'] as String?;
-    final path = data['path'] as String?;
+    debugPrint(data.toString());
+    final type = data['data']['type'] as String?;
+    debugPrint(type);
+    final path = data['data']['path'] as String?;
     if (type == null || path == null) {
       return;
     }

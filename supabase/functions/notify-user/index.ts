@@ -324,6 +324,8 @@ async function getTargets(record: any) {
 async function getNotificationPayload(record: any) {
   let title = "New Activity";
   let body = "Click to see";
+  let payloadData: { type?: string; path?: string } = {};
+
   const userData = await getUser(record.source_uid || record.author_uid);
   const sourceName = userData?.name || "Someone";
 
@@ -332,28 +334,35 @@ async function getNotificationPayload(record: any) {
       const commentData = await getComment(record.comment_id);
       title = `${sourceName} commented on your post!`;
       body = commentData?.body || body;
+      payloadData = { type: "comment", path: record.post_id };
     } else if (record.type === "eko") {
       title = `${sourceName} eko'ed your post!`;
+      payloadData = { type: "post", path: record.post_id };
     } else if (record.type === "follow") {
       title = `${sourceName} followed you!`;
+      payloadData = { type: "follow", path: record.source_uid };
     } else if (record.type === "comment_tag") {
       title = `${sourceName} tagged you in a comment!`;
       const commentData = await getComment(record.comment_id);
       body = commentData?.body || body;
+      payloadData = { type: "tag", path: record.post_id };
     } else if (record.type === "post_tag") {
       title = `${sourceName} tagged you in a post!`;
       const postData = await getPost(record.post_id);
       body = postData?.title || postData?.body || body;
+      payloadData = { type: "tag", path: record.post_id };
     } else if (record.type === "post") {
       title = `New post from ${sourceName}!`;
       const postData = await getPost(record.post_id);
       body = postData?.title || postData?.body || body;
+      payloadData = { type: "post", path: record.post_id };
     }
   } else if (record.table == "posts") {
     title = `New post from ${sourceName}!`;
     body = record.title || record.body || body;
+    payloadData = { type: "post", path: record.id };
   }
-  return { title, body };
+  return { title, body, payloadData };
 }
 
 Deno.serve(async (req) => {
@@ -364,7 +373,7 @@ Deno.serve(async (req) => {
     return new Response("Unsupported table", { status: 400 });
   }
 
-  const { title, body } = await getNotificationPayload(record);
+  const { title, body, payloadData } = await getNotificationPayload(record);
   const targetUids = await getTargets(record);
 
   if (!targetUids || targetUids.length === 0) {
@@ -393,10 +402,10 @@ Deno.serve(async (req) => {
 
   const notifications = [
     ...apnsDevices.map((device: Device) =>
-      sendAPNS(device, record, apnsConfig, title, body)
+      sendAPNS(device, payloadData, apnsConfig, title, body)
     ),
     ...webPushDevices.map((device: Device) =>
-      sendWebPush(device, record, title, body)
+      sendWebPush(device, payloadData, title, body)
     ),
   ];
 
