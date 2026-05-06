@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/providers/popular_feed_provider.dart';
 import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -227,6 +228,7 @@ class _NotificationHandlerState extends ConsumerState<NotificationHandler> {
     NotificationHelper.setupHandlersWithContext(context, () {
       ref.read(followingFeedProvider.notifier).refresh();
       ref.read(newFeedProvider.notifier).refresh();
+      ref.read(popularFeedProvider.notifier).refresh();
     });
     super.initState();
   }

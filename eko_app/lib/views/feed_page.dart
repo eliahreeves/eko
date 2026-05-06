@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eko_app/interfaces/post_queries.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/providers/popular_feed_provider.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
 
 import 'package:eko_app/widgets/common/icons.dart';
@@ -87,10 +87,12 @@ class _AppBar extends StatelessWidget {
   final double height;
   final TabController tabController;
   final List<ScrollController> scrollControllers;
+  final VoidCallback onLogoTap;
   const _AppBar({
     required this.height,
     required this.tabController,
     required this.scrollControllers,
+    required this.onLogoTap,
   });
   @override
   Widget build(BuildContext context) {
@@ -107,7 +109,7 @@ class _AppBar extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Eko(),
+                      child: InkWell(onTap: onLogoTap, child: Eko()),
                     ),
                   ),
                   Align(
@@ -186,6 +188,22 @@ class _FeedPageState extends ConsumerState<FeedPage>
         return popScrollController;
       default:
         return followingScrollController;
+    }
+  }
+
+  Future<void> _refreshCurrentTab() async {
+    switch (tabController.index) {
+      case 0:
+        await ref.read(followingFeedProvider.notifier).refresh();
+        return;
+      case 1:
+        await ref.read(newFeedProvider.notifier).refresh();
+        return;
+      case 2:
+        await ref.read(popularFeedProvider.notifier).refresh();
+        return;
+      default:
+        return;
     }
   }
 
@@ -315,6 +333,7 @@ class _FeedPageState extends ConsumerState<FeedPage>
           child: _AppBar(
             height: appBarHeight,
             tabController: tabController,
+            onLogoTap: _refreshCurrentTab,
             scrollControllers: [
               followingScrollController,
               newScrollController,
@@ -403,11 +422,13 @@ class __PopTabState extends ConsumerState<_PopTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return InfiniteScrolly<int, (int, int)>(
+    final provider = ref.watch(popularFeedProvider);
+    return InfiniteScrollyShell<int>(
+      isEnd: provider.$2,
+      list: provider.$1,
       header: SizedBox(height: appBarHeight),
-      getter: (data) async {
-        return await popGetter(data, ref);
-      },
+      getter: ref.read(popularFeedProvider.notifier).getter,
+      onRefresh: ref.read(popularFeedProvider.notifier).refresh,
       initialLoadingWidget: PostLoader(length: 3),
       widget: postCardBuilder,
       controller: widget.controller,

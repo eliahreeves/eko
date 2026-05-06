@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/providers/following_feed_provider.dart';
 import 'package:eko_app/providers/new_feed_provider.dart';
+import 'package:eko_app/providers/popular_feed_provider.dart';
 import 'package:eko_app/providers/profile_post_list_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
@@ -215,6 +216,7 @@ class Post extends _$Post {
       await supabase.from('posts').delete().eq('id', postId);
       ref.read(followingFeedProvider.notifier).removePost(postId);
       ref.read(newFeedProvider.notifier).removePost(postId);
+      ref.read(popularFeedProvider.notifier).removePost(postId);
       ref.read(profilePostListProvider.notifier).removePost(postId);
     } catch (e) {
       rethrow;

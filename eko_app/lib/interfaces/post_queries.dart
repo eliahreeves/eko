@@ -55,29 +55,6 @@ Future<(List<MapEntry<int, String>>, bool)> otherProfilePageGetter(
   return (retList, retList.length < c.postsOnRefresh);
 }
 
-Future<(List<MapEntry<int, (int, int)>>, bool)> popGetter(
-  List<MapEntry<int, (int, int)>> list,
-  WidgetRef ref,
-) async {
-  final params = <String, dynamic>{
-    'p_limit': c.postsOnRefresh,
-  };
-  if (list.isNotEmpty) {
-    params['p_last_likes'] = list.last.value.$1;
-    params['p_last_id'] = list.last.key;
-  }
-  final rows = await supabase.rpc('paginated_popular_posts', params: params);
-  final rowList = rows as List<dynamic>? ?? const [];
-  final postList = rowList
-      .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
-      .toList();
-  ref.read(postPoolProvider).putAll(postList);
-  final retList = postList
-      .map((item) => MapEntry(item.id, (item.likes + item.dislikes, item.id)))
-      .toList();
-  return (retList, retList.length < c.postsOnRefresh);
-}
-
 Future<List<CommentModel>> getCommentsForPost(
   int postId, {
   String? lastTime,
