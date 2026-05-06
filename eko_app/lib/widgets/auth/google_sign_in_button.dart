@@ -66,7 +66,7 @@ class GoogleSignInButton extends StatelessWidget {
               minimumSize: const Size(_minButtonWidth, _buttonHeight),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: isLoading

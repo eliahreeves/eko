@@ -166,8 +166,10 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
 
   Future<void> addGifPressed() async {
     String? url = await context.pushNamed('gif');
-    gif = url;
-    postCommentPressed();
+    if (url != null) {
+      gif = url;
+      postCommentPressed();
+    }
   }
 
   Future<void> postCommentPressed() async {

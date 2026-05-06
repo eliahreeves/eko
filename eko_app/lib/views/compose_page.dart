@@ -143,11 +143,13 @@ class _ComposePageState extends ConsumerState<ComposePage> {
 
   void _addGifPressed() async {
     String? url = await context.pushNamed('gif');
-    setState(() {
-      gif = url;
-      image = null;
-      repostId = null;
-    });
+    if (url != null) {
+      setState(() {
+        gif = url;
+        image = null;
+        repostId = null;
+      });
+    }
   }
 
   Future<void> _addImagePressed() async {
