@@ -515,44 +515,6 @@ PERFORM public.log_post_activity(o_post_id, p_author_uid, ARRAY[p_body, p_title]
 ALTER FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") RETURNS "record"
-    LANGUAGE "plpgsql"
-    SET "search_path" TO ''
-    AS $$
-  begin
-    -- 1. Insert the main post
-    insert into public.posts (
-      created_at, firebase_uid, body, title, gif, author_uid, image, ekoed_id
-    ) values (
-      p_created_at, p_firebase_uid, p_body, p_title, p_gif, p_author_uid,
-      case 
-        when p_image_base64 is not null 
-        then pg_catalog.decode(p_image_base64, 'base64') 
-        else null 
-      end,
-      p_ekoed_id
-    )
-    returning id into o_post_id;
-
-    -- 2. Insert poll options if the array is not empty
-    if p_poll is not null and pg_catalog.array_length(p_poll, 1) > 0 then
-      insert into public.poll_options (post_id, value)
-      select o_post_id, pg_catalog.unnest(p_poll);
-      
-      -- 3. Fetch the JSON representation using your existing function
-      -- Note: You must qualify get_poll_from_id with its schema (public)
-      o_poll_data := public.get_post_poll_results_json(o_post_id);
-    else
-      o_poll_data := null;
-    end if;
-
-  end;
-  $$;
-
-
-ALTER FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") OWNER TO "postgres";
-
-
 CREATE OR REPLACE FUNCTION "public"."is_username_available"("p_username" "text") RETURNS boolean
     LANGUAGE "plpgsql" STABLE
     SET "search_path" TO ''
@@ -654,8 +616,7 @@ ALTER FUNCTION "public"."log_post_activity"("p_post_id" bigint, "p_author_id" "u
 CREATE OR REPLACE FUNCTION "public"."notify_user_on_insert"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
-    AS $$
-DECLARE
+    AS $$DECLARE
   payload jsonb;
   edge_function_url text;
   request_id bigint;
@@ -664,7 +625,7 @@ BEGIN
     payload = jsonb_build_object(
       'record', jsonb_build_object(
         'table', 'posts',
-        'id', NEW.id,
+        'id', NEW.id::text,
         'title', NEW.title,
         'body', NEW.body,
         'author_uid', NEW.author_uid
@@ -674,24 +635,26 @@ BEGIN
     payload = jsonb_build_object(
       'record', jsonb_build_object(
         'table', 'activity',
-        'id', NEW.id,
+        'id', NEW.id::text,
         'type', NEW.type,
         'source_uid', NEW.source_uid,
         'target_uid', NEW.target_uid,
-        'post_id', NEW.post_id,
-        'comment_id', NEW.comment_id
+        'post_id', NEW.post_id::text,
+        'comment_id', NEW.comment_id::text
       )
     );
   END IF;
-  edge_function_url = 'https://' || current_setting('supabase_functions_endpoint', true) || '/functions/v1/notify-user';
+  edge_function_url = 'https://nkwizistugahxfwdwtwg.supabase.co/functions/v1/notify-user';
   SELECT net.http_post(
     url := edge_function_url,
     body := payload,
-    headers := '{"Content-Type": "application/json"}'::jsonb
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rd2l6aXN0dWdhaHhmd2R3dHdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODY0NTMsImV4cCI6MjA5MjQ2MjQ1M30.bfhwjriddYaDmiyeaCoFNF8nmRb8GXh2KnZs3as3T_I'
+    )
   ) INTO request_id;
   RETURN NEW;
-END;
-$$;
+END;$$;
 
 
 ALTER FUNCTION "public"."notify_user_on_insert"() OWNER TO "postgres";
@@ -2310,12 +2273,6 @@ GRANT ALL ON FUNCTION "public"."insert_comment"("p_created_at" timestamp with ti
 GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "anon";
 GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "service_role";
-
-
-
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "anon";
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "authenticated";
-GRANT ALL ON FUNCTION "public"."insert_post"("p_created_at" timestamp with time zone, "p_firebase_uid" "text", "p_body" "text", "p_title" "text", "p_gif" "text", "p_poll" "text"[], "p_author_uid" "uuid", "p_image_base64" "text", "p_ekoed_id" bigint, OUT "o_post_id" bigint, OUT "o_poll_data" "jsonb") TO "service_role";
 
 
 
