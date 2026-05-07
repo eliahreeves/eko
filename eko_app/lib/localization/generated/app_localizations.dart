@@ -182,23 +182,11 @@ abstract class AppLocalizations {
   /// **'Username Unavailable'**
   String get usernameInUse;
 
-  /// No description provided for @usernameTakenTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'This Username has been taken.'**
-  String get usernameTakenTitle;
-
   /// No description provided for @usernameTakenBody.
   ///
   /// In en, this message translates to:
   /// **'Please go back and choose a different username.'**
   String get usernameTakenBody;
-
-  /// No description provided for @invalidEmailTittle.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Email Formating'**
-  String get invalidEmailTittle;
 
   /// No description provided for @invalidEmailBody.
   ///
@@ -206,53 +194,11 @@ abstract class AppLocalizations {
   /// **'Please check your email and try again.'**
   String get invalidEmailBody;
 
-  /// No description provided for @userNotFoundTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Can\'t Find Account'**
-  String get userNotFoundTitle;
-
-  /// No description provided for @userNotFoundBody.
-  ///
-  /// In en, this message translates to:
-  /// **'We can\'t find an account with that email. Try another email, or sign up.'**
-  String get userNotFoundBody;
-
-  /// No description provided for @wrongPasswordTittle.
-  ///
-  /// In en, this message translates to:
-  /// **'Incorrect Password'**
-  String get wrongPasswordTittle;
-
-  /// No description provided for @wrongPasswordBody.
-  ///
-  /// In en, this message translates to:
-  /// **'The password you entered is incorrect.'**
-  String get wrongPasswordBody;
-
   /// No description provided for @requiredResetPasswordPrompt.
   ///
   /// In en, this message translates to:
   /// **'If you have not logged in since May 2026, you need to reset your password.'**
   String get requiredResetPasswordPrompt;
-
-  /// No description provided for @userDisabledTittle.
-  ///
-  /// In en, this message translates to:
-  /// **'Account Disabled'**
-  String get userDisabledTittle;
-
-  /// No description provided for @userDisabledBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Your account has been disabled. Please contact us at conetechnologiesdev@gmail.com.'**
-  String get userDisabledBody;
-
-  /// No description provided for @weakPasswordTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Weak Password'**
-  String get weakPasswordTitle;
 
   /// No description provided for @weakPasswordBody.
   ///
@@ -284,12 +230,6 @@ abstract class AppLocalizations {
   /// **'An account with that email already exists'**
   String get emailAlreadyInUseBody;
 
-  /// No description provided for @forgotPasswordTittle.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'ve Got Mail!'**
-  String get forgotPasswordTittle;
-
   /// No description provided for @forgotPasswordBody.
   ///
   /// In en, this message translates to:
@@ -314,18 +254,6 @@ abstract class AppLocalizations {
   /// **'Resend email'**
   String get resendVerificationEmail;
 
-  /// No description provided for @resendSent.
-  ///
-  /// In en, this message translates to:
-  /// **'Verification email sent.'**
-  String get resendSent;
-
-  /// No description provided for @resendTooManyAttempts.
-  ///
-  /// In en, this message translates to:
-  /// **'Too many attempts. Please try again later.'**
-  String get resendTooManyAttempts;
-
   /// No description provided for @iveVerifiedMyEmail.
   ///
   /// In en, this message translates to:
@@ -337,48 +265,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resend in {seconds}s'**
   String resendInSeconds(int seconds);
-
-  /// No description provided for @wrongEmailTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Used the wrong email?'**
-  String get wrongEmailTitle;
-
-  /// No description provided for @wrongEmailBody.
-  ///
-  /// In en, this message translates to:
-  /// **'We\'ll delete this account so you can sign up again with the correct email. You\'ll return to the welcome page.'**
-  String get wrongEmailBody;
-
-  /// No description provided for @useDifferentEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'I used the wrong email'**
-  String get useDifferentEmail;
-
-  /// No description provided for @verifyEmailLeaveTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Leave verification?'**
-  String get verifyEmailLeaveTitle;
-
-  /// No description provided for @verifyEmailLeaveBody.
-  ///
-  /// In en, this message translates to:
-  /// **'You can sign out and return to the welcome page.'**
-  String get verifyEmailLeaveBody;
-
-  /// No description provided for @exitCreateAccountTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Return to welcome page?'**
-  String get exitCreateAccountTitle;
-
-  /// No description provided for @exitCreateAccountBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to go back? Your information will be deleted.'**
-  String get exitCreateAccountBody;
 
   /// No description provided for @exitEditProfileTitle.
   ///
@@ -434,53 +320,17 @@ abstract class AppLocalizations {
   /// **'Sign In'**
   String get signIn;
 
-  /// No description provided for @signInToComment.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in to comment...'**
-  String get signInToComment;
-
   /// No description provided for @forgotPassword.
   ///
   /// In en, this message translates to:
   /// **'Forgot Password?'**
   String get forgotPassword;
 
-  /// No description provided for @passwordLen.
-  ///
-  /// In en, this message translates to:
-  /// **'Between 8 and 32 characters.'**
-  String get passwordLen;
-
   /// No description provided for @passwordMinChars.
   ///
   /// In en, this message translates to:
   /// **'8 or more characters'**
   String get passwordMinChars;
-
-  /// No description provided for @passwordLower.
-  ///
-  /// In en, this message translates to:
-  /// **'Contains a lowercase letter'**
-  String get passwordLower;
-
-  /// No description provided for @passwordUpper.
-  ///
-  /// In en, this message translates to:
-  /// **'Contains a uppercase letter'**
-  String get passwordUpper;
-
-  /// No description provided for @passwordNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Contains a number'**
-  String get passwordNumber;
-
-  /// No description provided for @passwordSpecial.
-  ///
-  /// In en, this message translates to:
-  /// **'Contains a special character'**
-  String get passwordSpecial;
 
   /// No description provided for @passwordMatch.
   ///
@@ -505,24 +355,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Down-Ekos'**
   String get dislikes;
-
-  /// No description provided for @like.
-  ///
-  /// In en, this message translates to:
-  /// **'Like'**
-  String get like;
-
-  /// No description provided for @dislike.
-  ///
-  /// In en, this message translates to:
-  /// **'Dislike'**
-  String get dislike;
-
-  /// No description provided for @comments.
-  ///
-  /// In en, this message translates to:
-  /// **'Comments'**
-  String get comments;
 
   /// No description provided for @comment.
   ///
@@ -566,47 +398,11 @@ abstract class AppLocalizations {
   /// **'Username'**
   String get userName;
 
-  /// No description provided for @previous.
-  ///
-  /// In en, this message translates to:
-  /// **'Previous'**
-  String get previous;
-
-  /// No description provided for @followingTab.
-  ///
-  /// In en, this message translates to:
-  /// **'Following'**
-  String get followingTab;
-
-  /// No description provided for @popularTab.
-  ///
-  /// In en, this message translates to:
-  /// **'Popular'**
-  String get popularTab;
-
-  /// No description provided for @newTab.
-  ///
-  /// In en, this message translates to:
-  /// **'New'**
-  String get newTab;
-
-  /// No description provided for @oldTab.
-  ///
-  /// In en, this message translates to:
-  /// **'Old'**
-  String get oldTab;
-
   /// No description provided for @postTitle.
   ///
   /// In en, this message translates to:
   /// **'Title'**
   String get postTitle;
-
-  /// No description provided for @postBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Body'**
-  String get postBody;
 
   /// No description provided for @newLines.
   ///
@@ -626,12 +422,6 @@ abstract class AppLocalizations {
   /// **'Add text...'**
   String get addText;
 
-  /// No description provided for @addTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Add title...'**
-  String get addTitle;
-
   /// No description provided for @error.
   ///
   /// In en, this message translates to:
@@ -643,12 +433,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create'**
   String get create;
-
-  /// No description provided for @createNewPost.
-  ///
-  /// In en, this message translates to:
-  /// **'Create new post'**
-  String get createNewPost;
 
   /// No description provided for @postButton.
   ///
@@ -716,18 +500,6 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
-  /// No description provided for @welcome.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome'**
-  String get welcome;
-
-  /// No description provided for @welcomeBack.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome Back'**
-  String get welcomeBack;
-
   /// No description provided for @createAccount.
   ///
   /// In en, this message translates to:
@@ -745,12 +517,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue'**
   String get cont;
-
-  /// No description provided for @dateOfBirth.
-  ///
-  /// In en, this message translates to:
-  /// **'Date of Birth'**
-  String get dateOfBirth;
 
   /// No description provided for @createAPassword.
   ///
@@ -788,29 +554,11 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
-  /// No description provided for @searchUsername.
-  ///
-  /// In en, this message translates to:
-  /// **'Search users...'**
-  String get searchUsername;
-
   /// No description provided for @search.
   ///
   /// In en, this message translates to:
   /// **'Search'**
   String get search;
-
-  /// No description provided for @noResultsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No results found.'**
-  String get noResultsFound;
-
-  /// No description provided for @confirmation.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirmation'**
-  String get confirmation;
 
   /// No description provided for @cancel.
   ///
@@ -866,18 +614,6 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get next;
 
-  /// No description provided for @description.
-  ///
-  /// In en, this message translates to:
-  /// **'Description(Optional)'**
-  String get description;
-
-  /// No description provided for @skip.
-  ///
-  /// In en, this message translates to:
-  /// **'Skip'**
-  String get skip;
-
   /// No description provided for @done.
   ///
   /// In en, this message translates to:
@@ -919,36 +655,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'tagged you:'**
   String get taggedText;
-
-  /// No description provided for @badAuthState.
-  ///
-  /// In en, this message translates to:
-  /// **'Request is invalid or has expired. Please try again.'**
-  String get badAuthState;
-
-  /// No description provided for @resetPasswordPromt.
-  ///
-  /// In en, this message translates to:
-  /// **'Reset password for:'**
-  String get resetPasswordPromt;
-
-  /// No description provided for @passwordResetTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Password Reset Successfully'**
-  String get passwordResetTitle;
-
-  /// No description provided for @passwordResetBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Please continue to login.'**
-  String get passwordResetBody;
-
-  /// No description provided for @setPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Set Password'**
-  String get setPassword;
 
   /// No description provided for @coppiedToClipboard.
   ///
@@ -998,12 +704,6 @@ abstract class AppLocalizations {
   /// **'Please download the latest update to continue.'**
   String get updateRequiredBody;
 
-  /// No description provided for @updateAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'Update Available'**
-  String get updateAvailable;
-
   /// No description provided for @update.
   ///
   /// In en, this message translates to:
@@ -1040,24 +740,6 @@ abstract class AppLocalizations {
   /// **'Share Profile'**
   String get shareProfile;
 
-  /// No description provided for @verificationExp.
-  ///
-  /// In en, this message translates to:
-  /// **'Add your Eko profile link to another platform that has RelMeAuth support. It may take up to 24 hours to get verified. Potential sites include Threads, Mastadon, and GitHub. Include the full url of the other site here. Example: www.threads.com/@user'**
-  String get verificationExp;
-
-  /// No description provided for @copyProfileLink.
-  ///
-  /// In en, this message translates to:
-  /// **'Copy Profile Link'**
-  String get copyProfileLink;
-
-  /// No description provided for @deleteAcountReAuthWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your password to confirm you wish to delete your account. This Action cannot be undone. Upon clicking the button below, your account will be deleted.'**
-  String get deleteAcountReAuthWarning;
-
   /// No description provided for @logIntoApp.
   ///
   /// In en, this message translates to:
@@ -1088,12 +770,6 @@ abstract class AppLocalizations {
   /// **'Comment Required'**
   String get commentRequired;
 
-  /// No description provided for @tooEarlyDeleteTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Please Wait'**
-  String get tooEarlyDeleteTitle;
-
   /// No description provided for @tooEarlyDeleteBody.
   ///
   /// In en, this message translates to:
@@ -1117,12 +793,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you wish to proceed? This action cannot be undone.'**
   String get deletePostWarningBody;
-
-  /// No description provided for @invalidSession.
-  ///
-  /// In en, this message translates to:
-  /// **'This Eko account is being used on another device. Press below to continue on this device.'**
-  String get invalidSession;
 
   /// No description provided for @birthday.
   ///
@@ -1148,23 +818,11 @@ abstract class AppLocalizations {
   /// **'Year'**
   String get year;
 
-  /// No description provided for @invalidBirthdayTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Birthday'**
-  String get invalidBirthdayTitle;
-
   /// No description provided for @invalidBirthdayBody.
   ///
   /// In en, this message translates to:
   /// **'Please select a valid birthday.'**
   String get invalidBirthdayBody;
-
-  /// No description provided for @tooYoungTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'You are too young'**
-  String get tooYoungTitle;
 
   /// No description provided for @tooYoungBody.
   ///
@@ -1256,29 +914,11 @@ abstract class AppLocalizations {
   /// **'We use this to ensure you are old enough to use the app.'**
   String get birthdayExplanation;
 
-  /// No description provided for @noImageSelected.
-  ///
-  /// In en, this message translates to:
-  /// **'No image selected'**
-  String get noImageSelected;
-
-  /// No description provided for @changeImage.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Image'**
-  String get changeImage;
-
   /// No description provided for @pickImage.
   ///
   /// In en, this message translates to:
   /// **'Pick Image'**
   String get pickImage;
-
-  /// No description provided for @verification.
-  ///
-  /// In en, this message translates to:
-  /// **'Verification'**
-  String get verification;
 
   /// No description provided for @verificationUrl.
   ///
@@ -1291,12 +931,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Google'**
   String get continueWithGoogle;
-
-  /// No description provided for @loginFailedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Login Failed'**
-  String get loginFailedTitle;
 
   /// No description provided for @loginFailedBody.
   ///

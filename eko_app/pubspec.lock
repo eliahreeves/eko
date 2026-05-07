@@ -1285,6 +1285,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  remove_unused_localizations_keys:
+    dependency: "direct dev"
+    description:
+      name: remove_unused_localizations_keys
+      sha256: bffe93e3492d8c43da8f362f6ad05834860d5f90a2207006fbbec57013ff467d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.40"
   retry:
     dependency: transitive
     description:

@@ -51,44 +51,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usernameInUse => 'Username Unavailable';
 
   @override
-  String get usernameTakenTitle => 'This Username has been taken.';
-
-  @override
   String get usernameTakenBody =>
       'Please go back and choose a different username.';
-
-  @override
-  String get invalidEmailTittle => 'Invalid Email Formating';
 
   @override
   String get invalidEmailBody => 'Please check your email and try again.';
 
   @override
-  String get userNotFoundTitle => 'Can\'t Find Account';
-
-  @override
-  String get userNotFoundBody =>
-      'We can\'t find an account with that email. Try another email, or sign up.';
-
-  @override
-  String get wrongPasswordTittle => 'Incorrect Password';
-
-  @override
-  String get wrongPasswordBody => 'The password you entered is incorrect.';
-
-  @override
   String get requiredResetPasswordPrompt =>
       'If you have not logged in since May 2026, you need to reset your password.';
-
-  @override
-  String get userDisabledTittle => 'Account Disabled';
-
-  @override
-  String get userDisabledBody =>
-      'Your account has been disabled. Please contact us at conetechnologiesdev@gmail.com.';
-
-  @override
-  String get weakPasswordTitle => 'Weak Password';
 
   @override
   String get weakPasswordBody => 'Check password requirements and try again.';
@@ -108,9 +79,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'An account with that email already exists';
 
   @override
-  String get forgotPasswordTittle => 'You\'ve Got Mail!';
-
-  @override
   String get forgotPasswordBody =>
       'Check your email for a password reset link.';
 
@@ -125,43 +93,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resendVerificationEmail => 'Resend email';
 
   @override
-  String get resendSent => 'Verification email sent.';
-
-  @override
-  String get resendTooManyAttempts =>
-      'Too many attempts. Please try again later.';
-
-  @override
   String get iveVerifiedMyEmail => 'I\'ve verified my email';
 
   @override
   String resendInSeconds(int seconds) {
     return 'Resend in ${seconds}s';
   }
-
-  @override
-  String get wrongEmailTitle => 'Used the wrong email?';
-
-  @override
-  String get wrongEmailBody =>
-      'We\'ll delete this account so you can sign up again with the correct email. You\'ll return to the welcome page.';
-
-  @override
-  String get useDifferentEmail => 'I used the wrong email';
-
-  @override
-  String get verifyEmailLeaveTitle => 'Leave verification?';
-
-  @override
-  String get verifyEmailLeaveBody =>
-      'You can sign out and return to the welcome page.';
-
-  @override
-  String get exitCreateAccountTitle => 'Return to welcome page?';
-
-  @override
-  String get exitCreateAccountBody =>
-      'Are you sure you want to go back? Your information will be deleted.';
 
   @override
   String get exitEditProfileTitle => 'Are you sure you want to exit?';
@@ -191,28 +128,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signIn => 'Sign In';
 
   @override
-  String get signInToComment => 'Sign in to comment...';
-
-  @override
   String get forgotPassword => 'Forgot Password?';
 
   @override
-  String get passwordLen => 'Between 8 and 32 characters.';
-
-  @override
   String get passwordMinChars => '8 or more characters';
-
-  @override
-  String get passwordLower => 'Contains a lowercase letter';
-
-  @override
-  String get passwordUpper => 'Contains a uppercase letter';
-
-  @override
-  String get passwordNumber => 'Contains a number';
-
-  @override
-  String get passwordSpecial => 'Contains a special character';
 
   @override
   String get passwordMatch => 'Passwords match';
@@ -225,15 +144,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dislikes => 'Down-Ekos';
-
-  @override
-  String get like => 'Like';
-
-  @override
-  String get dislike => 'Dislike';
-
-  @override
-  String get comments => 'Comments';
 
   @override
   String get comment => 'Comment';
@@ -257,25 +167,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userName => 'Username';
 
   @override
-  String get previous => 'Previous';
-
-  @override
-  String get followingTab => 'Following';
-
-  @override
-  String get popularTab => 'Popular';
-
-  @override
-  String get newTab => 'New';
-
-  @override
-  String get oldTab => 'Old';
-
-  @override
   String get postTitle => 'Title';
-
-  @override
-  String get postBody => 'Body';
 
   @override
   String get newLines => 'New Lines';
@@ -287,16 +179,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addText => 'Add text...';
 
   @override
-  String get addTitle => 'Add title...';
-
-  @override
   String get error => 'Error';
 
   @override
   String get create => 'Create';
-
-  @override
-  String get createNewPost => 'Create new post';
 
   @override
   String get postButton => 'Post';
@@ -332,12 +218,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get welcome => 'Welcome';
-
-  @override
-  String get welcomeBack => 'Welcome Back';
-
-  @override
   String get createAccount => 'Create Account';
 
   @override
@@ -345,9 +225,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cont => 'Continue';
-
-  @override
-  String get dateOfBirth => 'Date of Birth';
 
   @override
   String get createAPassword => 'Create a Password';
@@ -370,16 +247,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
-  String get searchUsername => 'Search users...';
-
-  @override
   String get search => 'Search';
-
-  @override
-  String get noResultsFound => 'No results found.';
-
-  @override
-  String get confirmation => 'Confirmation';
 
   @override
   String get cancel => 'Cancel';
@@ -409,12 +277,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get next => 'Next';
 
   @override
-  String get description => 'Description(Optional)';
-
-  @override
-  String get skip => 'Skip';
-
-  @override
   String get done => 'Done';
 
   @override
@@ -435,22 +297,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taggedText => 'tagged you:';
-
-  @override
-  String get badAuthState =>
-      'Request is invalid or has expired. Please try again.';
-
-  @override
-  String get resetPasswordPromt => 'Reset password for:';
-
-  @override
-  String get passwordResetTitle => 'Password Reset Successfully';
-
-  @override
-  String get passwordResetBody => 'Please continue to login.';
-
-  @override
-  String get setPassword => 'Set Password';
 
   @override
   String get coppiedToClipboard => 'Copied to Clipboard';
@@ -478,9 +324,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please download the latest update to continue.';
 
   @override
-  String get updateAvailable => 'Update Available';
-
-  @override
   String get update => 'Update';
 
   @override
@@ -499,17 +342,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareProfile => 'Share Profile';
 
   @override
-  String get verificationExp =>
-      'Add your Eko profile link to another platform that has RelMeAuth support. It may take up to 24 hours to get verified. Potential sites include Threads, Mastadon, and GitHub. Include the full url of the other site here. Example: www.threads.com/@user';
-
-  @override
-  String get copyProfileLink => 'Copy Profile Link';
-
-  @override
-  String get deleteAcountReAuthWarning =>
-      'Please enter your password to confirm you wish to delete your account. This Action cannot be undone. Upon clicking the button below, your account will be deleted.';
-
-  @override
   String get logIntoApp => 'Login required';
 
   @override
@@ -526,9 +358,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commentRequired => 'Comment Required';
 
   @override
-  String get tooEarlyDeleteTitle => 'Please Wait';
-
-  @override
   String get tooEarlyDeleteBody =>
       'Posts/comments may only be deleted 48 hours after they are posted.';
 
@@ -543,10 +372,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you wish to proceed? This action cannot be undone.';
 
   @override
-  String get invalidSession =>
-      'This Eko account is being used on another device. Press below to continue on this device.';
-
-  @override
   String get birthday => 'Birthday';
 
   @override
@@ -559,13 +384,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get year => 'Year';
 
   @override
-  String get invalidBirthdayTitle => 'Invalid Birthday';
-
-  @override
   String get invalidBirthdayBody => 'Please select a valid birthday.';
-
-  @override
-  String get tooYoungTitle => 'You are too young';
 
   @override
   String get tooYoungBody => 'You must be 13 years old to make an account';
@@ -617,25 +436,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'We use this to ensure you are old enough to use the app.';
 
   @override
-  String get noImageSelected => 'No image selected';
-
-  @override
-  String get changeImage => 'Change Image';
-
-  @override
   String get pickImage => 'Pick Image';
-
-  @override
-  String get verification => 'Verification';
 
   @override
   String get verificationUrl => 'Verification Url';
 
   @override
   String get continueWithGoogle => 'Continue with Google';
-
-  @override
-  String get loginFailedTitle => 'Login Failed';
 
   @override
   String get loginFailedBody =>

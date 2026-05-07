@@ -52,44 +52,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get usernameInUse => 'Nombre de usario no disponible';
 
   @override
-  String get usernameTakenTitle => 'Este nombre de usario ha sido tomado';
-
-  @override
   String get usernameTakenBody => 'Por favor escoja otro nombre de usario';
-
-  @override
-  String get invalidEmailTittle => 'Formato de correo electrónico no es válido';
 
   @override
   String get invalidEmailBody =>
       'Por favor revise su correo electrónico y vuelva a intentar';
 
   @override
-  String get userNotFoundTitle => 'No hemos encontrado esta cuenta';
-
-  @override
-  String get userNotFoundBody =>
-      'No hemos encontrado una cuenta con este correo electrónico. Intente otro correo electrónico o cree una cuenta.';
-
-  @override
-  String get wrongPasswordTittle => 'Contraseña incorrecta';
-
-  @override
-  String get wrongPasswordBody => 'La contraseña usada es incorrecta.';
-
-  @override
   String get requiredResetPasswordPrompt =>
       'If you have not logged in since May 2026, you need to reset your password.';
-
-  @override
-  String get userDisabledTittle => 'Cuenta no disponible';
-
-  @override
-  String get userDisabledBody =>
-      'Su cuenta ha sido deshabilitada. Para preguntas comunicarse con conetechnologiesdev@gmail.com.';
-
-  @override
-  String get weakPasswordTitle => 'Contraseña débil';
 
   @override
   String get weakPasswordBody =>
@@ -110,9 +81,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Una cuenta con este correo electrónico ya existe.';
 
   @override
-  String get forgotPasswordTittle => 'Recibiste un correo!';
-
-  @override
   String get forgotPasswordBody =>
       'Intenta usar el link que mandamos a tu correo electrónico';
 
@@ -127,44 +95,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get resendVerificationEmail => 'Resend email';
 
   @override
-  String get resendSent => 'Verification email sent.';
-
-  @override
-  String get resendTooManyAttempts =>
-      'Too many attempts. Please try again later.';
-
-  @override
   String get iveVerifiedMyEmail => 'I\'ve verified my email';
 
   @override
   String resendInSeconds(int seconds) {
     return 'Resend in ${seconds}s';
   }
-
-  @override
-  String get wrongEmailTitle => 'Used the wrong email?';
-
-  @override
-  String get wrongEmailBody =>
-      'We\'ll delete this account so you can sign up again with the correct email. You\'ll return to the welcome page.';
-
-  @override
-  String get useDifferentEmail => 'I used the wrong email';
-
-  @override
-  String get verifyEmailLeaveTitle => 'Leave verification?';
-
-  @override
-  String get verifyEmailLeaveBody =>
-      'You can sign out and return to the welcome page.';
-
-  @override
-  String get exitCreateAccountTitle =>
-      'Quieres regresar a la página de inicio?';
-
-  @override
-  String get exitCreateAccountBody =>
-      'Estas seguro de que quieres regresar a la página de inicio? Tu informacion será borrada.';
 
   @override
   String get exitEditProfileTitle => 'Estas seguro de que quieres salir?';
@@ -194,28 +130,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get signIn => 'Iniciar sesión';
 
   @override
-  String get signInToComment => 'Iniciar sesión para comentar';
-
-  @override
   String get forgotPassword => 'Contraseña olvidada?';
 
   @override
-  String get passwordLen => 'Entre 8 y 32 caracteres.';
-
-  @override
   String get passwordMinChars => '8 o más caracteres';
-
-  @override
-  String get passwordLower => 'Contiene letra mayuscula';
-
-  @override
-  String get passwordUpper => 'Contiene letra minúscula';
-
-  @override
-  String get passwordNumber => 'Contiene un número';
-
-  @override
-  String get passwordSpecial => 'Contiene un simbolo';
 
   @override
   String get passwordMatch => 'Las contraseñas coinciden';
@@ -228,15 +146,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dislikes => 'Down-Ekos';
-
-  @override
-  String get like => 'Like';
-
-  @override
-  String get dislike => 'Dislike';
-
-  @override
-  String get comments => 'Comentarios';
 
   @override
   String get comment => 'Añadir comentario';
@@ -260,25 +169,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get userName => 'Nombre de usario';
 
   @override
-  String get previous => 'Regresar';
-
-  @override
-  String get followingTab => 'Siguiendo';
-
-  @override
-  String get popularTab => 'Popular';
-
-  @override
-  String get newTab => 'Nuevo';
-
-  @override
-  String get oldTab => 'Viejo';
-
-  @override
   String get postTitle => 'Título';
-
-  @override
-  String get postBody => 'Cuerpo';
 
   @override
   String get newLines => 'Lineas nuevas';
@@ -290,16 +181,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get addText => 'Añadir texto...';
 
   @override
-  String get addTitle => 'Añadir título...';
-
-  @override
   String get error => 'Error';
 
   @override
   String get create => 'Crear';
-
-  @override
-  String get createNewPost => 'Crear publicación nuevo';
 
   @override
   String get postButton => 'Publicar';
@@ -336,12 +221,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings => 'Ajustes';
 
   @override
-  String get welcome => 'Bienvenido';
-
-  @override
-  String get welcomeBack => 'Bienvenido de vuelta';
-
-  @override
   String get createAccount => 'Crear cuenta';
 
   @override
@@ -349,9 +228,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cont => 'Continuar';
-
-  @override
-  String get dateOfBirth => 'Fecha de nacimiento';
 
   @override
   String get createAPassword => 'Crear una contraseña';
@@ -374,16 +250,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get save => 'Guardar';
 
   @override
-  String get searchUsername => 'Buscar usarios...';
-
-  @override
   String get search => 'Buscar';
-
-  @override
-  String get noResultsFound => 'No se han encontrado resultados.';
-
-  @override
-  String get confirmation => 'Confirmación';
 
   @override
   String get cancel => 'Cancelar';
@@ -413,12 +280,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get next => 'Luego';
 
   @override
-  String get description => 'Descripción(Opcional)';
-
-  @override
-  String get skip => 'Saltar';
-
-  @override
   String get done => 'Listo';
 
   @override
@@ -439,23 +300,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get taggedText => 'te ha etiquetado:';
-
-  @override
-  String get badAuthState =>
-      'Solicitud no es válida o ha caducado. Por favor inténtelo de nuevo.';
-
-  @override
-  String get resetPasswordPromt => 'Cambiar la contraseña para:';
-
-  @override
-  String get passwordResetTitle =>
-      'Restablecimiento de contraseña correctamente';
-
-  @override
-  String get passwordResetBody => 'Por favor continúe iniciando sesión.';
-
-  @override
-  String get setPassword => 'Establecer contraseña';
 
   @override
   String get coppiedToClipboard => 'Copiado al portapapeles';
@@ -483,9 +327,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Descargue la actualización mas reciente para continuar.';
 
   @override
-  String get updateAvailable => 'Actualización disponible';
-
-  @override
   String get update => 'Actualizar';
 
   @override
@@ -502,17 +343,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get shareProfile => 'Compartir Perfil';
-
-  @override
-  String get verificationExp =>
-      'Añade el enlace de tu perfil de Eko a otra plataforma que tenga soporte para RelMeAuth. Puede tardar hasta 24 horas en verificarse. Los sitios potenciales incluyen Threads, Mastadon y GitHub. Incluye aquí la URL completa del otro sitio. Ejemplo: www.threads.com/@user';
-
-  @override
-  String get copyProfileLink => 'Copy Profile Link';
-
-  @override
-  String get deleteAcountReAuthWarning =>
-      'Ingrese tu contraseña para confirmar que deseas eliminar tu cuenta. Esta acción no se puede deshacer. Al hacer clic en el botón de abajo, tu cuenta será eliminada.';
 
   @override
   String get logIntoApp => 'Login requerido';
@@ -532,9 +362,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commentRequired => 'Comentario requerido';
 
   @override
-  String get tooEarlyDeleteTitle => 'Por favor espera';
-
-  @override
   String get tooEarlyDeleteBody =>
       'Publicaciones/comentarios solo se pueden eliminar 48 horas después de haber sido publicados.';
 
@@ -549,10 +376,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Estas seguro de que quieres continuar? Esta acción no se puede deshacer.';
 
   @override
-  String get invalidSession =>
-      'Esta cuenta de eko se está utilizando en otro dispositivo. Hacer clic debajo para continuar en este dispositivo.';
-
-  @override
   String get birthday => 'El cumpleaños';
 
   @override
@@ -565,14 +388,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get year => 'Año';
 
   @override
-  String get invalidBirthdayTitle => 'El cumpleaños no es válido';
-
-  @override
   String get invalidBirthdayBody =>
       'Por favor escoja una fecha de nacimiento válida.';
-
-  @override
-  String get tooYoungTitle => 'Eres demasiado joven';
 
   @override
   String get tooYoungBody => 'Debes tener 13 años para crear una cuenta';
@@ -624,25 +441,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Usamos esto para asegurarnos de que tengas la edad suficiente para usar la aplicación.';
 
   @override
-  String get noImageSelected => 'Ninguna imagen seleccionada';
-
-  @override
-  String get changeImage => 'Cambiar imagen';
-
-  @override
   String get pickImage => 'Escoger imagen';
-
-  @override
-  String get verification => 'Verificación';
 
   @override
   String get verificationUrl => 'Verification Url';
 
   @override
   String get continueWithGoogle => 'Continuar con Google';
-
-  @override
-  String get loginFailedTitle => 'Inicio de Sesión Fallido';
 
   @override
   String get loginFailedBody =>

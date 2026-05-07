@@ -1,293 +1,158 @@
 {
-    "@@locale" : "en",
-    "post":"Post",
-    "email":"Email",
-    "password":"Password",
-    "confirmPassword":"Confirm Password",
-    "logIn":"Login",
-    "option":"Option",
-    "addOption":"Add option",
-    "needTwoOptions":"You need at least two poll options",
-    "votes":"votes",
-    "removeVote":"Remove vote",
-    "newPasswordMustBeDifferent":"New Password Must be Different",
-
-
-    "invalidUserName":"Username does not meet requirements",
-    "available":"Available",
-    "usernameInUse":"Username Unavailable",
-
-
-    "usernameTakenTitle":"This Username has been taken.",
-    "usernameTakenBody":"Please go back and choose a different username.",
-
-
-    "invalidEmailTittle":"Invalid Email Formating",
-    "invalidEmailBody":"Please check your email and try again.",
-
-
-    "userNotFoundTitle":"Can't Find Account",
-    "userNotFoundBody":"We can't find an account with that email. Try another email, or sign up.",
-
-
-    "wrongPasswordTittle":"Incorrect Password",
-    "wrongPasswordBody":"The password you entered is incorrect.",
-
-	"requiredResetPasswordPrompt":"If you have not logged in since May 2026, you need to reset your password.",
-
-    "userDisabledTittle":"Account Disabled",
-    "userDisabledBody":"Your account has been disabled. Please contact us at conetechnologiesdev@gmail.com.",
-
-
-    "weakPasswordTitle":"Weak Password",
-    "weakPasswordBody":"Check password requirements and try again.",
-
-
-    "defaultErrorTittle":"Something Went Wrong",
-    "defaultErrorBody":"Please try again later or reach out to conetechnologiesdev@gmail.com.",
-
-
-    "emailAlreadyInUseTitle":"Email Already In-Use",
-    "emailAlreadyInUseBody":"An account with that email already exists",
-
-
-    "forgotPasswordTittle":"You've Got Mail!",
-    "forgotPasswordBody":"Check your email for a password reset link.",
-
-    "verifyEmailTitle":"Verify your email",
-    "verifyEmailBody":"We sent a verification link to your email. Check your inbox and spam folder, then click the link to verify your account.",
-    "resendVerificationEmail":"Resend email",
-    "resendSent":"Verification email sent.",
-    "resendTooManyAttempts":"Too many attempts. Please try again later.",
-    "iveVerifiedMyEmail":"I've verified my email",
-    "resendInSeconds":"Resend in {seconds}s",
-    "@resendInSeconds": {
-      "placeholders": {
-        "seconds": {
-          "type": "int"
-        }
+  "@@locale": "en",
+  "post": "Post",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "logIn": "Login",
+  "option": "Option",
+  "addOption": "Add option",
+  "needTwoOptions": "You need at least two poll options",
+  "votes": "votes",
+  "removeVote": "Remove vote",
+  "newPasswordMustBeDifferent": "New Password Must be Different",
+  "invalidUserName": "Username does not meet requirements",
+  "available": "Available",
+  "usernameInUse": "Username Unavailable",
+  "usernameTakenBody": "Please go back and choose a different username.",
+  "invalidEmailBody": "Please check your email and try again.",
+  "requiredResetPasswordPrompt": "If you have not logged in since May 2026, you need to reset your password.",
+  "weakPasswordBody": "Check password requirements and try again.",
+  "defaultErrorTittle": "Something Went Wrong",
+  "defaultErrorBody": "Please try again later or reach out to conetechnologiesdev@gmail.com.",
+  "emailAlreadyInUseTitle": "Email Already In-Use",
+  "emailAlreadyInUseBody": "An account with that email already exists",
+  "forgotPasswordBody": "Check your email for a password reset link.",
+  "verifyEmailTitle": "Verify your email",
+  "verifyEmailBody": "We sent a verification link to your email. Check your inbox and spam folder, then click the link to verify your account.",
+  "resendVerificationEmail": "Resend email",
+  "iveVerifiedMyEmail": "I've verified my email",
+  "resendInSeconds": "Resend in {seconds}s",
+  "@resendInSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
       }
-    },
-    "wrongEmailTitle":"Used the wrong email?",
-    "wrongEmailBody":"We'll delete this account so you can sign up again with the correct email. You'll return to the welcome page.",
-    "useDifferentEmail":"I used the wrong email",
-    "verifyEmailLeaveTitle":"Leave verification?",
-    "verifyEmailLeaveBody":"You can sign out and return to the welcome page.",
-
-    "exitCreateAccountTitle":"Return to welcome page?",
-    "exitCreateAccountBody":"Are you sure you want to go back? Your information will be deleted.",
-
-    "exitEditProfileTitle":"Are you sure you want to exit?",
-    "exitEditProfileBody":"All changes will be lost.",
-    "stay":"Stay",
-    "exit":"Exit",
-    "back":"Back",
-    "goBack":"Go Back",
-    "tryAgain":"Try Again",
-    "signUp":"Sign Up",
-    "signIn":"Sign In",
-    "signInToComment":"Sign in to comment...",
-    "forgotPassword":"Forgot Password?",
-
-
-    "passwordLen":"Between 8 and 32 characters.",
-    "passwordMinChars":"8 or more characters",
-    "passwordLower":"Contains a lowercase letter",
-    "passwordUpper":"Contains a uppercase letter",
-    "passwordNumber":"Contains a number",
-    "passwordSpecial":"Contains a special character",
-    "passwordMatch":"Passwords match",
-
-
-    "close":"Close",
-    "likes":"Up-Ekos",
-    "dislikes":"Down-Ekos",
-    "like":"Like",
-    "dislike":"Dislike",
-    "comments":"Comments",
-    "comment":"Comment",
-    "follow":"Follow",
-    "followers":"Followers",
-    "following":"Following",
-    "editProfile":"Edit Profile",
-    "name":"Name",
-   
-    "userName":"Username",
-    "previous":"Previous",
-    "followingTab":"Following",
-    "popularTab":"Popular",
-    "newTab":"New",
-    "oldTab":"Old",
-
-
-    "postTitle":"Title",
-    "postBody":"Body",
-    "newLines":"New Lines",
-    "characters":"Characters",
-    "addText":"Add text...",
-    "addTitle":"Add title...",
-    "error":"Error",
-
-		"create":"Create",
-    "createNewPost":"Create new post",
-    "postButton":"Post",
-    "clear":"Clear",
-    "tooManyChar":"Too many characters.",
-    "tooManyLine":"Too many newlines.",
-
-
-    "emptyFieldError":"Make sure all fields are filled.",
-
-
-    "bioTitle":"Bio",
-
-
-    "logOut":"Log Out",
-    "deleteAccount":"Delete Account",
-    "darkMode":"Dark Mode",
-    "addComment":"Add a comment...",
-    "settings":"Settings",
-    "welcome":"Welcome",
-    "welcomeBack":"Welcome Back",
-    "createAccount":"Create Account",
-    "createAnAccount":"Create an Account",
-    "cont":"Continue",
-    "dateOfBirth":"Date of Birth",
-    "createAPassword":"Create a Password",
-
-
-    "deleteAcountTitle":"Are you sure you want to delete your account?",
-    "deleteAcountBody":"All account data will be deleted. This action cannot be undone. Press \"Go Back\" to cancel",
-    "delete":"Delete",
-    "report":"Report",
-    "save":"Save",
-    "searchUsername":"Search users...",
-    "search":"Search",
-    "noResultsFound":"No results found.",
-    "confirmation":"Confirmation",
-    "cancel":"Cancel",
-    "resetPassword":"Reset Password",
-    "sendResetLink":"Send reset link",
-    "ok":"Ok",
-    "recentActivity":"Recent Activity",
-    "nothingToSeeHere":"Nothing to see here!",
-    "someone":"Someone",
-    "commentText":"commented on your post",
-
-    "next":"Next",
-    "description":"Description(Optional)",
-    "skip":"Skip",
-    "done":"Done",
-    "public":"Public",
-    "reply":"Reply",
-    "userNotFound":"User Not Found",
-    "usernameReqs":"Usernames must be between 3 and 24 characters. Usernames can only contain lowercase letters, numbers, and underscores.",
-
-
-    "followText":"started following you",
-    "taggedText":"tagged you:",
-   
-    "badAuthState":"Request is invalid or has expired. Please try again.",
-    "resetPasswordPromt":"Reset password for:",
-
-
-    "passwordResetTitle":"Password Reset Successfully",
-    "passwordResetBody":"Please continue to login.",
-    "setPassword":"Set Password",
-
-
-    "coppiedToClipboard":"Copied to Clipboard",
-    "download":"Download",
-    "getTheApp":"Get the App",
-
-
-    "gifLoadingError":"Failed to load",
-    "viewLikes":"See Up-Ekos",
-    "viewDislikes":"See Down-Ekos",
-
-
-    "updateRequiredTitle":"Update Required",
-    "updateRequiredBody":"Please download the latest update to continue.",
-    "updateAvailable":"Update Available",
-    "update":"Update",
-    "postNotFound":"Post Not Found",
-    "share":"Share",
-    "copyLink":"Copy Link",
-    "copied":"Copied",
-    "shareProfile":"Share Profile",
-    "verificationExp": "Add your Eko profile link to another platform that has RelMeAuth support. It may take up to 24 hours to get verified. Potential sites include Threads, Mastadon, and GitHub. Include the full url of the other site here. Example: www.threads.com/@user",
-    "copyProfileLink": "Copy Profile Link",
-
-
-    "deleteAcountReAuthWarning":"Please enter your password to confirm you wish to delete your account. This Action cannot be undone. Upon clicking the button below, your account will be deleted.",
-
-
-    "logIntoApp":"Login required",
-    "logInRequired":"Please log in to access all features of Eko.",
-   
-    "send":"Send",
-    "reportDetails":"Please provide information on why you are reporting this post.",
-    "commentRequired":"Comment Required",
-
-
-    "tooEarlyDeleteTitle":"Please Wait",
-    "tooEarlyDeleteBody":"Posts/comments may only be deleted 48 hours after they are posted.",
-
-
-    "deletePostWarningTitle":"Delete Post",
-    "deleteCommentWarningTitle":"Delete Comment",
-    "deletePostWarningBody":"Are you sure you wish to proceed? This action cannot be undone.",
-
-
-    "invalidSession":"This Eko account is being used on another device. Press below to continue on this device.",
-    "birthday":"Birthday",
-    "month":"Month",
-    "day":"Day",
-    "year":"Year",
-
-
-    "invalidBirthdayTitle":"Invalid Birthday",
-    "invalidBirthdayBody":"Please select a valid birthday.",
-    "tooYoungTitle":"You are too young",
-    "tooYoungBody":"You must be 13 years old to make an account",
-   
-    "bySigningUp":"By signing up, you agree to our ",
-    "termsAndConditions":"Terms and Conditions",
-
-
-    "block":"Block",
-    "unblock":"Unblock",
-
-
-    "blockTitle":"Block User",
-    "blockBody":"This will hide content the user posts and prevent them from viewing your profile.",
-   
-    "blockedAccounts":"Blocked Accounts",
-    "newActivityNotifications":"New Activity Notifications",
-	"shareOnlineStatus":"Share Online Status",
-    "showPostPreview":"Show post preview",
-    "postPreviewInfoTitle":"Preview Disabled",
-    "postPreviewInfoBody":"Posts will now be published immediately after you press the post button.",
-
-
-    "blockedByUserMessage":"You do not currently have permission to view this content.",
-    "birthdayExplanation":"We use this to ensure you are old enough to use the app.",
-    "noImageSelected":"No image selected",
-    "changeImage":"Change Image",
-    "pickImage":"Pick Image",
-    "verification":"Verification",
-    "verificationUrl":"Verification Url",
-    "continueWithGoogle":"Continue with Google",
-    
-    "loginFailedTitle":"Login Failed",
-    "loginFailedBody":"Please check your email and password and try again.",
-
-    "changeEmail":"Change Email",
-    "changePassword":"Change Password",
-    "currentPassword":"Current Password",
-    "currentEmail":"Current email",
-    "newEmail":"New Email",
-    "passwordChangedBody":"Your password has been updated.",
-    "changeEmailVerificationTitle":"Verify your new email",
-    "changeEmailVerificationBody":"We sent a verification link to your new email address. Open it to finish changing your email."
+    }
+  },
+  "exitEditProfileTitle": "Are you sure you want to exit?",
+  "exitEditProfileBody": "All changes will be lost.",
+  "stay": "Stay",
+  "exit": "Exit",
+  "back": "Back",
+  "goBack": "Go Back",
+  "tryAgain": "Try Again",
+  "signUp": "Sign Up",
+  "signIn": "Sign In",
+  "forgotPassword": "Forgot Password?",
+  "passwordMinChars": "8 or more characters",
+  "passwordMatch": "Passwords match",
+  "close": "Close",
+  "likes": "Up-Ekos",
+  "dislikes": "Down-Ekos",
+  "comment": "Comment",
+  "follow": "Follow",
+  "followers": "Followers",
+  "following": "Following",
+  "editProfile": "Edit Profile",
+  "name": "Name",
+  "userName": "Username",
+  "postTitle": "Title",
+  "newLines": "New Lines",
+  "characters": "Characters",
+  "addText": "Add text...",
+  "error": "Error",
+  "create": "Create",
+  "postButton": "Post",
+  "clear": "Clear",
+  "tooManyChar": "Too many characters.",
+  "tooManyLine": "Too many newlines.",
+  "emptyFieldError": "Make sure all fields are filled.",
+  "bioTitle": "Bio",
+  "logOut": "Log Out",
+  "deleteAccount": "Delete Account",
+  "darkMode": "Dark Mode",
+  "addComment": "Add a comment...",
+  "settings": "Settings",
+  "createAccount": "Create Account",
+  "createAnAccount": "Create an Account",
+  "cont": "Continue",
+  "createAPassword": "Create a Password",
+  "deleteAcountTitle": "Are you sure you want to delete your account?",
+  "deleteAcountBody": "All account data will be deleted. This action cannot be undone. Press \"Go Back\" to cancel",
+  "delete": "Delete",
+  "report": "Report",
+  "save": "Save",
+  "search": "Search",
+  "cancel": "Cancel",
+  "resetPassword": "Reset Password",
+  "sendResetLink": "Send reset link",
+  "ok": "Ok",
+  "recentActivity": "Recent Activity",
+  "nothingToSeeHere": "Nothing to see here!",
+  "someone": "Someone",
+  "commentText": "commented on your post",
+  "next": "Next",
+  "done": "Done",
+  "public": "Public",
+  "reply": "Reply",
+  "userNotFound": "User Not Found",
+  "usernameReqs": "Usernames must be between 3 and 24 characters. Usernames can only contain lowercase letters, numbers, and underscores.",
+  "followText": "started following you",
+  "taggedText": "tagged you:",
+  "coppiedToClipboard": "Copied to Clipboard",
+  "download": "Download",
+  "getTheApp": "Get the App",
+  "gifLoadingError": "Failed to load",
+  "viewLikes": "See Up-Ekos",
+  "viewDislikes": "See Down-Ekos",
+  "updateRequiredTitle": "Update Required",
+  "updateRequiredBody": "Please download the latest update to continue.",
+  "update": "Update",
+  "postNotFound": "Post Not Found",
+  "share": "Share",
+  "copyLink": "Copy Link",
+  "copied": "Copied",
+  "shareProfile": "Share Profile",
+  "logIntoApp": "Login required",
+  "logInRequired": "Please log in to access all features of Eko.",
+  "send": "Send",
+  "reportDetails": "Please provide information on why you are reporting this post.",
+  "commentRequired": "Comment Required",
+  "tooEarlyDeleteBody": "Posts/comments may only be deleted 48 hours after they are posted.",
+  "deletePostWarningTitle": "Delete Post",
+  "deleteCommentWarningTitle": "Delete Comment",
+  "deletePostWarningBody": "Are you sure you wish to proceed? This action cannot be undone.",
+  "birthday": "Birthday",
+  "month": "Month",
+  "day": "Day",
+  "year": "Year",
+  "invalidBirthdayBody": "Please select a valid birthday.",
+  "tooYoungBody": "You must be 13 years old to make an account",
+  "bySigningUp": "By signing up, you agree to our ",
+  "termsAndConditions": "Terms and Conditions",
+  "block": "Block",
+  "unblock": "Unblock",
+  "blockTitle": "Block User",
+  "blockBody": "This will hide content the user posts and prevent them from viewing your profile.",
+  "blockedAccounts": "Blocked Accounts",
+  "newActivityNotifications": "New Activity Notifications",
+  "shareOnlineStatus": "Share Online Status",
+  "showPostPreview": "Show post preview",
+  "postPreviewInfoTitle": "Preview Disabled",
+  "postPreviewInfoBody": "Posts will now be published immediately after you press the post button.",
+  "blockedByUserMessage": "You do not currently have permission to view this content.",
+  "birthdayExplanation": "We use this to ensure you are old enough to use the app.",
+  "pickImage": "Pick Image",
+  "verificationUrl": "Verification Url",
+  "continueWithGoogle": "Continue with Google",
+  "loginFailedBody": "Please check your email and password and try again.",
+  "changeEmail": "Change Email",
+  "changePassword": "Change Password",
+  "currentPassword": "Current Password",
+  "currentEmail": "Current email",
+  "newEmail": "New Email",
+  "passwordChangedBody": "Your password has been updated.",
+  "changeEmailVerificationTitle": "Verify your new email",
+  "changeEmailVerificationBody": "We sent a verification link to your new email address. Open it to finish changing your email."
 }

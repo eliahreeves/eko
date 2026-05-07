@@ -91,6 +91,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   freezed: ^3.0.6
   json_serializable: ^6.9.5
+  remove_unused_localizations_keys: ^0.0.40
   riverpod_generator: ^2.6.5
   riverpod_lint: ^2.6.5
 
