@@ -10,9 +10,11 @@ class ProfileRedirect extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
-    if (currentUser.user.username.isNotEmpty) {
+    final username = currentUser.user.username;
+    final uid = currentUser.user.uid;
+    if (username.isNotEmpty && uid.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) context.go('/users/${currentUser.user.username}');
+        if (context.mounted) context.go('/users/$username?uid=$uid');
       });
       return const Scaffold(body: Center(child: LoadingSpinner()));
     }

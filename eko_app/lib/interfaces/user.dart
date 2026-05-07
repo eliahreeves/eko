@@ -109,11 +109,11 @@ Future<String> forgotPassword({
 
 Future<String?> getUidFromUsername(String username) async {
   final data = await supabase
-      .from('usernames')
-      .select('user_uid')
+      .from('users')
+      .select('id')
       .eq('username', username)
       .maybeSingle();
-  return data?['user_uid'] as String?;
+  return data?['id'] as String?;
 }
 
 Future<String> verifyPasswordReset(String code) async {

@@ -38,15 +38,21 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
   }
 
   Future<void> _resolveUid() async {
-    // If uid is provided, use it directly (happy path)
-    if (widget.uid != null) {
+    if (widget.uid != null && widget.uid!.isNotEmpty) {
       setState(() {
         _resolvedUid = widget.uid;
       });
       return;
     }
 
-    // Otherwise, fetch uid from username
+    final me = ref.read(currentUserProvider).user;
+    if (me.username == widget.username && me.uid.isNotEmpty) {
+      setState(() {
+        _resolvedUid = me.uid;
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
