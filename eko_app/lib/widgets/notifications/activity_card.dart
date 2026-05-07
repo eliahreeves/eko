@@ -94,8 +94,9 @@ String _activityTypeText(ActivityType type, AppLocalizations l10n) {
     case ActivityType.follow:
       return l10n.followText;
     case ActivityType.postTag:
+      return l10n.postTaggedText;
     case ActivityType.commentTag:
-      return l10n.taggedText;
+      return l10n.commentTaggedText;
     case ActivityType.comment:
       return l10n.commentText;
   }

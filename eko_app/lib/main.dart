@@ -103,6 +103,8 @@ class MyApp extends ConsumerWidget {
         supportedLocales: const [
           Locale('en'), // English
           Locale('es'), // Spanish
+          Locale('hi'), // Hindi
+          Locale('id'), // Indonesian
         ],
         builder: (context, child) => CheckVersion(child: child),
         routerConfig: ref.watch(goRouterProvider),
