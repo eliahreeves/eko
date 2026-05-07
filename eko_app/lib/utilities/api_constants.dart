@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 const _klipyKey = [
   81,
   76,
@@ -112,8 +114,13 @@ final _supabaseKey = [
   104,
   50
 ];
-const supabaseUrl = 'https://nkwizistugahxfwdwtwg.supabase.co';
-final supabaseKey = String.fromCharCodes(_supabaseKey);
+const _useLocal = kDebugMode && (String.fromEnvironment('USE_LOCAL') == '1');
+const supabaseUrl = _useLocal
+    ? String.fromEnvironment('SUPABASE_URL')
+    : 'https://nkwizistugahxfwdwtwg.supabase.co';
+final supabaseKey = _useLocal
+    ? String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY')
+    : String.fromCharCodes(_supabaseKey);
 final klipyKey = String.fromCharCodes(_klipyKey);
 const vapidPublicKey =
     'BFo24IYjHDx-wf82zp7ngoj1Bmm_xrtnF38DzgD2HqEJOoeJhOKipVcC7bwqNwrcHXL01ERh2HWktpKsiiRtZi4';
