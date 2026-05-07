@@ -201,19 +201,50 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                         path: 'likes',
                         name: 'likes',
                         builder: (context, state) {
-                          int postId = state.extra as int;
-                          return ViewLikesPage(postId: postId);
+                          final id =
+                              int.tryParse(state.pathParameters['id'] ?? '');
+                          if (id == null) {
+                            return const FeedPage();
+                          }
+                          return ViewPostLikesPage(postId: id);
                         },
                       ),
                       GoRoute(
                         path: 'dislikes',
                         name: 'dislikes',
                         builder: (context, state) {
-                          int postId = state.extra as int;
-                          return ViewLikesPage(postId: postId, dislikes: true);
+                          final id =
+                              int.tryParse(state.pathParameters['id'] ?? '');
+                          if (id == null) {
+                            return const FeedPage();
+                          }
+                          return ViewPostLikesPage(postId: id, dislikes: true);
                         },
                       ),
                     ],
+                  ),
+                  GoRoute(
+                    path: 'comment/:id/likes',
+                    name: 'comment_likes',
+                    builder: (context, state) {
+                      final id = int.tryParse(state.pathParameters['id'] ?? '');
+                      if (id == null) {
+                        return const FeedPage();
+                      }
+                      return ViewCommentLikesPage(commentId: id);
+                    },
+                  ),
+                  GoRoute(
+                    path: 'comment/:id/dislikes',
+                    name: 'comment_dislikes',
+                    builder: (context, state) {
+                      final id = int.tryParse(state.pathParameters['id'] ?? '');
+                      if (id == null) {
+                        return const FeedPage();
+                      }
+                      return ViewCommentLikesPage(
+                          commentId: id, dislikes: true);
+                    },
                   ),
                 ],
               ),
