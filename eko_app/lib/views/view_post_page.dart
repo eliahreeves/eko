@@ -374,7 +374,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
                 Expanded(
                   child: Stack(
                     children: [
-                      InfiniteScrollyShell<int>(
+                      InfiniteScrollyCore<int>(
                         isEnd: provider.$2,
                         list: provider.$1,
                         header: PostCard(id: widget.id, isPostPage: true),

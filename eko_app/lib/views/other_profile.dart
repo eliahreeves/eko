@@ -239,7 +239,7 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                 ),
               );
             }
-            return InfiniteScrollyShell<int>(
+            return InfiniteScrollyCore<int>(
               getter: loadMorePosts,
               list: postListState.$1,
               isEnd: postListState.$2,

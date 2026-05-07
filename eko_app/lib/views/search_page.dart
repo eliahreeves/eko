@@ -87,7 +87,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       onPanDown: (details) => FocusManager.instance.primaryFocus?.unfocus(),
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        body: InfiniteScrollyShell<String>(
+        body: InfiniteScrollyCore<String>(
           onRefresh: () async {
             if (debounce?.isActive ?? false) debounce!.cancel();
             final res = await SearchInterface.getter([], ref, controller.text);
