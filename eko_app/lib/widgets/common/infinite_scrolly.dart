@@ -106,7 +106,7 @@ class _InfiniteScrollyState<K, V> extends State<InfiniteScrolly<K, V>> {
 
   @override
   Widget build(BuildContext context) {
-    return InfiniteScrollyShell<K>(
+    return InfiniteScrollyCore<K>(
       appBar: widget.appBar,
       header: widget.header,
       initialLoadingWidget: widget.initialLoadingWidget,
@@ -121,7 +121,7 @@ class _InfiniteScrollyState<K, V> extends State<InfiniteScrolly<K, V>> {
   }
 }
 
-class InfiniteScrollyShell<T> extends StatefulWidget {
+class InfiniteScrollyCore<T> extends StatefulWidget {
   final Future<void> Function() getter;
 
   /// Builder function that takes a key and returns a widget to display it.
@@ -154,7 +154,7 @@ class InfiniteScrollyShell<T> extends StatefulWidget {
   /// Optional controller
   final ScrollController? controller;
 
-  const InfiniteScrollyShell({
+  const InfiniteScrollyCore({
     super.key,
     required this.getter,
     required this.widget,
@@ -170,27 +170,39 @@ class InfiniteScrollyShell<T> extends StatefulWidget {
   });
 
   @override
-  State<InfiniteScrollyShell<T>> createState() => _InfiniteScrollyShell<T>();
+  State<InfiniteScrollyCore<T>> createState() => _InfiniteScrollyCore<T>();
 }
 
-class _InfiniteScrollyShell<T> extends State<InfiniteScrollyShell<T>> {
+class _InfiniteScrollyCore<T> extends State<InfiniteScrollyCore<T>> {
+  static const double _loadMoreTriggerDistance = 200;
+  static const double _autoTopupScrollTolerance = 32;
   late final ScrollController scrollController;
   bool isLoading = false;
 
-  void onScroll() async {
-    if (widget.isEnd) {
-      return;
-    }
-    if (scrollController.position.maxScrollExtent -
-            scrollController.position.pixels <=
-        scrollController.position.maxScrollExtent * 0.2) {
-      if (isLoading) {
-        return;
-      }
-
-      isLoading = true;
+  Future<void> _loadMore() async {
+    if (widget.isEnd || isLoading) return;
+    isLoading = true;
+    try {
       await widget.getter();
+    } finally {
       isLoading = false;
+    }
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !scrollController.hasClients) return;
+      if (!widget.isEnd &&
+          scrollController.position.maxScrollExtent <=
+              _autoTopupScrollTolerance) {
+        _loadMore();
+      }
+    });
+  }
+
+  void onScroll() {
+    if (widget.isEnd) return;
+    final pos = scrollController.position;
+    if (pos.maxScrollExtent - pos.pixels <= _loadMoreTriggerDistance) {
+      _loadMore();
     }
   }
 
@@ -198,8 +210,7 @@ class _InfiniteScrollyShell<T> extends State<InfiniteScrollyShell<T>> {
   void initState() {
     scrollController = widget.controller ?? ScrollController();
     if (widget.list.isEmpty && !widget.isEnd) {
-      isLoading = true;
-      widget.getter().then((_) => isLoading = false);
+      _loadMore();
     }
     scrollController.addListener(onScroll);
     super.initState();

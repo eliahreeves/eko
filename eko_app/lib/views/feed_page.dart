@@ -363,7 +363,7 @@ class __FollowingTabState extends ConsumerState<_FollowingTab>
   Widget build(BuildContext context) {
     super.build(context);
     final provider = ref.watch(followingFeedProvider);
-    return InfiniteScrollyShell<int>(
+    return InfiniteScrollyCore<int>(
       isEnd: provider.$2,
       list: provider.$1,
       header: SizedBox(height: appBarHeight),
@@ -393,7 +393,7 @@ class __NewTabState extends ConsumerState<_NewTab>
   Widget build(BuildContext context) {
     super.build(context);
     final provider = ref.watch(newFeedProvider);
-    return InfiniteScrollyShell<int>(
+    return InfiniteScrollyCore<int>(
       isEnd: provider.$2,
       list: provider.$1,
       header: SizedBox(height: appBarHeight),
@@ -423,7 +423,7 @@ class __PopTabState extends ConsumerState<_PopTab>
   Widget build(BuildContext context) {
     super.build(context);
     final provider = ref.watch(popularFeedProvider);
-    return InfiniteScrollyShell<int>(
+    return InfiniteScrollyCore<int>(
       isEnd: provider.$2,
       list: provider.$1,
       header: SizedBox(height: appBarHeight),
