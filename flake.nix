@@ -23,6 +23,8 @@
           unzip
           supabase-cli
           ungoogled-chromium
+          sops
+          age
         ];
         commonShellHook = ''
           git config core.hooksPath scripts/git-hooks

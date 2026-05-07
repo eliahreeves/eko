@@ -1,0 +1,7 @@
+creation_rules:
+  - path_regex: supabase/\.env$
+    key_groups:
+      - age:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOanOZf0P4dP7gnyYLQ8WcxTm3ln5rFZE+J/1RhTewVR ericchuang94@gmail.com
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJT4WXnfL1SCvyBo6p3+pUNSBI+ZxyTADd4NzX5GKd0Z ereeclimb@gmail.com
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZnymIHOfUPHQuCbaW8aPC9lkrV7kHBaE0sEQDaykG3 christiantknab@gmail.com
