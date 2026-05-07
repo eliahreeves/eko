@@ -291,7 +291,7 @@ async function getComment(commentId: string) {
 async function getUser(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("users")
-    .select("name")
+    .select("username")
     .eq("id", userId)
     .single();
 
@@ -327,7 +327,7 @@ async function getNotificationPayload(record: any) {
   let payloadData: { type?: string; path?: string } = {};
 
   const userData = await getUser(record.source_uid || record.author_uid);
-  const sourceName = userData?.name || "Someone";
+  const sourceName = userData?.username;
 
   if (record.table === "activity") {
     if (record.type === "comment") {
