@@ -49,6 +49,9 @@ class PrefsService {
       instance.getBool(_keyNotFirstInstall) ?? false;
   static set notFirstInstall(bool value) =>
       instance.setBool(_keyNotFirstInstall, value);
+  static Future<void> markNotFirstInstall() async {
+    await instance.setBool(_keyNotFirstInstall, true);
+  }
 
   static int get lastFeedPageIndex =>
       instance.getInt(_keyLastFeedPageIndex) ?? 1;

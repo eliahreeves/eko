@@ -11,6 +11,7 @@ import 'package:eko_app/providers/theme_provider.dart';
 import 'package:eko_app/utilities/logo_service.dart';
 import 'package:eko_app/utilities/provider_debugger.dart';
 import 'package:eko_app/utilities/shared_pref_service.dart';
+import 'package:eko_app/utilities/supabase_session_storage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/scaffolds/check_version.dart';
@@ -23,16 +24,26 @@ Future<void> _checkFirstInstall() async {
     if (!kDebugMode && Supabase.instance.client.auth.currentSession != null) {
       await Supabase.instance.client.auth.signOut();
     }
-    PrefsService.notFirstInstall = true;
+    await PrefsService.markNotFirstInstall();
   }
 }
 
 Future<void> _initSupabase() async {
+  final projectRef = Uri.parse(ac.supabaseUrl).host.split('.').first;
   await Supabase.initialize(
-      url: ac.supabaseUrl,
-      anonKey: ac.supabaseKey,
-      authOptions:
-          const FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit));
+    url: ac.supabaseUrl,
+    anonKey: ac.supabaseKey,
+    authOptions: Platform.isLinux
+        ? FlutterAuthClientOptions(
+            authFlowType: AuthFlowType.implicit,
+            localStorage: ReliableSupabaseSessionStorage(
+              persistSessionKey: 'sb-$projectRef-auth-token',
+            ),
+          )
+        : FlutterAuthClientOptions(
+            authFlowType: AuthFlowType.implicit,
+          ),
+  );
 }
 
 Future<void> main(List<String> args) async {

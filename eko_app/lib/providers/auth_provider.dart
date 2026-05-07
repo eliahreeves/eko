@@ -132,7 +132,7 @@ class Auth extends _$Auth {
         }
       },
       onError: (error) {
-        debugPrint('Auth state change error: $error');
+        debugPrint('Auth state change error: $error (${error.runtimeType})');
         if (error is AuthException) {
           supabase.auth.signOut().catchError((e) {
             debugPrint('Error signing out after auth error: $e');
