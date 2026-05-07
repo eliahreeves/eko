@@ -10,19 +10,95 @@ import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 
-class ViewLikesPage extends ConsumerWidget {
+class ViewPostLikesPage extends ConsumerWidget {
   final int postId;
   final bool dislikes;
-  const ViewLikesPage({super.key, required this.postId, this.dislikes = false});
+  const ViewPostLikesPage({
+    super.key,
+    required this.postId,
+    this.dislikes = false,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef _) {
+    return Scaffold(
+      appBar: AppBar(
+        title: dislikes
+            ? Text(AppLocalizations.of(context)!.viewDislikes)
+            : Text(AppLocalizations.of(context)!.viewLikes),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          onPressed: () => context.pop(),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+      ),
+      body: _LikesList(
+        rpcName: 'paginated_post_likes',
+        targetId: postId,
+        dislikes: dislikes,
+      ),
+    );
+  }
+}
+
+class ViewCommentLikesPage extends ConsumerWidget {
+  final int commentId;
+  final bool dislikes;
+  const ViewCommentLikesPage({
+    super.key,
+    required this.commentId,
+    this.dislikes = false,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef _) {
+    return Scaffold(
+      appBar: AppBar(
+        title: dislikes
+            ? Text(AppLocalizations.of(context)!.viewDislikes)
+            : Text(AppLocalizations.of(context)!.viewLikes),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          onPressed: () => context.pop(),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+      ),
+      body: _LikesList(
+        rpcName: 'paginated_comment_likes',
+        targetId: commentId,
+        dislikes: dislikes,
+      ),
+    );
+  }
+}
+
+class _LikesList extends ConsumerWidget {
+  final String rpcName;
+  final int targetId;
+  final bool dislikes;
+
+  const _LikesList({
+    required this.rpcName,
+    required this.targetId,
+    required this.dislikes,
+  });
 
   Future<(List<MapEntry<String, Never?>>, bool)> getter(
     List<MapEntry<String, Never?>> list,
     WidgetRef ref,
   ) async {
     final lastUid = list.isEmpty ? null : list.last.key;
-    final rows = await supabase.rpc('paginated_post_likes', params: {
+    final rows = await supabase.rpc(rpcName, params: {
       'p_limit': c.usersOnSearch,
-      'p_id': postId,
+      'p_id': targetId,
       'p_last_uid': lastUid,
       'p_dislikes': dislikes,
     });
@@ -41,28 +117,12 @@ class ViewLikesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: dislikes
-            ? Text(AppLocalizations.of(context)!.viewDislikes)
-            : Text(AppLocalizations.of(context)!.viewLikes),
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-      ),
-      body: InfiniteScrolly<String, Never?>(
-        getter: (data) async {
-          return await getter(data, ref);
-        },
-        widget: userCardBuilder,
-        initialLoadingWidget: UserLoader(length: 12),
-      ),
+    return InfiniteScrolly<String, Never?>(
+      getter: (data) async {
+        return await getter(data, ref);
+      },
+      widget: userCardBuilder,
+      initialLoadingWidget: UserLoader(length: 12),
     );
   }
 }

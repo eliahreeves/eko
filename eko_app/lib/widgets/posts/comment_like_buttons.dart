@@ -51,10 +51,7 @@ class CommentLikeButtons extends ConsumerWidget {
             Count(
               count: comment.likes,
               onTap: () {
-                context.push(
-                  '/feed/post/${comment.id}/likes',
-                  extra: comment.id,
-                );
+                context.push('/feed/comment/${comment.id}/likes');
               },
             ),
           ],
@@ -93,10 +90,7 @@ class CommentLikeButtons extends ConsumerWidget {
             Count(
               count: comment.dislikes,
               onTap: () {
-                context.push(
-                  '/feed/post/${comment.id}/dislikes',
-                  extra: comment.id,
-                );
+                context.push('/feed/comment/${comment.id}/dislikes');
               },
             ),
           ],

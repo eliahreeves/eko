@@ -1,4 +1,5 @@
 import 'package:eko_app/types/comment.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/post.dart';
@@ -65,17 +66,14 @@ Future<(int, List<PollOptionModel>?)> uploadPost(
 }
 
 Future<int> uploadComment(CommentModel comment, WidgetRef ref) async {
-  final json = comment.toJson();
   final uid = ref.read(currentUserProvider).user.uid;
 
-  json.remove('id');
-  json.remove('postId');
-
+  debugPrint(comment.gifUrl);
   final result = await supabase.rpc('insert_comment', params: {
     'p_created_at': comment.createdAt,
     'p_author_uid': uid,
-    'p_body': json['body'],
-    'p_gif': json['gifUrl'],
+    'p_body': comment.body.isNotEmpty ? comment.body.join('') : null,
+    'p_gif': comment.gifUrl,
     'p_parent_post_id': comment.postId,
   });
 
