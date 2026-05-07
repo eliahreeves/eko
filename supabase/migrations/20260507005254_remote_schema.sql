@@ -1697,7 +1697,7 @@ CREATE POLICY "Enable insert for users based on user_id" ON "public"."comments" 
 
 
 
-CREATE POLICY "Enable insert for users based on user_id" ON "public"."notifications" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "user_uid"));
+CREATE POLICY "Enable insert for users based on user_id" ON "public"."notifications" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_uid"));
 
 
 
@@ -1773,7 +1773,7 @@ ALTER TABLE "public"."comments" ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "create poll" ON "public"."poll_options" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."posts"
-  WHERE (("posts"."id" = "poll_options"."post_id") AND ("posts"."author_uid" = "auth"."uid"())))));
+  WHERE (("posts"."id" = "poll_options"."post_id") AND ("posts"."author_uid" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
@@ -1852,7 +1852,7 @@ CREATE POLICY "see who you have blocked" ON "public"."blocked" FOR SELECT TO "au
 
 
 
-CREATE POLICY "select only user id" ON "public"."notifications" FOR SELECT TO "authenticated" USING (("auth"."uid"() = "user_uid"));
+CREATE POLICY "select only user id" ON "public"."notifications" FOR SELECT TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_uid"));
 
 
 
@@ -1864,7 +1864,7 @@ CREATE POLICY "update based on uid" ON "public"."comment_likes" FOR UPDATE TO "a
 
 
 
-CREATE POLICY "update based on uid" ON "public"."notifications" FOR UPDATE TO "authenticated" USING (("auth"."uid"() = "user_uid")) WITH CHECK (("auth"."uid"() = "user_uid"));
+CREATE POLICY "update based on uid" ON "public"."notifications" FOR UPDATE TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_uid")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_uid"));
 
 
 
@@ -2647,6 +2647,49 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 
 
+
+
+
+drop extension if exists "pg_net";
+
+create extension if not exists "pg_net" with schema "public";
+
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+  create policy "Give users access to own folder 1pmf6kr_0"
+  on "storage"."objects"
+  as permissive
+  for insert
+  to public
+with check (((bucket_id = 'profile_pictures'::text) AND (( SELECT (auth.uid())::text AS uid) = (storage.foldername(name))[1])));
+
+
+
+  create policy "Give users access to own folder 1pmf6kr_1"
+  on "storage"."objects"
+  as permissive
+  for update
+  to public
+using (((bucket_id = 'profile_pictures'::text) AND (( SELECT (auth.uid())::text AS uid) = (storage.foldername(name))[1])));
+
+
+
+  create policy "Give users access to own folder 1pmf6kr_2"
+  on "storage"."objects"
+  as permissive
+  for select
+  to public
+using (((bucket_id = 'profile_pictures'::text) AND (( SELECT (auth.uid())::text AS uid) = (storage.foldername(name))[1])));
+
+
+
+  create policy "Give users access to own folder 1pmf6kr_3"
+  on "storage"."objects"
+  as permissive
+  for delete
+  to public
+using (((bucket_id = 'profile_pictures'::text) AND (( SELECT (auth.uid())::text AS uid) = (storage.foldername(name))[1])));
 
 
 
