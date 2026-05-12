@@ -211,10 +211,7 @@ workflows:
       - name: Build Flutter web
         script: |
           flutter config --enable-web
-          flutter build web --release \
-            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
-            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
-            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
+          flutter build web --release --wasm
       - name: Deploy to Firebase Hosting
         script: |
           firebase deploy --only hosting --non-interactive --token "$FIREBASE_TOKEN"
