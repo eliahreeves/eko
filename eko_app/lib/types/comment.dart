@@ -1,21 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:eko_app/interfaces/post.dart';
 part '../generated/types/comment.freezed.dart';
 part '../generated/types/comment.g.dart';
-
-String _joinList(List<String>? list) {
-  if (list == null) {
-    return '';
-  }
-  return list.join('');
-}
-
-List<String> _parseTags(Object? value) {
-  if (value == null) return [];
-  if (value is String) return parseTextToTags(value);
-  if (value is List) return value.map((item) => item.toString()).toList();
-  return parseTextToTags(value.toString());
-}
 
 @freezed
 abstract class CommentModel with _$CommentModel {
@@ -25,9 +10,7 @@ abstract class CommentModel with _$CommentModel {
     required int id,
     @JsonKey(name: 'parent_post_id') required int postId,
     @JsonKey(name: 'gif') String? gifUrl,
-    @Default(<String>[])
-    @JsonKey(fromJson: _parseTags, toJson: _joinList)
-    List<String> body,
+    String? body,
     @Default(0) @JsonKey(name: 'like_count') int likes,
     @Default(0) @JsonKey(name: 'dislike_count') int dislikes,
     @Default(false) @JsonKey(name: 'is_liked') bool isLiked,

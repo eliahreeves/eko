@@ -1,3 +1,4 @@
+import 'package:eko_app/widgets/posts/markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,6 @@ import 'package:eko_app/widgets/posts/like_buttons.dart';
 import 'package:eko_app/widgets/posts/repost_card.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
-import 'package:eko_app/widgets/common/text_with_tags.dart';
 import 'package:eko_app/widgets/common/time_stamp.dart';
 import 'package:eko_app/widgets/users/user_tag.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
@@ -265,16 +265,10 @@ class PostCardFromPost extends ConsumerWidget {
                           ],
                         ),
                         const SizedBox(height: 6.0),
-                        if (post.title.isNotEmpty)
-                          TextWithTags(
-                            text: post.title,
-                            baseTextStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 15,
-                              fontFamily: DefaultTextStyle.of(
-                                context,
-                              ).style.fontFamily,
-                            ),
+                        if (post.title?.isNotEmpty ?? false)
+                          MarkdownView(
+                            content: post.title!,
+                            type: MarkdownType.title,
                           ),
                         const SizedBox(height: 6.0),
                         if (post.repostId != null)
@@ -304,7 +298,8 @@ class PostCardFromPost extends ConsumerWidget {
                             padding: EdgeInsets.only(bottom: 6),
                             child: PollWidget(post: post, isPreview: isPreview),
                           ),
-                        if (post.body.isNotEmpty) TextWithTags(text: post.body),
+                        if (post.body?.isNotEmpty ?? false)
+                          MarkdownView(content: post.body!),
                       ],
                     ),
                   ),

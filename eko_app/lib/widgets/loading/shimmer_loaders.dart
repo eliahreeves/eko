@@ -4,8 +4,8 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/common/divider.dart';
 
 class PostLoader extends StatelessWidget {
-  final int length;
-  const PostLoader({this.length = 1, super.key});
+  final int length = c.postsOnRefresh;
+  const PostLoader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,8 @@ class PostLoader extends StatelessWidget {
 }
 
 class UserLoader extends StatelessWidget {
-  final int length;
-  const UserLoader({this.length = 1, super.key});
+  final int length = c.usersOnSearch;
+  const UserLoader({super.key});
 
   @override
   Widget build(BuildContext context) {

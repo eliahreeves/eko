@@ -11,9 +11,8 @@ _PostModel _$PostModelFromJson(Map<String, dynamic> json) => _PostModel(
       id: (json['id'] as num).toInt(),
       gifUrl: json['gif'] as String?,
       imageString: _asciiImageFromString(json['image'] as String?),
-      title:
-          json['title'] == null ? const <String>[] : _parseTags(json['title']),
-      body: json['body'] == null ? const <String>[] : _parseTags(json['body']),
+      title: json['title'] as String?,
+      body: json['body'] as String?,
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
               const ['public'],
@@ -36,8 +35,8 @@ Map<String, dynamic> _$PostModelToJson(_PostModel instance) =>
       'id': instance.id,
       'gif': instance.gifUrl,
       'image': _asciiImageToString(instance.imageString),
-      'title': _joinList(instance.title),
-      'body': _joinList(instance.body),
+      'title': instance.title,
+      'body': instance.body,
       'tags': instance.tags,
       'like_count': instance.likes,
       'dislike_count': instance.dislikes,

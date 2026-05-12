@@ -1,3 +1,4 @@
+import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -369,7 +370,7 @@ class __FollowingTabState extends ConsumerState<_FollowingTab>
       header: SizedBox(height: appBarHeight),
       getter: ref.read(followingFeedProvider.notifier).getter,
       onRefresh: ref.read(followingFeedProvider.notifier).refresh,
-      initialLoadingWidget: PostLoader(length: 3),
+      initialLoadingWidget: PostLoader(),
       widget: postCardBuilder,
       controller: widget.controller,
     );
@@ -399,7 +400,7 @@ class __NewTabState extends ConsumerState<_NewTab>
       header: SizedBox(height: appBarHeight),
       getter: ref.read(newFeedProvider.notifier).getter,
       onRefresh: ref.read(newFeedProvider.notifier).refresh,
-      initialLoadingWidget: PostLoader(length: 3),
+      initialLoadingWidget: PostLoader(),
       widget: postCardBuilder,
       controller: widget.controller,
     );
@@ -429,7 +430,7 @@ class __PopTabState extends ConsumerState<_PopTab>
       header: SizedBox(height: appBarHeight),
       getter: ref.read(popularFeedProvider.notifier).getter,
       onRefresh: ref.read(popularFeedProvider.notifier).refresh,
-      initialLoadingWidget: PostLoader(length: 3),
+      initialLoadingWidget: PostLoader(),
       widget: postCardBuilder,
       controller: widget.controller,
     );

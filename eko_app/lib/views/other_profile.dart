@@ -247,7 +247,7 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                   ? profilePostCardBuilder
                   : otherProfilePostCardBuilder,
               onRefresh: onRefresh,
-              initialLoadingWidget: PostLoader(length: 3),
+              initialLoadingWidget: PostLoader(),
               header: _Header(user: profileUser, isCurrentUser: isCurrentUser),
               appBar: SliverAppBar(
                 floating: true,

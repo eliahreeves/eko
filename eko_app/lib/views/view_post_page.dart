@@ -223,7 +223,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
             id: 0,
             postId: widget.id,
             createdAt: DateTime.now().toUtc().toIso8601String(),
-            body: parseTextToTags(body),
+            body: body,
           );
         }
       } else {

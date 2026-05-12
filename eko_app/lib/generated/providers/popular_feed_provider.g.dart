@@ -6,7 +6,7 @@ part of '../../providers/popular_feed_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$popularFeedHash() => r'474d8eb17cb9488a9d15a5569a0d84b946b66d97';
+String _$popularFeedHash() => r'7706d653c1eff0da6b588bd950795944a7557dfd';
 
 /// See also [PopularFeed].
 @ProviderFor(PopularFeed)
