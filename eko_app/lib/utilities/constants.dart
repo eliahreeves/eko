@@ -149,3 +149,4 @@ const String playStoreURL =
 const String appStoreURL =
     'https://apps.apple.com/us/app/eko/id6470772031?platform=iphone';
 const String termsUrl = 'https://eko-app.com/privacy-policy';
+const String finance = 'https://finance.yahoo.com/quote/';

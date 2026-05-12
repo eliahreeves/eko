@@ -64,12 +64,16 @@ class UserCard extends ConsumerWidget {
   final Widget Function(UserModel)? actionWidget;
   final String uid;
   final void Function(UserModel)? onCardPressed;
+  final void Function(UserModel)? onCardTapDown;
+  final bool canRequestFocus;
   const UserCard({
     super.key,
     required this.uid,
     this.actionWidget,
     this.showBlockedUsers = false,
     this.onCardPressed,
+    this.onCardTapDown,
+    this.canRequestFocus = true,
   });
 
   // void unblockPressed(UserModel user) {
@@ -91,6 +95,8 @@ class UserCard extends ConsumerWidget {
           return SizedBox.shrink();
         }
         return InkWell(
+          canRequestFocus: canRequestFocus,
+          onTapDown: onCardTapDown == null ? null : (_) => onCardTapDown!(user),
           onTap: () {
             if (onCardPressed != null) {
               onCardPressed!(user);

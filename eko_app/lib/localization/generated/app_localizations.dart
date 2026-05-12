@@ -990,6 +990,18 @@ abstract class AppLocalizations {
   /// **'Check password requirements and try again.'**
   String get weakPasswordBody;
 
+  /// No description provided for @write.
+  ///
+  /// In en, this message translates to:
+  /// **'Write'**
+  String get write;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
   /// No description provided for @year.
   ///
   /// In en, this message translates to:

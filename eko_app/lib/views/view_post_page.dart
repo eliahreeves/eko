@@ -39,7 +39,6 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
   final reportFocus = FocusNode();
   final reportController = TextEditingController();
   final ScrollController commentsScrollController = ScrollController();
-
   @override
   void dispose() {
     commentsScrollController.dispose();

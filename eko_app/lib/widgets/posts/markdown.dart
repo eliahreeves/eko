@@ -1,4 +1,5 @@
 import 'package:eko_app/providers/current_user_provider.dart';
+import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,12 +20,16 @@ Future<void> _defaultTagPressed(
   }
 }
 
-String formatMentions(String content) {
+String _format(String content) {
   final RegExp mentionRegex = RegExp(r'(@[a-z0-9_]{3,24})');
+  final RegExp tickerRegex = RegExp(r'(\$[A-Z]{2,5}\b)');
 
   return content.replaceAllMapped(mentionRegex, (match) {
     String y = match[0]!;
     return '[$y]($y)';
+  }).replaceAllMapped(tickerRegex, (match) {
+    String y = match[0]!;
+    return '[$y](${c.finance}${y.substring(1)}/)';
   });
 }
 
@@ -68,7 +73,38 @@ class MarkdownView extends ConsumerWidget {
             } finally {}
           }
         },
-        data: formatMentions(content),
+        // disallow images for now
+        imageBuilder: (_, __, ___) => SizedBox(),
+        checkboxBuilder: (checked) {
+          final colors = Theme.of(context).colorScheme;
+          final borderColor =
+              checked ? colors.onSurface : colors.onSurface.withAlpha(128);
+          final fillColor = checked ? colors.onSurface : Colors.transparent;
+
+          return Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints.tightFor(width: 14, height: 14),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: fillColor,
+                  borderRadius: BorderRadius.circular(3),
+                  border: Border.all(width: 1.6, color: borderColor),
+                ),
+                child: checked
+                    ? Center(
+                        child: Icon(
+                          Icons.check,
+                          size: 12,
+                          color: colors.onPrimary,
+                        ),
+                      )
+                    : null,
+              ),
+            ),
+          );
+        },
+        data: _format(content),
         styleSheet: getTheme(context, type));
   }
 }

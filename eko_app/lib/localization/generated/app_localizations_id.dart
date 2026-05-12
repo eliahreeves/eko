@@ -475,5 +475,11 @@ class AppLocalizationsId extends AppLocalizations {
       'Periksa persyaratan kata sandi dan coba lagi.';
 
   @override
+  String get write => 'Tulis';
+
+  @override
+  String get preview => 'Pratinjau';
+
+  @override
   String get year => 'Tahun';
 }

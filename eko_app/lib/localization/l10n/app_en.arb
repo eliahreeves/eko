@@ -155,5 +155,7 @@
   "viewLikes" : "See Up-Ekos",
   "votes" : "votes",
   "weakPasswordBody" : "Check password requirements and try again.",
+  "write" : "Write",
+  "preview" : "Preview",
   "year" : "Year"
 }
