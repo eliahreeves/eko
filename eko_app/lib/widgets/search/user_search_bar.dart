@@ -16,15 +16,10 @@ class UserSearchBar extends StatelessWidget {
         cursorColor: Theme.of(context).colorScheme.onSurface,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(height * 0.01),
-          prefixIcon: Padding(
-            padding: EdgeInsets.all(width * 0.035),
-            child: Image.asset(
-              (Theme.of(context).brightness == Brightness.dark)
-                  ? 'images/algolia_logo_white.png'
-                  : 'images/algolia_logo_blue.png',
-              width: width * 0.05,
-              height: width * 0.05,
-            ),
+          prefixIcon: Icon(
+            Icons.search,
+            size: width * 0.05,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           hintText: AppLocalizations.of(context)!.search,
           filled: true,
