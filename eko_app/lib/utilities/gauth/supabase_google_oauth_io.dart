@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/utilities/platform.dart' as platform;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> signInWithGoogleOAuth(GoTrueClient auth) async {
-  if (Platform.isAndroid || Platform.isIOS) {
+  if (platform.isMobile) {
     final launched = await auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: c.supabaseOAuthRedirectUrl,
@@ -17,7 +17,7 @@ Future<void> signInWithGoogleOAuth(GoTrueClient auth) async {
     return;
   }
 
-  if (!Platform.isLinux) {
+  if (!platform.isDesktop) {
     await auth.signInWithOAuth(
       OAuthProvider.google,
       queryParams: {'prompt': 'select_account'},

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:eko_app/utilities/platform.dart' as platform;
 import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -18,12 +18,9 @@ class Version {
   }
 
   Future<void> getAppVersion() async {
-    bool ios = Platform.isIOS;
-    bool android = Platform.isAndroid;
-
-    if (ios || android) {
+    if (platform.isMobile) {
       minimumVersion = await supabase.rpc('get_min_version',
-          params: {'p_platform': ios ? 'ios' : 'android'});
+          params: {'p_platform': platform.isIOS ? 'ios' : 'android'});
     } else {
       minimumVersion = '0.0.0';
       return;

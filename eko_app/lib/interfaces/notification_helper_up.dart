@@ -66,14 +66,14 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
         LinuxInitializationSettings(defaultActionName: _linuxDefaultActionName);
     await _flutterLocalNotifications.initialize(
       settings: InitializationSettings(
-        android: Platform.isAndroid ? androidInit : null,
-        linux: Platform.isLinux ? linuxInit : null,
+        android: platform.isAndroid ? androidInit : null,
+        linux: platform.isLinux ? linuxInit : null,
       ),
-      onDidReceiveNotificationResponse: (Platform.isAndroid || Platform.isLinux)
+      onDidReceiveNotificationResponse: (platform.isAndroid || platform.isLinux)
           ? _onLocalNotificationResponse
           : null,
     );
-    if (Platform.isAndroid) {
+    if (platform.isAndroid) {
       final android =
           _flutterLocalNotifications.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
@@ -110,7 +110,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   }
 
   static Future<void> _clearStaleLinuxSavedDistributorIfNeeded() async {
-    if (!Platform.isLinux) return;
+    if (!platform.isLinux) return;
     final storage = UnifiedPushStorageSharedPreferences();
     final saved = await storage.distrib.get();
     if (saved == null || saved.isEmpty) return;
@@ -138,7 +138,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
     try {
       debugPrint('[UnifiedPush] initialize start');
       await _ensureFlutterLocalNotificationsInitialized();
-      final LinuxOptions? linuxOptions = Platform.isLinux
+      final LinuxOptions? linuxOptions = platform.isLinux
           ? LinuxOptions(
               dbusName: _linuxDbusName,
               storage: UnifiedPushStorageSharedPreferences(),
@@ -202,7 +202,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
             payload = null;
           }
           final NotificationDetails details;
-          if (Platform.isAndroid) {
+          if (platform.isAndroid) {
             details = const NotificationDetails(
               android: AndroidNotificationDetails(
                 _androidChannelId,
@@ -211,7 +211,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
                 priority: Priority.high,
               ),
             );
-          } else if (Platform.isLinux) {
+          } else if (platform.isLinux) {
             details = NotificationDetails(
               linux: LinuxNotificationDetails(
                 defaultActionName: _linuxDefaultActionName,
@@ -342,19 +342,19 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
   Future<void> requestPermissions() async {
     await _ensureInitialized();
     debugPrint('[UnifiedPush] requestPermissions start');
-    if (Platform.isAndroid) {
+    if (platform.isAndroid) {
       final notification = await Permission.notification.request();
       debugPrint(
           '[UnifiedPush] notification permission=${notification.toString()}');
     }
-    if (Platform.isAndroid || Platform.isLinux) {
+    if (platform.isAndroid || platform.isLinux) {
       await WidgetsBinding.instance.endOfFrame;
       debugPrint('[UnifiedPush] requestPermissions after endOfFrame');
     }
     var success = await UnifiedPush.tryUseCurrentOrDefaultDistributor();
     debugPrint(
         '[UnifiedPush] tryUseCurrentOrDefaultDistributor success=$success');
-    if (!success && Platform.isAndroid) {
+    if (!success && platform.isAndroid) {
       await WidgetsBinding.instance.endOfFrame;
       success = await UnifiedPush.tryUseCurrentOrDefaultDistributor();
       debugPrint(

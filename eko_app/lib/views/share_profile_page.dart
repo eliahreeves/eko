@@ -15,6 +15,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/utilities/platform.dart' as platform;
 
 GlobalKey repaintKey = GlobalKey();
 
@@ -61,11 +62,9 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
     final String shareUrl =
         '${c.appURL}/users/${ref.read(currentUserProvider).user.username}';
     final width = c.widthGetter(context);
-    final icon = kIsWeb
-        ? CupertinoIcons.arrowshape_turn_up_right
-        : Platform.isIOS
-            ? CupertinoIcons.share
-            : CupertinoIcons.arrowshape_turn_up_right;
+    final icon = platform.isIOS
+        ? CupertinoIcons.share
+        : CupertinoIcons.arrowshape_turn_up_right;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

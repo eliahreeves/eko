@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +12,7 @@ import 'package:eko_app/utilities/shared_pref_service.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/interfaces/user.dart' as user;
 import 'package:eko_app/utilities/gauth/supabase_google_oauth.dart';
+import 'package:eko_app/utilities/platform.dart' as platform;
 
 part '../generated/providers/auth_provider.g.dart';
 
@@ -123,7 +122,7 @@ class Auth extends _$Auth {
             );
             if (data.event == AuthChangeEvent.signedIn) {
               // This throws on linux but appears to have to affect on android
-              if (!Platform.isLinux) {
+              if (!platform.isLinux) {
                 // ios typically opens an in-app web view, so it doesnt get dismissed otherwise
                 closeInAppWebView();
               }
@@ -176,7 +175,7 @@ class Auth extends _$Auth {
           'bio': '',
           'is_verified': false,
         },
-        emailRedirectTo: (Platform.isAndroid || Platform.isIOS)
+        emailRedirectTo: (platform.isAndroid || platform.isIOS)
             ? c.appURL
             : c.verifyEmailURL,
       );
