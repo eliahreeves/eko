@@ -87,6 +87,8 @@ class MyApp extends ConsumerWidget {
         title: 'Eko',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          fontFamily: Platform.isLinux ? 'Inter' : null,
+          fontFamilyFallback: Platform.isLinux ? ['NotoEmoji'] : null,
           colorScheme: theme,
           useMaterial3: true,
           splashColor: Colors.transparent,

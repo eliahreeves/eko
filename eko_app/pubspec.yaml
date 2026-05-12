@@ -108,6 +108,7 @@ flutter:
     - family: MartianMono
       fonts:
         - asset: fonts/martian_mono_bold.ttf
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/
