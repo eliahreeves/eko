@@ -1,3 +1,4 @@
+import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:eko_app/widgets/posts/markdown.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ import 'package:eko_app/widgets/posts/repost_card.dart';
 import 'package:eko_app/widgets/search/tag_search.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class _CornerClose extends StatelessWidget {
   final void Function() onPressed;
@@ -417,7 +419,8 @@ class _ComposePageState extends ConsumerState<ComposePage> {
     final height = MediaQuery.sizeOf(context).height;
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
+      child: AppScaffold(
+        contrainBody: true,
         floatingActionButtonLocation: ExpandableFab.location,
         floatingActionButton: Visibility(
           visible: showFab,

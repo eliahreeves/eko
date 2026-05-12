@@ -1,3 +1,4 @@
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
@@ -48,7 +49,8 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
+      contrainBody: true,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         leading: IconButton(

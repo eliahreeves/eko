@@ -1,4 +1,5 @@
 import 'package:eko_app/utilities/api_constants.dart' as ac;
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -171,7 +172,8 @@ class _GifSearchSectionState extends State<GifSearchSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
+      contrainBody: true,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

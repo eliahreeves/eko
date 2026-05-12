@@ -9,6 +9,7 @@ import 'package:eko_app/utilities/supabase_ref.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class ViewPostLikesPage extends ConsumerWidget {
   final int postId;
@@ -21,7 +22,7 @@ class ViewPostLikesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef _) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         title: dislikes
             ? Text(AppLocalizations.of(context)!.viewDislikes)
@@ -56,7 +57,7 @@ class ViewCommentLikesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef _) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         title: dislikes
             ? Text(AppLocalizations.of(context)!.viewDislikes)

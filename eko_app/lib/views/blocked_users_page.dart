@@ -5,6 +5,7 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/users/user_card.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class BlockedUsersPage extends ConsumerWidget {
   const BlockedUsersPage({super.key});
@@ -13,7 +14,7 @@ class BlockedUsersPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
     final blockedList = ref.watch(currentUserProvider).blockedUsers.toList();
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         leading: IconButton(

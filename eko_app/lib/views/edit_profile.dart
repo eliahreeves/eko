@@ -15,6 +15,7 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class EditProfile extends ConsumerStatefulWidget {
   const EditProfile({super.key});
@@ -253,7 +254,8 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       },
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(
+        child: AppScaffold(
+          contrainBody: true,
           appBar: AppBar(
             leading: IconButton(
               icon: Icon(

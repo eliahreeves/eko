@@ -16,6 +16,8 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/users/verification_badge.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/posts/post_card.dart';
+import 'package:eko_app/widgets/common/max_width_content.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class OtherProfile extends ConsumerStatefulWidget {
   final String username;
@@ -106,12 +108,17 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
 
     // Handle loading state while resolving UID
     if (_isLoading) {
-      return Scaffold(
+      return AppScaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.surface,
           surfaceTintColor: Colors.transparent,
           automaticallyImplyLeading: false,
-          leading: buildLeadingWidget(context, isMyOwnProfile),
+          titleSpacing: 0,
+          title: _ProfileAppBarContent(
+            leading: buildLeadingWidget(context, isMyOwnProfile),
+            title: const SizedBox(),
+            actions: const [],
+          ),
         ),
         body: const Center(child: LoadingSpinner()),
       );
@@ -119,12 +126,17 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
 
     // Handle error state
     if (_error != null || _resolvedUid == null) {
-      return Scaffold(
+      return AppScaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.surface,
           surfaceTintColor: Colors.transparent,
           automaticallyImplyLeading: false,
-          leading: buildLeadingWidget(context, isMyOwnProfile),
+          titleSpacing: 0,
+          title: _ProfileAppBarContent(
+            leading: buildLeadingWidget(context, isMyOwnProfile),
+            title: const SizedBox(),
+            actions: const [],
+          ),
         ),
         body: Center(
           child: Text(_error ?? AppLocalizations.of(context)!.userNotFound),
@@ -204,27 +216,42 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
 
     return PopScope(
       canPop: true,
-      child: Scaffold(
+      child: AppScaffold(
         appBar: userAsync.when(
           data: (profileUser) => (isBlockedByMe || blocksMe)
               ? AppBar(
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   surfaceTintColor: Colors.transparent,
                   automaticallyImplyLeading: false,
-                  leading: buildLeadingWidget(context, isCurrentUser),
+                  titleSpacing: 0,
+                  title: _ProfileAppBarContent(
+                    leading: buildLeadingWidget(context, isCurrentUser),
+                    title: const SizedBox(),
+                    actions: const [],
+                  ),
                 )
               : null,
           loading: () => AppBar(
             backgroundColor: Theme.of(context).colorScheme.surface,
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: false,
-            leading: buildLeadingWidget(context, isCurrentUser),
+            titleSpacing: 0,
+            title: _ProfileAppBarContent(
+              leading: buildLeadingWidget(context, isCurrentUser),
+              title: const SizedBox(),
+              actions: const [],
+            ),
           ),
           error: (_, __) => AppBar(
             backgroundColor: Theme.of(context).colorScheme.surface,
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: false,
-            leading: buildLeadingWidget(context, isCurrentUser),
+            titleSpacing: 0,
+            title: _ProfileAppBarContent(
+              leading: buildLeadingWidget(context, isCurrentUser),
+              title: const SizedBox(),
+              actions: const [],
+            ),
           ),
         ),
         body: userAsync.when(
@@ -256,84 +283,93 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                 centerTitle: false,
                 leadingWidth:
                     null, //ref.read(authProvider).uid == null ? 100 : null,
-                leading: isCurrentUser
-                    ? null
-                    : IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 20,
-                        ),
-                        onPressed: () => context.pop('popped'),
-                      ),
+                leading: null,
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '@${profileUser.username}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Theme.of(context).colorScheme.onSurface,
+                titleSpacing: 0,
+                title: _ProfileAppBarContent(
+                  leading: isCurrentUser
+                      ? null
+                      : IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            size: 20,
+                          ),
+                          onPressed: () => context.pop('popped'),
                         ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          '@${profileUser.username}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
                       ),
-                    ),
-                    if (profileUser.isVerified) VerificationBadge(uid: uid),
+                      if (profileUser.isVerified) VerificationBadge(uid: uid),
+                    ],
+                  ),
+                  actions: [
+                    if (isCurrentUser)
+                      InkWell(
+                        onTap: () {
+                          //ref.read(navBarProvider.notifier).disable();
+                          context
+                              .push(
+                                '/users/${profileUser.username}/user_settings',
+                              )
+                              .then(
+                                (_) =>
+                                    {} /*ref.read(navBarProvider.notifier).enable()*/,
+                              );
+                        },
+                        child: Icon(
+                          Icons.settings_outlined,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          size: 25,
+                          weight: 10,
+                        ),
+                      )
+                    else
+                      Padding(
+                        padding: EdgeInsets.only(left: 16, right: 16),
+                        child: PopupMenuButton<void Function()>(
+                          itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                height: 25,
+                                value: () => showBlockDialog(),
+                                child: Text(
+                                  AppLocalizations.of(context)!.block,
+                                ),
+                              ),
+                            ];
+                          },
+                          onSelected: (fn) => fn(),
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                          child: Icon(
+                            Icons.more_vert,
+                            size: 20,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
-                actions: [
-                  if (isCurrentUser)
-                    InkWell(
-                      onTap: () {
-                        //ref.read(navBarProvider.notifier).disable();
-                        context
-                            .push(
-                              '/users/${profileUser.username}/user_settings',
-                            )
-                            .then(
-                              (_) =>
-                                  {} /*ref.read(navBarProvider.notifier).enable()*/,
-                            );
-                      },
-                      child: Icon(
-                        Icons.settings_outlined,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        size: 25,
-                        weight: 10,
-                      ),
-                    )
-                  else
-                    Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16),
-                      child: PopupMenuButton<void Function()>(
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                              height: 25,
-                              value: () => showBlockDialog(),
-                              child: Text(AppLocalizations.of(context)!.block),
-                            ),
-                          ];
-                        },
-                        onSelected: (fn) => fn(),
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        child: Icon(
-                          Icons.more_vert,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                ],
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(3),
-                  child: Divider(
-                    color: Theme.of(context).colorScheme.outline,
-                    height: c.dividerWidth,
+                  child: MaxWidthContent(
+                    child: Divider(
+                      color: Theme.of(context).colorScheme.outline,
+                      height: c.dividerWidth,
+                    ),
                   ),
                 ),
               ),
@@ -344,6 +380,38 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
           loading: () => const Center(child: LoadingSpinner()),
           error: (error, stack) =>
               Center(child: Text('Error loading user profile: $error')),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileAppBarContent extends StatelessWidget {
+  const _ProfileAppBarContent({
+    required this.leading,
+    required this.title,
+    required this.actions,
+  });
+
+  final Widget? leading;
+  final Widget title;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaxWidthContent(
+      child: SizedBox(
+        height: kToolbarHeight,
+        child: Row(
+          children: [
+            SizedBox(width: 8),
+            SizedBox(width: 40, child: leading ?? const SizedBox()),
+            const SizedBox(width: 8),
+            Expanded(child: Center(child: title)),
+            const SizedBox(width: 8),
+            Row(mainAxisSize: MainAxisSize.min, children: actions),
+            const SizedBox(width: 8),
+          ],
         ),
       ),
     );
