@@ -49,10 +49,7 @@ workflows:
 
           flutter build appbundle --release \
             --build-name="$VERSION_NAME" \
-            --build-number="$BUILD_NUM" \
-            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
-            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
-            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
+            --build-number="$BUILD_NUM"
     artifacts:
       - build/app/outputs/bundle/release/*.aab
       - build/app/outputs/mapping/release/mapping.txt
@@ -112,10 +109,7 @@ workflows:
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
-            --export-options-plist=/Users/builder/export_options.plist \
-            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
-            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
-            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -173,10 +167,7 @@ workflows:
           flutter build ipa --release \
             --build-name="$VERSION_NAME" \
             --build-number="$BUILD_NUM" \
-            --export-options-plist=/Users/builder/export_options.plist \
-            --dart-define=ALGOLIA_APP_ID=$ALGOLIA_APP_ID \
-            --dart-define=SEARCH_API_KEY=$SEARCH_API_KEY \
-            --dart-define=KLIPY_API_KEY=$KLIPY_API_KEY
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
