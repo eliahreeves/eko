@@ -41,6 +41,7 @@ MarkdownStyleSheet getTheme(BuildContext context, MarkdownType type) {
   final base = theme.copyWith(
     blockSpacing: 0.0,
     p: plain,
+    code: plain?.copyWith(fontFamily: 'MartianMono'),
     h1: theme.p?.copyWith(fontSize: 16),
     h2: plain,
     h3: plain,
