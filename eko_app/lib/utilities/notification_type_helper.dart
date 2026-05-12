@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:eko_app/types/notification.dart';
 
 String deviceTypeFromPlatform() {
-  if (kIsWeb) return DeviceType.browser.name;
   switch (defaultTargetPlatform) {
     case TargetPlatform.iOS:
       return DeviceType.ios.name;

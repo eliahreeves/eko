@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:eraser/eraser.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 import 'package:unifiedpush_platform_interface/unifiedpush_platform_interface.dart';
 import 'package:unifiedpush_storage_shared_preferences/storage.dart';
+import 'package:eko_app/utilities/platform.dart' as platform;
 
 part 'notification_helper_apn.dart';
 part 'notification_helper_up.dart';
@@ -26,11 +25,11 @@ class NotificationHelper {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
   static NotificationPlatformAdapter get _adapter {
-    if (Platform.isIOS) {
+    if (platform.isIOS) {
       const MethodChannel channel = MethodChannel('PushNotificationChannel');
       return const ApnsNotificationAdapter(channel);
     }
-    if (Platform.isAndroid || Platform.isLinux) {
+    if (platform.isAndroid || platform.isLinux) {
       return const UnifiedPushNotificationAdapter();
     }
     return const NoopNotificationAdapter();
@@ -46,7 +45,7 @@ class NotificationHelper {
 
   static Future<void> bootstrapUnifiedPushBackground(List<String> args) async {
     if (!args.contains('--unifiedpush-bg')) return;
-    if (Platform.isAndroid) {
+    if (platform.isAndroid) {
       debugPrint('[UnifiedPush] bootstrap background entrypoint');
       await const UnifiedPushNotificationAdapter().initialize();
       if (await UnifiedPush.getDistributor() != null) {
@@ -57,7 +56,7 @@ class NotificationHelper {
       }
       return;
     }
-    if (Platform.isLinux) {
+    if (platform.isLinux) {
       UnifiedPushNotificationAdapter.markLinuxBackgroundLaunch();
       try {
         debugPrint('[UnifiedPush] bootstrap linux background entrypoint');

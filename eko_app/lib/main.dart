@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:flutter/foundation.dart';
@@ -16,6 +14,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/scaffolds/check_version.dart';
 import 'utilities/router.dart';
+import 'package:eko_app/utilities/platform.dart' as platform;
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -33,7 +32,7 @@ Future<void> _initSupabase() async {
   await Supabase.initialize(
     url: ac.supabaseUrl,
     anonKey: ac.supabaseKey,
-    authOptions: Platform.isLinux
+    authOptions: platform.isLinux
         ? FlutterAuthClientOptions(
             authFlowType: AuthFlowType.implicit,
             localStorage: ReliableSupabaseSessionStorage(
@@ -49,7 +48,7 @@ Future<void> _initSupabase() async {
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb &&
-      (Platform.isAndroid || Platform.isLinux) &&
+      (platform.isAndroid || platform.isLinux) &&
       args.contains('--unifiedpush-bg')) {
     await PrefsService.init();
     await NotificationHelper.bootstrapUnifiedPushBackground(args);
@@ -87,8 +86,8 @@ class MyApp extends ConsumerWidget {
         title: 'Eko',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          fontFamily: Platform.isLinux ? 'Inter' : null,
-          fontFamilyFallback: Platform.isLinux ? ['NotoEmoji'] : null,
+          fontFamily: platform.isLinux ? 'Inter' : null,
+          fontFamilyFallback: platform.isLinux ? ['NotoEmoji'] : null,
           colorScheme: theme,
           useMaterial3: true,
           splashColor: Colors.transparent,
