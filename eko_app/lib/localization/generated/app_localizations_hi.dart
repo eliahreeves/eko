@@ -474,5 +474,11 @@ class AppLocalizationsHi extends AppLocalizations {
       'पासवर्ड आवश्यकताओं की जाँच करें और फिर से प्रयास करें।';
 
   @override
+  String get write => 'लिखें';
+
+  @override
+  String get preview => 'पूर्वावलोकन';
+
+  @override
   String get year => 'वर्ष';
 }

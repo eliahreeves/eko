@@ -39,7 +39,6 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
   final reportFocus = FocusNode();
   final reportController = TextEditingController();
   final ScrollController commentsScrollController = ScrollController();
-
   @override
   void dispose() {
     commentsScrollController.dispose();
@@ -223,7 +222,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
             id: 0,
             postId: widget.id,
             createdAt: DateTime.now().toUtc().toIso8601String(),
-            body: parseTextToTags(body),
+            body: body,
           );
         }
       } else {

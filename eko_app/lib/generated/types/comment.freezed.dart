@@ -21,8 +21,7 @@ mixin _$CommentModel {
   int get postId;
   @JsonKey(name: 'gif')
   String? get gifUrl;
-  @JsonKey(fromJson: _parseTags, toJson: _joinList)
-  List<String> get body;
+  String? get body;
   @JsonKey(name: 'like_count')
   int get likes;
   @JsonKey(name: 'dislike_count')
@@ -54,7 +53,7 @@ mixin _$CommentModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.gifUrl, gifUrl) || other.gifUrl == gifUrl) &&
-            const DeepCollectionEquality().equals(other.body, body) &&
+            (identical(other.body, body) || other.body == body) &&
             (identical(other.likes, likes) || other.likes == likes) &&
             (identical(other.dislikes, dislikes) ||
                 other.dislikes == dislikes) &&
@@ -67,18 +66,8 @@ mixin _$CommentModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      uid,
-      id,
-      postId,
-      gifUrl,
-      const DeepCollectionEquality().hash(body),
-      likes,
-      dislikes,
-      isLiked,
-      isDisliked,
-      createdAt);
+  int get hashCode => Object.hash(runtimeType, uid, id, postId, gifUrl, body,
+      likes, dislikes, isLiked, isDisliked, createdAt);
 
   @override
   String toString() {
@@ -97,7 +86,7 @@ abstract mixin class $CommentModelCopyWith<$Res> {
       int id,
       @JsonKey(name: 'parent_post_id') int postId,
       @JsonKey(name: 'gif') String? gifUrl,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+      String? body,
       @JsonKey(name: 'like_count') int likes,
       @JsonKey(name: 'dislike_count') int dislikes,
       @JsonKey(name: 'is_liked') bool isLiked,
@@ -121,7 +110,7 @@ class _$CommentModelCopyWithImpl<$Res> implements $CommentModelCopyWith<$Res> {
     Object? id = null,
     Object? postId = null,
     Object? gifUrl = freezed,
-    Object? body = null,
+    Object? body = freezed,
     Object? likes = null,
     Object? dislikes = null,
     Object? isLiked = null,
@@ -145,10 +134,10 @@ class _$CommentModelCopyWithImpl<$Res> implements $CommentModelCopyWith<$Res> {
           ? _self.gifUrl
           : gifUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      body: null == body
+      body: freezed == body
           ? _self.body
           : body // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as String?,
       likes: null == likes
           ? _self.likes
           : likes // ignore: cast_nullable_to_non_nullable
@@ -271,7 +260,7 @@ extension CommentModelPatterns on CommentModel {
             int id,
             @JsonKey(name: 'parent_post_id') int postId,
             @JsonKey(name: 'gif') String? gifUrl,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            String? body,
             @JsonKey(name: 'like_count') int likes,
             @JsonKey(name: 'dislike_count') int dislikes,
             @JsonKey(name: 'is_liked') bool isLiked,
@@ -319,7 +308,7 @@ extension CommentModelPatterns on CommentModel {
             int id,
             @JsonKey(name: 'parent_post_id') int postId,
             @JsonKey(name: 'gif') String? gifUrl,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            String? body,
             @JsonKey(name: 'like_count') int likes,
             @JsonKey(name: 'dislike_count') int dislikes,
             @JsonKey(name: 'is_liked') bool isLiked,
@@ -365,7 +354,7 @@ extension CommentModelPatterns on CommentModel {
             int id,
             @JsonKey(name: 'parent_post_id') int postId,
             @JsonKey(name: 'gif') String? gifUrl,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            String? body,
             @JsonKey(name: 'like_count') int likes,
             @JsonKey(name: 'dislike_count') int dislikes,
             @JsonKey(name: 'is_liked') bool isLiked,
@@ -401,15 +390,13 @@ class _CommentModel extends CommentModel {
       required this.id,
       @JsonKey(name: 'parent_post_id') required this.postId,
       @JsonKey(name: 'gif') this.gifUrl,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList)
-      final List<String> body = const <String>[],
+      this.body,
       @JsonKey(name: 'like_count') this.likes = 0,
       @JsonKey(name: 'dislike_count') this.dislikes = 0,
       @JsonKey(name: 'is_liked') this.isLiked = false,
       @JsonKey(name: 'is_disliked') this.isDisliked = false,
       @JsonKey(name: 'created_at') required this.createdAt})
-      : _body = body,
-        super._();
+      : super._();
   factory _CommentModel.fromJson(Map<String, dynamic> json) =>
       _$CommentModelFromJson(json);
 
@@ -424,15 +411,8 @@ class _CommentModel extends CommentModel {
   @override
   @JsonKey(name: 'gif')
   final String? gifUrl;
-  final List<String> _body;
   @override
-  @JsonKey(fromJson: _parseTags, toJson: _joinList)
-  List<String> get body {
-    if (_body is EqualUnmodifiableListView) return _body;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_body);
-  }
-
+  final String? body;
   @override
   @JsonKey(name: 'like_count')
   final int likes;
@@ -473,7 +453,7 @@ class _CommentModel extends CommentModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.gifUrl, gifUrl) || other.gifUrl == gifUrl) &&
-            const DeepCollectionEquality().equals(other._body, _body) &&
+            (identical(other.body, body) || other.body == body) &&
             (identical(other.likes, likes) || other.likes == likes) &&
             (identical(other.dislikes, dislikes) ||
                 other.dislikes == dislikes) &&
@@ -486,18 +466,8 @@ class _CommentModel extends CommentModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      uid,
-      id,
-      postId,
-      gifUrl,
-      const DeepCollectionEquality().hash(_body),
-      likes,
-      dislikes,
-      isLiked,
-      isDisliked,
-      createdAt);
+  int get hashCode => Object.hash(runtimeType, uid, id, postId, gifUrl, body,
+      likes, dislikes, isLiked, isDisliked, createdAt);
 
   @override
   String toString() {
@@ -518,7 +488,7 @@ abstract mixin class _$CommentModelCopyWith<$Res>
       int id,
       @JsonKey(name: 'parent_post_id') int postId,
       @JsonKey(name: 'gif') String? gifUrl,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+      String? body,
       @JsonKey(name: 'like_count') int likes,
       @JsonKey(name: 'dislike_count') int dislikes,
       @JsonKey(name: 'is_liked') bool isLiked,
@@ -543,7 +513,7 @@ class __$CommentModelCopyWithImpl<$Res>
     Object? id = null,
     Object? postId = null,
     Object? gifUrl = freezed,
-    Object? body = null,
+    Object? body = freezed,
     Object? likes = null,
     Object? dislikes = null,
     Object? isLiked = null,
@@ -567,10 +537,10 @@ class __$CommentModelCopyWithImpl<$Res>
           ? _self.gifUrl
           : gifUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      body: null == body
-          ? _self._body
+      body: freezed == body
+          ? _self.body
           : body // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as String?,
       likes: null == likes
           ? _self.likes
           : likes // ignore: cast_nullable_to_non_nullable

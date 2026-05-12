@@ -39,7 +39,7 @@ dependencies:
   intl: any
   flutter_svg: ^2.0.17
   qr_flutter_new: ^1.0.2
-  url_launcher: ^6.2.2
+  url_launcher: ^6.3.2
   overlay_support: ^2.1.0
   package_info_plus: ^8.3.0
   share_plus: ^11.0.0
@@ -76,6 +76,7 @@ dependencies:
   unifiedpush_storage_shared_preferences: ^1.0.0
   flutter_local_notifications: ^21.0.0
   webcrypto: ^0.6.0
+  flutter_markdown_plus: ^1.0.7
 
 dev_dependencies:
   # flutter_test:
@@ -107,6 +108,7 @@ flutter:
     - family: MartianMono
       fonts:
         - asset: fonts/martian_mono_bold.ttf
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:eko_app/widgets/posts/markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,6 @@ import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/comment.dart';
 import 'package:eko_app/widgets/posts/comment_like_buttons.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
-import 'package:eko_app/widgets/common/text_with_tags.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_tag.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
@@ -316,7 +316,7 @@ class _Card extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 8.0),
-                      TextWithTags(text: comment.body),
+                      MarkdownView(content: comment.body ?? ''),
                       if (comment.gifUrl != null)
                         GifWidget(url: comment.gifUrl!),
                       const SizedBox(height: 4.0),

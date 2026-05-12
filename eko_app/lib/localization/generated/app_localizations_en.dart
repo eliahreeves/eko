@@ -474,5 +474,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weakPasswordBody => 'Check password requirements and try again.';
 
   @override
+  String get write => 'Write';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
   String get year => 'Year';
 }

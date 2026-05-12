@@ -60,7 +60,7 @@ class RecentActivity extends ConsumerWidget {
       body: InfiniteScrolly<ActivityModel, Never?>(
         getter: (data) => getter(data, ref),
         widget: recentActivityCardBuilder,
-        initialLoadingWidget: UserLoader(length: 12),
+        initialLoadingWidget: UserLoader(),
       ),
     );
   }

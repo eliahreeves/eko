@@ -122,7 +122,7 @@ class _LikesList extends ConsumerWidget {
         return await getter(data, ref);
       },
       widget: userCardBuilder,
-      initialLoadingWidget: UserLoader(length: 12),
+      initialLoadingWidget: UserLoader(),
     );
   }
 }

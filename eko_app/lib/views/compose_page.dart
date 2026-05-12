@@ -1,3 +1,4 @@
+import 'package:eko_app/widgets/posts/markdown.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,6 +94,8 @@ class _ComposePageState extends ConsumerState<ComposePage> {
   bool isChecking = false;
   String? partialTag;
   bool showFab = true;
+  bool showMarkdownPreview = false;
+  bool _markdownUsesTitle = false;
 
   @override
   void didUpdateWidget(covariant ComposePage oldWidget) {
@@ -109,9 +112,19 @@ class _ComposePageState extends ConsumerState<ComposePage> {
   @override
   void initState() {
     bodyFocus.addListener(bodyFocusListen);
+    titleFocus.addListener(_markdownTargetFocusListen);
+    bodyFocus.addListener(_markdownTargetFocusListen);
     repostId = widget.repostId;
     timestamp = widget.timestamp;
     super.initState();
+  }
+
+  void _markdownTargetFocusListen() {
+    if (titleFocus.hasPrimaryFocus) {
+      _markdownUsesTitle = true;
+    } else if (bodyFocus.hasPrimaryFocus) {
+      _markdownUsesTitle = false;
+    }
   }
 
   void bodyFocusListen() {
@@ -123,6 +136,8 @@ class _ComposePageState extends ConsumerState<ComposePage> {
   @override
   void dispose() {
     bodyFocus.removeListener(bodyFocusListen);
+    titleFocus.removeListener(_markdownTargetFocusListen);
+    bodyFocus.removeListener(_markdownTargetFocusListen);
     scrollController.dispose();
     titleController.dispose();
     bodyController.dispose();
@@ -139,6 +154,46 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       }
     }
     return count;
+  }
+
+  void _wrapMarkdown(
+    TextEditingController controller,
+    FocusNode focus,
+    String left,
+    String right,
+  ) {
+    focus.requestFocus();
+    final text = controller.text;
+    var sel = controller.selection;
+    if (!sel.isValid) {
+      sel = TextSelection.collapsed(offset: text.length);
+    }
+    final int start = sel.start;
+    final int end = sel.end;
+    final int lo = start < end ? start : end;
+    final int hi = start < end ? end : start;
+    final int loC = lo.clamp(0, text.length);
+    final int hiC = hi.clamp(0, text.length);
+    final String middle = text.substring(loC, hiC);
+    final String replacement = '$left$middle$right';
+    final String newText = text.replaceRange(loC, hiC, replacement);
+    final int newOffset =
+        middle.isEmpty ? loC + left.length : loC + replacement.length;
+    controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(
+        offset: newOffset.clamp(0, newText.length),
+      ),
+    );
+  }
+
+  void _wrapActiveFieldMarkdown(String left, String right) {
+    _wrapMarkdown(
+      _markdownUsesTitle ? titleController : bodyController,
+      _markdownUsesTitle ? titleFocus : bodyFocus,
+      left,
+      right,
+    );
   }
 
   void _addGifPressed() async {
@@ -297,8 +352,8 @@ class _ComposePageState extends ConsumerState<ComposePage> {
           imageString: image,
           gifUrl: gif,
           repostId: repostId,
-          title: parseTextToTags(title),
-          body: parseTextToTags(body),
+          title: title,
+          body: body,
           poll: postPollOptions
               ?.map<PollOptionModel>(
                   (v) => PollOptionModel(value: v, optionId: 0, voteCount: 0))
@@ -490,49 +545,86 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                     size: width * 0.115,
                   ),
                   const SizedBox(width: 9),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.outline,
-                      side: BorderSide(
-                        width: 0.5,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        style: BorderStyle.solid,
-                      ),
+                  ToggleButtons(
+                    isSelected: [
+                      !showMarkdownPreview,
+                      showMarkdownPreview,
+                    ],
+                    onPressed: (index) {
+                      setState(() {
+                        showMarkdownPreview = (index == 1);
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    color: Theme.of(context).colorScheme.onSurface,
+                    selectedColor:
+                        Theme.of(context).colorScheme.onPrimaryContainer,
+                    fillColor: Theme.of(context).colorScheme.surfaceContainer,
+                    borderColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                    selectedBorderColor:
+                        Theme.of(context).colorScheme.onSurfaceVariant,
+                    constraints: BoxConstraints(minHeight: 32, minWidth: 70),
+                    children: [
+                      Text(AppLocalizations.of(context)!.write),
+                      Text(AppLocalizations.of(context)!.preview),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    tooltip: 'Bold',
+                    onPressed: showMarkdownPreview
+                        ? null
+                        : () => _wrapActiveFieldMarkdown('**', '**'),
+                    icon: const Icon(Icons.format_bold),
+                    visualDensity: VisualDensity.compact,
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(32, 32),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    onPressed: null,
-                    child: Text(
-                      AppLocalizations.of(context)!.public,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                  ),
+                  IconButton(
+                    tooltip: 'Italic',
+                    onPressed: showMarkdownPreview
+                        ? null
+                        : () => _wrapActiveFieldMarkdown('*', '*'),
+                    icon: const Icon(Icons.format_italic),
+                    visualDensity: VisualDensity.compact,
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(32, 32),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ),
                 ],
               ),
               SizedBox(height: height * 0.01),
-              TextField(
-                textCapitalization: TextCapitalization.sentences,
-                focusNode: titleFocus,
-                controller: titleController,
-                maxLines: null,
-                cursorColor: Theme.of(context).colorScheme.onSurface,
-                keyboardType: TextInputType.text,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(height * 0.01),
-                  hintText: AppLocalizations.of(context)!.postTitle,
-                  hintStyle: TextStyle(
-                    fontSize: 22,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  border: InputBorder.none,
-                ),
-                // ),
-              ),
+              showMarkdownPreview
+                  ? MarkdownView(
+                      content: titleController.text,
+                      type: MarkdownType.title,
+                    )
+                  : TextField(
+                      textCapitalization: TextCapitalization.sentences,
+                      focusNode: titleFocus,
+                      controller: titleController,
+                      maxLines: null,
+                      cursorColor: Theme.of(context).colorScheme.onSurface,
+                      keyboardType: TextInputType.text,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(height * 0.01),
+                        hintText: AppLocalizations.of(context)!.postTitle,
+                        hintStyle: TextStyle(
+                          fontSize: 22,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      // ),
+                    ),
               Stack(
                 children: [
                   Column(
@@ -598,34 +690,40 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                             ),
                           ),
                         ),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(),
-                        child: TextField(
-                          textCapitalization: TextCapitalization.sentences,
-                          focusNode: bodyFocus,
-                          controller: bodyController,
-                          maxLines: null,
-                          cursorColor: Theme.of(context).colorScheme.onSurface,
-                          keyboardType: TextInputType.multiline,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(height * 0.01),
-                            hintText: AppLocalizations.of(context)!.addText,
-                            hintStyle: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
+                      showMarkdownPreview
+                          ? MarkdownView(content: bodyController.text)
+                          : ConstrainedBox(
+                              constraints: BoxConstraints(),
+                              child: TextField(
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                focusNode: bodyFocus,
+                                controller: bodyController,
+                                maxLines: null,
+                                cursorColor:
+                                    Theme.of(context).colorScheme.onSurface,
+                                keyboardType: TextInputType.multiline,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(height * 0.01),
+                                  hintText:
+                                      AppLocalizations.of(context)!.addText,
+                                  hintStyle: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                              ),
                             ),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
                       AnimatedBuilder(
                         animation: Listenable.merge([
                           bodyController,

@@ -24,10 +24,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
       fromJson: _asciiImageFromString,
       toJson: _asciiImageToString)
   AsciiImage? get imageString;
-  @JsonKey(fromJson: _parseTags, toJson: _joinList)
-  List<String> get title;
-  @JsonKey(fromJson: _parseTags, toJson: _joinList)
-  List<String> get body;
+  String? get title;
+  String? get body;
   List<String> get tags;
   @JsonKey(name: 'like_count')
   int get likes;
@@ -88,8 +86,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
             (identical(other.gifUrl, gifUrl) || other.gifUrl == gifUrl) &&
             (identical(other.imageString, imageString) ||
                 other.imageString == imageString) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
-            const DeepCollectionEquality().equals(other.body, body) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.body, body) || other.body == body) &&
             const DeepCollectionEquality().equals(other.tags, tags) &&
             (identical(other.likes, likes) || other.likes == likes) &&
             (identical(other.dislikes, dislikes) ||
@@ -115,8 +113,8 @@ mixin _$PostModel implements DiagnosticableTreeMixin {
       id,
       gifUrl,
       imageString,
-      const DeepCollectionEquality().hash(title),
-      const DeepCollectionEquality().hash(body),
+      title,
+      body,
       const DeepCollectionEquality().hash(tags),
       likes,
       dislikes,
@@ -148,8 +146,8 @@ abstract mixin class $PostModelCopyWith<$Res> {
           fromJson: _asciiImageFromString,
           toJson: _asciiImageToString)
       AsciiImage? imageString,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> title,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+      String? title,
+      String? body,
       List<String> tags,
       @JsonKey(name: 'like_count') int likes,
       @JsonKey(name: 'dislike_count') int dislikes,
@@ -178,8 +176,8 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
     Object? id = null,
     Object? gifUrl = freezed,
     Object? imageString = freezed,
-    Object? title = null,
-    Object? body = null,
+    Object? title = freezed,
+    Object? body = freezed,
     Object? tags = null,
     Object? likes = null,
     Object? dislikes = null,
@@ -208,14 +206,14 @@ class _$PostModelCopyWithImpl<$Res> implements $PostModelCopyWith<$Res> {
           ? _self.imageString
           : imageString // ignore: cast_nullable_to_non_nullable
               as AsciiImage?,
-      title: null == title
+      title: freezed == title
           ? _self.title
           : title // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      body: null == body
+              as String?,
+      body: freezed == body
           ? _self.body
           : body // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as String?,
       tags: null == tags
           ? _self.tags
           : tags // ignore: cast_nullable_to_non_nullable
@@ -362,9 +360,8 @@ extension PostModelPatterns on PostModel {
                 fromJson: _asciiImageFromString,
                 toJson: _asciiImageToString)
             AsciiImage? imageString,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList)
-            List<String> title,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            String? title,
+            String? body,
             List<String> tags,
             @JsonKey(name: 'like_count') int likes,
             @JsonKey(name: 'dislike_count') int dislikes,
@@ -427,9 +424,8 @@ extension PostModelPatterns on PostModel {
                 fromJson: _asciiImageFromString,
                 toJson: _asciiImageToString)
             AsciiImage? imageString,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList)
-            List<String> title,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            String? title,
+            String? body,
             List<String> tags,
             @JsonKey(name: 'like_count') int likes,
             @JsonKey(name: 'dislike_count') int dislikes,
@@ -490,9 +486,8 @@ extension PostModelPatterns on PostModel {
                 fromJson: _asciiImageFromString,
                 toJson: _asciiImageToString)
             AsciiImage? imageString,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList)
-            List<String> title,
-            @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+            String? title,
+            String? body,
             List<String> tags,
             @JsonKey(name: 'like_count') int likes,
             @JsonKey(name: 'dislike_count') int dislikes,
@@ -543,10 +538,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
           fromJson: _asciiImageFromString,
           toJson: _asciiImageToString)
       this.imageString,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList)
-      final List<String> title = const <String>[],
-      @JsonKey(fromJson: _parseTags, toJson: _joinList)
-      final List<String> body = const <String>[],
+      this.title,
+      this.body,
       final List<String> tags = const ['public'],
       @JsonKey(name: 'like_count') this.likes = 0,
       @JsonKey(name: 'dislike_count') this.dislikes = 0,
@@ -557,9 +550,7 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       final List<PollOptionModel>? poll,
       this.vote,
       @JsonKey(name: 'ekoed_id') this.repostId})
-      : _title = title,
-        _body = body,
-        _tags = tags,
+      : _tags = tags,
         _poll = poll,
         super._();
   factory _PostModel.fromJson(Map<String, dynamic> json) =>
@@ -579,24 +570,10 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       fromJson: _asciiImageFromString,
       toJson: _asciiImageToString)
   final AsciiImage? imageString;
-  final List<String> _title;
   @override
-  @JsonKey(fromJson: _parseTags, toJson: _joinList)
-  List<String> get title {
-    if (_title is EqualUnmodifiableListView) return _title;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_title);
-  }
-
-  final List<String> _body;
+  final String? title;
   @override
-  @JsonKey(fromJson: _parseTags, toJson: _joinList)
-  List<String> get body {
-    if (_body is EqualUnmodifiableListView) return _body;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_body);
-  }
-
+  final String? body;
   final List<String> _tags;
   @override
   @JsonKey()
@@ -687,8 +664,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
             (identical(other.gifUrl, gifUrl) || other.gifUrl == gifUrl) &&
             (identical(other.imageString, imageString) ||
                 other.imageString == imageString) &&
-            const DeepCollectionEquality().equals(other._title, _title) &&
-            const DeepCollectionEquality().equals(other._body, _body) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.body, body) || other.body == body) &&
             const DeepCollectionEquality().equals(other._tags, _tags) &&
             (identical(other.likes, likes) || other.likes == likes) &&
             (identical(other.dislikes, dislikes) ||
@@ -714,8 +691,8 @@ class _PostModel extends PostModel with DiagnosticableTreeMixin {
       id,
       gifUrl,
       imageString,
-      const DeepCollectionEquality().hash(_title),
-      const DeepCollectionEquality().hash(_body),
+      title,
+      body,
       const DeepCollectionEquality().hash(_tags),
       likes,
       dislikes,
@@ -750,8 +727,8 @@ abstract mixin class _$PostModelCopyWith<$Res>
           fromJson: _asciiImageFromString,
           toJson: _asciiImageToString)
       AsciiImage? imageString,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> title,
-      @JsonKey(fromJson: _parseTags, toJson: _joinList) List<String> body,
+      String? title,
+      String? body,
       List<String> tags,
       @JsonKey(name: 'like_count') int likes,
       @JsonKey(name: 'dislike_count') int dislikes,
@@ -780,8 +757,8 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
     Object? id = null,
     Object? gifUrl = freezed,
     Object? imageString = freezed,
-    Object? title = null,
-    Object? body = null,
+    Object? title = freezed,
+    Object? body = freezed,
     Object? tags = null,
     Object? likes = null,
     Object? dislikes = null,
@@ -810,14 +787,14 @@ class __$PostModelCopyWithImpl<$Res> implements _$PostModelCopyWith<$Res> {
           ? _self.imageString
           : imageString // ignore: cast_nullable_to_non_nullable
               as AsciiImage?,
-      title: null == title
-          ? _self._title
+      title: freezed == title
+          ? _self.title
           : title // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      body: null == body
-          ? _self._body
+              as String?,
+      body: freezed == body
+          ? _self.body
           : body // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as String?,
       tags: null == tags
           ? _self._tags
           : tags // ignore: cast_nullable_to_non_nullable

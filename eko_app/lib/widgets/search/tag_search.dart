@@ -27,11 +27,11 @@ bool _isSeparator(String char) {
 }
 
 void onCardTap(String username, TextEditingController controller) {
-  final cursorPos = controller.selection.baseOffset;
+  var cursorPos = controller.selection.baseOffset;
   final text = controller.text;
 
   if (cursorPos < 0 || cursorPos > text.length) {
-    return;
+    cursorPos = text.length;
   }
   final (start, end) = _getStartEnd(text, cursorPos);
   final needsSpace = (end >= text.length);
@@ -107,11 +107,12 @@ class _TagSearchState extends State<TagSearch> {
             if (snapshot.hasData && snapshot.data != null) {
               final data = snapshot.data!;
               return NotificationListener<ScrollNotification>(
-                onNotification: (_) => true,
+                onNotification: (_) => false,
                 child: ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) => UserCard(
                     uid: data[index],
+                    canRequestFocus: false,
                     actionWidget: (_) => SizedBox(),
                     onCardPressed: (user) => widget.onCardTap(user.username),
                   ),

@@ -109,7 +109,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               isEnd = res.$2;
             });
           },
-          initialLoadingWidget: UserLoader(length: 12),
+          initialLoadingWidget: UserLoader(),
           widget: userCardBuilder,
           header: UserSearchBar(controller: controller),
         ),

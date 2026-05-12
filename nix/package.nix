@@ -11,6 +11,7 @@
   pkg-config,
   cmake,
   jq,
+  yq-go,
   makeDesktopItem,
 }:
 flutter.buildFlutterApplication {
@@ -36,9 +37,12 @@ flutter.buildFlutterApplication {
     pkg-config
     cmake
     jq
+    yq-go
   ];
 
   preBuild = ''
+    yq -i '.flutter.fonts += [{"family":"Inter","fonts":[{"asset":"fonts/linux/Inter-Cleaned.ttf"},{"asset":"fonts/linux/Inter-Italic-Cleaned.ttf"}]},{"family":"NotoEmoji","fonts":[{"asset":"fonts/linux/NotoColorEmoji.ttf"}]}]' pubspec.yaml
+
     webcrypto_root_uri="$(jq -r '.packages[] | select(.name=="webcrypto") | .rootUri' .dart_tool/package_config.json)"
     if [ -z "$webcrypto_root_uri" ] || [ "$webcrypto_root_uri" = "null" ]; then
       echo "webcrypto package not found in package_config.json"

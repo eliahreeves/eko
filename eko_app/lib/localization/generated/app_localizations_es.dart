@@ -480,5 +480,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Revise los requisitos para su contraseña e intente de nuevo.';
 
   @override
+  String get write => 'Escribir';
+
+  @override
+  String get preview => 'Vista previa';
+
+  @override
   String get year => 'Año';
 }

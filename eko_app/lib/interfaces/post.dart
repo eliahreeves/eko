@@ -5,35 +5,6 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/types/post.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
 
-// Converts a String to the List<String> eko tag format.
-List<String> parseTextToTags(String? text) {
-  if (text == null) return [];
-
-  RegExp regExp = RegExp(r'@[a-z0-9_]{3,24}', caseSensitive: false);
-  List<String> chunks = [];
-  int lastEnd = 0;
-
-  regExp.allMatches(text).forEach((match) {
-    // Add the chunk of text before the match to the list
-    String precedingText = text.substring(lastEnd, match.start);
-    if (precedingText.isNotEmpty) {
-      chunks.add(precedingText);
-    } else if (chunks.isNotEmpty && chunks.last.startsWith('@')) {
-      // If the last chunk was a username, add an empty string
-      chunks.add('');
-    }
-    // Add the match itself
-    chunks.add(match.group(0)!);
-    lastEnd = match.end;
-  });
-
-  // If there's any text left after the last match, add this remaining text to the list
-  if (lastEnd < text.length) {
-    chunks.add(text.substring(lastEnd));
-  }
-  return chunks;
-}
-
 Future<(int, List<PollOptionModel>?)> uploadPost(
     PostModel post, List<String>? pollOptions, WidgetRef ref) async {
   final fixedPost = post.copyWith(
@@ -44,8 +15,8 @@ Future<(int, List<PollOptionModel>?)> uploadPost(
   final result = await supabase.rpc('insert_post', params: {
     'p_created_at': fixedPost.createdAt,
     'p_author_uid': uid,
-    'p_title': fixedPost.title.isNotEmpty ? fixedPost.title.join('') : null,
-    'p_body': fixedPost.body.isNotEmpty ? fixedPost.body.join('') : null,
+    'p_title': (fixedPost.title?.isNotEmpty ?? false) ? fixedPost.title : null,
+    'p_body': (fixedPost.body?.isNotEmpty ?? false) ? fixedPost.body : null,
     'p_gif': fixedPost.gifUrl,
     'p_poll': pollOptions,
     'p_image_base64': fixedPost.imageString?.toStorableString(),
@@ -72,7 +43,7 @@ Future<int> uploadComment(CommentModel comment, WidgetRef ref) async {
   final result = await supabase.rpc('insert_comment', params: {
     'p_created_at': comment.createdAt,
     'p_author_uid': uid,
-    'p_body': comment.body.isNotEmpty ? comment.body.join('') : null,
+    'p_body': (comment.body?.isNotEmpty ?? false) ? comment.body : null,
     'p_gif': comment.gifUrl,
     'p_parent_post_id': comment.postId,
   });

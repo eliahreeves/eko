@@ -134,7 +134,7 @@ class _FollowingState extends ConsumerState<Following> {
                   getter: getter,
                   widget: (uid) => UserCard(uid: uid),
                   onRefresh: onRefresh,
-                  initialLoadingWidget: UserLoader(length: 12),
+                  initialLoadingWidget: UserLoader(),
                 ),
     );
   }
