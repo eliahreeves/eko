@@ -5,7 +5,6 @@
 /untitled_app/
 
 /eko_app/lib/secrets
-/backend/NewPostNotification/secrets/
 
 # Miscellaneous
 *.class
@@ -54,7 +53,6 @@ app.*.map.json
 /eko_app/android/app/release
 .direnv
 
-firbaseHosting/**/*.js
 node_modules
 
 # Devenv

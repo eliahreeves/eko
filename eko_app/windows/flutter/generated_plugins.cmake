@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   emoji_picker_flutter
   file_selector_windows
-  firebase_core
   permission_handler_windows
   screen_retriever_windows
   share_plus

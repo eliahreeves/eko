@@ -23,8 +23,7 @@ abstract class UserModel with _$UserModel {
       isVerified: false,
       username: '',
       name: '',
-      profilePicture:
-          'https://firebasestorage.googleapis.com/v0/b/untitled-2832f.appspot.com/o/profile_pictures%2Fdefault%2Fprofile.jpg?alt=media&token=2543c4eb-f991-468f-9ce8-68c576ffca7c',
+      profilePicture: '',
       bio: '',
       followers: [],
       following: [],

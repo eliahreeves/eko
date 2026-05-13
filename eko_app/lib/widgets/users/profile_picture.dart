@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/widgets/loading/profile_picture_loading.dart';
 import 'package:eko_app/providers/user_provider.dart';
+import 'package:eko_app/widgets/users/network_or_default_profile_image.dart';
 
 class ProfilePicture extends ConsumerWidget {
   final String uid;
@@ -36,13 +36,8 @@ class ProfilePicture extends ConsumerWidget {
               ClipOval(
                 child: asyncUser.when(
                   data: (user) {
-                    return CachedNetworkImage(
-                      fit: BoxFit.cover,
+                    return NetworkOrDefaultProfileImage(
                       imageUrl: user.profilePicture,
-                      placeholder: (context, url) =>
-                          const LoadingProfileImage(),
-                      errorWidget: (context, url, error) =>
-                          Image.asset('images/default.jpg'),
                     );
                   },
                   error: (_, __) {

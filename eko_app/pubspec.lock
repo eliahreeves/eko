@@ -257,30 +257,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
-  cloud_functions:
-    dependency: "direct main"
-    description:
-      name: cloud_functions
-      sha256: b9ece944fc8c97ac0937cdf45e895f4670213c722ed819581e3d517b43413753
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.6.2"
-  cloud_functions_platform_interface:
-    dependency: transitive
-    description:
-      name: cloud_functions_platform_interface
-      sha256: "9720aa2ba715bfb1de6a131c70bbb0fa79329294ec1327fd24ce08004a080dcc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.8.2"
-  cloud_functions_web:
-    dependency: transitive
-    description:
-      name: cloud_functions_web
-      sha256: "7756b6a6cf16016dc4c8631c88b31b81156b129c40914a84021216a841c0b3d8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.11.5"
   code_assets:
     dependency: transitive
     description:
@@ -425,14 +401,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.1"
-  fake_async:
-    dependency: transitive
-    description:
-      name: fake_async
-      sha256: "5368f224a74523e8d2e7399ea1638b37aecfca824a3cc4dfdf77bf1fa905ac44"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.3"
   ffi:
     dependency: transitive
     description:
@@ -481,30 +449,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+5"
-  firebase_core:
-    dependency: transitive
-    description:
-      name: firebase_core
-      sha256: "7be63a3f841fc9663342f7f3a011a42aef6a61066943c90b1c434d79d5c995c5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.15.2"
-  firebase_core_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_core_platform_interface
-      sha256: "0ecda14c1bfc9ed8cac303dd0f8d04a320811b479362a9a4efb14fd331a473ce"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.3"
-  firebase_core_web:
-    dependency: transitive
-    description:
-      name: firebase_core_web
-      sha256: "0ed0dc292e8f9ac50992e2394e9d336a0275b6ae400d64163fdf0a8a8b556c37"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.24.1"
   fixnum:
     dependency: transitive
     description:
@@ -619,11 +563,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.4"
-  flutter_test:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   flutter_web_plugins:
     dependency: "direct main"
     description: flutter
@@ -933,30 +872,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
-  leak_tracker:
-    dependency: transitive
-    description:
-      name: leak_tracker
-      sha256: "33e2e26bdd85a0112ec15400c8cbffea70d0f9c3407491f672a2fad47915e2de"
-      url: "https://pub.dev"
-    source: hosted
-    version: "11.0.2"
-  leak_tracker_flutter_testing:
-    dependency: transitive
-    description:
-      name: leak_tracker_flutter_testing
-      sha256: "1dbc140bb5a23c75ea9c4811222756104fbcd1a27173f0c34ca01e16bea473c1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.10"
-  leak_tracker_testing:
-    dependency: transitive
-    description:
-      name: leak_tracker_testing
-      sha256: "8d5a2d49f4a66b49744b23b018848400d23e54caf9463f4eb20df3eb8acb2eb1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.2"
   like_button:
     dependency: "direct main"
     description:
