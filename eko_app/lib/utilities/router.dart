@@ -24,7 +24,7 @@ import 'package:eko_app/views/messages_page.dart';
 import 'package:eko_app/views/search_page.dart';
 import 'package:eko_app/views/edit_profile.dart';
 import 'package:eko_app/widgets/scaffolds/navigation_bar.dart';
-import 'package:eko_app/views/other_profile.dart';
+import 'package:eko_app/views/profile_page.dart';
 import 'package:eko_app/views/view_post_page.dart';
 import 'package:eko_app/views/profile_picture_detail.dart';
 import 'package:eko_app/views/welcome.dart';
@@ -353,7 +353,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   final username = state.pathParameters['username']!;
                   final uid = state.uri.queryParameters['uid'];
-                  return OtherProfile(username: username, uid: uid);
+                  return ProfilePage(username: username, uid: uid);
                 },
                 routes: [
                   GoRoute(

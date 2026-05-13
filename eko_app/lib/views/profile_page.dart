@@ -19,16 +19,16 @@ import 'package:eko_app/widgets/posts/post_card.dart';
 import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
-class OtherProfile extends ConsumerStatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   final String username;
   final String? uid;
-  const OtherProfile({super.key, required this.username, this.uid});
+  const ProfilePage({super.key, required this.username, this.uid});
 
   @override
-  ConsumerState<OtherProfile> createState() => _OtherProfileState();
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _OtherProfileState extends ConsumerState<OtherProfile> {
+class _ProfilePageState extends ConsumerState<ProfilePage> {
   String? _resolvedUid;
   bool _isLoading = false;
   String? _error;
@@ -87,12 +87,9 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
         (widget.uid != null && widget.uid == currentUserId) ||
             (widget.uid == null && widget.username == currentUsername);
 
-    // Helper function to build the leading widget (back button)
     Widget? buildLeadingWidget(BuildContext context, bool isMyProfile) {
       if (isMyProfile) {
-        return SizedBox(
-          width: 20,
-        ); // No back button for current user's own profile
+        return SizedBox(width: 20);
       }
       return IconButton(
         icon: Icon(
@@ -104,7 +101,6 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
       );
     }
 
-    // Handle loading state while resolving UID
     if (_isLoading) {
       return AppScaffold(
         appBar: AppBar(
@@ -122,7 +118,6 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
       );
     }
 
-    // Handle error state
     if (_error != null || _resolvedUid == null) {
       return AppScaffold(
         appBar: AppBar(
@@ -137,7 +132,23 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
           ),
         ),
         body: Center(
-          child: Text(_error ?? AppLocalizations.of(context)!.userNotFound),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.person_off_outlined,
+                size: 72,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                AppLocalizations.of(context)!.userNotFound,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -171,7 +182,6 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
       final currentUser = ref.read(currentUserProvider.notifier);
       await currentUser.blockUser(uid);
       if (context.mounted) {
-        // Navigate back to feed
         context.go('/feed', extra: true);
       }
     }
@@ -279,8 +289,7 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                 pinned: false,
                 scrolledUnderElevation: 0.0,
                 centerTitle: false,
-                leadingWidth:
-                    null, //ref.read(authProvider).uid == null ? 100 : null,
+                leadingWidth: null,
                 leading: null,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 titleSpacing: 0,
@@ -317,15 +326,11 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
                     if (isCurrentUser)
                       InkWell(
                         onTap: () {
-                          //ref.read(navBarProvider.notifier).disable();
                           context
                               .push(
                                 '/users/${profileUser.username}/user_settings',
                               )
-                              .then(
-                                (_) =>
-                                    {} /*ref.read(navBarProvider.notifier).enable()*/,
-                              );
+                              .then((_) => {});
                         },
                         child: Icon(
                           Icons.settings_outlined,
@@ -373,8 +378,6 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
               ),
             );
           },
-          // getter: (time) =>
-          //     locator<PostsHandling>().getSubProfilePosts(time, uid),
           loading: () => const Center(child: LoadingSpinner()),
           error: (error, stack) => Center(
             child: Text(AppLocalizations.of(context)!.profileLoadFailed),
@@ -436,7 +439,7 @@ class _Header extends ConsumerWidget {
       children: [
         ProfileHeader(
           user: user,
-          loggedIn: true, //authState.uid != null,
+          loggedIn: true,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 15),
@@ -444,17 +447,12 @@ class _Header extends ConsumerWidget {
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //the username chager doesn't work on web i think could be firebase outage
                     if (!kIsWeb)
                       InkWell(
                         onTap: () {
-                          //ref.read(navBarProvider.notifier).disable();
                           context
                               .push('/users/${user.username}/edit_profile')
-                              .then(
-                                (_) =>
-                                    {} /*ref.read(navBarProvider.notifier).enable()*/,
-                              );
+                              .then((_) => {});
                         },
                         child: Container(
                           width: width * 0.45,
@@ -480,13 +478,9 @@ class _Header extends ConsumerWidget {
                     if (!kIsWeb) SizedBox(width: width * 0.02),
                     InkWell(
                       onTap: () {
-                        //ref.read(navBarProvider.notifier).disable();
                         context
                             .push('/users/${user.username}/share_profile')
-                            .then(
-                              (_) =>
-                                  {} /*ref.read(navBarProvider.notifier).enable()*/,
-                            );
+                            .then((_) => {});
                       },
                       child: Container(
                         width: width * 0.45,
