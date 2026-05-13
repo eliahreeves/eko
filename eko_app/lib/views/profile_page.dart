@@ -289,6 +289,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 pinned: false,
                 scrolledUnderElevation: 0.0,
                 centerTitle: false,
+                automaticallyImplyLeading: false,
                 leadingWidth: null,
                 leading: null,
                 backgroundColor: Theme.of(context).colorScheme.surface,
