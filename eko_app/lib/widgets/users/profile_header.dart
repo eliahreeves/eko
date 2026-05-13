@@ -87,7 +87,6 @@ class ProfileHeader extends ConsumerWidget {
                 user.username != ''
                     ? user.name
                     : AppLocalizations.of(context)!.userNotFound,
-                //user.name,
                 style: TextStyle(
                   fontSize: 16,
                   letterSpacing: 1,

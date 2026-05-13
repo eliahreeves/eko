@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
+import 'package:eko_app/providers/follow_info_provider.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/supabase_ref.dart';
@@ -89,6 +90,11 @@ class User extends _$User {
       state = AsyncData(user.copyWith(isFollowing: isFollow));
       await supabase.rpc('change_follow_state',
           params: {'p_uid': user.uid, 'p_is_follow': isFollow});
+      ref.invalidate(followInfoProvider(user.uid));
+      final actorUid = ref.read(authProvider).uid;
+      if (actorUid != null && actorUid.isNotEmpty && actorUid != user.uid) {
+        ref.invalidate(followInfoProvider(actorUid));
+      }
     } catch (e) {
       state = AsyncData(user);
     }
