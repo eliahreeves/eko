@@ -399,7 +399,7 @@ abstract class AppLocalizations {
   /// No description provided for @dislikes.
   ///
   /// In en, this message translates to:
-  /// **'Down-Ekos'**
+  /// **'Down-ekos'**
   String get dislikes;
 
   /// No description provided for @done.
@@ -555,7 +555,7 @@ abstract class AppLocalizations {
   /// No description provided for @likes.
   ///
   /// In en, this message translates to:
-  /// **'Up-Ekos'**
+  /// **'Up-ekos'**
   String get likes;
 
   /// No description provided for @logIn.
@@ -573,7 +573,7 @@ abstract class AppLocalizations {
   /// No description provided for @logInRequired.
   ///
   /// In en, this message translates to:
-  /// **'Please log in to access all features of Eko.'**
+  /// **'Please log in to access all features of eko.'**
   String get logInRequired;
 
   /// No description provided for @logIntoApp.
@@ -975,13 +975,13 @@ abstract class AppLocalizations {
   /// No description provided for @viewDislikes.
   ///
   /// In en, this message translates to:
-  /// **'See Down-Ekos'**
+  /// **'See Down-ekos'**
   String get viewDislikes;
 
   /// No description provided for @viewLikes.
   ///
   /// In en, this message translates to:
-  /// **'See Up-Ekos'**
+  /// **'See Up-ekos'**
   String get viewLikes;
 
   /// No description provided for @votes.
@@ -1013,6 +1013,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Year'**
   String get year;
+
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'eko'**
+  String get appTitle;
+
+  /// No description provided for @feedTabNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get feedTabNew;
+
+  /// No description provided for @feedTabPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get feedTabPopular;
+
+  /// No description provided for @messengerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'eko messenger'**
+  String get messengerTitle;
+
+  /// No description provided for @messengerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'eko messenger coming soon'**
+  String get messengerSubtitle;
+
+  /// No description provided for @selectEmojiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select emoji'**
+  String get selectEmojiTitle;
+
+  /// No description provided for @pushDistributorPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a distributor'**
+  String get pushDistributorPickerTitle;
+
+  /// No description provided for @pushOpenNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Open notification'**
+  String get pushOpenNotification;
+
+  /// No description provided for @gifSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search KLIPY'**
+  String get gifSearchHint;
+
+  /// No description provided for @gifsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load GIFs'**
+  String get gifsLoadFailed;
+
+  /// No description provided for @postToPublicConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post to {visibility}?'**
+  String postToPublicConfirmTitle(String visibility);
+
+  /// No description provided for @markdownBoldTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold'**
+  String get markdownBoldTooltip;
+
+  /// No description provided for @markdownItalicTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Italic'**
+  String get markdownItalicTooltip;
+
+  /// No description provided for @loadingEllipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loadingEllipsis;
+
+  /// No description provided for @shortLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load'**
+  String get shortLoadError;
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this profile'**
+  String get profileLoadFailed;
+
+  /// No description provided for @profileResolveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load user'**
+  String get profileResolveFailed;
+
+  /// No description provided for @imageSavedToGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Image saved to gallery'**
+  String get imageSavedToGallery;
+
+  /// No description provided for @repostLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this post'**
+  String get repostLoadFailed;
 }
 
 class _AppLocalizationsDelegate

@@ -179,7 +179,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get ekoText => 'meng-eko postingan Anda!';
 
   @override
-  String get email => 'Sure, here\'s the JSON response:';
+  String get email => 'Email';
 
   @override
   String get emailAlreadyInUseBody => 'Akun dengan email tersebut sudah ada';
@@ -253,7 +253,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Silakan periksa email dan kata sandi Anda dan coba lagi.';
 
   @override
-  String get logInRequired => 'Silakan masuk untuk mengakses semua fitur Eko.';
+  String get logInRequired => 'Silakan masuk untuk mengakses semua fitur eko.';
 
   @override
   String get logIntoApp => 'Masuk diperlukan';
@@ -485,4 +485,63 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get year => 'Tahun';
+
+  @override
+  String get appTitle => 'eko';
+
+  @override
+  String get feedTabNew => 'Baru';
+
+  @override
+  String get feedTabPopular => 'Populer';
+
+  @override
+  String get messengerTitle => 'eko messenger';
+
+  @override
+  String get messengerSubtitle => 'eko messenger segera hadir';
+
+  @override
+  String get selectEmojiTitle => 'Pilih emoji';
+
+  @override
+  String get pushDistributorPickerTitle => 'Pilih distributor';
+
+  @override
+  String get pushOpenNotification => 'Buka notifikasi';
+
+  @override
+  String get gifSearchHint => 'Cari KLIPY';
+
+  @override
+  String get gifsLoadFailed => 'Gagal memuat GIF';
+
+  @override
+  String postToPublicConfirmTitle(String visibility) {
+    return 'Posting ke $visibility?';
+  }
+
+  @override
+  String get markdownBoldTooltip => 'Tebal';
+
+  @override
+  String get markdownItalicTooltip => 'Miring';
+
+  @override
+  String get loadingEllipsis => 'Memuat...';
+
+  @override
+  String get shortLoadError => 'Tidak dapat memuat';
+
+  @override
+  String get profileLoadFailed => 'Tidak dapat memuat profil ini';
+
+  @override
+  String get profileResolveFailed => 'Tidak dapat memuat pengguna';
+
+  @override
+  String get imageSavedToGallery => 'Gambar disimpan ke galeri';
+
+  @override
+  String get repostLoadFailed => 'Tidak dapat memuat postingan ini';
 }

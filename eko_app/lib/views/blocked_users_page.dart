@@ -38,6 +38,7 @@ class BlockedUsersPage extends ConsumerWidget {
           await ref.read(currentUserProvider.notifier).reload();
         },
         child: ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
           itemCount: blockedList.length,
           itemBuilder: (context, index) => UserCard(
             showBlockedUsers: true,

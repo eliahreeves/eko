@@ -1,4 +1,3 @@
-import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:eko_app/widgets/posts/markdown.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -367,23 +366,24 @@ class _ComposePageState extends ConsumerState<ComposePage> {
             barrierDismissible: true,
             context: context,
             builder: (BuildContext context) {
+              final l10n = AppLocalizations.of(context)!;
               return AlertDialog(
                 backgroundColor: Theme.of(context).colorScheme.outlineVariant,
                 title: Text(
-                  'Post to ${AppLocalizations.of(context)!.public}?',
+                  l10n.postToPublicConfirmTitle(l10n.public),
                 ),
                 content: SingleChildScrollView(
                   child: PostCardFromPost(post: post, isPreview: true),
                 ),
                 actions: <Widget>[
                   TextButton(
-                    child: Text(AppLocalizations.of(context)!.cancel),
+                    child: Text(l10n.cancel),
                     onPressed: () {
                       context.pop();
                     },
                   ),
                   TextButton(
-                    child: Text(AppLocalizations.of(context)!.post),
+                    child: Text(l10n.post),
                     onPressed: () async {
                       if (isUploading) return;
                       if (context.mounted) context.pop();
@@ -574,7 +574,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    tooltip: 'Bold',
+                    tooltip: AppLocalizations.of(context)!.markdownBoldTooltip,
                     onPressed: showMarkdownPreview
                         ? null
                         : () => _wrapActiveFieldMarkdown('**', '**'),
@@ -586,7 +586,8 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Italic',
+                    tooltip:
+                        AppLocalizations.of(context)!.markdownItalicTooltip,
                     onPressed: showMarkdownPreview
                         ? null
                         : () => _wrapActiveFieldMarkdown('*', '*'),

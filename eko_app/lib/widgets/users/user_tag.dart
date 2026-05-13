@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/widgets/users/verification_badge.dart';
@@ -45,9 +46,9 @@ class UserTag extends ConsumerWidget {
         );
       },
       error: (_, __) {
-        return const Text('Error');
+        return Text(AppLocalizations.of(context)!.shortLoadError);
       },
-      loading: () => const Text('Loading...'),
+      loading: () => Text(AppLocalizations.of(context)!.loadingEllipsis),
     );
   }
 }

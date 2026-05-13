@@ -164,7 +164,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deletePostWarningTitle => 'Delete Post';
 
   @override
-  String get dislikes => 'Down-Ekos';
+  String get dislikes => 'Down-ekos';
 
   @override
   String get done => 'Done';
@@ -244,7 +244,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get iveVerifiedMyEmail => 'I\'ve verified my email';
 
   @override
-  String get likes => 'Up-Ekos';
+  String get likes => 'Up-ekos';
 
   @override
   String get logIn => 'Login';
@@ -254,7 +254,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please check your email and password and try again.';
 
   @override
-  String get logInRequired => 'Please log in to access all features of Eko.';
+  String get logInRequired => 'Please log in to access all features of eko.';
 
   @override
   String get logIntoApp => 'Login required';
@@ -465,10 +465,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifyEmailTitle => 'Verify your email';
 
   @override
-  String get viewDislikes => 'See Down-Ekos';
+  String get viewDislikes => 'See Down-ekos';
 
   @override
-  String get viewLikes => 'See Up-Ekos';
+  String get viewLikes => 'See Up-ekos';
 
   @override
   String get votes => 'votes';
@@ -484,4 +484,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get year => 'Year';
+
+  @override
+  String get appTitle => 'eko';
+
+  @override
+  String get feedTabNew => 'New';
+
+  @override
+  String get feedTabPopular => 'Popular';
+
+  @override
+  String get messengerTitle => 'eko messenger';
+
+  @override
+  String get messengerSubtitle => 'eko messenger coming soon';
+
+  @override
+  String get selectEmojiTitle => 'Select emoji';
+
+  @override
+  String get pushDistributorPickerTitle => 'Select a distributor';
+
+  @override
+  String get pushOpenNotification => 'Open notification';
+
+  @override
+  String get gifSearchHint => 'Search KLIPY';
+
+  @override
+  String get gifsLoadFailed => 'Failed to load GIFs';
+
+  @override
+  String postToPublicConfirmTitle(String visibility) {
+    return 'Post to $visibility?';
+  }
+
+  @override
+  String get markdownBoldTooltip => 'Bold';
+
+  @override
+  String get markdownItalicTooltip => 'Italic';
+
+  @override
+  String get loadingEllipsis => 'Loading...';
+
+  @override
+  String get shortLoadError => 'Could not load';
+
+  @override
+  String get profileLoadFailed => 'Could not load this profile';
+
+  @override
+  String get profileResolveFailed => 'Could not load user';
+
+  @override
+  String get imageSavedToGallery => 'Image saved to gallery';
+
+  @override
+  String get repostLoadFailed => 'Could not load this post';
 }

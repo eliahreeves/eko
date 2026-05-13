@@ -164,7 +164,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deletePostWarningTitle => 'Eliminar publicación';
 
   @override
-  String get dislikes => 'Down-Ekos';
+  String get dislikes => 'Down-ekos';
 
   @override
   String get done => 'Listo';
@@ -247,7 +247,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get iveVerifiedMyEmail => 'He verificado mi email';
 
   @override
-  String get likes => 'Up-Ekos';
+  String get likes => 'Up-ekos';
 
   @override
   String get logIn => 'Iniciar sesión';
@@ -470,10 +470,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get verifyEmailTitle => 'Verifica tu correo';
 
   @override
-  String get viewDislikes => 'Ver Down-Ekos';
+  String get viewDislikes => 'Ver Down-ekos';
 
   @override
-  String get viewLikes => 'Ver Up-Ekos';
+  String get viewLikes => 'Ver Up-ekos';
 
   @override
   String get votes => 'votos';
@@ -490,4 +490,63 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get year => 'Año';
+
+  @override
+  String get appTitle => 'eko';
+
+  @override
+  String get feedTabNew => 'Nuevo';
+
+  @override
+  String get feedTabPopular => 'Popular';
+
+  @override
+  String get messengerTitle => 'eko messenger';
+
+  @override
+  String get messengerSubtitle => 'eko messenger próximamente';
+
+  @override
+  String get selectEmojiTitle => 'Seleccionar emoji';
+
+  @override
+  String get pushDistributorPickerTitle => 'Seleccione un distribuidor';
+
+  @override
+  String get pushOpenNotification => 'Abrir notificación';
+
+  @override
+  String get gifSearchHint => 'Buscar KLIPY';
+
+  @override
+  String get gifsLoadFailed => 'No se pudieron cargar los GIFs';
+
+  @override
+  String postToPublicConfirmTitle(String visibility) {
+    return '¿Publicar en $visibility?';
+  }
+
+  @override
+  String get markdownBoldTooltip => 'Negrita';
+
+  @override
+  String get markdownItalicTooltip => 'Cursiva';
+
+  @override
+  String get loadingEllipsis => 'Cargando...';
+
+  @override
+  String get shortLoadError => 'No se pudo cargar';
+
+  @override
+  String get profileLoadFailed => 'No se pudo cargar este perfil';
+
+  @override
+  String get profileResolveFailed => 'No se pudo cargar el usuario';
+
+  @override
+  String get imageSavedToGallery => 'Imagen guardada en la galería';
+
+  @override
+  String get repostLoadFailed => 'No se pudo cargar esta publicación';
 }

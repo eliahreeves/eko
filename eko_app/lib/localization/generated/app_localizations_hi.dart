@@ -163,7 +163,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deletePostWarningTitle => 'पोस्ट हटाएं';
 
   @override
-  String get dislikes => 'डाउन-एकोस';
+  String get dislikes => 'Down-ekos';
 
   @override
   String get done => 'हो गया';
@@ -242,7 +242,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get iveVerifiedMyEmail => 'मैंने अपना ईमेल सत्यापित किया है';
 
   @override
-  String get likes => 'उप-एकोस';
+  String get likes => 'Up-ekos';
 
   @override
   String get logIn => 'लॉगिन';
@@ -253,7 +253,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get logInRequired =>
-      'कृपया सुविधाओं की पूरी पहुँच के लिए Eko में लॉगिन करें।';
+      'कृपया सुविधाओं की पूरी पहुँच के लिए eko में लॉगिन करें।';
 
   @override
   String get logIntoApp => 'लॉगिन आवश्यक';
@@ -464,10 +464,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get verifyEmailTitle => 'अपना ईमेल सत्यापित करें';
 
   @override
-  String get viewDislikes => 'डाउन-एकोस देखें';
+  String get viewDislikes => 'Down-ekos देखें';
 
   @override
-  String get viewLikes => 'उप-एकोस देखें';
+  String get viewLikes => 'Up-ekos देखें';
 
   @override
   String get votes => 'वोट';
@@ -484,4 +484,63 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get year => 'वर्ष';
+
+  @override
+  String get appTitle => 'eko';
+
+  @override
+  String get feedTabNew => 'नया';
+
+  @override
+  String get feedTabPopular => 'लोकप्रिय';
+
+  @override
+  String get messengerTitle => 'eko messenger';
+
+  @override
+  String get messengerSubtitle => 'eko messenger जल्द आ रहा है';
+
+  @override
+  String get selectEmojiTitle => 'इमोजी चुनें';
+
+  @override
+  String get pushDistributorPickerTitle => 'एक वितरक चुनें';
+
+  @override
+  String get pushOpenNotification => 'सूचना खोलें';
+
+  @override
+  String get gifSearchHint => 'KLIPY खोजें';
+
+  @override
+  String get gifsLoadFailed => 'GIF लोड नहीं हो सके';
+
+  @override
+  String postToPublicConfirmTitle(String visibility) {
+    return '$visibility पर पोस्ट करें?';
+  }
+
+  @override
+  String get markdownBoldTooltip => 'बोल्ड';
+
+  @override
+  String get markdownItalicTooltip => 'इटैलिक';
+
+  @override
+  String get loadingEllipsis => 'लोड हो रहा है...';
+
+  @override
+  String get shortLoadError => 'लोड नहीं हो सका';
+
+  @override
+  String get profileLoadFailed => 'यह प्रोफ़ाइल लोड नहीं हो सकी';
+
+  @override
+  String get profileResolveFailed => 'उपयोगकर्ता लोड नहीं हो सका';
+
+  @override
+  String get imageSavedToGallery => 'छवि गैलरी में सहेजी गई';
+
+  @override
+  String get repostLoadFailed => 'यह पोस्ट लोड नहीं हो सकी';
 }

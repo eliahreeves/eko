@@ -1,3 +1,4 @@
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,6 +98,7 @@ class _AppBar extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return DecoratedBox(
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
       child: MaxWidthContent(
@@ -111,7 +113,7 @@ class _AppBar extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: InkWell(onTap: onLogoTap, child: Eko()),
+                        child: InkWell(onTap: onLogoTap, child: eko()),
                       ),
                     ),
                     Align(
@@ -128,17 +130,17 @@ class _AppBar extends StatelessWidget {
                 controller: tabController,
                 tabs: [
                   _Tab(
-                    label: 'Following',
+                    label: l10n.following,
                     selected: tabController.index == 0,
                     controller: scrollControllers[0],
                   ),
                   _Tab(
-                    label: 'New',
+                    label: l10n.feedTabNew,
                     selected: tabController.index == 1,
                     controller: scrollControllers[1],
                   ),
                   _Tab(
-                    label: 'Popular',
+                    label: l10n.feedTabPopular,
                     selected: tabController.index == 2,
                     controller: scrollControllers[2],
                   ),

@@ -58,7 +58,7 @@ class _FollowersState extends ConsumerState<Followers> {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _error = 'Error loading user';
+        _error = AppLocalizations.of(context)!.profileResolveFailed;
       });
     }
   }

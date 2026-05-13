@@ -49,7 +49,7 @@
   "deleteCommentWarningTitle" : "Delete Comment",
   "deletePostWarningBody" : "Are you sure you wish to proceed? This action cannot be undone.",
   "deletePostWarningTitle" : "Delete Post",
-  "dislikes" : "Down-Ekos",
+  "dislikes" : "Down-ekos",
   "done" : "Done",
   "download" : "Download",
   "editProfile" : "Edit Profile",
@@ -75,10 +75,10 @@
   "invalidEmailBody" : "Please check your email and try again.",
   "invalidUserName" : "Username does not meet requirements",
   "iveVerifiedMyEmail" : "I've verified my email",
-  "likes" : "Up-Ekos",
+  "likes" : "Up-ekos",
   "logIn" : "Login",
   "loginFailedBody" : "Please check your email and password and try again.",
-  "logInRequired" : "Please log in to access all features of Eko.",
+  "logInRequired" : "Please log in to access all features of eko.",
   "logIntoApp" : "Login required",
   "logOut" : "Log Out",
   "month" : "Month",
@@ -152,11 +152,37 @@
   "verificationUrl" : "Verification Url",
   "verifyEmailBody" : "We sent a verification link to your email. Check your inbox and spam folder, then click the link to verify your account.",
   "verifyEmailTitle" : "Verify your email",
-  "viewDislikes" : "See Down-Ekos",
-  "viewLikes" : "See Up-Ekos",
+  "viewDislikes" : "See Down-ekos",
+  "viewLikes" : "See Up-ekos",
   "votes" : "votes",
   "weakPasswordBody" : "Check password requirements and try again.",
   "write" : "Write",
   "preview" : "Preview",
-  "year" : "Year"
+  "year" : "Year",
+  "appTitle" : "eko",
+  "feedTabNew" : "New",
+  "feedTabPopular" : "Popular",
+  "messengerTitle" : "eko messenger",
+  "messengerSubtitle" : "eko messenger coming soon",
+  "selectEmojiTitle" : "Select emoji",
+  "pushDistributorPickerTitle" : "Select a distributor",
+  "pushOpenNotification" : "Open notification",
+  "gifSearchHint" : "Search KLIPY",
+  "gifsLoadFailed" : "Failed to load GIFs",
+  "postToPublicConfirmTitle" : "Post to {visibility}?",
+  "@postToPublicConfirmTitle" : {
+    "placeholders" : {
+      "visibility" : {
+        "type" : "String"
+      }
+    }
+  },
+  "markdownBoldTooltip" : "Bold",
+  "markdownItalicTooltip" : "Italic",
+  "loadingEllipsis" : "Loading...",
+  "shortLoadError" : "Could not load",
+  "profileLoadFailed" : "Could not load this profile",
+  "profileResolveFailed" : "Could not load user",
+  "imageSavedToGallery" : "Image saved to gallery",
+  "repostLoadFailed" : "Could not load this post"
 }

@@ -61,22 +61,20 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
 
     try {
       final uid = await getUidFromUsername(widget.username);
-      if (mounted) {
-        setState(() {
-          _resolvedUid = uid;
-          _isLoading = false;
-          if (uid == null) {
-            _error = 'User not found';
-          }
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _resolvedUid = uid;
+        _isLoading = false;
+        if (uid == null) {
+          _error = AppLocalizations.of(context)!.userNotFound;
+        }
+      });
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Error loading user';
-          _isLoading = false;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _error = AppLocalizations.of(context)!.profileResolveFailed;
+        _isLoading = false;
+      });
     }
   }
 
@@ -378,8 +376,9 @@ class _OtherProfileState extends ConsumerState<OtherProfile> {
           // getter: (time) =>
           //     locator<PostsHandling>().getSubProfilePosts(time, uid),
           loading: () => const Center(child: LoadingSpinner()),
-          error: (error, stack) =>
-              Center(child: Text('Error loading user profile: $error')),
+          error: (error, stack) => Center(
+            child: Text(AppLocalizations.of(context)!.profileLoadFailed),
+          ),
         ),
       ),
     );

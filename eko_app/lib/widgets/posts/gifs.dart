@@ -1,5 +1,6 @@
 import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -161,10 +162,14 @@ class _GifSearchSectionState extends State<GifSearchSection> {
           _gifData = append ? [..._gifData, ...newGifs] : newGifs;
         });
       } else {
-        setState(() => _error = 'Failed to load gifs');
+        if (!mounted) return;
+        final msg = AppLocalizations.of(context)!.gifsLoadFailed;
+        setState(() => _error = msg);
       }
     } catch (_) {
-      setState(() => _error = 'Failed to load gifs');
+      if (!mounted) return;
+      final msg = AppLocalizations.of(context)!.gifsLoadFailed;
+      setState(() => _error = msg);
     } finally {
       setState(() => _isLoadingMore = false);
     }
@@ -172,6 +177,7 @@ class _GifSearchSectionState extends State<GifSearchSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppScaffold(
       contrainBody: true,
       body: Column(
@@ -195,7 +201,7 @@ class _GifSearchSectionState extends State<GifSearchSection> {
                       isDense: true,
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.outlineVariant,
-                      hintText: 'Search KLIPY',
+                      hintText: l10n.gifSearchHint,
                       prefixIcon: Icon(Icons.search),
                       suffixIcon: Padding(
                         padding: const EdgeInsets.only(right: 8),

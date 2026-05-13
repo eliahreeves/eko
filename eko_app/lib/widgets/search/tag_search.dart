@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eko_app/interfaces/search.dart';
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 
 bool _isSeparator(String char) {
@@ -102,7 +103,8 @@ class _TagSearchState extends State<TagSearch> {
           future: future(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
+              debugPrint(snapshot.error.toString());
+              return Text(AppLocalizations.of(context)!.defaultErrorTittle);
             }
             if (snapshot.hasData && snapshot.data != null) {
               final data = snapshot.data!;

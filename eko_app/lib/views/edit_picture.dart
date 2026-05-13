@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_to_ascii/image_to_ascii.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
 
@@ -115,7 +116,7 @@ class _EditPictureState extends State<EditPicture> {
 
     if (mounted) {
       showSnackBar(
-        text: 'Image saved to gallery',
+        text: AppLocalizations.of(context)!.imageSavedToGallery,
         context: context,
       );
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/user_provider.dart';
 import 'package:eko_app/widgets/loading/profile_picture_loading.dart';
 import 'package:eko_app/widgets/users/network_or_default_profile_image.dart';
@@ -32,7 +33,9 @@ class ProfilePictureDetail extends ConsumerWidget {
                   data: (user) => NetworkOrDefaultProfileImage(
                     imageUrl: user.profilePicture,
                   ),
-                  error: (_, __) => const Center(child: Text('Error')),
+                  error: (_, __) => Center(
+                    child: Text(AppLocalizations.of(context)!.shortLoadError),
+                  ),
                   loading: () => const Center(child: LoadingProfileImage()),
                 ),
               ),

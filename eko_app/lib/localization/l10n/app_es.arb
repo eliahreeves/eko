@@ -49,7 +49,7 @@
   "deleteCommentWarningTitle" : "Eliminar comentario",
   "deletePostWarningBody" : "Estas seguro de que quieres continuar? Esta acción no se puede deshacer.",
   "deletePostWarningTitle" : "Eliminar publicación",
-  "dislikes" : "Down-Ekos",
+  "dislikes" : "Down-ekos",
   "done" : "Listo",
   "download" : "Descargar",
   "editProfile" : "Editar Perfil",
@@ -75,7 +75,7 @@
   "invalidEmailBody" : "Por favor revise su correo electrónico y vuelva a intentar",
   "invalidUserName" : "Nombre de usario no cumple con los requisitos",
   "iveVerifiedMyEmail" : "He verificado mi email",
-  "likes" : "Up-Ekos",
+  "likes" : "Up-ekos",
   "logIn" : "Iniciar sesión",
   "loginFailedBody" : "Por favor, revisa tu correo y contraseña e intenta de nuevo.",
   "logInRequired" : "Inicie sesión para acceder a todas las funciones de eko.",
@@ -145,11 +145,37 @@
   "verificationUrl" : "Verification Url",
   "verifyEmailBody" : "Hemos enviado un enlace de verificación a tu correo electrónico. Revisa tu buzón de entrada y la carpeta de spam, luego haz clic en el enlace para verificar tu cuenta.",
   "verifyEmailTitle" : "Verifica tu correo",
-  "viewDislikes" : "Ver Down-Ekos",
-  "viewLikes" : "Ver Up-Ekos",
+  "viewDislikes" : "Ver Down-ekos",
+  "viewLikes" : "Ver Up-ekos",
   "votes" : "votos",
   "weakPasswordBody" : "Revise los requisitos para su contraseña e intente de nuevo.",
   "write" : "Escribir",
   "preview" : "Vista previa",
-  "year" : "Año"
+  "year" : "Año",
+  "appTitle" : "eko",
+  "feedTabNew" : "Nuevo",
+  "feedTabPopular" : "Popular",
+  "messengerTitle" : "eko messenger",
+  "messengerSubtitle" : "eko messenger próximamente",
+  "selectEmojiTitle" : "Seleccionar emoji",
+  "pushDistributorPickerTitle" : "Seleccione un distribuidor",
+  "pushOpenNotification" : "Abrir notificación",
+  "gifSearchHint" : "Buscar KLIPY",
+  "gifsLoadFailed" : "No se pudieron cargar los GIFs",
+  "postToPublicConfirmTitle" : "¿Publicar en {visibility}?",
+  "@postToPublicConfirmTitle" : {
+    "placeholders" : {
+      "visibility" : {
+        "type" : "String"
+      }
+    }
+  },
+  "markdownBoldTooltip" : "Negrita",
+  "markdownItalicTooltip" : "Cursiva",
+  "loadingEllipsis" : "Cargando...",
+  "shortLoadError" : "No se pudo cargar",
+  "profileLoadFailed" : "No se pudo cargar este perfil",
+  "profileResolveFailed" : "No se pudo cargar el usuario",
+  "imageSavedToGallery" : "Imagen guardada en la galería",
+  "repostLoadFailed" : "No se pudo cargar esta publicación"
 }

@@ -54,7 +54,7 @@
   "download" : "Unduh",
   "editProfile" : "Edit Profil",
   "ekoText" : "meng-eko postingan Anda!",
-  "email" : "Sure, here's the JSON response:",
+  "email" : "Email",
   "emailAlreadyInUseBody" : "Akun dengan email tersebut sudah ada",
   "emailAlreadyInUseTitle" : "Email Sudah Digunakan",
   "emptyFieldError" : "Pastikan semua kolom telah diisi.",
@@ -78,7 +78,7 @@
   "likes" : "Suka",
   "logIn" : "Masuk",
   "loginFailedBody" : "Silakan periksa email dan kata sandi Anda dan coba lagi.",
-  "logInRequired" : "Silakan masuk untuk mengakses semua fitur Eko.",
+  "logInRequired" : "Silakan masuk untuk mengakses semua fitur eko.",
   "logIntoApp" : "Masuk diperlukan",
   "logOut" : "Keluar",
   "month" : "Bulan",
@@ -151,5 +151,31 @@
   "weakPasswordBody" : "Periksa persyaratan kata sandi dan coba lagi.",
   "write" : "Tulis",
   "preview" : "Pratinjau",
-  "year" : "Tahun"
+  "year" : "Tahun",
+  "appTitle" : "eko",
+  "feedTabNew" : "Baru",
+  "feedTabPopular" : "Populer",
+  "messengerTitle" : "eko messenger",
+  "messengerSubtitle" : "eko messenger segera hadir",
+  "selectEmojiTitle" : "Pilih emoji",
+  "pushDistributorPickerTitle" : "Pilih distributor",
+  "pushOpenNotification" : "Buka notifikasi",
+  "gifSearchHint" : "Cari KLIPY",
+  "gifsLoadFailed" : "Gagal memuat GIF",
+  "postToPublicConfirmTitle" : "Posting ke {visibility}?",
+  "@postToPublicConfirmTitle" : {
+    "placeholders" : {
+      "visibility" : {
+        "type" : "String"
+      }
+    }
+  },
+  "markdownBoldTooltip" : "Tebal",
+  "markdownItalicTooltip" : "Miring",
+  "loadingEllipsis" : "Memuat...",
+  "shortLoadError" : "Tidak dapat memuat",
+  "profileLoadFailed" : "Tidak dapat memuat profil ini",
+  "profileResolveFailed" : "Tidak dapat memuat pengguna",
+  "imageSavedToGallery" : "Gambar disimpan ke galeri",
+  "repostLoadFailed" : "Tidak dapat memuat postingan ini"
 }

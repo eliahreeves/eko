@@ -1,6 +1,7 @@
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:eko_app/localization/generated/app_localizations.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -9,6 +10,7 @@ class MessagesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
       contrainBody: true,
@@ -23,16 +25,16 @@ class MessagesPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'eko messenger',
+              l10n.messengerTitle,
               style: textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'eko messenger coming soon',
+              l10n.messengerSubtitle,
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withAlpha(128),
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],

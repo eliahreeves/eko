@@ -85,7 +85,8 @@ class MyApp extends ConsumerWidget {
 
     return OverlaySupport(
       child: MaterialApp.router(
-        title: 'Eko',
+        onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+        title: 'eko',
         debugShowCheckedModeBanner: false,
         scrollBehavior: const MaterialScrollBehavior().copyWith(
           dragDevices: PointerDeviceKind.values.toSet(),

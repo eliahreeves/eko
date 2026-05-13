@@ -247,7 +247,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       SizedBox(
                         height: height * .22,
                         width: width * 0.7,
-                        child: Eko(useDefault: true),
+                        child: eko(useDefault: true),
                       ),
                       SizedBox(height: height * .04),
                       AutofillGroup(

@@ -1,3 +1,4 @@
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/posts/markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,7 +158,7 @@ class RepostCard extends ConsumerWidget {
       ),
       error: (e, __) {
         debugPrint(e.toString());
-        return Text('Failed to Load');
+        return Text(AppLocalizations.of(context)!.repostLoadFailed);
       },
       loading: () => CircularProgressIndicator(),
     );

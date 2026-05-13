@@ -49,7 +49,7 @@
   "deleteCommentWarningTitle" : "टिप्पणी हटाएं",
   "deletePostWarningBody" : "क्या आप वाकई आगे बढ़ना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
   "deletePostWarningTitle" : "पोस्ट हटाएं",
-  "dislikes" : "डाउन-एकोस",
+  "dislikes" : "Down-ekos",
   "done" : "हो गया",
   "download" : "डाउनलोड",
   "editProfile" : "प्रोफ़ाइल संपादित करें",
@@ -75,10 +75,10 @@
   "invalidEmailBody" : "कृपया अपना ईमेल जांचें और पुनः प्रयास करें।",
   "invalidUserName" : "उपयोगकर्ता नाम आवश्यकताओं को पूरा नहीं करता",
   "iveVerifiedMyEmail" : "मैंने अपना ईमेल सत्यापित किया है",
-  "likes" : "उप-एकोस",
+  "likes" : "Up-ekos",
   "logIn" : "लॉगिन",
   "loginFailedBody" : "कृपया अपना ईमेल और पासवर्ड जांचें और पुनः प्रयास करें।",
-  "logInRequired" : "कृपया सुविधाओं की पूरी पहुँच के लिए Eko में लॉगिन करें।",
+  "logInRequired" : "कृपया सुविधाओं की पूरी पहुँच के लिए eko में लॉगिन करें।",
   "logIntoApp" : "लॉगिन आवश्यक",
   "logOut" : "लॉग आउट",
   "month" : "महीना",
@@ -145,11 +145,37 @@
   "verificationUrl" : "सत्यापन Url",
   "verifyEmailBody" : "हमने आपके ईमेल पर एक सत्यापन लिंक भेजा है। कृपया अपने इनबॉक्स और स्पैम फ़ोल्डर की जाँच करें, फिर अपने खाते को सत्यापित करने के लिए लिंक पर क्लिक करें।",
   "verifyEmailTitle" : "अपना ईमेल सत्यापित करें",
-  "viewDislikes" : "डाउन-एकोस देखें",
-  "viewLikes" : "उप-एकोस देखें",
+  "viewDislikes" : "Down-ekos देखें",
+  "viewLikes" : "Up-ekos देखें",
   "votes" : "वोट",
   "weakPasswordBody" : "पासवर्ड आवश्यकताओं की जाँच करें और फिर से प्रयास करें।",
   "write" : "लिखें",
   "preview" : "पूर्वावलोकन",
-  "year" : "वर्ष"
+  "year" : "वर्ष",
+  "appTitle" : "eko",
+  "feedTabNew" : "नया",
+  "feedTabPopular" : "लोकप्रिय",
+  "messengerTitle" : "eko messenger",
+  "messengerSubtitle" : "eko messenger जल्द आ रहा है",
+  "selectEmojiTitle" : "इमोजी चुनें",
+  "pushDistributorPickerTitle" : "एक वितरक चुनें",
+  "pushOpenNotification" : "सूचना खोलें",
+  "gifSearchHint" : "KLIPY खोजें",
+  "gifsLoadFailed" : "GIF लोड नहीं हो सके",
+  "postToPublicConfirmTitle" : "{visibility} पर पोस्ट करें?",
+  "@postToPublicConfirmTitle" : {
+    "placeholders" : {
+      "visibility" : {
+        "type" : "String"
+      }
+    }
+  },
+  "markdownBoldTooltip" : "बोल्ड",
+  "markdownItalicTooltip" : "इटैलिक",
+  "loadingEllipsis" : "लोड हो रहा है...",
+  "shortLoadError" : "लोड नहीं हो सका",
+  "profileLoadFailed" : "यह प्रोफ़ाइल लोड नहीं हो सकी",
+  "profileResolveFailed" : "उपयोगकर्ता लोड नहीं हो सका",
+  "imageSavedToGallery" : "छवि गैलरी में सहेजी गई",
+  "repostLoadFailed" : "यह पोस्ट लोड नहीं हो सकी"
 }
