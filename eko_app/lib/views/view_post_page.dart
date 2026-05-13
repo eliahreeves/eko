@@ -21,6 +21,7 @@ import 'package:eko_app/widgets/search/tag_search.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/posts/comment_card.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class ViewPostPage extends ConsumerStatefulWidget {
   final int id;
@@ -313,7 +314,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         }
         return GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Scaffold(
+          child: AppScaffold(
             appBar: AppBar(
               backgroundColor: Theme.of(context).colorScheme.surface,
               surfaceTintColor: Colors.transparent,

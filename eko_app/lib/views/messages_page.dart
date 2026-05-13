@@ -1,3 +1,4 @@
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,8 @@ class MessagesPage extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
+    return AppScaffold(
+      contrainBody: true,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -30,7 +32,7 @@ class MessagesPage extends StatelessWidget {
             Text(
               'eko messenger coming soon',
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.5),
+                color: colorScheme.onSurface.withAlpha(128),
               ),
             ),
           ],

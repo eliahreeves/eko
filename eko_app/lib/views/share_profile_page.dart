@@ -16,6 +16,7 @@ import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/utilities/platform.dart' as platform;
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 GlobalKey repaintKey = GlobalKey();
 
@@ -65,7 +66,7 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
     final icon = platform.isIOS
         ? CupertinoIcons.share
         : CupertinoIcons.arrowshape_turn_up_right;
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(

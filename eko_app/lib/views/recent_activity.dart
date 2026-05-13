@@ -8,6 +8,7 @@ import 'package:eko_app/widgets/notifications/activity_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class RecentActivity extends ConsumerWidget {
   const RecentActivity({super.key});
@@ -38,7 +39,7 @@ class RecentActivity extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
         leading: IconButton(

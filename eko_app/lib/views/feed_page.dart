@@ -1,4 +1,4 @@
-import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -99,62 +99,64 @@ class _AppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
-      child: SizedBox(
-        height: appBarHeight,
-        child: Column(
-          children: [
-            Flexible(
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: InkWell(onTap: onLogoTap, child: Eko()),
+      child: MaxWidthContent(
+        child: SizedBox(
+          height: appBarHeight,
+          child: Column(
+            children: [
+              Flexible(
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: InkWell(onTap: onLogoTap, child: Eko()),
+                      ),
                     ),
+                    Align(
+                      alignment: Alignment(0.95, 0.05),
+                      child: InkWell(
+                        onTap: () => context.pushNamed('recent'),
+                        child: Bell(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TabBar(
+                controller: tabController,
+                tabs: [
+                  _Tab(
+                    label: 'Following',
+                    selected: tabController.index == 0,
+                    controller: scrollControllers[0],
                   ),
-                  Align(
-                    alignment: Alignment(0.95, 0.05),
-                    child: InkWell(
-                      onTap: () => context.pushNamed('recent'),
-                      child: Bell(),
-                    ),
+                  _Tab(
+                    label: 'New',
+                    selected: tabController.index == 1,
+                    controller: scrollControllers[1],
+                  ),
+                  _Tab(
+                    label: 'Popular',
+                    selected: tabController.index == 2,
+                    controller: scrollControllers[2],
                   ),
                 ],
+                indicator: RoundedTabIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                  radius: 4,
+                  thickness: 3,
+                ),
+                indicatorPadding: EdgeInsets.only(bottom: 5, top: 4),
+                labelColor: Theme.of(context).colorScheme.onSurface,
+                labelPadding: EdgeInsets.all(0),
+                unselectedLabelColor: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withAlpha(200),
               ),
-            ),
-            TabBar(
-              controller: tabController,
-              tabs: [
-                _Tab(
-                  label: 'Following',
-                  selected: tabController.index == 0,
-                  controller: scrollControllers[0],
-                ),
-                _Tab(
-                  label: 'New',
-                  selected: tabController.index == 1,
-                  controller: scrollControllers[1],
-                ),
-                _Tab(
-                  label: 'Popular',
-                  selected: tabController.index == 2,
-                  controller: scrollControllers[2],
-                ),
-              ],
-              indicator: RoundedTabIndicator(
-                color: Theme.of(context).colorScheme.primary,
-                radius: 4,
-                thickness: 3,
-              ),
-              indicatorPadding: EdgeInsets.only(bottom: 5, top: 4),
-              labelColor: Theme.of(context).colorScheme.onSurface,
-              labelPadding: EdgeInsets.all(0),
-              unselectedLabelColor: Theme.of(
-                context,
-              ).colorScheme.onSurface.withAlpha(200),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -83,7 +84,8 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     final height = MediaQuery.sizeOf(context).height;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
+    return AppScaffold(
+      contrainBody: true,
       appBar: const AuthAppBar(),
       body: Center(
         child: SizedBox(

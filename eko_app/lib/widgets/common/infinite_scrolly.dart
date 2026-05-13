@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/loading/loading_spinner.dart';
+import 'package:eko_app/widgets/common/max_width_content.dart';
 
 class _DefaultInitialLoader extends StatelessWidget {
   const _DefaultInitialLoader();
@@ -242,44 +243,55 @@ class _InfiniteScrollyCore<T> extends State<InfiniteScrollyCore<T>> {
             itemBuilder: (BuildContext context, int index) {
               // build header
               if (index == 0) {
-                return widget.header ?? SizedBox();
+                return widget.header == null
+                    ? const SizedBox()
+                    : MaxWidthContent(child: widget.header!);
               }
               //normal case put cards
               if (widget.list.isNotEmpty && index < widget.list.length + 1) {
-                return widget.widget(widget.list[index - 1]);
+                return MaxWidthContent(
+                  child: widget.widget(widget.list[index - 1]),
+                );
               }
               //what to return if dataset is empty
               if (isEmptySet) {
-                return widget.emptySetNotice ??
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Center(
-                        child: Text(
-                          AppLocalizations.of(context)!.nothingToSeeHere,
+                return MaxWidthContent(
+                  child: widget.emptySetNotice ??
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Center(
+                          child: Text(
+                            AppLocalizations.of(context)!.nothingToSeeHere,
+                          ),
                         ),
                       ),
-                    );
+                );
               }
               //what to return if dataset is under initial load sequence
               if (!widget.isEnd && widget.list.isEmpty) {
-                return widget.initialLoadingWidget ??
-                    const _DefaultInitialLoader();
+                return MaxWidthContent(
+                  child: widget.initialLoadingWidget ??
+                      const _DefaultInitialLoader(),
+                );
               }
               //end of feed
               if (widget.isEnd && widget.list.isNotEmpty) {
-                return const SizedBox();
+                return const MaxWidthContent(child: SizedBox());
               }
               // new posts are loading
-              return widget.loadingWidget ??
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: CircularProgressIndicator(),
+              return MaxWidthContent(
+                child: widget.loadingWidget ??
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  );
+              );
             },
           ),
-          const SliverFillRemaining(hasScrollBody: false, child: SizedBox()),
+          const SliverFillRemaining(
+              hasScrollBody: false, child: SizedBox.shrink()),
         ],
       ),
     );

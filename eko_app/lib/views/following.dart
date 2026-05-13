@@ -10,6 +10,7 @@ import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class Following extends ConsumerStatefulWidget {
   final String username;
@@ -105,7 +106,7 @@ class _FollowingState extends ConsumerState<Following> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
