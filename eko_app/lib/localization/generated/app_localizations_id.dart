@@ -85,10 +85,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get commentRequired => 'Komentar Diperlukan';
 
   @override
-  String get commentTaggedText => 'menandai Anda dalam sebuah komentar';
+  String get commentTaggedText => 'menandai Anda dalam sebuah komentar!';
 
   @override
-  String get commentText => 'mengomentari postingan Anda';
+  String get commentText => 'mengomentari postingan Anda!';
 
   @override
   String get confirmPassword => 'Konfirmasi Kata Sandi';
@@ -176,6 +176,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get editProfile => 'Edit Profil';
 
   @override
+  String get ekoText => 'meng-eko postingan Anda!';
+
+  @override
   String get email => 'Sure, here\'s the JSON response:';
 
   @override
@@ -209,7 +212,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get following => 'Mengikuti';
 
   @override
-  String get followText => 'mulai mengikuti Anda';
+  String get followText => 'mengikuti Anda!';
 
   @override
   String get forgotPassword => 'Lupa Kata Sandi?';
@@ -324,7 +327,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get postPreviewInfoTitle => 'Pratinjau Dinonaktifkan';
 
   @override
-  String get postTaggedText => 'menandai Anda dalam sebuah postingan';
+  String get postTaggedText => 'menandai Anda dalam sebuah postingan!';
 
   @override
   String get postTitle => 'Judul';

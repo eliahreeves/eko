@@ -85,10 +85,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commentRequired => 'Comentario requerido';
 
   @override
-  String get commentTaggedText => 'te etiquetó en un comentario';
+  String get commentTaggedText => '¡te etiquetó en un comentario!';
 
   @override
-  String get commentText => 'ha comentado en tu publicación';
+  String get commentText => '¡ha comentado en tu publicación!';
 
   @override
   String get confirmPassword => 'Confirmar Contraseña';
@@ -176,6 +176,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get editProfile => 'Editar Perfil';
 
   @override
+  String get ekoText => '¡hizo eko de tu publicación!';
+
+  @override
   String get email => 'Correo electrónico';
 
   @override
@@ -211,7 +214,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get following => 'Siguiendo';
 
   @override
-  String get followText => 'ha empezado a seguirte';
+  String get followText => '¡te ha seguido!';
 
   @override
   String get forgotPassword => 'Contraseña olvidada?';
@@ -330,7 +333,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get postPreviewInfoTitle => 'Vista previa desactivada';
 
   @override
-  String get postTaggedText => 'te etiquetó en una publicación';
+  String get postTaggedText => '¡te etiquetó en una publicación!';
 
   @override
   String get postTitle => 'Título';

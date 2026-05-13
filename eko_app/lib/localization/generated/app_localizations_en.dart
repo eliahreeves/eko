@@ -85,10 +85,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commentRequired => 'Comment Required';
 
   @override
-  String get commentTaggedText => 'tagged you in a comment';
+  String get commentTaggedText => 'tagged you in a comment!';
 
   @override
-  String get commentText => 'commented on your post';
+  String get commentText => 'commented on your post!';
 
   @override
   String get confirmPassword => 'Confirm Password';
@@ -176,6 +176,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editProfile => 'Edit Profile';
 
   @override
+  String get ekoText => 'eko\'ed your post!';
+
+  @override
   String get email => 'Email';
 
   @override
@@ -210,7 +213,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get following => 'Following';
 
   @override
-  String get followText => 'started following you';
+  String get followText => 'followed you!';
 
   @override
   String get forgotPassword => 'Forgot Password?';
@@ -324,7 +327,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get postPreviewInfoTitle => 'Preview Disabled';
 
   @override
-  String get postTaggedText => 'tagged you in a post';
+  String get postTaggedText => 'tagged you in a post!';
 
   @override
   String get postTitle => 'Title';

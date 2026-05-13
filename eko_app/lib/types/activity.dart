@@ -9,6 +9,7 @@ enum ActivityType {
   commentTag,
   follow,
   comment,
+  eko,
 }
 
 @freezed

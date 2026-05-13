@@ -249,13 +249,13 @@ abstract class AppLocalizations {
   /// No description provided for @commentTaggedText.
   ///
   /// In en, this message translates to:
-  /// **'tagged you in a comment'**
+  /// **'tagged you in a comment!'**
   String get commentTaggedText;
 
   /// No description provided for @commentText.
   ///
   /// In en, this message translates to:
-  /// **'commented on your post'**
+  /// **'commented on your post!'**
   String get commentText;
 
   /// No description provided for @confirmPassword.
@@ -420,6 +420,12 @@ abstract class AppLocalizations {
   /// **'Edit Profile'**
   String get editProfile;
 
+  /// No description provided for @ekoText.
+  ///
+  /// In en, this message translates to:
+  /// **'eko\'ed your post!'**
+  String get ekoText;
+
   /// No description provided for @email.
   ///
   /// In en, this message translates to:
@@ -489,7 +495,7 @@ abstract class AppLocalizations {
   /// No description provided for @followText.
   ///
   /// In en, this message translates to:
-  /// **'started following you'**
+  /// **'followed you!'**
   String get followText;
 
   /// No description provided for @forgotPassword.
@@ -711,7 +717,7 @@ abstract class AppLocalizations {
   /// No description provided for @postTaggedText.
   ///
   /// In en, this message translates to:
-  /// **'tagged you in a post'**
+  /// **'tagged you in a post!'**
   String get postTaggedText;
 
   /// No description provided for @postTitle.

@@ -31,4 +31,5 @@ const _$ActivityTypeEnumMap = {
   ActivityType.commentTag: 'comment_tag',
   ActivityType.follow: 'follow',
   ActivityType.comment: 'comment',
+  ActivityType.eko: 'eko',
 };

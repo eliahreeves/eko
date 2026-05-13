@@ -337,6 +337,8 @@ async function getNotificationPayload(record: any) {
       payloadData = { type: "comment", path: record.post_id };
     } else if (record.type === "eko") {
       title = `${sourceName} eko'ed your post!`;
+      const postData = await getPost(record.post_id);
+      body = postData?.title || postData?.body || body;
       payloadData = { type: "post", path: record.post_id };
     } else if (record.type === "follow") {
       title = `${sourceName} followed you!`;

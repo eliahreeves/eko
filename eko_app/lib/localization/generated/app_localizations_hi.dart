@@ -85,10 +85,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get commentRequired => 'टिप्पणी अनिवार्य';
 
   @override
-  String get commentTaggedText => 'एक टिप्पणी में आपको टैग किया';
+  String get commentTaggedText => 'एक टिप्पणी में आपको टैग किया!';
 
   @override
-  String get commentText => 'आपकी पोस्ट पर टिप्पणी की';
+  String get commentText => 'आपकी पोस्ट पर टिप्पणी की!';
 
   @override
   String get confirmPassword => 'पासवर्ड की पुष्टि करें';
@@ -175,6 +175,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get editProfile => 'प्रोफ़ाइल संपादित करें';
 
   @override
+  String get ekoText => 'ने आपकी पोस्ट को एको किया!';
+
+  @override
   String get email => 'ईमेल';
 
   @override
@@ -208,7 +211,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get following => 'अनुसरण कर रहे हैं';
 
   @override
-  String get followText => 'ने आपका अनुसरण करना शुरू कर दिया';
+  String get followText => 'ने आपका अनुसरण किया!';
 
   @override
   String get forgotPassword => 'पासवर्ड भूल गए?';
@@ -323,7 +326,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get postPreviewInfoTitle => 'पूर्वावलोकन निष्क्रिय है';
 
   @override
-  String get postTaggedText => 'आपको एक पोस्ट में टैग किया';
+  String get postTaggedText => 'आपको एक पोस्ट में टैग किया!';
 
   @override
   String get postTitle => 'शीर्षक';
