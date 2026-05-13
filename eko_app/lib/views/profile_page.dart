@@ -432,6 +432,8 @@ class _Header extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
+    final actionButtonWidth = (width * 0.45).clamp(120.0, 170.0).toDouble();
+    final actionButtonHeight = (width * 0.09).clamp(38.0, 44.0).toDouble();
     final userState = ref.watch(userProvider(user.uid));
     final isFollowing = userState.valueOrNull?.isFollowing ?? user.isFollowing;
 
@@ -455,8 +457,8 @@ class _Header extends ConsumerWidget {
                               .then((_) => {});
                         },
                         child: Container(
-                          width: width * 0.45,
-                          height: width * 0.09,
+                          width: actionButtonWidth,
+                          height: actionButtonHeight,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             borderRadius: const BorderRadius.all(
@@ -483,8 +485,8 @@ class _Header extends ConsumerWidget {
                             .then((_) => {});
                       },
                       child: Container(
-                        width: width * 0.45,
-                        height: width * 0.09,
+                        width: actionButtonWidth,
+                        height: actionButtonHeight,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.all(
@@ -507,8 +509,8 @@ class _Header extends ConsumerWidget {
                   child: InkWell(
                     onTap: () => _onFollowPressed(ref),
                     child: Container(
-                      width: width * 0.45,
-                      height: width * 0.09,
+                      width: actionButtonWidth,
+                      height: actionButtonHeight,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(

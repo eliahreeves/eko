@@ -25,6 +25,8 @@ class FollowButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = c.widthGetter(context);
+    final buttonWidth = (width * 0.22).clamp(92.0, 120.0).toDouble();
+    final buttonHeight = (width * 0.07).clamp(34.0, 40.0).toDouble();
     final currentUser = ref.watch(currentUserProvider);
     final userState = ref.watch(userProvider(user.uid));
     final isFollowing = userState.valueOrNull?.isFollowing ?? user.isFollowing;
@@ -34,8 +36,8 @@ class FollowButton extends ConsumerWidget {
     return InkWell(
       onTap: () => onFollowPressed(ref),
       child: Container(
-        width: width * 0.25,
-        height: width * 0.08,
+        width: buttonWidth,
+        height: buttonHeight,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -49,7 +51,6 @@ class FollowButton extends ConsumerWidget {
               : AppLocalizations.of(context)!.follow,
           maxLines: 1,
           style: TextStyle(
-            fontSize: 13,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),

@@ -46,7 +46,7 @@ class ActivityCardWidget extends ConsumerWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: height * 0.01),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
               padding: EdgeInsets.only(
@@ -58,13 +58,12 @@ class ActivityCardWidget extends ConsumerWidget {
                 size: width * 0.115,
               ),
             ),
-            SizedBox(
-              width: width * 0.8,
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Text(
@@ -75,7 +74,6 @@ class ActivityCardWidget extends ConsumerWidget {
                       const SizedBox(width: 8),
                       TimeStamp(
                         time: activity.dateTime,
-                        fontSize: 12,
                       ),
                     ],
                   ),
@@ -124,7 +122,6 @@ class _ActivityBody extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 13,
         ),
       ),
     );
