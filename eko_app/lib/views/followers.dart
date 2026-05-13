@@ -113,7 +113,6 @@ class _FollowersState extends ConsumerState<Followers> {
           icon: Icon(
             Icons.arrow_back_ios_rounded,
             color: Theme.of(context).colorScheme.onSurface,
-            size: 20,
           ),
           onPressed: () => context.pop(),
         ),

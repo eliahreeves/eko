@@ -101,7 +101,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   void _popDialog() {
-    Navigator.of(context, rootNavigator: true).pop();
+    context.pop();
   }
 
   void _goToLogin() {

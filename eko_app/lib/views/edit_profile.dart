@@ -212,11 +212,11 @@ class _EditProfileState extends ConsumerState<EditProfile> {
           content: Text(AppLocalizations.of(context)!.exitEditProfileBody),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => context.pop(false),
               child: Text(AppLocalizations.of(context)!.stay),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => context.pop(true),
               child: Text(AppLocalizations.of(context)!.exit),
             ),
           ],

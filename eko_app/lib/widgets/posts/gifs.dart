@@ -227,7 +227,7 @@ class _GifSearchSectionState extends State<GifSearchSection> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                   icon: Icon(Icons.close),
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),

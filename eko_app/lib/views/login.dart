@@ -112,13 +112,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     TextButton(
                       child: Text(l10n.back),
                       onPressed: () {
-                        Navigator.of(dialogContext).pop();
+                        dialogContext.pop();
                       },
                     ),
                     TextButton(
                       child: Text(l10n.resetPassword),
                       onPressed: () {
-                        Navigator.of(dialogContext).pop();
+                        dialogContext.pop();
                         forgotPasswordPressed(l10n.localeName);
                       },
                     ),

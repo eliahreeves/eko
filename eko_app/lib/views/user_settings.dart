@@ -58,7 +58,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
             Icons.arrow_back_ios_rounded,
             color: Theme.of(context).colorScheme.onSurface,
           ),
-          onPressed: () => context.pop('poped'),
+          onPressed: () => context.pop(),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(

@@ -73,7 +73,7 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
             Icons.arrow_back_ios_rounded,
             color: Theme.of(context).colorScheme.onSurface,
           ),
-          onPressed: () => context.pop('poped'),
+          onPressed: () => context.pop(),
         ),
         automaticallyImplyLeading: false,
         centerTitle: true,

@@ -96,7 +96,7 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
         [l10n.ok],
         [
           () {
-            Navigator.of(context, rootNavigator: true).pop();
+            context.pop();
             if (mounted) context.pop();
           },
         ],

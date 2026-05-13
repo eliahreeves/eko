@@ -50,7 +50,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
   }
 
   void _popDialog() {
-    Navigator.of(context, rootNavigator: true).pop();
+    context.pop();
   }
 
   KeyEventResult _handleCommentFieldKey(FocusNode _, KeyEvent event) {

@@ -113,7 +113,6 @@ class _FollowingState extends ConsumerState<Following> {
           icon: Icon(
             Icons.arrow_back_ios_rounded,
             color: Theme.of(context).colorScheme.onSurface,
-            size: 20,
           ),
           onPressed: () => context.pop(),
         ),

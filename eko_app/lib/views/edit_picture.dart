@@ -140,7 +140,10 @@ class _EditPictureState extends State<EditPicture> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded),
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               onPressed: () => context.pop(),
             ),
             Row(
