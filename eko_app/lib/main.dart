@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:eko_app/interfaces/notification_helper.dart';
 import 'package:eko_app/utilities/api_constants.dart' as ac;
 import 'package:flutter/foundation.dart';
@@ -85,6 +87,9 @@ class MyApp extends ConsumerWidget {
       child: MaterialApp.router(
         title: 'Eko',
         debugShowCheckedModeBanner: false,
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: PointerDeviceKind.values.toSet(),
+        ),
         theme: ThemeData(
           fontFamily: platform.isLinux ? 'Inter' : null,
           fontFamilyFallback: platform.isLinux ? ['NotoEmoji'] : null,
