@@ -68,7 +68,6 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
         : CupertinoIcons.arrowshape_turn_up_right;
     return AppScaffold(
       appBar: EkoAppBar(
-        centerTitle: true,
         title: Text(AppLocalizations.of(context)!.shareProfile),
       ),
       body: Center(

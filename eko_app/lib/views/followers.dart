@@ -108,10 +108,7 @@ class _FollowersState extends ConsumerState<Followers> {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: EkoAppBar(
-        title: Text(
-          AppLocalizations.of(context)!.followers,
-          style: EkoAppBar.titleTextStyle(context).copyWith(fontSize: 20),
-        ),
+        title: Text(AppLocalizations.of(context)!.followers),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

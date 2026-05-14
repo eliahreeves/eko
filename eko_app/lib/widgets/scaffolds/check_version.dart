@@ -49,7 +49,6 @@ class _CheckVersonMobileState extends State<_CheckVersonMobile> {
     return needsUpdate
         ? Scaffold(
             appBar: EkoAppBar(
-              centerTitle: true,
               title: Text(AppLocalizations.of(context)!.updateRequiredTitle),
               showBackButton: false,
             ),

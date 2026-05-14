@@ -259,15 +259,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
           contrainBody: true,
           appBar: EkoAppBar(
             onBack: () => _onBackPressed(user),
-            title: Text(
-              AppLocalizations.of(context)!.editProfile,
-              //AppLocalizations.of(context)!.save,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
+            title: Text(AppLocalizations.of(context)!.editProfile),
             scrolledUnderElevation: 0.0,
             actions: [
               AnimatedBuilder(

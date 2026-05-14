@@ -12,7 +12,6 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.surfaceTintColor = Colors.transparent,
     this.elevation = 0,
     this.scrolledUnderElevation,
-    this.centerTitle,
     this.titleSpacing,
 
     /// When true, [title] spans the toolbar ([titleSpacing] 0, no default
@@ -30,7 +29,6 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? surfaceTintColor;
   final double elevation;
   final double? scrolledUnderElevation;
-  final bool? centerTitle;
   final double? titleSpacing;
   final bool embedLeadingInTitle;
   final PreferredSizeWidget? bottom;
@@ -79,7 +77,6 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: surfaceTintColor,
       elevation: elevation,
       scrolledUnderElevation: scrolledUnderElevation,
-      centerTitle: centerTitle,
       bottom: bottom,
     );
   }
