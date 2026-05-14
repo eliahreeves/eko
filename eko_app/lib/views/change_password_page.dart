@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
-import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
 import 'package:eko_app/widgets/auth/create_password.dart';
@@ -86,7 +86,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
     return AppScaffold(
       contrainBody: true,
-      appBar: const AuthAppBar(),
+      appBar: const EkoAppBar(),
       body: Center(
         child: SizedBox(
           width: width,

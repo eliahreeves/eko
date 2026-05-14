@@ -18,6 +18,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/posts/post_card.dart';
 import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   final String username;
@@ -102,11 +103,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     if (_isLoading) {
       return AppScaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          surfaceTintColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          titleSpacing: 0,
+        appBar: EkoAppBar(
+          embedLeadingInTitle: true,
           title: _ProfileAppBarContent(
             leading: buildLeadingWidget(context, isMyOwnProfile),
             title: const SizedBox(),
@@ -119,11 +117,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     if (_error != null || _resolvedUid == null) {
       return AppScaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          surfaceTintColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          titleSpacing: 0,
+        appBar: EkoAppBar(
+          embedLeadingInTitle: true,
           title: _ProfileAppBarContent(
             leading: buildLeadingWidget(context, isMyOwnProfile),
             title: const SizedBox(),
@@ -226,11 +221,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       child: AppScaffold(
         appBar: userAsync.when(
           data: (profileUser) => (isBlockedByMe || blocksMe)
-              ? AppBar(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  surfaceTintColor: Colors.transparent,
-                  automaticallyImplyLeading: false,
-                  titleSpacing: 0,
+              ? EkoAppBar(
+                  embedLeadingInTitle: true,
                   title: _ProfileAppBarContent(
                     leading: buildLeadingWidget(context, isCurrentUser),
                     title: const SizedBox(),
@@ -238,22 +230,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                 )
               : null,
-          loading: () => AppBar(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
+          loading: () => EkoAppBar(
+            embedLeadingInTitle: true,
             title: _ProfileAppBarContent(
               leading: buildLeadingWidget(context, isCurrentUser),
               title: const SizedBox(),
               actions: const [],
             ),
           ),
-          error: (_, __) => AppBar(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
+          error: (_, __) => EkoAppBar(
+            embedLeadingInTitle: true,
             title: _ProfileAppBarContent(
               leading: buildLeadingWidget(context, isCurrentUser),
               title: const SizedBox(),

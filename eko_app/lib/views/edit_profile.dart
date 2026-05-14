@@ -16,6 +16,7 @@ import 'package:eko_app/types/user.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class EditProfile extends ConsumerStatefulWidget {
   const EditProfile({super.key});
@@ -256,15 +257,8 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: AppScaffold(
           contrainBody: true,
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onPressed: () => _onBackPressed(user),
-            ),
-            automaticallyImplyLeading: false,
+          appBar: EkoAppBar(
+            onBack: () => _onBackPressed(user),
             title: Text(
               AppLocalizations.of(context)!.editProfile,
               //AppLocalizations.of(context)!.save,
@@ -274,7 +268,6 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                 color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
-            backgroundColor: Theme.of(context).colorScheme.surface,
             scrolledUnderElevation: 0.0,
             actions: [
               AnimatedBuilder(

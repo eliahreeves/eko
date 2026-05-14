@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:go_router/go_router.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/follow_info_provider.dart';
 import 'package:eko_app/providers/user_provider.dart';
@@ -10,7 +11,6 @@ import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 
 class Followers extends ConsumerStatefulWidget {
   final String username;
@@ -107,23 +107,10 @@ class _FollowersState extends ConsumerState<Followers> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: EkoAppBar(
         title: Text(
           AppLocalizations.of(context)!.followers,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            fontSize: 20,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: EkoAppBar.titleTextStyle(context).copyWith(fontSize: 20),
         ),
       ),
       body: _isLoading

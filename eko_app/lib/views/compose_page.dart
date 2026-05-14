@@ -24,6 +24,7 @@ import 'package:eko_app/widgets/search/tag_search.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class _CornerClose extends StatelessWidget {
   final void Function() onPressed;
@@ -477,8 +478,8 @@ class _ComposePageState extends ConsumerState<ComposePage> {
             ],
           ),
         ),
-        appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
+        appBar: EkoAppBar(
+          showBackButton: false,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -531,7 +532,6 @@ class _ComposePageState extends ConsumerState<ComposePage> {
               ),
             ],
           ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 0.04),

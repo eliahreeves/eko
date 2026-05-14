@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/users/user_card.dart';
-import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
+import 'package:eko_app/widgets/users/user_card.dart';
 
 class BlockedUsersPage extends ConsumerWidget {
   const BlockedUsersPage({super.key});
@@ -15,23 +15,8 @@ class BlockedUsersPage extends ConsumerWidget {
     final width = c.widthGetter(context);
     final blockedList = ref.watch(currentUserProvider).blockedUsers.toList();
     return AppScaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text(
-          AppLocalizations.of(context)!.blockedAccounts,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
+      appBar: EkoAppBar(
+        title: Text(AppLocalizations.of(context)!.blockedAccounts),
       ),
       body: RefreshIndicator(
         onRefresh: () async {

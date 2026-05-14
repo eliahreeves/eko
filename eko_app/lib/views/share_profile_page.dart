@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -17,6 +16,7 @@ import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/utilities/platform.dart' as platform;
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 GlobalKey repaintKey = GlobalKey();
 
@@ -67,18 +67,9 @@ class _ShareProfileState extends ConsumerState<ShareProfile> {
         ? CupertinoIcons.share
         : CupertinoIcons.arrowshape_turn_up_right;
     return AppScaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        automaticallyImplyLeading: false,
+      appBar: EkoAppBar(
         centerTitle: true,
         title: Text(AppLocalizations.of(context)!.shareProfile),
-        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       body: Center(
         child: SizedBox(
