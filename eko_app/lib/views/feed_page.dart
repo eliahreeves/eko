@@ -100,7 +100,7 @@ class _AppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Colors.transparent),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
       child: MaxWidthContent(
         child: SizedBox(
           height: appBarHeight,

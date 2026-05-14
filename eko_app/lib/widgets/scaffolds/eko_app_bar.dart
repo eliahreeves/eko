@@ -9,7 +9,6 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBack,
     this.showBackButton = true,
     this.backgroundColor,
-    this.surfaceTintColor = Colors.transparent,
     this.elevation = 0,
     this.scrolledUnderElevation,
     this.titleSpacing,
@@ -26,7 +25,6 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final bool showBackButton;
   final Color? backgroundColor;
-  final Color? surfaceTintColor;
   final double elevation;
   final double? scrolledUnderElevation;
   final double? titleSpacing;
@@ -73,8 +71,7 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleSpacing: embedLeadingInTitle ? 0 : titleSpacing,
       title: titleWidget,
       actions: actions,
-      backgroundColor: backgroundColor ?? Colors.transparent,
-      surfaceTintColor: surfaceTintColor,
+      backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.surface,
       elevation: elevation,
       scrolledUnderElevation: scrolledUnderElevation,
       bottom: bottom,
