@@ -149,6 +149,14 @@ class ScaffoldWithNavigationRail extends ConsumerWidget {
             // Fixed navigation rail on the left (start)
             if (ref.watch(navBarProvider))
               NavigationRail(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                useIndicator: false,
+                selectedIconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                unselectedIconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 selectedLabelTextStyle: const TextStyle(fontSize: 0),
                 unselectedLabelTextStyle: const TextStyle(fontSize: 0),
                 selectedIndex: selectedIndex,
