@@ -113,7 +113,7 @@ class _AppBar extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: InkWell(onTap: onLogoTap, child: eko()),
+                        child: InkWell(onTap: onLogoTap, child: Eko()),
                       ),
                     ),
                     Align(

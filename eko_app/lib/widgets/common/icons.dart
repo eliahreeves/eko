@@ -193,12 +193,11 @@ class _DefaultEko extends StatelessWidget {
   }
 }
 
-// ignore: camel_case_types
-class eko extends ConsumerWidget {
+class Eko extends ConsumerWidget {
   final Color? color;
   final BoxFit fit;
   final bool useDefault;
-  const eko({
+  const Eko({
     super.key,
     this.color,
     this.fit = BoxFit.contain,
