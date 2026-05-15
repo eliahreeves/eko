@@ -16,6 +16,7 @@ import 'package:eko_app/types/user.dart';
 import 'package:eko_app/widgets/users/profile_picture.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class EditProfile extends ConsumerStatefulWidget {
   const EditProfile({super.key});
@@ -212,11 +213,11 @@ class _EditProfileState extends ConsumerState<EditProfile> {
           content: Text(AppLocalizations.of(context)!.exitEditProfileBody),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => context.pop(false),
               child: Text(AppLocalizations.of(context)!.stay),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => context.pop(true),
               child: Text(AppLocalizations.of(context)!.exit),
             ),
           ],
@@ -256,26 +257,9 @@ class _EditProfileState extends ConsumerState<EditProfile> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: AppScaffold(
           contrainBody: true,
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onPressed: () => _onBackPressed(user),
-            ),
-            automaticallyImplyLeading: false,
-            title: Text(
-              AppLocalizations.of(context)!.editProfile,
-              //AppLocalizations.of(context)!.save,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            scrolledUnderElevation: 0.0,
+          appBar: EkoAppBar(
+            onBack: () => _onBackPressed(user),
+            title: Text(AppLocalizations.of(context)!.editProfile),
             actions: [
               AnimatedBuilder(
                 animation: Listenable.merge([

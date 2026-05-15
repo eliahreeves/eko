@@ -9,6 +9,7 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:image/image.dart' as img;
 import 'package:eko_app/widgets/scaffolds/always_oriented.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class CameraPage extends StatelessWidget {
   const CameraPage({super.key});
@@ -145,12 +146,7 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => context.pop(),
-        ),
+      appBar: EkoAppBar(
         actions: [
           IconButton(
             onPressed: !cameraAvailable

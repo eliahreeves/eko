@@ -31,7 +31,7 @@ void showSnackBar({
         },
       ),
       duration: Duration(milliseconds: time),
-      backgroundColor: Colors.transparent,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       elevation: 0,
       behavior: SnackBarBehavior.floating,
       margin: EdgeInsets.only(

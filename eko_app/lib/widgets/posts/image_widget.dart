@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_to_ascii/image_to_ascii.dart';
 
 class ImageWidget extends StatelessWidget {
@@ -31,7 +32,7 @@ class ImageWidget extends StatelessWidget {
         backgroundColor: Colors.transparent,
         insetPadding: EdgeInsets.zero,
         child: GestureDetector(
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pop(),
           child: InteractiveViewer(
             minScale: 0.5,
             maxScale: 4.0,

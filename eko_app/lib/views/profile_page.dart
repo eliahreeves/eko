@@ -18,6 +18,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/posts/post_card.dart';
 import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   final String username;
@@ -95,7 +96,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         icon: Icon(
           Icons.arrow_back_ios_rounded,
           color: Theme.of(context).colorScheme.onSurface,
-          size: 20,
         ),
         onPressed: () => context.pop(),
       );
@@ -103,11 +103,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     if (_isLoading) {
       return AppScaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          surfaceTintColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          titleSpacing: 0,
+        appBar: EkoAppBar(
           title: _ProfileAppBarContent(
             leading: buildLeadingWidget(context, isMyOwnProfile),
             title: const SizedBox(),
@@ -120,11 +116,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     if (_error != null || _resolvedUid == null) {
       return AppScaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          surfaceTintColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          titleSpacing: 0,
+        appBar: EkoAppBar(
           title: _ProfileAppBarContent(
             leading: buildLeadingWidget(context, isMyOwnProfile),
             title: const SizedBox(),
@@ -174,7 +166,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         : ref.watch(otherProfilePostListProvider(uid));
 
     void popDialog() {
-      Navigator.of(context, rootNavigator: true).pop();
+      context.pop();
     }
 
     void blockUser() async {
@@ -227,11 +219,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       child: AppScaffold(
         appBar: userAsync.when(
           data: (profileUser) => (isBlockedByMe || blocksMe)
-              ? AppBar(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  surfaceTintColor: Colors.transparent,
-                  automaticallyImplyLeading: false,
-                  titleSpacing: 0,
+              ? EkoAppBar(
                   title: _ProfileAppBarContent(
                     leading: buildLeadingWidget(context, isCurrentUser),
                     title: const SizedBox(),
@@ -239,22 +227,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                 )
               : null,
-          loading: () => AppBar(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
+          loading: () => EkoAppBar(
             title: _ProfileAppBarContent(
               leading: buildLeadingWidget(context, isCurrentUser),
               title: const SizedBox(),
               actions: const [],
             ),
           ),
-          error: (_, __) => AppBar(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
+          error: (_, __) => EkoAppBar(
             title: _ProfileAppBarContent(
               leading: buildLeadingWidget(context, isCurrentUser),
               title: const SizedBox(),
@@ -290,8 +270,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 scrolledUnderElevation: 0.0,
                 centerTitle: false,
                 automaticallyImplyLeading: false,
-                leadingWidth: null,
-                leading: null,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 titleSpacing: 0,
                 title: _ProfileAppBarContent(
@@ -301,9 +279,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           icon: Icon(
                             Icons.arrow_back_ios_rounded,
                             color: Theme.of(context).colorScheme.onSurface,
-                            size: 20,
                           ),
-                          onPressed: () => context.pop('popped'),
+                          onPressed: () => context.pop(),
                         ),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -408,7 +385,7 @@ class _ProfileAppBarContent extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(width: 8),
-            SizedBox(width: 40, child: leading ?? const SizedBox()),
+            SizedBox(width: 48, child: leading ?? const SizedBox()),
             const SizedBox(width: 8),
             Expanded(child: Center(child: title)),
             const SizedBox(width: 8),

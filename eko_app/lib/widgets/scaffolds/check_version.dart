@@ -4,6 +4,7 @@ import 'package:eko_app/interfaces/uri_launcher.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/utilities/version.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class CheckVersion extends StatelessWidget {
   final Widget? child;
@@ -47,12 +48,9 @@ class _CheckVersonMobileState extends State<_CheckVersonMobile> {
     final width = c.widthGetter(context);
     return needsUpdate
         ? Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
+            appBar: EkoAppBar(
               title: Text(AppLocalizations.of(context)!.updateRequiredTitle),
-              automaticallyImplyLeading: false,
-              surfaceTintColor: Colors.transparent,
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              showBackButton: false,
             ),
             body: Center(
               child: Column(

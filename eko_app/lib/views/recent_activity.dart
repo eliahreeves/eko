@@ -5,10 +5,10 @@ import 'package:eko_app/types/activity.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/notifications/activity_card.dart';
-import 'package:go_router/go_router.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class RecentActivity extends ConsumerWidget {
   const RecentActivity({super.key});
@@ -40,23 +40,8 @@ class RecentActivity extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0.0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop('poped'),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text(
-          AppLocalizations.of(context)!.recentActivity,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
+      appBar: EkoAppBar(
+        title: Text(AppLocalizations.of(context)!.recentActivity),
       ),
       body: InfiniteScrolly<ActivityModel, Never?>(
         getter: (data) => getter(data, ref),

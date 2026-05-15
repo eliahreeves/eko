@@ -11,6 +11,7 @@ import 'package:eko_app/providers/nav_bar_provider.dart';
 import 'package:eko_app/providers/theme_provider.dart';
 import 'package:eko_app/providers/post_preview_provider.dart';
 import 'package:eko_app/interfaces/notification_helper.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 import 'package:go_router/go_router.dart';
 
 class UserSettings extends ConsumerStatefulWidget {
@@ -51,24 +52,7 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
   Widget build(BuildContext context) {
     return AppScaffold(
       contrainBody: true,
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop('poped'),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text(
-          AppLocalizations.of(context)!.settings,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-      ),
+      appBar: EkoAppBar(title: Text(AppLocalizations.of(context)!.settings)),
       body: ListView(
         children: [
           SwitchListTile(

@@ -323,7 +323,7 @@ class UnifiedPushNotificationAdapter extends NotificationPlatformAdapter {
                 return ListTile(
                   title: Text(name),
                   subtitle: Text(distributor),
-                  onTap: () => Navigator.of(context).pop(distributor),
+                  onTap: () => context.pop(distributor),
                 );
               },
             ),

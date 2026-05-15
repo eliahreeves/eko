@@ -13,6 +13,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class EditPicture extends StatefulWidget {
   final XFile picture;
@@ -133,57 +134,45 @@ class _EditPictureState extends State<EditPicture> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded),
-              onPressed: () => context.pop(),
+      appBar: EkoAppBar(
+        actions: [
+          IconButton(
+            onPressed: copyPressed,
+            icon: Icon(
+              Icons.copy,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: copyPressed,
-                  icon: Icon(
-                    Icons.copy,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                IconButton(
-                  onPressed: downloadPressed,
-                  icon: Icon(
-                    Icons.download,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                SizedBox(width: 10),
-                InkWell(
-                  onTap: () {
-                    if (asciiPicture != null) context.pop(asciiPicture);
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-              ],
+          ),
+          IconButton(
+            onPressed: downloadPressed,
+            icon: Icon(
+              Icons.download,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
-          ],
-        ),
+          ),
+          SizedBox(width: 10),
+          InkWell(
+            onTap: () {
+              if (asciiPicture != null) context.pop(asciiPicture);
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.arrow_forward,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ),
+          ),
+          SizedBox(width: 8),
+        ],
       ),
       body: Column(
         children: [

@@ -5,6 +5,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/interfaces/uri_launcher.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class DownloadPage extends StatelessWidget {
   const DownloadPage({super.key});
@@ -19,18 +20,7 @@ class DownloadPage extends StatelessWidget {
         context.go('/');
       },
       child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            onPressed: () => context.pop(),
-          ),
-          title: Text(AppLocalizations.of(context)!.download),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-        ),
+        appBar: EkoAppBar(title: Text(AppLocalizations.of(context)!.download)),
         body: Center(
           child: SingleChildScrollView(
             child: Column(

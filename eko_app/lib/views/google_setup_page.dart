@@ -9,7 +9,7 @@ import 'package:eko_app/providers/auth_provider.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/utilities/supabase_ref.dart';
-import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
@@ -217,7 +217,9 @@ class _GoogleSetupPageState extends ConsumerState<GoogleSetupPage> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        appBar: AuthAppBar(onBack: _cancel),
+        appBar: EkoAppBar(
+          onBack: _cancel,
+        ),
         body: Center(
           child: SizedBox(
             width: width,

@@ -11,7 +11,7 @@ import 'package:eko_app/widgets/auth/google_sign_in_button.dart';
 import 'package:eko_app/widgets/common/icons.dart';
 import 'package:eko_app/widgets/inputs/custom_input_field.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
-import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -112,13 +112,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     TextButton(
                       child: Text(l10n.back),
                       onPressed: () {
-                        Navigator.of(dialogContext).pop();
+                        dialogContext.pop();
                       },
                     ),
                     TextButton(
                       child: Text(l10n.resetPassword),
                       onPressed: () {
-                        Navigator.of(dialogContext).pop();
+                        dialogContext.pop();
                         forgotPasswordPressed(l10n.localeName);
                       },
                     ),
@@ -222,7 +222,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AuthAppBar(
+      appBar: EkoAppBar(
         onBack: _paneIndex == 1 ? () => setState(() => _paneIndex = 0) : null,
       ),
       floatingActionButton: downloadButtonIfWeb(),

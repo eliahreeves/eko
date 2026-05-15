@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/providers/auth_provider.dart';
-import 'package:eko_app/widgets/auth/auth_app_bar.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
@@ -96,7 +96,7 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
         [l10n.ok],
         [
           () {
-            Navigator.of(context, rootNavigator: true).pop();
+            context.pop();
             if (mounted) context.pop();
           },
         ],
@@ -124,7 +124,7 @@ class _ChangeEmailPageState extends ConsumerState<ChangeEmailPage> {
 
     return AppScaffold(
       contrainBody: true,
-      appBar: const AuthAppBar(),
+      appBar: const EkoAppBar(),
       body: Center(
         child: SizedBox(
           width: width,

@@ -22,6 +22,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/posts/comment_card.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class ViewPostPage extends ConsumerStatefulWidget {
   final int id;
@@ -50,7 +51,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
   }
 
   void _popDialog() {
-    Navigator.of(context, rootNavigator: true).pop();
+    context.pop();
   }
 
   KeyEventResult _handleCommentFieldKey(FocusNode _, KeyEvent event) {
@@ -315,17 +316,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         return GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: AppScaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              surfaceTintColor: Colors.transparent,
-              automaticallyImplyLeading: false,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_rounded,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                onPressed: () => context.pop(),
-              ),
+            appBar: EkoAppBar(
               actions: [
                 PopupMenuButton<void Function()>(
                   itemBuilder: (context) {

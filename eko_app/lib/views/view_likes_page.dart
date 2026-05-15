@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:eko_app/providers/pool_providers.dart';
 import 'package:eko_app/types/user.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
@@ -10,6 +9,7 @@ import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
+import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class ViewPostLikesPage extends ConsumerWidget {
   final int postId;
@@ -23,19 +23,10 @@ class ViewPostLikesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef _) {
     return AppScaffold(
-      appBar: AppBar(
+      appBar: EkoAppBar(
         title: dislikes
             ? Text(AppLocalizations.of(context)!.viewDislikes)
             : Text(AppLocalizations.of(context)!.viewLikes),
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       body: _LikesList(
         rpcName: 'paginated_post_likes',
@@ -58,19 +49,10 @@ class ViewCommentLikesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef _) {
     return AppScaffold(
-      appBar: AppBar(
+      appBar: EkoAppBar(
         title: dislikes
             ? Text(AppLocalizations.of(context)!.viewDislikes)
             : Text(AppLocalizations.of(context)!.viewLikes),
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       body: _LikesList(
         rpcName: 'paginated_comment_likes',
