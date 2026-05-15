@@ -114,8 +114,6 @@ class FakeSignedInCurrentUser extends CurrentUser {
   CurrentUserModel build() {
     return CurrentUserModel(
       user: testNavigationUser,
-      likedPosts: {},
-      dislikedPosts: {},
       blockedUsers: {},
       blockedBy: {},
     );

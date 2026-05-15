@@ -143,30 +143,6 @@ class CurrentUser extends _$CurrentUser {
     }
   }
 
-  void addIdToLiked(String id) {
-    final likes = Set<String>.from(state.likedPosts);
-    likes.add(id);
-    state = state.copyWith(likedPosts: likes);
-  }
-
-  void removeIdFromLiked(String id) {
-    final likes = Set<String>.from(state.likedPosts);
-    likes.remove(id);
-    state = state.copyWith(likedPosts: likes);
-  }
-
-  void addIdToDisliked(String id) {
-    final dislikes = Set<String>.from(state.dislikedPosts);
-    dislikes.add(id);
-    state = state.copyWith(dislikedPosts: dislikes);
-  }
-
-  void removeIdFromDisliked(String id) {
-    final dislikes = Set<String>.from(state.dislikedPosts);
-    dislikes.remove(id);
-    state = state.copyWith(dislikedPosts: dislikes);
-  }
-
   Future<void> signOut() async {
     final stateUid = state.user.uid;
     final authUid = ref.read(authProvider).uid;

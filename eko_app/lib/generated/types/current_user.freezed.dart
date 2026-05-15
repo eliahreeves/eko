@@ -15,8 +15,6 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CurrentUserModel {
   UserModel get user;
-  Set<String> get likedPosts;
-  Set<String> get dislikedPosts;
   Set<String> get blockedUsers;
   Set<String> get blockedBy;
 
@@ -35,10 +33,6 @@ mixin _$CurrentUserModel {
             other is CurrentUserModel &&
             (identical(other.user, user) || other.user == user) &&
             const DeepCollectionEquality()
-                .equals(other.likedPosts, likedPosts) &&
-            const DeepCollectionEquality()
-                .equals(other.dislikedPosts, dislikedPosts) &&
-            const DeepCollectionEquality()
                 .equals(other.blockedUsers, blockedUsers) &&
             const DeepCollectionEquality().equals(other.blockedBy, blockedBy));
   }
@@ -47,14 +41,12 @@ mixin _$CurrentUserModel {
   int get hashCode => Object.hash(
       runtimeType,
       user,
-      const DeepCollectionEquality().hash(likedPosts),
-      const DeepCollectionEquality().hash(dislikedPosts),
       const DeepCollectionEquality().hash(blockedUsers),
       const DeepCollectionEquality().hash(blockedBy));
 
   @override
   String toString() {
-    return 'CurrentUserModel(user: $user, likedPosts: $likedPosts, dislikedPosts: $dislikedPosts, blockedUsers: $blockedUsers, blockedBy: $blockedBy)';
+    return 'CurrentUserModel(user: $user, blockedUsers: $blockedUsers, blockedBy: $blockedBy)';
   }
 }
 
@@ -64,12 +56,7 @@ abstract mixin class $CurrentUserModelCopyWith<$Res> {
           CurrentUserModel value, $Res Function(CurrentUserModel) _then) =
       _$CurrentUserModelCopyWithImpl;
   @useResult
-  $Res call(
-      {UserModel user,
-      Set<String> likedPosts,
-      Set<String> dislikedPosts,
-      Set<String> blockedUsers,
-      Set<String> blockedBy});
+  $Res call({UserModel user, Set<String> blockedUsers, Set<String> blockedBy});
 
   $UserModelCopyWith<$Res> get user;
 }
@@ -88,8 +75,6 @@ class _$CurrentUserModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? user = null,
-    Object? likedPosts = null,
-    Object? dislikedPosts = null,
     Object? blockedUsers = null,
     Object? blockedBy = null,
   }) {
@@ -98,14 +83,6 @@ class _$CurrentUserModelCopyWithImpl<$Res>
           ? _self.user
           : user // ignore: cast_nullable_to_non_nullable
               as UserModel,
-      likedPosts: null == likedPosts
-          ? _self.likedPosts
-          : likedPosts // ignore: cast_nullable_to_non_nullable
-              as Set<String>,
-      dislikedPosts: null == dislikedPosts
-          ? _self.dislikedPosts
-          : dislikedPosts // ignore: cast_nullable_to_non_nullable
-              as Set<String>,
       blockedUsers: null == blockedUsers
           ? _self.blockedUsers
           : blockedUsers // ignore: cast_nullable_to_non_nullable
@@ -222,19 +199,14 @@ extension CurrentUserModelPatterns on CurrentUserModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
-            UserModel user,
-            Set<String> likedPosts,
-            Set<String> dislikedPosts,
-            Set<String> blockedUsers,
-            Set<String> blockedBy)?
+            UserModel user, Set<String> blockedUsers, Set<String> blockedBy)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _CurrentUserModel() when $default != null:
-        return $default(_that.user, _that.likedPosts, _that.dislikedPosts,
-            _that.blockedUsers, _that.blockedBy);
+        return $default(_that.user, _that.blockedUsers, _that.blockedBy);
       case _:
         return orElse();
     }
@@ -256,18 +228,13 @@ extension CurrentUserModelPatterns on CurrentUserModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(
-            UserModel user,
-            Set<String> likedPosts,
-            Set<String> dislikedPosts,
-            Set<String> blockedUsers,
-            Set<String> blockedBy)
+            UserModel user, Set<String> blockedUsers, Set<String> blockedBy)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _CurrentUserModel():
-        return $default(_that.user, _that.likedPosts, _that.dislikedPosts,
-            _that.blockedUsers, _that.blockedBy);
+        return $default(_that.user, _that.blockedUsers, _that.blockedBy);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -288,18 +255,13 @@ extension CurrentUserModelPatterns on CurrentUserModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
-            UserModel user,
-            Set<String> likedPosts,
-            Set<String> dislikedPosts,
-            Set<String> blockedUsers,
-            Set<String> blockedBy)?
+            UserModel user, Set<String> blockedUsers, Set<String> blockedBy)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _CurrentUserModel() when $default != null:
-        return $default(_that.user, _that.likedPosts, _that.dislikedPosts,
-            _that.blockedUsers, _that.blockedBy);
+        return $default(_that.user, _that.blockedUsers, _that.blockedBy);
       case _:
         return null;
     }
@@ -311,33 +273,13 @@ extension CurrentUserModelPatterns on CurrentUserModel {
 class _CurrentUserModel implements CurrentUserModel {
   const _CurrentUserModel(
       {required this.user,
-      required final Set<String> likedPosts,
-      required final Set<String> dislikedPosts,
       required final Set<String> blockedUsers,
       required final Set<String> blockedBy})
-      : _likedPosts = likedPosts,
-        _dislikedPosts = dislikedPosts,
-        _blockedUsers = blockedUsers,
+      : _blockedUsers = blockedUsers,
         _blockedBy = blockedBy;
 
   @override
   final UserModel user;
-  final Set<String> _likedPosts;
-  @override
-  Set<String> get likedPosts {
-    if (_likedPosts is EqualUnmodifiableSetView) return _likedPosts;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableSetView(_likedPosts);
-  }
-
-  final Set<String> _dislikedPosts;
-  @override
-  Set<String> get dislikedPosts {
-    if (_dislikedPosts is EqualUnmodifiableSetView) return _dislikedPosts;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableSetView(_dislikedPosts);
-  }
-
   final Set<String> _blockedUsers;
   @override
   Set<String> get blockedUsers {
@@ -369,10 +311,6 @@ class _CurrentUserModel implements CurrentUserModel {
             other is _CurrentUserModel &&
             (identical(other.user, user) || other.user == user) &&
             const DeepCollectionEquality()
-                .equals(other._likedPosts, _likedPosts) &&
-            const DeepCollectionEquality()
-                .equals(other._dislikedPosts, _dislikedPosts) &&
-            const DeepCollectionEquality()
                 .equals(other._blockedUsers, _blockedUsers) &&
             const DeepCollectionEquality()
                 .equals(other._blockedBy, _blockedBy));
@@ -382,14 +320,12 @@ class _CurrentUserModel implements CurrentUserModel {
   int get hashCode => Object.hash(
       runtimeType,
       user,
-      const DeepCollectionEquality().hash(_likedPosts),
-      const DeepCollectionEquality().hash(_dislikedPosts),
       const DeepCollectionEquality().hash(_blockedUsers),
       const DeepCollectionEquality().hash(_blockedBy));
 
   @override
   String toString() {
-    return 'CurrentUserModel(user: $user, likedPosts: $likedPosts, dislikedPosts: $dislikedPosts, blockedUsers: $blockedUsers, blockedBy: $blockedBy)';
+    return 'CurrentUserModel(user: $user, blockedUsers: $blockedUsers, blockedBy: $blockedBy)';
   }
 }
 
@@ -401,12 +337,7 @@ abstract mixin class _$CurrentUserModelCopyWith<$Res>
       __$CurrentUserModelCopyWithImpl;
   @override
   @useResult
-  $Res call(
-      {UserModel user,
-      Set<String> likedPosts,
-      Set<String> dislikedPosts,
-      Set<String> blockedUsers,
-      Set<String> blockedBy});
+  $Res call({UserModel user, Set<String> blockedUsers, Set<String> blockedBy});
 
   @override
   $UserModelCopyWith<$Res> get user;
@@ -426,8 +357,6 @@ class __$CurrentUserModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   $Res call({
     Object? user = null,
-    Object? likedPosts = null,
-    Object? dislikedPosts = null,
     Object? blockedUsers = null,
     Object? blockedBy = null,
   }) {
@@ -436,14 +365,6 @@ class __$CurrentUserModelCopyWithImpl<$Res>
           ? _self.user
           : user // ignore: cast_nullable_to_non_nullable
               as UserModel,
-      likedPosts: null == likedPosts
-          ? _self._likedPosts
-          : likedPosts // ignore: cast_nullable_to_non_nullable
-              as Set<String>,
-      dislikedPosts: null == dislikedPosts
-          ? _self._dislikedPosts
-          : dislikedPosts // ignore: cast_nullable_to_non_nullable
-              as Set<String>,
       blockedUsers: null == blockedUsers
           ? _self._blockedUsers
           : blockedUsers // ignore: cast_nullable_to_non_nullable
