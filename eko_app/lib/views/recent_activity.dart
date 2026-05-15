@@ -41,7 +41,6 @@ class RecentActivity extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
       appBar: EkoAppBar(
-        scrolledUnderElevation: 0.0,
         title: Text(AppLocalizations.of(context)!.recentActivity),
       ),
       body: InfiniteScrolly<ActivityModel, Never?>(

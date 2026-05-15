@@ -10,13 +10,9 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBackButton = true,
     this.backgroundColor,
     this.elevation = 0,
-    this.scrolledUnderElevation,
+    this.scrolledUnderElevation = 0,
+    this.surfaceTintColor = Colors.transparent,
     this.titleSpacing,
-
-    /// When true, [title] spans the toolbar ([titleSpacing] 0, no default
-    /// leading). Use when back/actions are laid out inside [title], e.g.
-    /// profile loading/error chrome.
-    this.embedLeadingInTitle = false,
     this.bottom,
   });
 
@@ -27,8 +23,8 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final double elevation;
   final double? scrolledUnderElevation;
+  final Color? surfaceTintColor;
   final double? titleSpacing;
-  final bool embedLeadingInTitle;
   final PreferredSizeWidget? bottom;
 
   static TextStyle titleTextStyle(BuildContext context) => TextStyle(
@@ -44,34 +40,28 @@ class EkoAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget? leading = embedLeadingInTitle
-        ? null
-        : (showBackButton
-            ? IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_rounded,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                onPressed: onBack ?? () => context.pop(),
-              )
-            : null);
+    final Widget? resolvedLeading = showBackButton
+        ? BackButton(
+            color: Theme.of(context).colorScheme.onSurface,
+            onPressed: onBack ?? () => context.pop(),
+          )
+        : null;
 
     final Widget? titleWidget = title == null
         ? null
-        : embedLeadingInTitle
-            ? title
-            : DefaultTextStyle.merge(
-                style: titleTextStyle(context),
-                child: title!,
-              );
+        : DefaultTextStyle.merge(
+            style: titleTextStyle(context),
+            child: title!,
+          );
 
     return AppBar(
-      leading: leading,
+      leading: resolvedLeading,
       automaticallyImplyLeading: false,
-      titleSpacing: embedLeadingInTitle ? 0 : titleSpacing,
+      titleSpacing: titleSpacing,
       title: titleWidget,
       actions: actions,
       backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.surface,
+      surfaceTintColor: surfaceTintColor,
       elevation: elevation,
       scrolledUnderElevation: scrolledUnderElevation,
       bottom: bottom,

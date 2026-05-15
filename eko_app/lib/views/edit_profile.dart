@@ -260,7 +260,6 @@ class _EditProfileState extends ConsumerState<EditProfile> {
           appBar: EkoAppBar(
             onBack: () => _onBackPressed(user),
             title: Text(AppLocalizations.of(context)!.editProfile),
-            scrolledUnderElevation: 0.0,
             actions: [
               AnimatedBuilder(
                 animation: Listenable.merge([

@@ -104,7 +104,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     if (_isLoading) {
       return AppScaffold(
         appBar: EkoAppBar(
-          embedLeadingInTitle: true,
           title: _ProfileAppBarContent(
             leading: buildLeadingWidget(context, isMyOwnProfile),
             title: const SizedBox(),
@@ -118,7 +117,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     if (_error != null || _resolvedUid == null) {
       return AppScaffold(
         appBar: EkoAppBar(
-          embedLeadingInTitle: true,
           title: _ProfileAppBarContent(
             leading: buildLeadingWidget(context, isMyOwnProfile),
             title: const SizedBox(),
@@ -222,7 +220,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         appBar: userAsync.when(
           data: (profileUser) => (isBlockedByMe || blocksMe)
               ? EkoAppBar(
-                  embedLeadingInTitle: true,
                   title: _ProfileAppBarContent(
                     leading: buildLeadingWidget(context, isCurrentUser),
                     title: const SizedBox(),
@@ -231,7 +228,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 )
               : null,
           loading: () => EkoAppBar(
-            embedLeadingInTitle: true,
             title: _ProfileAppBarContent(
               leading: buildLeadingWidget(context, isCurrentUser),
               title: const SizedBox(),
@@ -239,7 +235,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
           ),
           error: (_, __) => EkoAppBar(
-            embedLeadingInTitle: true,
             title: _ProfileAppBarContent(
               leading: buildLeadingWidget(context, isCurrentUser),
               title: const SizedBox(),

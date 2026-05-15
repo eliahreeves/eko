@@ -135,58 +135,44 @@ class _EditPictureState extends State<EditPicture> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: EkoAppBar(
-        embedLeadingInTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: Theme.of(context).colorScheme.onSurface,
+        actions: [
+          IconButton(
+            onPressed: copyPressed,
+            icon: Icon(
+              Icons.copy,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          IconButton(
+            onPressed: downloadPressed,
+            icon: Icon(
+              Icons.download,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          SizedBox(width: 10),
+          InkWell(
+            onTap: () {
+              if (asciiPicture != null) context.pop(asciiPicture);
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 8,
               ),
-              onPressed: () => context.pop(),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.arrow_forward,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
             ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: copyPressed,
-                  icon: Icon(
-                    Icons.copy,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                IconButton(
-                  onPressed: downloadPressed,
-                  icon: Icon(
-                    Icons.download,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                SizedBox(width: 10),
-                InkWell(
-                  onTap: () {
-                    if (asciiPicture != null) context.pop(asciiPicture);
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          SizedBox(width: 8),
+        ],
       ),
       body: Column(
         children: [
