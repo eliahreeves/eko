@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eko_app/interfaces/search.dart';
 import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:eko_app/widgets/search/user_search_bar.dart';
 import 'package:eko_app/widgets/users/user_card.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
@@ -86,7 +87,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     return GestureDetector(
       onPanDown: (details) => FocusManager.instance.primaryFocus?.unfocus(),
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
+      child: AppScaffold(
         body: InfiniteScrollyCore<String>(
           onRefresh: () async {
             if (debounce?.isActive ?? false) debounce!.cancel();

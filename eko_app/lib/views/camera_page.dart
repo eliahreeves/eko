@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:image/image.dart' as img;
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:eko_app/widgets/scaffolds/always_oriented.dart';
 import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
@@ -145,7 +146,8 @@ class _InnerCameraPageState extends State<InnerCameraPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
+      contrainBody: true,
       appBar: EkoAppBar(
         actions: [
           IconButton(

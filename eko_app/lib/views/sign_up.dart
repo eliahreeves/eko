@@ -17,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:eko_app/widgets/inputs/custom_input_field.dart';
 import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:eko_app/widgets/common/download_button.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 import 'package:eko_app/widgets/auth/auth_button.dart';
 import 'package:eko_app/widgets/auth/auth_divider.dart';
@@ -192,7 +193,7 @@ class _SignUpState extends ConsumerState<SignUp> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
+      child: AppScaffold(
         appBar: EkoAppBar(
           onBack: () {
             if (index == 2) {

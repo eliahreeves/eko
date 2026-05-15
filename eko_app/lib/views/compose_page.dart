@@ -418,356 +418,395 @@ class _ComposePageState extends ConsumerState<ComposePage> {
   Widget build(BuildContext context) {
     final width = c.widthGetter(context);
     final height = MediaQuery.sizeOf(context).height;
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: AppScaffold(
-        contrainBody: true,
-        floatingActionButtonLocation: ExpandableFab.location,
-        floatingActionButton: Visibility(
-          visible: showFab,
-          child: ExpandableFab(
-            onOpen: () => FocusManager.instance.primaryFocus?.unfocus(),
-            key: _key,
-            openButtonBuilder: RotateFloatingActionButtonBuilder(
-              fabSize: ExpandableFabSize.regular,
-              shape: const CircleBorder(),
-              child: const Icon(Icons.add_photo_alternate_outlined),
-            ),
-            closeButtonBuilder: DefaultFloatingActionButtonBuilder(
-              child: const Icon(Icons.close),
-              fabSize: ExpandableFabSize.regular,
-              shape: const CircleBorder(),
-            ),
-            type: ExpandableFabType.fan,
-            distance: 70.0,
-            children: [
-              FloatingActionButton.small(
-                heroTag: null,
-                onPressed: () {
-                  final state = _key.currentState;
-                  if (state != null) {
-                    state.toggle();
-                  }
-                  _addPollPressed();
-                },
-                child: const Icon(Icons.poll),
-              ),
-              if (!kIsWeb)
-                FloatingActionButton.small(
-                  heroTag: null,
-                  child: const Icon(Icons.perm_media),
-                  onPressed: () async {
-                    final state = _key.currentState;
-                    if (state != null) {
-                      state.toggle();
-                    }
-                    _addImagePressed();
-                  },
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final fabInset = ((constraints.maxWidth - c.indealAppWidth) / 2)
+            .clamp(0.0, double.infinity)
+            .toDouble();
+        return GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: AppScaffold(
+            contrainBody: true,
+            floatingActionButtonLocation: ExpandableFab.location,
+            floatingActionButton: Visibility(
+              visible: showFab,
+              child: ExpandableFab(
+                margin: EdgeInsets.only(right: fabInset),
+                onOpen: () => FocusManager.instance.primaryFocus?.unfocus(),
+                key: _key,
+                openButtonBuilder: RotateFloatingActionButtonBuilder(
+                  fabSize: ExpandableFabSize.regular,
+                  shape: const CircleBorder(),
+                  child: const Icon(Icons.add_photo_alternate_outlined),
                 ),
-              FloatingActionButton.small(
-                heroTag: null,
-                onPressed: () {
-                  final state = _key.currentState;
-                  if (state != null) {
-                    state.toggle();
-                  }
-                  _addGifPressed();
-                },
-                child: const Icon(Icons.gif_box_rounded),
-              ),
-            ],
-          ),
-        ),
-        appBar: EkoAppBar(
-          showBackButton: false,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                onPressed: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  _clear();
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
+                closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+                  child: const Icon(Icons.close),
+                  fabSize: ExpandableFabSize.regular,
+                  shape: const CircleBorder(),
                 ),
-                child: Text(
-                  AppLocalizations.of(context)!.clear,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).colorScheme.onSurface,
+                type: ExpandableFabType.fan,
+                distance: 70.0,
+                children: [
+                  FloatingActionButton.small(
+                    heroTag: null,
+                    onPressed: () {
+                      final state = _key.currentState;
+                      if (state != null) {
+                        state.toggle();
+                      }
+                      _addPollPressed();
+                    },
+                    child: const Icon(Icons.poll),
                   ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => _postPressed(),
-                style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.primaryContainer,
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                  if (!kIsWeb)
+                    FloatingActionButton.small(
+                      heroTag: null,
+                      child: const Icon(Icons.perm_media),
+                      onPressed: () async {
+                        final state = _key.currentState;
+                        if (state != null) {
+                          state.toggle();
+                        }
+                        _addImagePressed();
+                      },
+                    ),
+                  FloatingActionButton.small(
+                    heroTag: null,
+                    onPressed: () {
+                      final state = _key.currentState;
+                      if (state != null) {
+                        state.toggle();
+                      }
+                      _addGifPressed();
+                    },
+                    child: const Icon(Icons.gif_box_rounded),
                   ),
-                  elevation: 2,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.postButton,
+                ],
+              ),
+            ),
+            appBar: EkoAppBar(
+              showBackButton: false,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      _clear();
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                    ),
+                    child: Text(
+                      AppLocalizations.of(context)!.clear,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 14,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
-                    SizedBox(width: 6),
-                    Icon(
-                      Icons.send,
-                      color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  TextButton(
+                    onPressed: () => _postPressed(),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 2,
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-          child: ListView(
-            controller: scrollController,
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            children: [
-              SizedBox(height: height * 0.01),
-              Row(
-                children: [
-                  ProfilePicture(
-                    uid: ref.watch(currentUserProvider).user.uid,
-                    onlineIndicatorEnabled: false,
-                    size: width * 0.115,
-                  ),
-                  const SizedBox(width: 9),
-                  ToggleButtons(
-                    isSelected: [
-                      !showMarkdownPreview,
-                      showMarkdownPreview,
-                    ],
-                    onPressed: (index) {
-                      setState(() {
-                        showMarkdownPreview = (index == 1);
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(12),
-                    color: Theme.of(context).colorScheme.onSurface,
-                    selectedColor:
-                        Theme.of(context).colorScheme.onPrimaryContainer,
-                    fillColor: Theme.of(context).colorScheme.surfaceContainer,
-                    borderColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                    selectedBorderColor:
-                        Theme.of(context).colorScheme.onSurfaceVariant,
-                    constraints: BoxConstraints(minHeight: 32, minWidth: 70),
-                    children: [
-                      Text(AppLocalizations.of(context)!.write),
-                      Text(AppLocalizations.of(context)!.preview),
-                    ],
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    tooltip: AppLocalizations.of(context)!.markdownBoldTooltip,
-                    onPressed: showMarkdownPreview
-                        ? null
-                        : () => _wrapActiveFieldMarkdown('**', '**'),
-                    icon: const Icon(Icons.format_bold),
-                    visualDensity: VisualDensity.compact,
-                    style: IconButton.styleFrom(
-                      minimumSize: const Size(32, 32),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ),
-                  IconButton(
-                    tooltip:
-                        AppLocalizations.of(context)!.markdownItalicTooltip,
-                    onPressed: showMarkdownPreview
-                        ? null
-                        : () => _wrapActiveFieldMarkdown('*', '*'),
-                    icon: const Icon(Icons.format_italic),
-                    visualDensity: VisualDensity.compact,
-                    style: IconButton.styleFrom(
-                      minimumSize: const Size(32, 32),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.postButton,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        SizedBox(width: 6),
+                        Icon(
+                          Icons.send,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: height * 0.01),
-              showMarkdownPreview
-                  ? MarkdownView(
-                      content: titleController.text,
-                      type: MarkdownType.title,
-                    )
-                  : TextField(
-                      textCapitalization: TextCapitalization.sentences,
-                      focusNode: titleFocus,
-                      controller: titleController,
-                      maxLines: null,
-                      cursorColor: Theme.of(context).colorScheme.onSurface,
-                      keyboardType: TextInputType.text,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(height * 0.01),
-                        hintText: AppLocalizations.of(context)!.postTitle,
-                        hintStyle: TextStyle(
-                          fontSize: 22,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        border: InputBorder.none,
-                      ),
-                      // ),
-                    ),
-              Stack(
+            ),
+            body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+              child: ListView(
+                controller: scrollController,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  SizedBox(height: height * 0.01),
+                  Row(
                     children: [
-                      AnimatedBuilder(
-                        animation: Listenable.merge([
-                          titleController,
-                          titleFocus,
-                        ]),
-                        builder: (context, _) {
-                          if (titleFocus.hasPrimaryFocus &&
-                              titleController.text.isNotEmpty) {
-                            return Text(
-                              '${titleController.text.length}/${c.maxTitleChars} ${AppLocalizations.of(context)!.characters}',
-                            );
-                          }
-                          return SizedBox();
-                        },
+                      ProfilePicture(
+                        uid: ref.watch(currentUserProvider).user.uid,
+                        onlineIndicatorEnabled: false,
+                        size: width * 0.115,
                       ),
-                      if (repostId != null)
-                        _CornerClose(
-                          onPressed: () => setState(() {
-                            repostId = null;
-                          }),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(minWidth: width * 0.8),
-                            child: RepostCard(
-                              postId: repostId!,
-                              isLoggedIn: true,
-                              isPreview: true,
-                            ),
+                      const SizedBox(width: 9),
+                      ToggleButtons(
+                        isSelected: [
+                          !showMarkdownPreview,
+                          showMarkdownPreview,
+                        ],
+                        onPressed: (index) {
+                          setState(() {
+                            showMarkdownPreview = (index == 1);
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        color: Theme.of(context).colorScheme.onSurface,
+                        selectedColor:
+                            Theme.of(context).colorScheme.onPrimaryContainer,
+                        fillColor:
+                            Theme.of(context).colorScheme.surfaceContainer,
+                        borderColor:
+                            Theme.of(context).colorScheme.onSurfaceVariant,
+                        selectedBorderColor:
+                            Theme.of(context).colorScheme.onSurfaceVariant,
+                        constraints:
+                            BoxConstraints(minHeight: 32, minWidth: 70),
+                        children: [
+                          Text(AppLocalizations.of(context)!.write),
+                          Text(AppLocalizations.of(context)!.preview),
+                        ],
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        tooltip:
+                            AppLocalizations.of(context)!.markdownBoldTooltip,
+                        onPressed: showMarkdownPreview
+                            ? null
+                            : () => _wrapActiveFieldMarkdown('**', '**'),
+                        icon: const Icon(Icons.format_bold),
+                        visualDensity: VisualDensity.compact,
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size(32, 32),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                      IconButton(
+                        tooltip:
+                            AppLocalizations.of(context)!.markdownItalicTooltip,
+                        onPressed: showMarkdownPreview
+                            ? null
+                            : () => _wrapActiveFieldMarkdown('*', '*'),
+                        icon: const Icon(Icons.format_italic),
+                        visualDensity: VisualDensity.compact,
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size(32, 32),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: height * 0.01),
+                  showMarkdownPreview
+                      ? MarkdownView(
+                          content: titleController.text,
+                          type: MarkdownType.title,
+                        )
+                      : TextField(
+                          textCapitalization: TextCapitalization.sentences,
+                          focusNode: titleFocus,
+                          controller: titleController,
+                          maxLines: null,
+                          cursorColor: Theme.of(context).colorScheme.onSurface,
+                          keyboardType: TextInputType.text,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
-                        ),
-                      if (gif != null)
-                        _CornerClose(
-                          onPressed: () => setState(() {
-                            gif = null;
-                          }),
-                          child: GifWidget(url: gif!),
-                        ),
-                      if (image != null)
-                        _CornerClose(
-                          onPressed: () => setState(() {
-                            image = null;
-                          }),
-                          child: Align(child: ImageWidget(ascii: image!)),
-                        ),
-                      if (isPoll &&
-                          (image != null || gif != null || repostId != null))
-                        SizedBox(height: 5),
-                      if (isPoll)
-                        Padding(
-                          padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
-                          child: _CornerClose(
-                            onPressed: () => setState(() {
-                              isPoll = false;
-                            }),
-                            child: PollCreator(
-                              height: height,
-                              width: width,
-                              pollOptions: pollOptions,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.all(height * 0.01),
+                            hintText: AppLocalizations.of(context)!.postTitle,
+                            hintStyle: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
+                            border: InputBorder.none,
                           ),
+                          // ),
                         ),
-                      showMarkdownPreview
-                          ? MarkdownView(content: bodyController.text)
-                          : ConstrainedBox(
-                              constraints: BoxConstraints(),
-                              child: TextField(
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                focusNode: bodyFocus,
-                                controller: bodyController,
-                                maxLines: null,
-                                cursorColor:
-                                    Theme.of(context).colorScheme.onSurface,
-                                keyboardType: TextInputType.multiline,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(height * 0.01),
-                                  hintText:
-                                      AppLocalizations.of(context)!.addText,
-                                  hintStyle: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                  ),
-                                  border: InputBorder.none,
+                  Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnimatedBuilder(
+                            animation: Listenable.merge([
+                              titleController,
+                              titleFocus,
+                            ]),
+                            builder: (context, _) {
+                              if (titleFocus.hasPrimaryFocus &&
+                                  titleController.text.isNotEmpty) {
+                                return Text(
+                                  '${titleController.text.length}/${c.maxTitleChars} ${AppLocalizations.of(context)!.characters}',
+                                );
+                              }
+                              return SizedBox();
+                            },
+                          ),
+                          if (repostId != null)
+                            _CornerClose(
+                              onPressed: () => setState(() {
+                                repostId = null;
+                              }),
+                              child: ConstrainedBox(
+                                constraints:
+                                    BoxConstraints(minWidth: width * 0.8),
+                                child: RepostCard(
+                                  postId: repostId!,
+                                  isLoggedIn: true,
+                                  isPreview: true,
                                 ),
                               ),
                             ),
-                      AnimatedBuilder(
-                        animation: Listenable.merge([
-                          bodyController,
-                          bodyFocus,
-                        ]),
-                        builder: (context, _) {
-                          if (bodyFocus.hasPrimaryFocus &&
-                              bodyController.text.isNotEmpty) {
-                            return Row(
-                              children: [
-                                Text(
-                                  '${bodyController.text.length}/${c.maxPostChars} ${AppLocalizations.of(context)!.characters}',
+                          if (gif != null)
+                            _CornerClose(
+                              onPressed: () => setState(() {
+                                gif = null;
+                              }),
+                              child: GifWidget(url: gif!),
+                            ),
+                          if (image != null)
+                            _CornerClose(
+                              onPressed: () => setState(() {
+                                image = null;
+                              }),
+                              child: Align(child: ImageWidget(ascii: image!)),
+                            ),
+                          if (isPoll &&
+                              (image != null ||
+                                  gif != null ||
+                                  repostId != null))
+                            SizedBox(height: 5),
+                          if (isPoll)
+                            Padding(
+                              padding:
+                                  EdgeInsetsGeometry.symmetric(horizontal: 10),
+                              child: _CornerClose(
+                                onPressed: () => setState(() {
+                                  isPoll = false;
+                                }),
+                                child: PollCreator(
+                                  height: height,
+                                  width: width,
+                                  pollOptions: pollOptions,
                                 ),
-                                const Spacer(),
-                                if (bodyNewLines != 0 || true)
-                                  Text(
-                                    '${_countNewLines(bodyController.text.trim())}/${c.maxPostLines} ${AppLocalizations.of(context)!.newLines}',
+                              ),
+                            ),
+                          showMarkdownPreview
+                              ? MarkdownView(content: bodyController.text)
+                              : ConstrainedBox(
+                                  constraints: BoxConstraints(),
+                                  child: TextField(
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    focusNode: bodyFocus,
+                                    controller: bodyController,
+                                    maxLines: null,
+                                    cursorColor:
+                                        Theme.of(context).colorScheme.onSurface,
+                                    keyboardType: TextInputType.multiline,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                    ),
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          EdgeInsets.all(height * 0.01),
+                                      hintText:
+                                          AppLocalizations.of(context)!.addText,
+                                      hintStyle: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                      border: InputBorder.none,
+                                    ),
                                   ),
-                              ],
-                            );
-                          }
-                          return SizedBox();
-                        },
+                                ),
+                          AnimatedBuilder(
+                            animation: Listenable.merge([
+                              bodyController,
+                              bodyFocus,
+                            ]),
+                            builder: (context, _) {
+                              if (bodyFocus.hasPrimaryFocus &&
+                                  bodyController.text.isNotEmpty) {
+                                return Row(
+                                  children: [
+                                    Text(
+                                      '${bodyController.text.length}/${c.maxPostChars} ${AppLocalizations.of(context)!.characters}',
+                                    ),
+                                    const Spacer(),
+                                    if (bodyNewLines != 0 || true)
+                                      Text(
+                                        '${_countNewLines(bodyController.text.trim())}/${c.maxPostLines} ${AppLocalizations.of(context)!.newLines}',
+                                      ),
+                                  ],
+                                );
+                              }
+                              return SizedBox();
+                            },
+                          ),
+                          AnimatedBuilder(
+                            animation: Listenable.merge([
+                              bodyController,
+                              bodyFocus,
+                            ]),
+                            builder: (context, _) {
+                              final text = searchText(bodyController);
+                              if (text != null && bodyFocus.hasFocus) {
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) => scrollController.jumpTo(
+                                    scrollController.position.maxScrollExtent,
+                                  ),
+                                );
+                                return TagSearch(
+                                  onCardTap: (username) =>
+                                      onCardTap(username, bodyController),
+                                  searchText: text,
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.4,
+                                );
+                              }
+                              return SizedBox();
+                            },
+                          ),
+                        ],
                       ),
                       AnimatedBuilder(
-                        animation: Listenable.merge([
-                          bodyController,
-                          bodyFocus,
-                        ]),
+                        animation:
+                            Listenable.merge([titleController, titleFocus]),
                         builder: (context, _) {
-                          final text = searchText(bodyController);
-                          if (text != null && bodyFocus.hasFocus) {
-                            WidgetsBinding.instance.addPostFrameCallback(
-                              (_) => scrollController.jumpTo(
-                                scrollController.position.maxScrollExtent,
-                              ),
-                            );
+                          final text = searchText(titleController);
+                          if (text != null && titleFocus.hasFocus) {
                             return TagSearch(
                               onCardTap: (username) =>
-                                  onCardTap(username, bodyController),
+                                  onCardTap(username, titleController),
                               searchText: text,
                               height: MediaQuery.sizeOf(context).height * 0.4,
                             );
@@ -777,27 +816,12 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                       ),
                     ],
                   ),
-                  AnimatedBuilder(
-                    animation: Listenable.merge([titleController, titleFocus]),
-                    builder: (context, _) {
-                      final text = searchText(titleController);
-                      if (text != null && titleFocus.hasFocus) {
-                        return TagSearch(
-                          onCardTap: (username) =>
-                              onCardTap(username, titleController),
-                          searchText: text,
-                          height: MediaQuery.sizeOf(context).height * 0.4,
-                        );
-                      }
-                      return SizedBox();
-                    },
-                  ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

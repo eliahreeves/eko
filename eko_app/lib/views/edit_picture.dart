@@ -13,6 +13,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:eko_app/localization/generated/app_localizations.dart';
 import 'package:eko_app/widgets/posts/image_widget.dart';
 import 'package:eko_app/widgets/errors/snack_bar.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class EditPicture extends StatefulWidget {
@@ -133,7 +134,8 @@ class _EditPictureState extends State<EditPicture> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
+      contrainBody: true,
       appBar: EkoAppBar(
         actions: [
           IconButton(

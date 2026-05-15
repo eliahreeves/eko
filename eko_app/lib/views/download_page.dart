@@ -5,6 +5,7 @@ import 'package:eko_app/utilities/constants.dart' as c;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eko_app/interfaces/uri_launcher.dart';
+import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
 class DownloadPage extends StatelessWidget {
@@ -19,7 +20,7 @@ class DownloadPage extends StatelessWidget {
       onPopInvokedWithResult: (didPop, result) {
         context.go('/');
       },
-      child: Scaffold(
+      child: AppScaffold(
         appBar: EkoAppBar(title: Text(AppLocalizations.of(context)!.download)),
         body: Center(
           child: SingleChildScrollView(
