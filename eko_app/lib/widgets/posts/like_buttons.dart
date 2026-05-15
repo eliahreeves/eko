@@ -54,8 +54,9 @@ class LikeButtons extends ConsumerWidget {
           count: post.likes,
           onTap: disabled
               ? null
-              : () {
-                  context.push('/feed/post/${post.id}/likes');
+              : () async {
+                  await context.push('/feed/post/${post.id}/likes');
+                  ref.invalidate(postProvider(post.id));
                 },
         ),
         LikeButton(
@@ -92,8 +93,9 @@ class LikeButtons extends ConsumerWidget {
           count: post.dislikes,
           onTap: disabled
               ? null
-              : () {
-                  context.push('/feed/post/${post.id}/dislikes');
+              : () async {
+                  await context.push('/feed/post/${post.id}/dislikes');
+                  ref.invalidate(postProvider(post.id));
                 },
         ),
       ],

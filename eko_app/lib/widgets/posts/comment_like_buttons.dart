@@ -50,8 +50,9 @@ class CommentLikeButtons extends ConsumerWidget {
             ),
             Count(
               count: comment.likes,
-              onTap: () {
-                context.push('/feed/comment/${comment.id}/likes');
+              onTap: () async {
+                await context.push('/feed/comment/${comment.id}/likes');
+                ref.invalidate(commentProvider(comment.id));
               },
             ),
           ],
@@ -89,8 +90,9 @@ class CommentLikeButtons extends ConsumerWidget {
             ),
             Count(
               count: comment.dislikes,
-              onTap: () {
-                context.push('/feed/comment/${comment.id}/dislikes');
+              onTap: () async {
+                await context.push('/feed/comment/${comment.id}/dislikes');
+                ref.invalidate(commentProvider(comment.id));
               },
             ),
           ],
