@@ -282,11 +282,11 @@ abstract class AppLocalizations {
   /// **'Copied'**
   String get copied;
 
-  /// No description provided for @coppiedToClipboard.
+  /// No description provided for @copiedToClipboard.
   ///
   /// In en, this message translates to:
   /// **'Copied to Clipboard'**
-  String get coppiedToClipboard;
+  String get copiedToClipboard;
 
   /// No description provided for @copyLink.
   ///
@@ -348,11 +348,11 @@ abstract class AppLocalizations {
   /// **'Please try again later or reach out to conetechnologiesdev@gmail.com.'**
   String get defaultErrorBody;
 
-  /// No description provided for @defaultErrorTittle.
+  /// No description provided for @defaultErrorTitle.
   ///
   /// In en, this message translates to:
   /// **'Something Went Wrong'**
-  String get defaultErrorTittle;
+  String get defaultErrorTitle;
 
   /// No description provided for @delete.
   ///
@@ -366,17 +366,17 @@ abstract class AppLocalizations {
   /// **'Delete Account'**
   String get deleteAccount;
 
-  /// No description provided for @deleteAcountBody.
+  /// No description provided for @deleteAccountBody.
   ///
   /// In en, this message translates to:
   /// **'All account data will be deleted. This action cannot be undone. Press \"Go Back\" to cancel'**
-  String get deleteAcountBody;
+  String get deleteAccountBody;
 
-  /// No description provided for @deleteAcountTitle.
+  /// No description provided for @deleteAccountTitle.
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to delete your account?'**
-  String get deleteAcountTitle;
+  String get deleteAccountTitle;
 
   /// No description provided for @deleteCommentWarningTitle.
   ///
@@ -444,11 +444,17 @@ abstract class AppLocalizations {
   /// **'Email Already In-Use'**
   String get emailAlreadyInUseTitle;
 
-  /// No description provided for @emptyFieldError.
+  /// No description provided for @allFieldsEmpty.
   ///
   /// In en, this message translates to:
-  /// **'Make sure all fields are filled.'**
-  String get emptyFieldError;
+  /// **'All fields are empty.'**
+  String get allFieldsEmpty;
+
+  /// No description provided for @commentCantBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment can\'t be empty.'**
+  String get commentCantBeEmpty;
 
   /// No description provided for @error.
   ///
@@ -605,6 +611,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You need at least two poll options'**
   String get needTwoOptions;
+
+  /// No description provided for @blankPollOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll options can\'t be blank'**
+  String get blankPollOption;
+
+  /// No description provided for @tooManyPollOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many poll options'**
+  String get tooManyPollOptions;
 
   /// No description provided for @newActivityNotifications.
   ///

@@ -158,7 +158,7 @@ class UserCard extends ConsumerWidget {
       },
       error: (err, _) {
         debugPrint(err.toString());
-        return Text(AppLocalizations.of(context)!.defaultErrorTittle);
+        return Text(AppLocalizations.of(context)!.defaultErrorTitle);
       },
       loading: () => const UserLoader(),
     );

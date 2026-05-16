@@ -103,7 +103,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copied => 'Copied';
 
   @override
-  String get coppiedToClipboard => 'Copied to Clipboard';
+  String get copiedToClipboard => 'Copied to Clipboard';
 
   @override
   String get copyLink => 'Copy Link';
@@ -137,7 +137,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please try again later or reach out to conetechnologiesdev@gmail.com.';
 
   @override
-  String get defaultErrorTittle => 'Something Went Wrong';
+  String get defaultErrorTitle => 'Something Went Wrong';
 
   @override
   String get delete => 'Delete';
@@ -146,11 +146,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAccount => 'Delete Account';
 
   @override
-  String get deleteAcountBody =>
+  String get deleteAccountBody =>
       'All account data will be deleted. This action cannot be undone. Press \"Go Back\" to cancel';
 
   @override
-  String get deleteAcountTitle =>
+  String get deleteAccountTitle =>
       'Are you sure you want to delete your account?';
 
   @override
@@ -189,7 +189,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailAlreadyInUseTitle => 'Email Already In-Use';
 
   @override
-  String get emptyFieldError => 'Make sure all fields are filled.';
+  String get allFieldsEmpty => 'All fields are empty.';
+
+  @override
+  String get commentCantBeEmpty => 'Comment can\'t be empty.';
 
   @override
   String get error => 'Error';
@@ -270,6 +273,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get needTwoOptions => 'You need at least two poll options';
+
+  @override
+  String get blankPollOption => 'Poll options can\'t be blank';
+
+  @override
+  String get tooManyPollOptions => 'Too many poll options';
 
   @override
   String get newActivityNotifications => 'New Activity Notifications';

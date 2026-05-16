@@ -103,7 +103,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get copied => 'कॉपी किया गया';
 
   @override
-  String get coppiedToClipboard => 'क्लिपबोर्ड पर कॉपी किया गया';
+  String get copiedToClipboard => 'क्लिपबोर्ड पर कॉपी किया गया';
 
   @override
   String get copyLink => 'लिंक कॉपी करें';
@@ -137,7 +137,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'कृपया बाद में पुनः प्रयास करें या conetechnologiesdev@gmail.com पर संपर्क करें।';
 
   @override
-  String get defaultErrorTittle => 'कुछ गड़बड़ हुई';
+  String get defaultErrorTitle => 'कुछ गड़बड़ हुई';
 
   @override
   String get delete => 'हटाएं';
@@ -146,11 +146,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteAccount => 'खाता हटाएं';
 
   @override
-  String get deleteAcountBody =>
+  String get deleteAccountBody =>
       'सभी खाता डेटा हटा दिया जाएगा। यह क्रिया पूर्ववत नहीं की जा सकती। रद्द करने के लिए \"वापस जाएँ\" दबाएँ';
 
   @override
-  String get deleteAcountTitle => 'क्या आप वाकई अपना खाता हटाना चाहते हैं?';
+  String get deleteAccountTitle => 'क्या आप वाकई अपना खाता हटाना चाहते हैं?';
 
   @override
   String get deleteCommentWarningTitle => 'टिप्पणी हटाएं';
@@ -187,7 +187,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get emailAlreadyInUseTitle => 'Email पहले से उपयोग में है';
 
   @override
-  String get emptyFieldError => 'सुनिश्चित करें कि सभी फ़ील्ड भरे हुए हैं।';
+  String get allFieldsEmpty => 'सभी फ़ील्ड खाली हैं।';
+
+  @override
+  String get commentCantBeEmpty => 'टिप्पणी खाली नहीं हो सकती।';
 
   @override
   String get error => 'त्रुटि';
@@ -269,6 +272,12 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get needTwoOptions => 'आपको कम से कम दो मतदान विकल्पों की आवश्यकता है';
+
+  @override
+  String get blankPollOption => 'मतदान विकल्प खाली नहीं हो सकते';
+
+  @override
+  String get tooManyPollOptions => 'बहुत अधिक मतदान विकल्प';
 
   @override
   String get newActivityNotifications => 'नई गतिविधि सूचनाएँ';

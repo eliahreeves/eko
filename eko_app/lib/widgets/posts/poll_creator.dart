@@ -75,7 +75,7 @@ class _PollCreatorState extends State<PollCreator> {
                       },
                     ),
                   ),
-                  if (widget.pollOptions.length > 2 &&
+                  if (widget.pollOptions.length > c.minPollOptions &&
                       index == widget.pollOptions.length - 1)
                     IconButton(
                       icon: Icon(Icons.delete_outline),
@@ -89,7 +89,7 @@ class _PollCreatorState extends State<PollCreator> {
               ),
             ),
           ),
-          if (widget.pollOptions.length < 4)
+          if (widget.pollOptions.length < c.maxPollOptions)
             TextButton.icon(
               onPressed: () {
                 setState(() {

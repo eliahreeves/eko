@@ -152,7 +152,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
       if (mounted) {
         showSnackBar(
           context: context,
-          text: AppLocalizations.of(context)!.defaultErrorTittle,
+          text: AppLocalizations.of(context)!.defaultErrorTitle,
         );
       }
     }
@@ -210,7 +210,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
         } else if (commentField.text == '') {
           commentFieldFocus.requestFocus();
           showSnackBar(
-            text: AppLocalizations.of(context)!.emptyFieldError,
+            text: AppLocalizations.of(context)!.commentCantBeEmpty,
             context: context,
             variant: SnackBarVariant.destructive,
           );
@@ -267,7 +267,7 @@ class _ViewPostPageState extends ConsumerState<ViewPostPage> {
       debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
-          text: AppLocalizations.of(context)!.defaultErrorTittle,
+          text: AppLocalizations.of(context)!.defaultErrorTitle,
           context: context,
           variant: SnackBarVariant.destructive,
         );

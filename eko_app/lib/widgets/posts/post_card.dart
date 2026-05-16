@@ -117,7 +117,7 @@ class _PostCardState extends ConsumerState<PostCard> {
       );
       showSnackBar(
         context: context,
-        text: AppLocalizations.of(context)!.coppiedToClipboard,
+        text: AppLocalizations.of(context)!.copiedToClipboard,
       );
     } else {
       if (!sharing) {

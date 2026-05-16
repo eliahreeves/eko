@@ -104,7 +104,7 @@ class _TagSearchState extends State<TagSearch> {
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               debugPrint(snapshot.error.toString());
-              return Text(AppLocalizations.of(context)!.defaultErrorTittle);
+              return Text(AppLocalizations.of(context)!.defaultErrorTitle);
             }
             if (snapshot.hasData && snapshot.data != null) {
               final data = snapshot.data!;

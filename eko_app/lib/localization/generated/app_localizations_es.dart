@@ -103,7 +103,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get copied => 'Copiado';
 
   @override
-  String get coppiedToClipboard => 'Copiado al portapapeles';
+  String get copiedToClipboard => 'Copiado al portapapeles';
 
   @override
   String get copyLink => 'Copiar vínculo';
@@ -137,7 +137,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Por favor intente de nuevo o contacte conetechnologiesdev@gmail.com.';
 
   @override
-  String get defaultErrorTittle => 'Oops! Algo salió mal';
+  String get defaultErrorTitle => 'Oops! Algo salió mal';
 
   @override
   String get delete => 'Borrar';
@@ -146,11 +146,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteAccount => 'Borrar Cuenta';
 
   @override
-  String get deleteAcountBody =>
+  String get deleteAccountBody =>
       'Todos los datos de cuenta será borrado. Esta acción no se puede deshacer. Hacer clic en \"Volver\" para cancelar';
 
   @override
-  String get deleteAcountTitle =>
+  String get deleteAccountTitle =>
       'Estas seguro de que quieres borrar tu cuenta?';
 
   @override
@@ -189,8 +189,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get emailAlreadyInUseTitle => 'Correo electrónico en uso';
 
   @override
-  String get emptyFieldError =>
-      'Asegúrese de que todos los campos están llenos.';
+  String get allFieldsEmpty => 'Todos los campos están vacíos.';
+
+  @override
+  String get commentCantBeEmpty => 'El comentario no puede estar vacío.';
 
   @override
   String get error => 'Error';
@@ -275,6 +277,12 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get needTwoOptions =>
       'Tiene que añadir dos opciones del poll por lo menos';
+
+  @override
+  String get blankPollOption => 'Las opciones del poll no pueden estar vacías';
+
+  @override
+  String get tooManyPollOptions => 'Demasiadas opciones del poll';
 
   @override
   String get newActivityNotifications => 'Notificaciones de nueva actividad';

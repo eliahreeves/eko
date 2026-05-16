@@ -85,7 +85,11 @@ class _ComposePageState extends ConsumerState<ComposePage> {
   String? timestamp;
   AsciiImage? image;
   bool isPoll = false;
-  List<String> pollOptions = ['', ''];
+  List<String> pollOptions = List.filled(
+    c.minPollOptions,
+    '',
+    growable: true,
+  );
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
   final scrollController = ScrollController();
@@ -236,7 +240,11 @@ class _ComposePageState extends ConsumerState<ComposePage> {
     setState(() {
       repostId = null;
       isPoll = false;
-      pollOptions = ['', ''];
+      pollOptions = List.filled(
+        c.minPollOptions,
+        '',
+        growable: true,
+      );
       gif = null;
       image = null;
       bodyNewLines = 0;
@@ -266,7 +274,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
-          text: AppLocalizations.of(context)!.defaultErrorTittle,
+          text: AppLocalizations.of(context)!.defaultErrorTitle,
           context: context,
           variant: SnackBarVariant.destructive,
         );
@@ -290,7 +298,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
           !isPoll) {
         titleFocus.requestFocus();
         showSnackBar(
-          text: AppLocalizations.of(context)!.emptyFieldError,
+          text: AppLocalizations.of(context)!.allFieldsEmpty,
           context: context,
           variant: SnackBarVariant.destructive,
         );
@@ -324,9 +332,26 @@ class _ComposePageState extends ConsumerState<ComposePage> {
         return;
       }
       if (isPoll &&
-          pollOptions.where((option) => option.trim().isNotEmpty).length < 2) {
+          pollOptions.where((option) => option.trim().isNotEmpty).length <
+              c.minPollOptions) {
         showSnackBar(
           text: AppLocalizations.of(context)!.needTwoOptions,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+        return;
+      }
+      if (isPoll && pollOptions.any((option) => option.trim().isEmpty)) {
+        showSnackBar(
+          text: AppLocalizations.of(context)!.blankPollOption,
+          context: context,
+          variant: SnackBarVariant.destructive,
+        );
+        return;
+      }
+      if (isPoll && pollOptions.length > c.maxPollOptions) {
+        showSnackBar(
+          text: AppLocalizations.of(context)!.tooManyPollOptions,
           context: context,
           variant: SnackBarVariant.destructive,
         );
@@ -404,7 +429,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
       debugPrint(e.toString());
       if (mounted) {
         showSnackBar(
-          text: AppLocalizations.of(context)!.defaultErrorTittle,
+          text: AppLocalizations.of(context)!.defaultErrorTitle,
           context: context,
           variant: SnackBarVariant.destructive,
         );

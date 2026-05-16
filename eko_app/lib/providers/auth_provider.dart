@@ -64,7 +64,7 @@ void handleAuthError(Object e, BuildContext context) {
     }
   } else {
     showSnackBar(
-      text: AppLocalizations.of(context)!.defaultErrorTittle,
+      text: AppLocalizations.of(context)!.defaultErrorTitle,
       context: context,
       variant: SnackBarVariant.destructive,
     );

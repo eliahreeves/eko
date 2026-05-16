@@ -62,7 +62,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // url_launcher throws a PlatformException on iOS if the Safari View Controller is closed
       if (e.toString().contains('PlatformException')) return;
       showSnackBar(
-        text: AppLocalizations.of(context)!.defaultErrorTittle,
+        text: AppLocalizations.of(context)!.defaultErrorTitle,
         context: context,
         variant: SnackBarVariant.destructive,
       );
@@ -135,7 +135,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         debugPrint(e.toString());
         if (mounted) {
           showSnackBar(
-              text: AppLocalizations.of(context)!.defaultErrorTittle,
+              text: AppLocalizations.of(context)!.defaultErrorTitle,
               context: context,
               variant: SnackBarVariant.destructive);
         }

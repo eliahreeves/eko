@@ -140,8 +140,8 @@ class _UserSettingsState extends ConsumerState<UserSettings> {
           TextButton(
             onPressed: () {
               showMyDialog(
-                AppLocalizations.of(context)!.deleteAcountTitle,
-                AppLocalizations.of(context)!.deleteAcountBody,
+                AppLocalizations.of(context)!.deleteAccountTitle,
+                AppLocalizations.of(context)!.deleteAccountBody,
                 [
                   AppLocalizations.of(context)!.goBack,
                   AppLocalizations.of(context)!.delete,

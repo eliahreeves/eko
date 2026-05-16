@@ -103,7 +103,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get copied => 'Tersalin';
 
   @override
-  String get coppiedToClipboard => 'Tersalin ke Papan Klip';
+  String get copiedToClipboard => 'Tersalin ke Papan Klip';
 
   @override
   String get copyLink => 'Salin Tautan';
@@ -137,7 +137,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Silakan coba lagi nanti atau hubungi conetechnologiesdev@gmail.com.';
 
   @override
-  String get defaultErrorTittle => 'Terjadi Kesalahan';
+  String get defaultErrorTitle => 'Terjadi Kesalahan';
 
   @override
   String get delete => 'Hapus';
@@ -146,11 +146,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get deleteAccount => 'Hapus Akun';
 
   @override
-  String get deleteAcountBody =>
+  String get deleteAccountBody =>
       'Semua data akun akan dihapus. Tindakan ini tidak dapat dibatalkan. Tekan \"Kembali\" untuk membatalkan';
 
   @override
-  String get deleteAcountTitle =>
+  String get deleteAccountTitle =>
       'Apakah Anda yakin ingin menghapus akun Anda?';
 
   @override
@@ -188,7 +188,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get emailAlreadyInUseTitle => 'Email Sudah Digunakan';
 
   @override
-  String get emptyFieldError => 'Pastikan semua kolom telah diisi.';
+  String get allFieldsEmpty => 'Semua kolom kosong.';
+
+  @override
+  String get commentCantBeEmpty => 'Komentar tidak boleh kosong.';
 
   @override
   String get error => 'Kesalahan';
@@ -270,6 +273,12 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get needTwoOptions =>
       'Anda memerlukan setidaknya dua opsi jajak pendapat';
+
+  @override
+  String get blankPollOption => 'Opsi jajak pendapat tidak boleh kosong';
+
+  @override
+  String get tooManyPollOptions => 'Terlalu banyak opsi jajak pendapat';
 
   @override
   String get newActivityNotifications => 'Notifikasi Aktivitas Baru';

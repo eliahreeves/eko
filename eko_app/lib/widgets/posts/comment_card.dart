@@ -35,7 +35,7 @@ class CommentCard extends ConsumerStatefulWidget {
 class _Error extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Text(AppLocalizations.of(context)!.defaultErrorTittle);
+    return Text(AppLocalizations.of(context)!.defaultErrorTitle);
   }
 }
 
@@ -111,7 +111,7 @@ class _CommentCardState extends ConsumerState<CommentCard> {
       print(e.toString());
       if (!mounted) return;
       showSnackBar(
-        text: AppLocalizations.of(context)!.defaultErrorTittle,
+        text: AppLocalizations.of(context)!.defaultErrorTitle,
         context: context,
       );
     }
