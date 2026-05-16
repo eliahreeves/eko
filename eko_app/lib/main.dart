@@ -100,6 +100,9 @@ class MyApp extends ConsumerWidget {
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent,
           splashFactory: NoSplash.splashFactory,
+          tabBarTheme: TabBarThemeData(
+            overlayColor: WidgetStatePropertyAll(Colors.transparent),
+          ),
         ),
         localizationsDelegates: const [
           AppLocalizations.delegate,
