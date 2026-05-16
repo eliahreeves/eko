@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:eko_app/types/current_user.dart';
 part '../generated/types/user.freezed.dart';
 
 @freezed
@@ -31,10 +30,6 @@ abstract class UserModel with _$UserModel {
       shareOnlineStatus: false,
       isFollowing: false,
     );
-  }
-
-  factory UserModel.fromCurrent(CurrentUserModel cur) {
-    return cur.user;
   }
 
   factory UserModel.fromJson(Map<String, dynamic>? json) {
