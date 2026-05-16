@@ -20,6 +20,8 @@ import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
 
+import '../utilities/constants.dart';
+
 class ProfilePage extends ConsumerStatefulWidget {
   final String username;
   final String? uid;
@@ -161,6 +163,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       error: (_, __) => false,
     );
     final bool isCurrentUser = currentUser.user.uid == uid;
+    final selectedSort = isCurrentUser
+        ? ref.watch(profilePostSortProvider)
+        : ref.watch(otherProfilePostSortProvider(uid));
     final postListState = isCurrentUser
         ? ref.watch(profilePostListProvider)
         : ref.watch(otherProfilePostListProvider(uid));
@@ -214,6 +219,21 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }
     }
 
+    Future<void> onSortChanged(ProfilePostSort sort) async {
+      if (selectedSort == sort) {
+        return;
+      }
+      if (isCurrentUser) {
+        ref.read(profilePostSortProvider.notifier).state = sort;
+        await ref.read(profilePostListProvider.notifier).setSort(sort);
+      } else {
+        ref.read(otherProfilePostSortProvider(uid).notifier).state = sort;
+        await ref
+            .read(otherProfilePostListProvider(uid).notifier)
+            .setSort(sort);
+      }
+    }
+
     return PopScope(
       canPop: true,
       child: AppScaffold(
@@ -263,7 +283,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   : otherProfilePostCardBuilder,
               onRefresh: onRefresh,
               initialLoadingWidget: PostLoader(),
-              header: _Header(user: profileUser, isCurrentUser: isCurrentUser),
+              header: _Header(
+                user: profileUser,
+                isCurrentUser: isCurrentUser,
+                sort: selectedSort,
+                onSortChanged: onSortChanged,
+              ),
               appBar: SliverAppBar(
                 floating: true,
                 pinned: false,
@@ -401,7 +426,14 @@ class _ProfileAppBarContent extends StatelessWidget {
 class _Header extends ConsumerWidget {
   final UserModel user;
   final bool isCurrentUser;
-  const _Header({required this.user, required this.isCurrentUser});
+  final ProfilePostSort sort;
+  final ValueChanged<ProfilePostSort> onSortChanged;
+  const _Header({
+    required this.user,
+    required this.isCurrentUser,
+    required this.sort,
+    required this.onSortChanged,
+  });
 
   Future<void> _onFollowPressed(WidgetRef ref) async {
     await ref.read(userProvider(user.uid).notifier).toggleFollow();
@@ -515,7 +547,49 @@ class _Header extends ConsumerWidget {
           color: Theme.of(context).colorScheme.outline,
           height: c.dividerWidth,
         ),
+        Row(
+          children: [
+            _PostSortToggle(
+              sort: sort,
+              onSortChanged: onSortChanged,
+            ),
+          ],
+        ),
       ],
+    );
+  }
+}
+
+class _PostSortToggle extends StatelessWidget {
+  const _PostSortToggle({
+    required this.sort,
+    required this.onSortChanged,
+  });
+
+  final ProfilePostSort sort;
+  final ValueChanged<ProfilePostSort> onSortChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final nextSort = sort == ProfilePostSort.newest
+        ? ProfilePostSort.popular
+        : ProfilePostSort.newest;
+    final label =
+        sort == ProfilePostSort.newest ? l10n.feedTabNew : l10n.feedTabPopular;
+
+    return TextButton(
+      style: buttonStyle(context),
+      onPressed: () => onSortChanged(nextSort),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+      ),
     );
   }
 }

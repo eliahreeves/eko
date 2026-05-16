@@ -7,23 +7,42 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef ProfilePostListState = (List<int>, bool);
 
+enum ProfilePostSort { newest, popular }
+
 class ProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
   ProfilePostListNotifier(this.ref) : super(([], false));
 
   final Ref ref;
-  final List<MapEntry<int, String>> _cursors = [];
+  final List<MapEntry<int, String>> _newestCursors = [];
+  final List<MapEntry<int, int>> _popularCursors = [];
   final Set<int> _set = {};
+  ProfilePostSort _sort = ProfilePostSort.newest;
+
+  Future<void> setSort(ProfilePostSort sort) async {
+    if (_sort == sort) {
+      return;
+    }
+    _sort = sort;
+    await refresh();
+  }
 
   Future<void> getter() async {
     final params = <String, dynamic>{
       'p_limit': c.postsOnRefresh,
       'p_user_uid': ref.read(currentUserProvider).user.uid,
     };
-    if (_cursors.isNotEmpty) {
-      params['p_last_time'] = _cursors.last.value;
-      params['p_last_id'] = _cursors.last.key;
+    final isPopular = _sort == ProfilePostSort.popular;
+    if (isPopular && _popularCursors.isNotEmpty) {
+      params['p_last_likes'] = _popularCursors.last.value;
+      params['p_last_id'] = _popularCursors.last.key;
+    } else if (!isPopular && _newestCursors.isNotEmpty) {
+      params['p_last_time'] = _newestCursors.last.value;
+      params['p_last_id'] = _newestCursors.last.key;
     }
-    final rows = await supabase.rpc('paginated_user_posts', params: params);
+    final rows = await supabase.rpc(
+      isPopular ? 'paginated_user_posts_popular' : 'paginated_user_posts',
+      params: params,
+    );
     final list = rows as List<dynamic>? ?? const [];
     final posts = list
         .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
@@ -34,16 +53,25 @@ class ProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
     for (final post in posts) {
       if (_set.add(post.id)) {
         newList.add(post.id);
-        _cursors.add(MapEntry(post.id, post.createdAt));
+        if (isPopular) {
+          _popularCursors.add(MapEntry(post.id, post.likes + post.dislikes));
+        } else {
+          _newestCursors.add(MapEntry(post.id, post.createdAt));
+        }
       }
     }
     state = (newList, posts.length < c.postsOnRefresh);
   }
 
-  Future<void> refresh() async {
+  void _resetPagination() {
     _set.clear();
-    _cursors.clear();
+    _newestCursors.clear();
+    _popularCursors.clear();
     state = ([], false);
+  }
+
+  Future<void> refresh() async {
+    _resetPagination();
     await getter();
   }
 
@@ -52,7 +80,8 @@ class ProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
     final removed = newList.remove(postId);
     if (removed) {
       _set.remove(postId);
-      _cursors.removeWhere((entry) => entry.key == postId);
+      _newestCursors.removeWhere((entry) => entry.key == postId);
+      _popularCursors.removeWhere((entry) => entry.key == postId);
       state = (newList, state.$2);
     }
   }
@@ -63,19 +92,36 @@ class OtherProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
 
   final Ref ref;
   final String uid;
-  final List<MapEntry<int, String>> _cursors = [];
+  final List<MapEntry<int, String>> _newestCursors = [];
+  final List<MapEntry<int, int>> _popularCursors = [];
   final Set<int> _set = {};
+  ProfilePostSort _sort = ProfilePostSort.newest;
+
+  Future<void> setSort(ProfilePostSort sort) async {
+    if (_sort == sort) {
+      return;
+    }
+    _sort = sort;
+    await refresh();
+  }
 
   Future<void> getter() async {
     final params = <String, dynamic>{
       'p_limit': c.postsOnRefresh,
       'p_user_uid': uid,
     };
-    if (_cursors.isNotEmpty) {
-      params['p_last_time'] = _cursors.last.value;
-      params['p_last_id'] = _cursors.last.key;
+    final isPopular = _sort == ProfilePostSort.popular;
+    if (isPopular && _popularCursors.isNotEmpty) {
+      params['p_last_likes'] = _popularCursors.last.value;
+      params['p_last_id'] = _popularCursors.last.key;
+    } else if (!isPopular && _newestCursors.isNotEmpty) {
+      params['p_last_time'] = _newestCursors.last.value;
+      params['p_last_id'] = _newestCursors.last.key;
     }
-    final rows = await supabase.rpc('paginated_user_posts', params: params);
+    final rows = await supabase.rpc(
+      isPopular ? 'paginated_user_posts_popular' : 'paginated_user_posts',
+      params: params,
+    );
     final list = rows as List<dynamic>? ?? const [];
     final posts = list
         .map((row) => PostModel.fromJson(Map<String, dynamic>.from(row as Map)))
@@ -87,16 +133,25 @@ class OtherProfilePostListNotifier extends StateNotifier<ProfilePostListState> {
     for (final post in posts) {
       if (_set.add(post.id)) {
         newList.add(post.id);
-        _cursors.add(MapEntry(post.id, post.createdAt));
+        if (isPopular) {
+          _popularCursors.add(MapEntry(post.id, post.likes + post.dislikes));
+        } else {
+          _newestCursors.add(MapEntry(post.id, post.createdAt));
+        }
       }
     }
     state = (newList, posts.length < c.postsOnRefresh);
   }
 
-  Future<void> refresh() async {
+  void _resetPagination() {
     _set.clear();
-    _cursors.clear();
+    _newestCursors.clear();
+    _popularCursors.clear();
     state = ([], false);
+  }
+
+  Future<void> refresh() async {
+    _resetPagination();
     await getter();
   }
 }
@@ -110,3 +165,12 @@ final otherProfilePostListProvider = StateNotifierProvider.family<
     OtherProfilePostListNotifier,
     ProfilePostListState,
     String>((ref, uid) => OtherProfilePostListNotifier(ref, uid));
+
+final profilePostSortProvider = StateProvider<ProfilePostSort>(
+  (ref) => ProfilePostSort.newest,
+);
+
+final otherProfilePostSortProvider =
+    StateProvider.family<ProfilePostSort, String>(
+  (ref, uid) => ProfilePostSort.newest,
+);
