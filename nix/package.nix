@@ -19,7 +19,9 @@ flutter.buildFlutterApplication {
   version = "2.0.0";
   src = lib.cleanSource ../eko_app;
   autoPubspecLock = ../eko_app/pubspec.lock;
-  gitHashes = {};
+  gitHashes = {
+    webcrypto = "sha256-XkZe7LcVyUtUJoTqeyd87xLENJIIExgyI9lym/aQBtw=";
+  };
   vendorHash = lib.fakeHash;
   dontUseCmakeConfigure = true;
 
@@ -73,6 +75,12 @@ flutter.buildFlutterApplication {
 
   postInstall = ''
     install -Dm644 "$src/linux/assets/logo.svg" "$out/share/icons/hicolor/scalable/apps/eko-app.svg"
+    if [ -f "build/native_assets/linux/libwebcrypto.so" ]; then
+      install -Dm755 "build/native_assets/linux/libwebcrypto.so" "$out/app/eko/lib/libwebcrypto.so"
+    else
+      echo "libwebcrypto.so not found at build/native_assets/linux" >&2
+      exit 1
+    fi
   '';
 
   meta = {

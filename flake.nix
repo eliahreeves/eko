@@ -18,6 +18,7 @@
         ...
       }: let
         commonPackages = with pkgs; [
+          gcc
           jdk
           ninja
           unzip
@@ -101,7 +102,10 @@
               ANDROID_HOME = sdkPath;
               nativeBuildInputs = commonPackages ++ [flutterPkg androidSdk];
               shellHook =
-                commonShellHook;
+                ''
+                  export LD_LIBRARY_PATH="$PWD/eko_app/build/native_assets/linux:$LD_LIBRARY_PATH"
+                ''
+                + commonShellHook;
             };
       };
     };
