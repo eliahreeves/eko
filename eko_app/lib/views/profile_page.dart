@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:eko_app/widgets/common/feed_options_button.dart';
 import 'package:eko_app/widgets/errors/dialogs.dart';
 import 'package:eko_app/interfaces/user.dart';
 import 'package:eko_app/providers/current_user_provider.dart';
@@ -19,8 +20,6 @@ import 'package:eko_app/widgets/posts/post_card.dart';
 import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:eko_app/widgets/scaffolds/app_scaffold.dart';
 import 'package:eko_app/widgets/scaffolds/eko_app_bar.dart';
-
-import '../utilities/constants.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   final String username;
@@ -547,49 +546,27 @@ class _Header extends ConsumerWidget {
           color: Theme.of(context).colorScheme.outline,
           height: c.dividerWidth,
         ),
-        Row(
-          children: [
-            _PostSortToggle(
-              sort: sort,
-              onSortChanged: onSortChanged,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: FeedOptionsButton<ProfilePostSort>(
+              selectedValue: sort,
+              onChanged: onSortChanged,
+              options: [
+                FeedOption(
+                  label: AppLocalizations.of(context)!.feedTabNew,
+                  value: ProfilePostSort.newest,
+                ),
+                FeedOption(
+                  label: AppLocalizations.of(context)!.feedTabPopular,
+                  value: ProfilePostSort.popular,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ],
-    );
-  }
-}
-
-class _PostSortToggle extends StatelessWidget {
-  const _PostSortToggle({
-    required this.sort,
-    required this.onSortChanged,
-  });
-
-  final ProfilePostSort sort;
-  final ValueChanged<ProfilePostSort> onSortChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
-    final nextSort = sort == ProfilePostSort.newest
-        ? ProfilePostSort.popular
-        : ProfilePostSort.newest;
-    final label =
-        sort == ProfilePostSort.newest ? l10n.feedTabNew : l10n.feedTabPopular;
-
-    return TextButton(
-      style: buttonStyle(context),
-      onPressed: () => onSortChanged(nextSort),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-      ),
     );
   }
 }
