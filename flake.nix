@@ -23,9 +23,10 @@
           ninja
           unzip
           supabase-cli
-          ungoogled-chromium
           sops
           age
+        ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
+          ungoogled-chromium
         ];
         commonShellHook = ''
           git config core.hooksPath scripts/git-hooks
