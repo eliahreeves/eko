@@ -1,22 +1,13 @@
 {
+  pkgs,
   lib,
-  flutter,
-  gtk3,
-  glib,
-  jsoncpp,
-  openssl,
-  libsecret,
-  copyDesktopItems,
-  wrapGAppsHook3,
-  pkg-config,
-  cmake,
-  jq,
-  yq-go,
-  makeDesktopItem,
+  pname,
+  gitRev ? "dirty",
+  ...
 }:
-flutter.buildFlutterApplication {
-  pname = "eko";
-  version = "2.0.0";
+pkgs.flutter.buildFlutterApplication {
+  inherit pname;
+  version = gitRev;
   src = lib.cleanSource ../eko_app;
   autoPubspecLock = ../eko_app/pubspec.lock;
   gitHashes = {
@@ -25,7 +16,7 @@ flutter.buildFlutterApplication {
   vendorHash = lib.fakeHash;
   dontUseCmakeConfigure = true;
 
-  buildInputs = [
+  buildInputs = with pkgs; [
     gtk3
     glib
     jsoncpp
@@ -33,7 +24,7 @@ flutter.buildFlutterApplication {
     libsecret
   ];
 
-  nativeBuildInputs = [
+  nativeBuildInputs = with pkgs; [
     copyDesktopItems
     wrapGAppsHook3
     pkg-config
@@ -42,41 +33,29 @@ flutter.buildFlutterApplication {
     yq-go
   ];
 
-  preBuild = ''
-    yq -i '.flutter.fonts += [{"family":"Inter","fonts":[{"asset":"fonts/linux/Inter-Cleaned.ttf"},{"asset":"fonts/linux/Inter-Italic-Cleaned.ttf"}]},{"family":"NotoEmoji","fonts":[{"asset":"fonts/linux/NotoColorEmoji.ttf"}]}]' pubspec.yaml
+  preBuild = builtins.readFile ./prebuild.sh;
 
-    webcrypto_root_uri="$(jq -r '.packages[] | select(.name=="webcrypto") | .rootUri' .dart_tool/package_config.json)"
-    if [ -z "$webcrypto_root_uri" ] || [ "$webcrypto_root_uri" = "null" ]; then
-      echo "webcrypto package not found in package_config.json"
-      exit 1
-    fi
-
-    webcrypto_root="''${webcrypto_root_uri#file://}"
-    cmake -S "$webcrypto_root/src" -B .dart_tool/webcrypto
-    cmake --build .dart_tool/webcrypto --target webcrypto
-  '';
-
-  preFixup = ''
-    gappsWrapperArgs+=(
-      --prefix LD_LIBRARY_PATH : "$out/app/eko/lib"
-    )
+  extraWrapProgramArgs = ''
+    --prefix LD_LIBRARY_PATH : "$out/app/${pname}/lib" \
+    --set FONTCONFIG_FILE ${pkgs.fontconfig.out}/etc/fonts/fonts.conf \
+    --set LOCALE_ARCHIVE ${pkgs.glibcLocales}/lib/locale/locale-archive
   '';
 
   desktopItems = [
-    (makeDesktopItem {
+    (pkgs.makeDesktopItem {
       name = "com.eko.network";
       desktopName = "eko";
-      comment = "eko social media network";
-      exec = "eko";
-      icon = "eko-app";
+      comment = "eko social network";
+      exec = pname;
+      icon = pname;
       categories = ["Network"];
     })
   ];
 
   postInstall = ''
-    install -Dm644 "$src/linux/assets/logo.svg" "$out/share/icons/hicolor/scalable/apps/eko-app.svg"
+    install -Dm644 "$src/linux/assets/logo.svg" "$out/share/icons/hicolor/scalable/apps/${pname}.svg"
     if [ -f "build/native_assets/linux/libwebcrypto.so" ]; then
-      install -Dm755 "build/native_assets/linux/libwebcrypto.so" "$out/app/eko/lib/libwebcrypto.so"
+      install -Dm755 "build/native_assets/linux/libwebcrypto.so" "$out/app/${pname}/lib/libwebcrypto.so"
     else
       echo "libwebcrypto.so not found at build/native_assets/linux" >&2
       exit 1
@@ -85,5 +64,7 @@ flutter.buildFlutterApplication {
 
   meta = {
     platforms = lib.platforms.linux;
+    mainProgram = pname;
+    license = pkgs.lib.licenses.agpl3Only;
   };
 }

@@ -15,30 +15,47 @@
       perSystem = {
         system,
         pkgs,
+        lib,
         ...
       }: let
-        commonPackages = with pkgs; [
-          gcc
-          jdk
-          ninja
-          unzip
-          supabase-cli
-          sops
-          age
-        ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
-          ungoogled-chromium
-        ];
+        pname = "eko";
+        gitRev = inputs.self.shortRev or inputs.self.dirtyShortRev or "dirty";
+        mkGenericRelease = import ./nix/mk-generic.nix {inherit pkgs;};
+        ekoApp = pkgs.callPackage ./nix/package.nix {
+          inherit gitRev;
+          inherit pname;
+        };
+        commonPackages = with pkgs;
+          [
+            gcc
+            jdk
+            ninja
+            unzip
+            supabase-cli
+            sops
+            age
+          ]
+          ++ lib.optionals (!pkgs.stdenv.isDarwin) [
+            ungoogled-chromium
+            yq-go
+          ];
         commonShellHook = ''
           git config core.hooksPath scripts/git-hooks
-          export CHROME_EXECUTABLE=$(which chromium)
         '';
       in {
-        packages.default = pkgs.callPackage ./nix/package.nix {};
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           config = {
             android_sdk.accept_license = true;
             allowUnfree = true;
+          };
+        };
+        packages = {
+          default = ekoApp;
+          tarball = mkGenericRelease {
+            inherit pname;
+            app = ekoApp;
+            version = gitRev;
           };
         };
         devShells.default =
@@ -57,23 +74,23 @@
               nativeBuildInputs = commonPackages ++ [flutterPkg];
               shellHook =
                 ''
-                                export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-                                export PATH=/usr/bin:/bin:/usr/sbin:/sbin:$PATH
-                                unset CC CXX LD AR NM RANLIB STRIP SDKROOT CPATH LIBRARY_PATH CFLAGS CXXFLAGS LDFLAGS OBJCFLAGS OBJCXXFLAGS
-                                export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
-                                if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
-                                  mkdir -p "$FLUTTER_ROOT_LOCAL"
-                                  /usr/bin/rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
-                                fi
-                                chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache/artifacts/engine" 2>/dev/null || true
-                                export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
-                                export PATH="$FLUTTER_ROOT/bin:$PATH"
-                    if [ -x "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart" ]; then
-                  	  cat > "$FLUTTER_ROOT/bin/dart" <<'EOF'
-                  	#!/bin/sh
-                  	exec "$(dirname "$0")/cache/dart-sdk/bin/dart" "$@"
+                  export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+                  export PATH=/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+                  unset CC CXX LD AR NM RANLIB STRIP SDKROOT CPATH LIBRARY_PATH CFLAGS CXXFLAGS LDFLAGS OBJCFLAGS OBJCXXFLAGS
+                  export FLUTTER_ROOT_LOCAL="$HOME/.cache/flutter-sdk-nix-${pkgs.flutter.version}"
+                  if [ ! -x "$FLUTTER_ROOT_LOCAL/bin/flutter" ]; then
+                    mkdir -p "$FLUTTER_ROOT_LOCAL"
+                    /usr/bin/rsync -aL --delete --chmod=Du+rwx,Dgo+rx,Fu+rwX,Fgo+rX "${flutterPkg}/" "$FLUTTER_ROOT_LOCAL/"
+                  fi
+                  chmod -R u+w "$FLUTTER_ROOT_LOCAL/bin/cache/artifacts/engine" 2>/dev/null || true
+                  export FLUTTER_ROOT="$FLUTTER_ROOT_LOCAL"
+                  export PATH="$FLUTTER_ROOT/bin:$PATH"
+                  if [ -x "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart" ]; then
+                  	cat > "$FLUTTER_ROOT/bin/dart" <<'EOF'
+                  	  #!/bin/sh
+                  	  exec "$(dirname "$0")/cache/dart-sdk/bin/dart" "$@"
                   	EOF
-                  	  chmod +x "$FLUTTER_ROOT/bin/dart"
+                  	chmod +x "$FLUTTER_ROOT/bin/dart"
                   fi
                 ''
                 + commonShellHook;
@@ -105,6 +122,7 @@
               shellHook =
                 ''
                   export LD_LIBRARY_PATH="$PWD/eko_app/build/native_assets/linux:$LD_LIBRARY_PATH"
+                  export CHROME_EXECUTABLE=$(which chromium)
                 ''
                 + commonShellHook;
             };
