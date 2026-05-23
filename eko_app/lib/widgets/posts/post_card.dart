@@ -42,7 +42,6 @@ class PostCard extends ConsumerStatefulWidget {
   final int id;
   final bool isPreview;
   final bool isPostPage;
-  final bool isBuiltFromId;
   final bool isOnProfile;
   final bool visible;
 
@@ -51,7 +50,6 @@ class PostCard extends ConsumerStatefulWidget {
     required this.id,
     this.isPreview = false,
     this.isPostPage = false,
-    this.isBuiltFromId = false,
     this.isOnProfile = false,
     this.visible = true,
   });

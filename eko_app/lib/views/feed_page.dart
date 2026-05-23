@@ -1,4 +1,5 @@
 import 'package:eko_app/localization/generated/app_localizations.dart';
+import 'package:eko_app/widgets/common/feed_options_button.dart';
 import 'package:eko_app/widgets/common/max_width_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,149 +14,50 @@ import 'package:eko_app/widgets/common/infinite_scrolly.dart';
 import 'package:eko_app/widgets/posts/post_card.dart';
 import 'package:eko_app/widgets/loading/shimmer_loaders.dart';
 
-const appBarHeight = 80.0;
-const tabStorageKey = 'LAST_FEED_PAGE_INDEX';
+const appBarHeight = kToolbarHeight;
 
-class RoundedTabIndicator extends Decoration {
-  final BoxPainter _painter;
-
-  RoundedTabIndicator({
-    required Color color,
-    required double radius,
-    required double thickness,
-  }) : _painter = _RoundedPainter(color, radius, thickness);
-
-  @override
-  BoxPainter createBoxPainter([VoidCallback? onChanged]) => _painter;
-}
-
-class _RoundedPainter extends BoxPainter {
-  final Paint _paint;
-  final double radius;
-  final double thickness;
-
-  _RoundedPainter(Color color, this.radius, this.thickness)
-      : _paint = Paint()
-          ..color = color
-          ..style = PaintingStyle.fill;
-
-  @override
-  void paint(Canvas canvas, Offset offset, ImageConfiguration cfg) {
-    final Rect rect = Offset(offset.dx - 5, cfg.size!.height - thickness) &
-        Size(cfg.size!.width + 10, thickness);
-    final RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
-    canvas.drawRRect(rRect, _paint);
-  }
-}
-
-class _Tab extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final ScrollController controller;
-  const _Tab({
-    required this.label,
-    required this.selected,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (selected) {
-      return GestureDetector(
-        onTap: () {
-          if (!controller.hasClients) {
-            return;
-          }
-          controller.animateTo(
-            0,
-            duration: Duration(milliseconds: 300),
-            curve: ElasticInCurve(),
-          );
-        },
-        child: Padding(
-          padding: EdgeInsetsDirectional.only(top: 0, bottom: 10),
-          child: Text(label),
-        ),
-      );
-    }
-    return Padding(
-      padding: EdgeInsetsDirectional.only(top: 0, bottom: 10),
-      child: Text(label),
-    );
-  }
-}
-
-class _AppBar extends StatelessWidget {
-  final double height;
-  final TabController tabController;
-  final List<ScrollController> scrollControllers;
+class _FeedAppBarContent extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onSelectionChanged;
   final VoidCallback onLogoTap;
-  const _AppBar({
-    required this.height,
-    required this.tabController,
-    required this.scrollControllers,
+  const _FeedAppBarContent({
+    required this.selectedIndex,
+    required this.onSelectionChanged,
     required this.onLogoTap,
   });
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return DecoratedBox(
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
-      child: MaxWidthContent(
-        child: SizedBox(
-          height: appBarHeight,
-          child: Column(
+    return MaxWidthContent(
+      child: SizedBox(
+        height: appBarHeight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              Flexible(
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: InkWell(onTap: onLogoTap, child: Eko()),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment(0.95, 0.05),
-                      child: InkWell(
-                        onTap: () => context.pushNamed('recent'),
-                        child: Bell(),
-                      ),
-                    ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: FeedOptionsButton<int>(
+                  selectedValue: selectedIndex,
+                  onChanged: onSelectionChanged,
+                  options: [
+                    FeedOption(label: l10n.following, value: 0),
+                    FeedOption(label: l10n.feedTabNew, value: 1),
+                    FeedOption(label: l10n.feedTabPopular, value: 2),
                   ],
                 ),
               ),
-              TabBar(
-                controller: tabController,
-                tabs: [
-                  _Tab(
-                    label: l10n.following,
-                    selected: tabController.index == 0,
-                    controller: scrollControllers[0],
-                  ),
-                  _Tab(
-                    label: l10n.feedTabNew,
-                    selected: tabController.index == 1,
-                    controller: scrollControllers[1],
-                  ),
-                  _Tab(
-                    label: l10n.feedTabPopular,
-                    selected: tabController.index == 2,
-                    controller: scrollControllers[2],
-                  ),
-                ],
-                indicator: RoundedTabIndicator(
-                  color: Theme.of(context).colorScheme.primary,
-                  radius: 4,
-                  thickness: 3,
+              Align(
+                alignment: Alignment.center,
+                child: InkWell(onTap: onLogoTap, child: Eko()),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  onTap: () => context.pushNamed('recent'),
+                  child: Bell(),
                 ),
-                indicatorPadding: EdgeInsets.only(bottom: 5, top: 4),
-                labelColor: Theme.of(context).colorScheme.onSurface,
-                labelPadding: EdgeInsets.all(0),
-                unselectedLabelColor: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withAlpha(200),
               ),
             ],
           ),
@@ -172,32 +74,77 @@ class FeedPage extends ConsumerStatefulWidget {
   ConsumerState<FeedPage> createState() => _FeedPageState();
 }
 
-class _FeedPageState extends ConsumerState<FeedPage>
-    with TickerProviderStateMixin {
-  late final TabController tabController;
+class _FeedPageState extends ConsumerState<FeedPage> {
+  int selectedIndex = 0;
   final followingScrollController = ScrollController();
   final newScrollController = ScrollController();
   final popScrollController = ScrollController();
-  static const targetRevealDelta = appBarHeight * 1.5;
-  double appBarOffset = 0.0;
-  double lastOffset = 0.0;
-  double revealDelta = 0.0;
 
-  ScrollController getCurrentScrollController() {
-    switch (tabController.index) {
+  Widget _buildCurrentFeed() {
+    final appBar = _buildFeedAppBar();
+    switch (selectedIndex) {
       case 0:
-        return followingScrollController;
+        return _FollowingFeed(
+          controller: followingScrollController,
+          appBar: appBar,
+        );
       case 1:
-        return newScrollController;
+        return _NewFeed(
+          controller: newScrollController,
+          appBar: appBar,
+        );
       case 2:
-        return popScrollController;
+        return _PopularFeed(
+          controller: popScrollController,
+          appBar: appBar,
+        );
       default:
-        return followingScrollController;
+        return _FollowingFeed(
+          controller: followingScrollController,
+          appBar: appBar,
+        );
     }
   }
 
+  SliverAppBar _buildFeedAppBar() {
+    return SliverAppBar(
+      floating: true,
+      pinned: false,
+      scrolledUnderElevation: 0.0,
+      centerTitle: false,
+      automaticallyImplyLeading: false,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      titleSpacing: 0,
+      toolbarHeight: appBarHeight,
+      title: _FeedAppBarContent(
+        selectedIndex: selectedIndex,
+        onSelectionChanged: _onFeedOptionChanged,
+        onLogoTap: _refreshCurrentTab,
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(3),
+        child: MaxWidthContent(
+          child: Divider(
+            color: Theme.of(context).colorScheme.outline,
+            height: 0.5,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onFeedOptionChanged(int index) {
+    if (selectedIndex == index) {
+      return;
+    }
+    setState(() {
+      selectedIndex = index;
+      PrefsService.lastFeedPageIndex = index;
+    });
+  }
+
   Future<void> _refreshCurrentTab() async {
-    switch (tabController.index) {
+    switch (selectedIndex) {
       case 0:
         await ref.read(followingFeedProvider.notifier).refresh();
         return;
@@ -212,154 +159,36 @@ class _FeedPageState extends ConsumerState<FeedPage>
     }
   }
 
-  void tabListener() {
-    PrefsService.lastFeedPageIndex = tabController.index;
-    final controller = getCurrentScrollController();
-    if (!controller.hasClients) {
-      return;
-    }
-    lastOffset = controller.offset;
-    revealDelta = 0.0;
-  }
-
-  void scrollListener() {
-    final currentOffset = getCurrentScrollController().offset;
-    final delta = currentOffset - lastOffset;
-    if (currentOffset < 0) {
-      return;
-    }
-    if (delta < 0) {
-      if (revealDelta < targetRevealDelta && currentOffset > appBarHeight) {
-        revealDelta -= delta;
-      } else if (appBarOffset != 0.0) {
-        setState(() {
-          appBarOffset -= delta;
-          appBarOffset = appBarOffset.clamp(-appBarHeight, 0.0);
-        });
-      }
-    } else {
-      revealDelta = 0.0;
-      if (appBarOffset != appBarHeight) {
-        setState(() {
-          appBarOffset -= delta;
-          appBarOffset = appBarOffset.clamp(-appBarHeight, 0.0);
-        });
-      }
-    }
-    lastOffset = currentOffset;
-  }
-
   @override
   void initState() {
-    const numTabs = 3;
     super.initState();
-    followingScrollController.addListener(scrollListener);
-    newScrollController.addListener(scrollListener);
-    popScrollController.addListener(scrollListener);
-    tabController = TabController(
-      length: numTabs,
-      vsync: this,
-      initialIndex: PrefsService.lastFeedPageIndex.clamp(
-        0,
-        numTabs,
-      ),
-    );
-    tabController.addListener(tabListener);
+    selectedIndex = PrefsService.lastFeedPageIndex.clamp(0, 2);
   }
 
   @override
   void dispose() {
-    followingScrollController.removeListener(scrollListener);
-    newScrollController.removeListener(scrollListener);
-    popScrollController.removeListener(scrollListener);
-    tabController.removeListener(tabListener);
     followingScrollController.dispose();
     newScrollController.dispose();
     popScrollController.dispose();
-    tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        NotificationListener<ScrollNotification>(
-          onNotification: (notification) {
-            if (notification is ScrollEndNotification) {
-              if (appBarOffset <= -appBarHeight * 0.9 &&
-                  getCurrentScrollController().offset > appBarHeight) {
-                setState(() {
-                  appBarOffset = -appBarHeight;
-                });
-              } else {
-                setState(() {
-                  appBarOffset = 0.0;
-                });
-              }
-            } else if (notification is ScrollUpdateNotification) {
-              if (appBarOffset == 0.0) {
-                return false;
-              }
-              final modulatedOffset = tabController.offset % 1;
-              if (modulatedOffset != 0) {
-                revealDelta = 0.0;
-                if (tabController.offset.sign == -1.0) {
-                  setState(() {
-                    appBarOffset = modulatedOffset * -appBarHeight;
-                  });
-                } else {
-                  setState(() {
-                    appBarOffset = (1 - modulatedOffset) * -appBarHeight;
-                  });
-                }
-              }
-            }
-            return false;
-          },
-          child: GestureDetector(
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                _FollowingTab(controller: followingScrollController),
-                _NewTab(controller: newScrollController),
-                _PopTab(controller: popScrollController),
-              ],
-            ),
-          ),
-        ),
-        AnimatedPositioned(
-          duration: Duration(milliseconds: 100),
-          curve: Curves.easeOut,
-          top: appBarOffset,
-          left: 0,
-          right: 0,
-          height: appBarHeight,
-          child: _AppBar(
-            height: appBarHeight,
-            tabController: tabController,
-            onLogoTap: _refreshCurrentTab,
-            scrollControllers: [
-              followingScrollController,
-              newScrollController,
-              popScrollController,
-            ],
-          ),
-        ),
-      ],
-    );
+    return _buildCurrentFeed();
   }
 }
 
-class _FollowingTab extends ConsumerStatefulWidget {
+class _FollowingFeed extends ConsumerStatefulWidget {
   final ScrollController controller;
-  const _FollowingTab({required this.controller});
+  final SliverAppBar appBar;
+  const _FollowingFeed({required this.controller, required this.appBar});
 
   @override
-  ConsumerState<_FollowingTab> createState() => __FollowingTabState();
+  ConsumerState<_FollowingFeed> createState() => __FollowingFeedState();
 }
 
-class __FollowingTabState extends ConsumerState<_FollowingTab>
+class __FollowingFeedState extends ConsumerState<_FollowingFeed>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -371,7 +200,7 @@ class __FollowingTabState extends ConsumerState<_FollowingTab>
     return InfiniteScrollyCore<int>(
       isEnd: provider.$2,
       list: provider.$1,
-      header: SizedBox(height: appBarHeight),
+      appBar: widget.appBar,
       getter: ref.read(followingFeedProvider.notifier).getter,
       onRefresh: ref.read(followingFeedProvider.notifier).refresh,
       initialLoadingWidget: PostLoader(),
@@ -381,15 +210,16 @@ class __FollowingTabState extends ConsumerState<_FollowingTab>
   }
 }
 
-class _NewTab extends ConsumerStatefulWidget {
+class _NewFeed extends ConsumerStatefulWidget {
   final ScrollController controller;
-  const _NewTab({required this.controller});
+  final SliverAppBar appBar;
+  const _NewFeed({required this.controller, required this.appBar});
 
   @override
-  ConsumerState<_NewTab> createState() => __NewTabState();
+  ConsumerState<_NewFeed> createState() => __NewFeedState();
 }
 
-class __NewTabState extends ConsumerState<_NewTab>
+class __NewFeedState extends ConsumerState<_NewFeed>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -401,7 +231,7 @@ class __NewTabState extends ConsumerState<_NewTab>
     return InfiniteScrollyCore<int>(
       isEnd: provider.$2,
       list: provider.$1,
-      header: SizedBox(height: appBarHeight),
+      appBar: widget.appBar,
       getter: ref.read(newFeedProvider.notifier).getter,
       onRefresh: ref.read(newFeedProvider.notifier).refresh,
       initialLoadingWidget: PostLoader(),
@@ -411,15 +241,16 @@ class __NewTabState extends ConsumerState<_NewTab>
   }
 }
 
-class _PopTab extends ConsumerStatefulWidget {
+class _PopularFeed extends ConsumerStatefulWidget {
   final ScrollController controller;
-  const _PopTab({required this.controller});
+  final SliverAppBar appBar;
+  const _PopularFeed({required this.controller, required this.appBar});
 
   @override
-  ConsumerState<_PopTab> createState() => __PopTabState();
+  ConsumerState<_PopularFeed> createState() => __PopularFeedState();
 }
 
-class __PopTabState extends ConsumerState<_PopTab>
+class __PopularFeedState extends ConsumerState<_PopularFeed>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -431,7 +262,7 @@ class __PopTabState extends ConsumerState<_PopTab>
     return InfiniteScrollyCore<int>(
       isEnd: provider.$2,
       list: provider.$1,
-      header: SizedBox(height: appBarHeight),
+      appBar: widget.appBar,
       getter: ref.read(popularFeedProvider.notifier).getter,
       onRefresh: ref.read(popularFeedProvider.notifier).refresh,
       initialLoadingWidget: PostLoader(),
