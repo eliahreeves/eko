@@ -9,26 +9,46 @@ part '../generated/providers/comment_list_provider.g.dart';
 class CommentList extends _$CommentList {
   String? _lastTime;
   int? _lastId;
+  Future<void>? _ongoingFetch;
   @override
   (List<int>, bool) build(int postId) {
     return ([], false);
   }
 
   Future<void> getter(int postId) async {
-    final commentList = await getCommentsForPost(
-      postId,
-      lastTime: _lastTime,
-      lastId: _lastId,
-    );
-    ref.read(commentPoolProvider).putAll(commentList);
-
-    final newList = [...state.$1];
-    for (final comment in commentList) {
-      newList.add(comment.id);
-      _lastTime = comment.createdAt;
-      _lastId = comment.id;
+    // wait for a current call to finish to prevent dup network calls and dup comments
+    // previously InfiniteScrolly was calling the getter as a result of refresh being
+    // called when the state was set to 0 comments and a scroll was happening
+    if (_ongoingFetch != null) {
+      await _ongoingFetch;
+      return;
     }
-    state = (newList, commentList.length < c.postsOnRefresh);
+
+    _ongoingFetch = () async {
+      try {
+        final commentList = await getCommentsForPost(
+          postId,
+          lastTime: _lastTime,
+          lastId: _lastId,
+        );
+        ref.read(commentPoolProvider).putAll(commentList);
+
+        final newList = [...state.$1];
+        for (final comment in commentList) {
+          // deduplicate comments
+          if (!newList.contains(comment.id)) {
+            newList.add(comment.id);
+          }
+          _lastTime = comment.createdAt;
+          _lastId = comment.id;
+        }
+        state = (newList, commentList.length < c.postsOnRefresh);
+      } finally {
+        _ongoingFetch = null;
+      }
+    }();
+
+    await _ongoingFetch;
   }
 
   Future<void> refresh() async {
