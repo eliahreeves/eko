@@ -38,14 +38,9 @@ class _FeedAppBarContent extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: FeedOptionsButton<int>(
-                  selectedValue: selectedIndex,
-                  onChanged: onSelectionChanged,
-                  options: [
-                    FeedOption(label: l10n.following, value: 0),
-                    FeedOption(label: l10n.feedTabNew, value: 1),
-                    FeedOption(label: l10n.feedTabPopular, value: 2),
-                  ],
+                child: InkWell(
+                  onTap: () => context.pushNamed('recent'),
+                  child: Bell(),
                 ),
               ),
               Align(
@@ -54,9 +49,14 @@ class _FeedAppBarContent extends StatelessWidget {
               ),
               Align(
                 alignment: Alignment.centerRight,
-                child: InkWell(
-                  onTap: () => context.pushNamed('recent'),
-                  child: Bell(),
+                child: FeedOptionsButton<int>(
+                  selectedValue: selectedIndex,
+                  onChanged: onSelectionChanged,
+                  options: [
+                    FeedOption(label: l10n.following, value: 0),
+                    FeedOption(label: l10n.feedTabNew, value: 1),
+                    FeedOption(label: l10n.feedTabPopular, value: 2),
+                  ],
                 ),
               ),
             ],

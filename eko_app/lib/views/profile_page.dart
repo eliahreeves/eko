@@ -547,7 +547,7 @@ class _Header extends ConsumerWidget {
           height: c.dividerWidth,
         ),
         Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.centerRight,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: FeedOptionsButton<ProfilePostSort>(
