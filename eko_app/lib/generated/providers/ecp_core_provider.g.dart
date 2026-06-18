@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../providers/auth_provider.dart';
+part of '../../providers/ecp_core_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,42 +9,43 @@ part of '../../providers/auth_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Auth)
-final authProvider = AuthProvider._();
+@ProviderFor(EcpCoreHolder)
+final ecpCoreHolderProvider = EcpCoreHolderProvider._();
 
-final class AuthProvider extends $AsyncNotifierProvider<Auth, AuthModel> {
-  AuthProvider._()
+final class EcpCoreHolderProvider
+    extends $AsyncNotifierProvider<EcpCoreHolder, EcpCore?> {
+  EcpCoreHolderProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'authProvider',
+        name: r'ecpCoreHolderProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$authHash();
+  String debugGetCreateSourceHash() => _$ecpCoreHolderHash();
 
   @$internal
   @override
-  Auth create() => Auth();
+  EcpCoreHolder create() => EcpCoreHolder();
 }
 
-String _$authHash() => r'50090e407bf5249fa3882c1506277eb5722aeddc';
+String _$ecpCoreHolderHash() => r'423e5cf0c53502bf3655fe77de07e76eeab93da1';
 
-abstract class _$Auth extends $AsyncNotifier<AuthModel> {
-  FutureOr<AuthModel> build();
+abstract class _$EcpCoreHolder extends $AsyncNotifier<EcpCore?> {
+  FutureOr<EcpCore?> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<AuthModel>, AuthModel>;
+    final ref = this.ref as $Ref<AsyncValue<EcpCore?>, EcpCore?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<AuthModel>, AuthModel>,
-              AsyncValue<AuthModel>,
+              AnyNotifier<AsyncValue<EcpCore?>, EcpCore?>,
+              AsyncValue<EcpCore?>,
               Object?,
               Object?
             >;
