@@ -246,6 +246,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get iveVerifiedMyEmail => 'Saya telah memverifikasi email saya';
 
   @override
+  String get keyExchangeFailed => 'Pertukaran kunci gagal';
+
+  @override
+  String get keysExchanged => 'Kunci berhasil ditukar';
+
+  @override
   String get likes => 'Suka';
 
   @override
@@ -290,6 +296,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get newLines => 'Baris Baru';
 
   @override
+  String get chats => 'Chats';
+
+  @override
+  String get newMessage => 'Pesan baru';
+
+  @override
+  String get noMessagesYet => 'Belum ada pesan';
+
+  @override
+  String get typeAMessage => 'Ketik pesan';
+
+  @override
   String get newPasswordMustBeDifferent => 'Kata Sandi Baru Harus Berbeda';
 
   @override
@@ -297,6 +315,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get nothingToSeeHere => 'Tidak ada yang bisa dilihat di sini!';
+
+  @override
+  String get noteToSelf => 'Catatan untuk diri sendiri';
 
   @override
   String get ok => 'Oke';
@@ -461,6 +482,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Silakan kembali dan pilih nama pengguna yang berbeda.';
 
   @override
+  String get userMayNotHaveDeviceRegistered =>
+      'Pengguna mungkin belum mendaftarkan perangkat.';
+
+  @override
   String get userNotFound => 'Pengguna Tidak Ditemukan';
 
   @override
@@ -511,6 +536,62 @@ class AppLocalizationsId extends AppLocalizations {
   String get messengerSubtitle => 'eko messenger segera hadir';
 
   @override
+  String get messengerSetupBody =>
+      'Daftarkan perangkat ini untuk mengirim dan menerima pesan terenkripsi ujung ke ujung.';
+
+  @override
+  String get enableMessages => 'Aktifkan pesan';
+
+  @override
+  String get registeringDevice => 'Mendaftarkan perangkat…';
+
+  @override
+  String get deviceRegistrationFailed =>
+      'Tidak dapat menyiapkan pesan di perangkat ini.';
+
+  @override
+  String get messengerServerUnavailableTitle => 'Server pesan tidak tersedia';
+
+  @override
+  String get messengerServerUnavailableBody =>
+      'Tidak dapat terhubung ke server pesan. Pastikan server berjalan dan coba lagi.';
+
+  @override
+  String get messengerWaitForApprovalTitle => 'Perangkat belum disetujui';
+
+  @override
+  String get messengerWaitForApprovalBody =>
+      'Perangkat ini belum disetujui. Notifikasi telah dikirim ke perangkat aktif Anda.';
+
+  @override
+  String get messengerDevicePublicKey => 'Kunci publik';
+
+  @override
+  String get messengerDeviceCode => 'Kode perangkat';
+
+  @override
+  String get messengerResendApprovalNotification => 'Kirim ulang notifikasi';
+
+  @override
+  String get messengerApproveDeviceTitle => 'Setujui perangkat baru';
+
+  @override
+  String get messengerApproveDeviceBody =>
+      'Perangkat baru meminta akses. Verifikasi kunci publik cocok, lalu masukkan kode perangkat yang ditampilkan di perangkat tersebut.';
+
+  @override
+  String get messengerEnterDeviceCode => 'Masukkan kode perangkat';
+
+  @override
+  String get messengerApproveDevice => 'Setujui';
+
+  @override
+  String get messengerIgnoreDevice => 'Abaikan';
+
+  @override
+  String get messengerInvalidDeviceCode => 'Kode perangkat tidak valid';
+
+  @override
   String get selectEmojiTitle => 'Pilih emoji';
 
   @override
@@ -550,6 +631,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get imageSavedToGallery => 'Gambar disimpan ke galeri';
+
+  @override
+  String get today => 'Hari ini';
+
+  @override
+  String get yesterday => 'Kemarin';
 
   @override
   String get repostLoadFailed => 'Tidak dapat memuat postingan ini';

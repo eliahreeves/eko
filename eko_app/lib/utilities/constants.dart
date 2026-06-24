@@ -152,3 +152,10 @@ const String appStoreURL =
     'https://apps.apple.com/us/app/eko/id6470772031?platform=iphone';
 const String termsUrl = 'https://eko-app.com/privacy-policy';
 const String finance = 'https://finance.yahoo.com/quote/';
+const String db = 'ecp.db';
+const String dbKey = 'db_key';
+const double messengerWideScreen = 700;
+const double kConversationAvatarRadius = 20.0;
+final Uri messengerDefaultServerUrl = Uri.parse('http://localhost:3000');
+
+const maxAgeInMinutesOfApproval = 10;

@@ -247,6 +247,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get iveVerifiedMyEmail => 'I\'ve verified my email';
 
   @override
+  String get keyExchangeFailed => 'Key exchange failed';
+
+  @override
+  String get keysExchanged => 'Keys exchanged';
+
+  @override
   String get likes => 'Up-ekos';
 
   @override
@@ -290,6 +296,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newLines => 'New Lines';
 
   @override
+  String get chats => 'Chats';
+
+  @override
+  String get newMessage => 'New message';
+
+  @override
+  String get noMessagesYet => 'No messages yet';
+
+  @override
+  String get typeAMessage => 'Type a message';
+
+  @override
   String get newPasswordMustBeDifferent => 'New Password Must be Different';
 
   @override
@@ -297,6 +315,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nothingToSeeHere => 'Nothing to see here!';
+
+  @override
+  String get noteToSelf => 'Note to Self';
 
   @override
   String get ok => 'Ok';
@@ -461,6 +482,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please go back and choose a different username.';
 
   @override
+  String get userMayNotHaveDeviceRegistered =>
+      'User may not have a device registered.';
+
+  @override
   String get userNotFound => 'User Not Found';
 
   @override
@@ -510,6 +535,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messengerSubtitle => 'eko messenger coming soon';
 
   @override
+  String get messengerSetupBody =>
+      'Register this device to send and receive end-to-end encrypted messages.';
+
+  @override
+  String get enableMessages => 'Enable messages';
+
+  @override
+  String get registeringDevice => 'Registering device…';
+
+  @override
+  String get deviceRegistrationFailed =>
+      'Could not set up messaging on this device.';
+
+  @override
+  String get messengerServerUnavailableTitle => 'Messages server unavailable';
+
+  @override
+  String get messengerServerUnavailableBody =>
+      'Could not reach the messages server. Check that it is running and try again.';
+
+  @override
+  String get messengerWaitForApprovalTitle => 'Device not approved';
+
+  @override
+  String get messengerWaitForApprovalBody =>
+      'This device hasn\'t been approved yet. A notification has been sent to your active devices.';
+
+  @override
+  String get messengerDevicePublicKey => 'Public key';
+
+  @override
+  String get messengerDeviceCode => 'Device code';
+
+  @override
+  String get messengerResendApprovalNotification => 'Resend notification';
+
+  @override
+  String get messengerApproveDeviceTitle => 'Approve new device';
+
+  @override
+  String get messengerApproveDeviceBody =>
+      'A new device is requesting access. Verify the public key matches, then enter the device code shown on that device.';
+
+  @override
+  String get messengerEnterDeviceCode => 'Enter device code';
+
+  @override
+  String get messengerApproveDevice => 'Approve';
+
+  @override
+  String get messengerIgnoreDevice => 'Ignore';
+
+  @override
+  String get messengerInvalidDeviceCode => 'Invalid device code';
+
+  @override
   String get selectEmojiTitle => 'Select emoji';
 
   @override
@@ -549,6 +630,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imageSavedToGallery => 'Image saved to gallery';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
 
   @override
   String get repostLoadFailed => 'Could not load this post';

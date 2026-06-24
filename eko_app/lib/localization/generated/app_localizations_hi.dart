@@ -245,6 +245,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get iveVerifiedMyEmail => 'मैंने अपना ईमेल सत्यापित किया है';
 
   @override
+  String get keyExchangeFailed => 'कुंजी विनिमय विफल';
+
+  @override
+  String get keysExchanged => 'कुंजियाँ विनिमय हो गईं';
+
+  @override
   String get likes => 'Up-ekos';
 
   @override
@@ -289,6 +295,18 @@ class AppLocalizationsHi extends AppLocalizations {
   String get newLines => 'नई पंक्तियाँ';
 
   @override
+  String get chats => 'Chats';
+
+  @override
+  String get newMessage => 'नया संदेश';
+
+  @override
+  String get noMessagesYet => 'अभी तक कोई संदेश नहीं';
+
+  @override
+  String get typeAMessage => 'एक संदेश लिखें';
+
+  @override
   String get newPasswordMustBeDifferent => 'नया पासवर्ड भिन्न होना चाहिए';
 
   @override
@@ -296,6 +314,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get nothingToSeeHere => 'यहाँ कुछ नहीं देखने को है!';
+
+  @override
+  String get noteToSelf => 'स्वयं के लिए नोट';
 
   @override
   String get ok => 'ठीक है';
@@ -460,6 +481,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'कृपया वापस जाएं और एक अलग उपयोगकर्ता नाम चुनें।';
 
   @override
+  String get userMayNotHaveDeviceRegistered =>
+      'हो सकता है कि उपयोगकर्ता ने कोई डिवाइस पंजीकृत न किया हो।';
+
+  @override
   String get userNotFound => 'उपयोगकर्ता नहीं मिला';
 
   @override
@@ -510,6 +535,62 @@ class AppLocalizationsHi extends AppLocalizations {
   String get messengerSubtitle => 'eko messenger जल्द आ रहा है';
 
   @override
+  String get messengerSetupBody =>
+      'एंड-टू-एंड एन्क्रिप्टेड संदेश भेजने और प्राप्त करने के लिए इस डिवाइस को पंजीकृत करें।';
+
+  @override
+  String get enableMessages => 'संदेश सक्षम करें';
+
+  @override
+  String get registeringDevice => 'डिवाइस पंजीकृत हो रहा है…';
+
+  @override
+  String get deviceRegistrationFailed =>
+      'इस डिवाइस पर मैसेजिंग सेट अप नहीं हो सकी।';
+
+  @override
+  String get messengerServerUnavailableTitle => 'मैसेज सर्वर उपलब्ध नहीं है';
+
+  @override
+  String get messengerServerUnavailableBody =>
+      'मैसेज सर्वर तक पहुँच नहीं हो सकी। जाँचें कि सर्वर चल रहा है और फिर से प्रयास करें।';
+
+  @override
+  String get messengerWaitForApprovalTitle => 'डिवाइस स्वीकृत नहीं है';
+
+  @override
+  String get messengerWaitForApprovalBody =>
+      'यह डिवाइस अभी तक स्वीकृत नहीं हुआ है। आपके सक्रिय डिवाइसों को एक सूचना भेजी गई है।';
+
+  @override
+  String get messengerDevicePublicKey => 'सार्वजनिक कुंजी';
+
+  @override
+  String get messengerDeviceCode => 'डिवाइस कोड';
+
+  @override
+  String get messengerResendApprovalNotification => 'सूचना पुनः भेजें';
+
+  @override
+  String get messengerApproveDeviceTitle => 'नया डिवाइस स्वीकृत करें';
+
+  @override
+  String get messengerApproveDeviceBody =>
+      'एक नया डिवाइस एक्सेस का अनुरोध कर रहा है। सार्वजनिक कुंजी मिलान सत्यापित करें, फिर उस डिवाइस पर दिखाया गया डिवाइस कोड दर्ज करें।';
+
+  @override
+  String get messengerEnterDeviceCode => 'डिवाइस कोड दर्ज करें';
+
+  @override
+  String get messengerApproveDevice => 'स्वीकृत करें';
+
+  @override
+  String get messengerIgnoreDevice => 'अनदेखा करें';
+
+  @override
+  String get messengerInvalidDeviceCode => 'अमान्य डिवाइस कोड';
+
+  @override
   String get selectEmojiTitle => 'इमोजी चुनें';
 
   @override
@@ -549,6 +630,12 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get imageSavedToGallery => 'छवि गैलरी में सहेजी गई';
+
+  @override
+  String get today => 'आज';
+
+  @override
+  String get yesterday => 'कल';
 
   @override
   String get repostLoadFailed => 'यह पोस्ट लोड नहीं हो सकी';
